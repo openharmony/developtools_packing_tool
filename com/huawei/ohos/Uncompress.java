@@ -542,8 +542,76 @@ public class Uncompress {
         }
     }
 
+    private static byte[] getResourceDataFromHap(ZipFile zipFile) throws BundleException, IOException {
+        int entriesNum = 0;
+        InputStream indexInputStream = null;
+        try {
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+                entriesNum++;
+                if (entriesNum > TOO_MANY_SIZE) {
+                    LOG.error("Uncompress::uncompress exception: the entry num is too many.");
+                    throw new BundleException("uncompress failed entry num is too many");
+                }
+
+                ZipEntry indexEntry = entries.nextElement();
+                if (indexEntry == null) {
+                    continue;
+                }
+                if (indexEntry != null && !"".equals(indexEntry.getName()) &&
+                    indexEntry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
+                    indexInputStream = zipFile.getInputStream(indexEntry);
+                    return getByte(indexInputStream);
+                }
+            }
+        } finally {
+            Utility.closeStream(indexInputStream);
+        }
+        return null;
+    }
+
+    private static String readStringFromFile(String fileName, ZipFile zipFile)
+        throws IOException {
+        ZipEntry entry = zipFile.getEntry(fileName);
+        if (entry == null) {
+            LOG.error("Uncompress::readStringFromFile " + fileName + " not found exception");
+            return "";
+        }
+        InputStream fileInputStream = null;
+        BufferedReader bufferedReader = null;
+        try {
+            fileInputStream = zipFile.getInputStream(entry);
+            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        } finally {
+            Utility.closeStream(bufferedReader);
+            Utility.closeStream(fileInputStream);
+        }
+    }
+
+    private static HapZipInfo unZipHapFileFromHapFile(String srcPath)
+        throws BundleException, IOException {
+        HapZipInfo hapZipInfo = new HapZipInfo();
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            hapZipInfo.setHarmonyProfileJsonStr(readStringFromFile(HARMONY_PROFILE, zipFile));
+            hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
+            hapZipInfo.setPackInfoJsonStr(readStringFromFile(PACK_INFO, zipFile));
+            hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
+        }  finally {
+            Utility.closeStream(zipFile);
+        }
+        return hapZipInfo;
+    }
+
     /**
-     * uncompress process
+     * uncompress from specified file name
      *
      * @param deviceType device type
      * @param srcPath source file path
@@ -559,69 +627,83 @@ public class Uncompress {
         }
 
         UncomperssResult result = new UncomperssResult();
-        InputStream fileInputStream = null;
-        InputStream indexInputStream = null;
-        ZipFile zipFile = null;
-        BufferedReader bufferedReader = null;
-        byte[] data = null;
         try {
-            File srcFile = new File(srcPath);
-            zipFile = new ZipFile(srcFile);
-
-            if (HARMONY_PROFILE.equals(fileName)) {
-                int entriesNum = 0;
-                for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
-                    entriesNum++;
-                    if (entriesNum > TOO_MANY_SIZE) {
-                        LOG.error("Uncompress::uncompress exception: the entry num is too many.");
-                        throw new BundleException("uncompress failed entry num is too many");
-                    }
-
-                    ZipEntry indexEntry = entries.nextElement();
-                    if (indexEntry == null) {
-                        continue;
-                    }
-                    if (indexEntry != null && !"".equals(indexEntry.getName()) &&
-                            indexEntry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
-                        indexInputStream = zipFile.getInputStream(indexEntry);
-                        data = getByte(indexInputStream);
-                        break;
-                    }
-                }
-            }
-
-            ZipEntry entry = zipFile.getEntry(fileName);
-            if (entry == null) {
-                LOG.error("Uncompress::uncompress " + fileName + " not found exception");
-                throw new BundleException("Uncompress failed");
-            }
-            fileInputStream = zipFile.getInputStream(entry);
-            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-            String line;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            if (PACK_INFO.equals(fileName)) {
-                List<PackInfo> packInfos = JsonUtil.parseHapList(deviceType, sb.toString());
-                result.setPackInfoStr(sb.toString());
-                result.setPackInfos(packInfos);
+            HapZipInfo hapZipInfo = unZipHapFileFromHapFile(srcPath);
+            if (isPackInfo(fileName)) {
+                uncompressPackInfo(deviceType, hapZipInfo, result);
             } else {
-                ProfileInfo profileInfo = JsonUtil.parseProfileInfo(sb.toString(), data);
-                profileInfo.hapName = srcFile.getName().replace(HAP_SUFFIX, "");
-                result.addProfileInfoStr(sb.toString());
-                result.addProfileInfo(profileInfo);
+                uncompressProfileInfo(hapZipInfo, result);
             }
         } catch (IOException exception) {
             LOG.error("Uncompress::uncompress io exception: " + exception.getMessage());
             throw new BundleException("Uncompress failed");
-        } finally {
-            Utility.closeStream(bufferedReader);
-            Utility.closeStream(indexInputStream);
-            Utility.closeStream(fileInputStream);
-            Utility.closeStream(zipFile);
         }
         return result;
+    }
+
+    private static void uncompressPackInfo(String deviceType, HapZipInfo hapZipInfo, UncomperssResult uncomperssResult)
+        throws BundleException {
+        List<PackInfo> packInfos = JsonUtil.parseHapList(deviceType, hapZipInfo.getPackInfoJsonStr());
+        uncomperssResult.setPackInfoStr(hapZipInfo.getPackInfoJsonStr());
+        uncomperssResult.setPackInfos(packInfos);
+    }
+
+    private static void uncompressProfileInfo(HapZipInfo hapZipInfo, UncomperssResult uncomperssResult)
+        throws BundleException {
+        ProfileInfo profileInfo = JsonUtil.parseProfileInfo(hapZipInfo.getHarmonyProfileJsonStr(),
+            hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr());
+        profileInfo.hapName = hapZipInfo.getHapFileName();
+        uncomperssResult.addProfileInfoStr(hapZipInfo.getHarmonyProfileJsonStr());
+        uncomperssResult.addProfileInfo(profileInfo);
+    }
+
+    private static HapZipInfo unZipHapFileFromInputStream(InputStream input) throws BundleException, IOException {
+        BufferedInputStream bufIn = null;
+        ZipInputStream zipIn = null;
+        BufferedReader bufferedReader = null;
+        HapZipInfo hapZipInfo = new HapZipInfo();
+        try {
+            ZipEntry entry = null;
+            bufIn = new BufferedInputStream(input);
+            zipIn = new ZipInputStream(bufIn);
+            int entriesNum = 0;
+            while ((entry = zipIn.getNextEntry()) != null) {
+                entriesNum++;
+                if (entriesNum > TOO_MANY_SIZE) {
+                    LOG.error("Uncompress::uncompressByInput exception: the entry num is too many.");
+                    throw new BundleException("uncompressByInput failed entry num is too many");
+                }
+
+                if (entry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
+                    hapZipInfo.setResDataBytes(getByte(zipIn));
+                    continue;
+                }
+                if (isPackInfo(entry.getName())) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
+                    hapZipInfo.setPackInfoJsonStr(readStringFromInputStream(zipIn, bufferedReader));
+                    continue;
+                }
+                if (isHarmonyProfile(entry.getName())) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
+                    hapZipInfo.setHarmonyProfileJsonStr(readStringFromInputStream(zipIn, bufferedReader));
+                }
+            }
+        } finally {
+            Utility.closeStream(bufferedReader);
+            Utility.closeStream(bufIn);
+            Utility.closeStream(zipIn);
+        }
+        return hapZipInfo;
+    }
+
+    private static String readStringFromInputStream(ZipInputStream zipIn, BufferedReader bufferedReader)
+        throws IOException {
+        String line;
+        StringBuilder sb = new StringBuilder();
+        while ((line = bufferedReader.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
     }
 
     /**
@@ -636,53 +718,16 @@ public class Uncompress {
     private static UncomperssResult uncompressByInput(String deviceType, InputStream input, String fileName)
             throws BundleException {
         UncomperssResult result = new UncomperssResult();
-        BufferedInputStream bufIn = null;
-        InputStream indexInputStream = null;
-        ZipInputStream zipIn = null;
-        BufferedReader bufferedReader = null;
         try {
-            ZipEntry entry = null;
-            bufIn = new BufferedInputStream(input);
-            zipIn = new ZipInputStream(bufIn);
-            String sbStr = "";
-            byte[] dataRes = null;
-            int entriesNum = 0;
-            while ((entry = zipIn.getNextEntry()) != null) {
-                entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::uncompressByInput exception: the entry num is too many.");
-                    throw new BundleException("uncompressByInput failed entry num is too many");
-                }
-
-                if (entry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
-                    dataRes = getByte(zipIn);
-                } else if (fileName.equals(entry.getName())) {
-                    bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
-                    String line;
-                    StringBuilder sb = new StringBuilder();
-                    while ((line = bufferedReader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    sbStr = sb.toString();
-                }
-            }
-
-            if (PACK_INFO.equals(fileName)) {
-                List<PackInfo> packInfos = JsonUtil.parseHapList(deviceType, sbStr);
-                result.setPackInfoStr(sbStr);
-                result.setPackInfos(packInfos);
+            HapZipInfo hapZipInfo = unZipHapFileFromInputStream(input);
+            if (isPackInfo(fileName)) {
+                uncompressPackInfo(deviceType, hapZipInfo, result);
             } else {
-                result.addProfileInfoStr(sbStr);
-                result.addProfileInfo(JsonUtil.parseProfileInfo(sbStr, dataRes));
+                uncompressProfileInfo(hapZipInfo, result);
             }
         } catch (IOException exception) {
             LOG.error("Uncompress::uncompressByInput io exception: " + exception.getMessage());
             throw new BundleException("Uncompress by input failed");
-        } finally {
-            Utility.closeStream(bufferedReader);
-            Utility.closeStream(indexInputStream);
-            Utility.closeStream(bufIn);
-            Utility.closeStream(zipIn);
         }
         return result;
     }
@@ -1200,5 +1245,21 @@ public class Uncompress {
             }
         }
         return result;
+    }
+
+
+    private static boolean isHarmonyProfile(String fileName) {
+        return HARMONY_PROFILE.equals(fileName);
+    }
+
+    private static boolean isPackInfo(String fileName) {
+        return PACK_INFO.equals(fileName);
+    }
+
+    private static String getHapNameWithoutSuffix(String hapFileName) {
+        if (hapFileName == null || hapFileName.isEmpty()) {
+            return "";
+        }
+        return hapFileName.replace(HAP_SUFFIX, "");
     }
 }
