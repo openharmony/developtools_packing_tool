@@ -94,7 +94,7 @@ public class Compressor {
     private static final String PIC_1X2 = "1x2";
     private static final String PIC_2X2 = "2x2";
     private static final String PIC_2X4 = "2x4";
-    private static final String PIC_4X4 = "4x2";
+    private static final String PIC_4X4 = "4x4";
 
 
     // set timestamp to get fixed MD5
