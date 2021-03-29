@@ -38,7 +38,7 @@ public class CompressVerify {
     private static final String APP_SUFFIX = ".app";
     private static final String APK_SUFFIX = ".apk";
     private static final String DEX_SUFFIX = ".dex";
-    private static final String AEX_SUFFIX = ".aex";
+    private static final String ABC_SUFFIX = ".abc";
     private static final String SO_SUFFIX = ".so";
     private static final String JAR_SUFFIX = ".jar";
     private static final String TXT_SUFFIX = ".txt";
@@ -107,9 +107,9 @@ public class CompressVerify {
                 return false;
             }
 
-            if (!utility.getAexPath().isEmpty() && !compatibleProcess(utility, utility.getAexPath(),
-                    utility.getFormattedAexPathList(), AEX_SUFFIX)) {
-                LOG.error("CompressVerify::isArgsValidInHapMode aex-path is invalid!");
+            if (!utility.getAbcPath().isEmpty() && !compatibleProcess(utility, utility.getAbcPath(),
+                    utility.getFormattedAbcPathList(), ABC_SUFFIX)) {
+                LOG.error("CompressVerify::isArgsValidInHapMode abc-path is invalid!");
                 return false;
             }
 

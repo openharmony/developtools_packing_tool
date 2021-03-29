@@ -45,7 +45,7 @@ public class Utility {
     private String soDir = "";
     private String abilitySoPath = "";
     private String dexPath = "";
-    private String aexPath = "";
+    private String abcPath = "";
     private String indexPath = "";
     private String hapPath = "";
     private String appPath = "";
@@ -77,7 +77,7 @@ public class Utility {
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
     private List<String> formattedDexPathList = new ArrayList<>();
-    private List<String> formattedAexPathList = new ArrayList<>();
+    private List<String> formattedAbcPathList = new ArrayList<>();
     private List<String> formattedHapPathList = new ArrayList<>();
     private List<String> formattedApkPathList = new ArrayList<>();
     private List<String> formattedJarPathList = new ArrayList<>();
@@ -154,13 +154,13 @@ public class Utility {
         }
     }
 
-    public String getAexPath() {
-        return aexPath;
+    public String getAbcPath() {
+        return abcPath;
     }
 
-    public void setAexPath(String aexPath) {
-        if (!aexPath.startsWith(CMD_PREFIX)) {
-            this.aexPath = aexPath;
+    public void setAbcPath(String abcPath) {
+        if (!abcPath.startsWith(CMD_PREFIX)) {
+            this.abcPath = abcPath;
         }
     }
 
@@ -439,8 +439,8 @@ public class Utility {
         return formattedDexPathList;
     }
 
-    public List<String> getFormattedAexPathList() {
-        return formattedAexPathList;
+    public List<String> getFormattedAbcPathList() {
+        return formattedAbcPathList;
     }
 
     public List<String> getFormattedHapPathList() {

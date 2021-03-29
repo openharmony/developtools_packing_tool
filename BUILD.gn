@@ -60,6 +60,7 @@ java_library("hmos_app_unpacking_tool_java") {
     "com/huawei/ohos/ScreenDensity.java",
     "com/huawei/ohos/ScreenWindow.java",
     "com/huawei/ohos/CountryCode.java",
+    "com/huawei/ohos/HapZipInfo.java",
   ]
 
   deps = [ "//third_party/fastjson/repackaged:fastjson_utils_java" ]

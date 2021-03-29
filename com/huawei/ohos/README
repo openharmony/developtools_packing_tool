@@ -42,9 +42,9 @@ HAP MODE OPTIONS:
   --dex-path                     1.dex path must end with .dex, if has more than one dex,
                                  use comma(,) to separate.
                                  2.dex path also can be directory path.
-  --aex-path                     1.aex path must end with .aex, if has more than one aex,
+  --abc-path                     1.abc path must end with .abc, if has more than one abc,
                                  use comma(,) to separate.
-                                 2.aex path also can be directory path.
+                                 2.abc path also can be directory path.
   --lib-path                     lib/ path.
   --assets-path                  assets/ path.
   --resources-path               resources path.

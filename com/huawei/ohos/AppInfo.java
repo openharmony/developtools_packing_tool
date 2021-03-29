@@ -74,4 +74,71 @@ public class AppInfo {
      * Indicates the releaseType of app AppInfo.
      */
     public String releaseType = "";
+
+
+    private String shellVersionCode = "";
+    private String shellVersionName = "";
+    private boolean multiFrameworkBundle;
+
+    /**
+     * Get shell version code.
+     *
+     * @return shell version code
+     */
+    public String getShellVersionCode() {
+        return shellVersionCode;
+    }
+
+    /**
+     * Set shell version code.
+     *
+     * @param shellVersionCode Indicates the shell version name
+     */
+    public void setShellVersionCode(String shellVersionCode) {
+        this.shellVersionCode = shellVersionCode;
+    }
+
+    /**
+     * Get shell version name.
+     *
+     * @return shell version name
+     */
+    public String getShellVersionName() {
+        return shellVersionName;
+    }
+
+    /**
+     * Set shell version name.
+     *
+     * @param shellVersionName Indicates the shell version name
+     */
+    public void setShellVersionName(String shellVersionName) {
+        this.shellVersionName = shellVersionName;
+    }
+
+    /**
+     * Whether the app is multi framework bundle.
+     *
+     * @return true if the app is a multi framework bundle.
+     */
+    public boolean isMultiFrameworkBundle() {
+        return multiFrameworkBundle;
+    }
+
+    /**
+     * Set multi framework bundle.
+     *
+     * @param multiFrameworkBundle Indicates the app type
+     */
+    public void setMultiFrameworkBundle(boolean multiFrameworkBundle) {
+        this.multiFrameworkBundle = multiFrameworkBundle;
+    }
+
+    /**
+     * Set default shell version
+     */
+    public void setDefaultShellVersion() {
+        this.shellVersionCode = versionCode;
+        this.shellVersionName = versionName;
+    }
 }

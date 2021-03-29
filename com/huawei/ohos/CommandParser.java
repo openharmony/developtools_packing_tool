@@ -40,7 +40,7 @@ public class CommandParser {
     private static final String CMD_SO_DIR = "--maple-so-dir";
     private static final String CMD_ABILITY_SO_PATH = "--ability-so-path";
     private static final String CMD_DEX_PATH = "--dex-path";
-    private static final String CMD_AEX_PATH = "--aex-path";
+    private static final String CMD_ABC_PATH = "--abc-path";
     private static final String CMD_LIB_PATH = "--lib-path";
     private static final String CMD_RES_PATH = "--res-path";
     private static final String CMD_RESOURCES_PATH = "--resources-path";
@@ -255,8 +255,8 @@ public class CommandParser {
                 utility.setDexPath(value);
                 return true;
             }
-            case CMD_AEX_PATH: {
-                utility.setAexPath(value);
+            case CMD_ABC_PATH: {
+                utility.setAbcPath(value);
                 return true;
             }
             case CMD_LIB_PATH: {
