@@ -41,6 +41,7 @@ import java.util.zip.ZipOutputStream;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * bundle compressor class, compress file and directory.
@@ -110,8 +111,9 @@ public class Compressor {
     private ZipOutputStream zipOut = null;
 
     private List<String> list = new ArrayList<String>();
-    private List<String> fromsList = new ArrayList<String>();
+    private List<String> formNamesList = new ArrayList<String>();
     private List<String> fileNameList = new ArrayList<String>();
+    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X4, PIC_4X4);
 
     /**
      * start compress.
@@ -246,8 +248,8 @@ public class Compressor {
             pathToFile(utility, dexPathItem, NULL_DIR_NAME, false);
         }
 
-        for (String aexPathItem : utility.getFormattedAexPathList()) {
-            pathToFile(utility, aexPathItem, NULL_DIR_NAME, false);
+        for (String abcPathItem : utility.getFormattedAbcPathList()) {
+            pathToFile(utility, abcPathItem, NULL_DIR_NAME, false);
         }
 
         for (String apkPathItem : utility.getFormattedApkPathList()) {
@@ -318,12 +320,20 @@ public class Compressor {
             pathToFile(utility, utility.getSignaturePath(), NULL_DIR_NAME, false);
         }
 
-        String[] outPath = utility.getOutPath().split("\\\\");
+        String[] outPath = utility.getOutPath().replace("\\", "/").split("/");
+        if (outPath.length < 2) {
+            LOG.error("Compressor::compressAppMode the outPath is invalid, length: " + outPath.length);
+            return;
+        }
         String[] path = utility.getOutPath().split(outPath[outPath.length - 2].toString());
         List<String> fileList = new ArrayList<>();
         for (String hapPathItem : utility.getFormattedHapPathList()) {
             String fName = hapPathItem.trim();
-            String[] temp = fName.split("\\\\");
+            String[] temp = fName.replace("\\", "/").split("/");
+            if (temp.length < 1) {
+                LOG.error("Compressor::compressAppMode the hap file path is invalid, length: " + temp.length);
+                continue;
+            }
             String[] str = temp[temp.length - 1].split("\\.");
             String outPathString = path[0] + str[0];
             fileList.add(outPathString);
@@ -376,6 +386,7 @@ public class Compressor {
             }
             outputStream = new FileOutputStream(destFile);
             out = new ZipOutputStream(new CheckedOutputStream(outputStream, new CRC32()));
+            out.setMethod(ZipOutputStream.STORED);
             compress(new File(path), out, NULL_DIR_NAME, true);
         } catch (FileNotFoundException ignored) {
             LOG.error("zip file not found exception");
@@ -542,7 +553,12 @@ public class Compressor {
             for (String fileName : fileNameList) {
                 if (fileName.endsWith(PNG_SUFFIX) || fileName.endsWith(UPPERCASE_PNG_SUFFIX)) {
                     String fName = fileName.trim();
-                    String[] temp = fName.split("\\\\");
+                    String[] temp = fName.replace("\\", "/").split("/");
+                    if (temp.length < 4) {
+                        LOG.error("Compressor::compressPackResMode the hap file path is invalid, length: "
+                            + temp.length);
+                        continue;
+                    }
                     String fileModelName = temp[temp.length - 4];
                     if (!isModelName(fileModelName)) {
                         LOG.error("Compressor::compressProcess compress failed ModelName Error!");
@@ -634,26 +650,22 @@ public class Compressor {
         if (name == null || name.isEmpty()) {
             return isSpecifications;
         }
-        if (name.endsWith(PNG_SUFFIX) || name.endsWith(UPPERCASE_PNG_SUFFIX)) {
-            String[] picName = name.split("-");
-            if (picName.length > 1) {
-                for (String fromName : fromsList) {
-                    if (fromName.equals(picName[0])) {
-                        isSpecifications = false;
-                        String[] normName = picName[1].split("\\.");
-                        if (normName[0].equals( PIC_1X2 ) || normName[0].equals( PIC_2X2 )
-                                || normName[0].equals( PIC_2X4 ) || normName[0].equals( PIC_4X4 )) {
-                            isSpecifications = true;
-                        }
-                    }
-                }
-                return isSpecifications;
-            } else {
-                return isSpecifications;
-            }
-        } else {
-            return isSpecifications;
+        if (!name.endsWith(PNG_SUFFIX) && !name.endsWith(UPPERCASE_PNG_SUFFIX)) {
+            LOG.error("isPicturing: the suffix is not .png or .PNG");
+            return false;
         }
+        int delimiterIndex = name.lastIndexOf("-");
+        if (delimiterIndex < 0) {
+            LOG.error("isPicturing: the entry card naming format is invalid and should be separated by '-'!");
+            return false;
+        }
+        String formName = name.substring(0, delimiterIndex);
+        if (!formNamesList.contains(formName)) {
+            LOG.error("isPicturing: the name is not same as formName, name: " + formName);
+            return false;
+        }
+        String dimension = name.substring(delimiterIndex + 1, name.lastIndexOf("."));
+        return supportDimensionsList.contains(dimension);
     }
 
     /**
@@ -676,6 +688,10 @@ public class Compressor {
         for (File f : files) {
             try {
                 if (f.isFile()) {
+                    if (f.getName().endsWith(".DS_Store")) {
+                        deleteFile(f.getCanonicalPath());
+                        continue;
+                    }
                     fileNameList.add(f.getCanonicalPath());
                 } else if (f.isDirectory()) {
                     getFileList(f.getCanonicalPath());
@@ -755,13 +771,14 @@ public class Compressor {
      * @param name filename
      * @param KeepDirStructure Empty File
      */
-    private static void compress(File sourceFile, ZipOutputStream zos, String name,
+    private void compress(File sourceFile, ZipOutputStream zos, String name,
                                 boolean KeepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
             if (sourceFile.isFile()) {
-                zos.putNextEntry(new ZipEntry(name));
+                ZipEntry zipEntry = getStoredZipEntry(sourceFile, name);
+                zos.putNextEntry(zipEntry);
                 in = new FileInputStream(sourceFile);
                 int len;
                 while ((len = in.read(buf)) != -1) {
@@ -773,9 +790,11 @@ public class Compressor {
                 if (listFiles == null || listFiles.length == 0) {
                     if (KeepDirStructure) {
                         if (!name.isEmpty()) {
-                            zos.putNextEntry(new ZipEntry(name + "/"));
+                            ZipEntry zipEntry = getStoredZipEntry(sourceFile, name + "/");
+                            zos.putNextEntry(zipEntry);
                         } else {
-                            zos.putNextEntry(new ZipEntry(name));
+                            ZipEntry zipEntry = getStoredZipEntry(sourceFile, name);
+                            zos.putNextEntry(zipEntry);
                         }
                         zos.closeEntry();
                     }
@@ -793,9 +812,48 @@ public class Compressor {
             LOG.error("Compressor::compressFile file not found exception");
         } catch (IOException exception) {
             LOG.error("Compressor::compressFile io exception: " + exception.getMessage());
-        }finally {
+        } catch (BundleException bundleException) {
+            LOG.error("Compressor::compressFile bundle exception" + bundleException.getMessage());
+        } finally {
             Utility.closeStream(in);
         }
+    }
+
+    private ZipEntry getStoredZipEntry(File sourceFile, String name) throws BundleException {
+        ZipEntry zipEntry = new ZipEntry(name);
+        zipEntry.setMethod(ZipEntry.STORED);
+        zipEntry.setCompressedSize(sourceFile.length());
+        zipEntry.setSize(sourceFile.length());
+        CRC32 crc = getCrcFromFile(sourceFile);
+        zipEntry.setCrc(crc.getValue());
+        FileTime fileTime = FileTime.fromMillis(FILE_TIME);
+        zipEntry.setLastAccessTime(fileTime);
+        zipEntry.setLastModifiedTime(fileTime);
+        return zipEntry;
+    }
+
+    private CRC32 getCrcFromFile(File file) throws BundleException {
+        FileInputStream fileInputStream = null;
+        CRC32 crc = new CRC32();
+        try {
+            fileInputStream = new FileInputStream(file);
+            byte[] buffer = new byte[BUFFER_SIZE];
+
+            int count = fileInputStream.read(buffer);
+            while (count > 0) {
+                crc.update(buffer, 0, count);
+                count = fileInputStream.read(buffer);
+            }
+        } catch (FileNotFoundException ignored) {
+            LOG.error("Uncompressor::getCrcFromFile file not found exception");
+            throw new BundleException("Get Crc from file failed");
+        } catch (IOException exception) {
+            LOG.error("Uncompressor::getCrcFromFile io exception: " + exception.getMessage());
+            throw new BundleException("Get Crc from file failed");
+        } finally {
+            Utility.closeStream(fileInputStream);
+        }
+        return crc;
     }
 
     /**
@@ -806,7 +864,7 @@ public class Compressor {
      * @param KeepDirStructure KeepDirStructure
      * @param file file
      */
-    private static void isNameEmpty(ZipOutputStream zos, String name, boolean KeepDirStructure, File file) {
+    private void isNameEmpty(ZipOutputStream zos, String name, boolean KeepDirStructure, File file) {
         if (!name.isEmpty()) {
             compress(file, zos, name + "/" + file.getName(), KeepDirStructure);
         } else {
@@ -1309,7 +1367,7 @@ public class Compressor {
             }
             String[] nameList = fromsName.split("\\.");
             if (nameList.length <= 1) {
-                fromsList.add(fromsName);
+                formNamesList.add(fromsName);
             }
         } catch (StringIndexOutOfBoundsException exception) {
             LOG.error("Compressor::parseModuleName field module-name is fault: " + exception.getMessage());

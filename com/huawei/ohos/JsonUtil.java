@@ -42,6 +42,13 @@ public class JsonUtil {
     private static final String ASSETS_DIR_NAME = "assets/";
     private static final Log LOG = new Log(JsonUtil.class.toString());
 
+    private static final String SUMMARY = "summary";
+    private static final String APP = "app";
+    private static final String VERSION = "version";
+    private static final String LEGACY_VERSION_CODE = "legacyVersionCode";
+    private static final String LEGACY_VERSION_NAME = "legacyVersionName";
+    private static final String MULTI_FRAMEWORK_BUNDLE = "multiFrameworkBundle";
+
     /**
      * parse hap list by device type
      *
@@ -89,24 +96,64 @@ public class JsonUtil {
         return packInfos;
     }
 
+    private static boolean parseShellVersionInfoToAppInfo(String packInfoJsonStr, AppInfo appInfo) {
+        LOG.info("Uncompress::parseShellVersionInfoToAppInfo: begin");
+        if (!appInfo.isMultiFrameworkBundle()) {
+            LOG.info("Uncompress::parseShellVersionInfoToAppInfo: is not a multi framewok bundle.");
+            return false;
+        }
+
+        JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
+        if (jsonObject == null) {
+            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+            return false;
+        }
+
+        JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
+        if (summaryJson == null) {
+            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+            return false;
+        }
+        JSONObject appJson = summaryJson.getJSONObject(APP);
+        if (appJson == null) {
+            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
+            return false;
+        }
+        JSONObject versionJson = appJson.getJSONObject(VERSION);
+        if (versionJson == null) {
+            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
+            return false;
+        }
+
+        if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
+            LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
+            return false;
+        }
+        appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
+        appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
+        return true;
+    }
+
     /**
      * parse hap profile info
      *
-     * @param jsonString uncompress json String
+     * @param harmonyProfileJsonString uncompress json String
      * @param data resource index data
+     * @param paclInfoJsonString pack.info json String
      * @return the parseProfileInfo result
      * @throws BundleException Throws this exception if the json is not standard.
      */
-    static ProfileInfo parseProfileInfo(String jsonString, byte[] data) throws BundleException {
+    static ProfileInfo parseProfileInfo(String harmonyProfileJsonString, byte[] data, String paclInfoJsonString)
+        throws BundleException {
         ProfileInfo profileInfo = new ProfileInfo();
-        JSONObject jsonObject = JSONObject.parseObject(jsonString);
-        if (jsonObject == null || !jsonObject.containsKey("app") || !jsonObject.containsKey("deviceConfig")
+        JSONObject jsonObject = JSONObject.parseObject(harmonyProfileJsonString);
+        if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey("deviceConfig")
                 || !jsonObject.containsKey("module")) {
             LOG.error("Uncompress::parseProfileInfo exception: app, deviceConfig or module is null");
             throw new BundleException("Parse profile info failed, app, deviceConfig or module is null");
         }
-        if (jsonObject.containsKey("app")) {
-            JSONObject appJson = jsonObject.getJSONObject("app");
+        if (jsonObject.containsKey(APP)) {
+            JSONObject appJson = jsonObject.getJSONObject(APP);
             profileInfo.appInfo = parseAppInfo(appJson);
         }
         if (jsonObject.containsKey("module")) {
@@ -138,6 +185,9 @@ public class JsonUtil {
             }
         }
 
+        if (!parseShellVersionInfoToAppInfo(paclInfoJsonString, profileInfo.appInfo)) {
+            profileInfo.appInfo.setDefaultShellVersion();
+        }
         return profileInfo;
     }
 
@@ -157,8 +207,8 @@ public class JsonUtil {
         appInfo.bundleName = getJsonString(appJson, "bundleName");
         appInfo.vendor = getJsonString(appJson, "vendor");
         appInfo.relatedBundleName = getJsonString(appJson, "relatedBundleName");
-        if (appJson.containsKey("version")) {
-            JSONObject version = appJson.getJSONObject("version");
+        if (appJson.containsKey(VERSION)) {
+            JSONObject version = appJson.getJSONObject(VERSION);
             appInfo.versionName = getJsonString(version, "name");
             appInfo.versionCode = getJsonString(version, "code");
         }
@@ -168,6 +218,7 @@ public class JsonUtil {
             appInfo.targetApiVersion = apiVersion.getIntValue("target");
             appInfo.releaseType = getJsonString(apiVersion, "releaseType");
         }
+        appInfo.setMultiFrameworkBundle(appJson.getBooleanValue(MULTI_FRAMEWORK_BUNDLE));
         return appInfo;
     }
 
