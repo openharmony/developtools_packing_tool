@@ -60,6 +60,7 @@ public class CommandParser {
     private static final String CMD_PARSE_MODE = "--p";
     private static final String CMD_PACK_RES_PATH = "--pack-res-path";
     private static final String CMD_UNPACKAPK = "--unpackapk";
+    private static final String CMD_UNPACK_CUT_ENTRY_APK = "--unpack-cut_entry";
     private static final String CMD_SHAREDLIBS_PATH = "--shared-libs-path";
     private static final String CMD_ENTRYCARD_PATH = "--entrycard-path";
     private static final Log LOG = new Log(CommandParser.class.toString());
@@ -144,7 +145,11 @@ public class CommandParser {
                     i++;
                     break;
                 }
-
+		case CMD_UNPACK_CUT_ENTRY_APK: {
+                    utility.setUnpackCutEntryApk(args[i + 1]);
+                    i++;
+                    break;
+                }
                 case CMD_PACK_INFO_PATH: {
                     utility.setPackInfoPath(args[i + 1]);
                     i++;

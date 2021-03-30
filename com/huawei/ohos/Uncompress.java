@@ -321,12 +321,14 @@ public class Uncompress {
 
                 ZipEntry entry = entries.nextElement();
                 String entryName = "";
-                if (entry != null && !"".equals(entry.getName()) &&
-                        !entry.getName().toLowerCase().endsWith(CUT_ENTRY_FILENAME)) {
-                    entryName = entry.getName();
-                } else {
-                    continue;
+		if (entry == null || entry.getName().isEmpty()) {
+		    continue;
+		}
+                if (entry.getName().toLowerCase().endsWith(CUT_ENTRY_FILENAME) &&
+		    "false".equals(utility.getUnpackCutEntryApk())) {
+		    continue;
                 }
+                entryName = entry.getName();
                 if (!entryName.toLowerCase(Locale.ENGLISH).endsWith(suffix) ||
                         (!hapNames.isEmpty() && !hapNames.contains(entryName.replace(suffix, "")))) {
                     continue;
