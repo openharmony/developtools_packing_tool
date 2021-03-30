@@ -70,6 +70,7 @@ public class Utility {
     private String hapName = "";
     private String sharedLibsPath = "";
     private String unpackApk = "false";
+    private String unpackCutEntryApk = "false";
     private String entryCardPath = "";
     private String packRes = "";
     private String packResPath = "";
@@ -379,6 +380,14 @@ public class Utility {
 
     public void setUnpackApk(String unpackApk) {
         this.unpackApk = unpackApk;
+    }
+
+    public String getUnpackCutEntryApk() {
+        return unpackCutEntryApk;
+    }
+
+    public void setUnpackCutEntryApk(String unpackCutEntryApk) {
+        this.unpackCutEntryApk = unpackCutEntryApk;
     }
 
     public String getHapName() {

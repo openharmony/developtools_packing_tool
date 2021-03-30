@@ -165,7 +165,7 @@ HAP MODE OPTIONS:
   --out-path                     target hap unpackage path.
   --force                        default false; if true, force delete destination
                                  out file if exists.
-
+  --unpack-cut_entry             default false; if true, unpack the cut_entry.apk
 HAR USAGE:
 java -jar hmos_app_unpacking_tool.jar --mode <options> --har-path <option>
 --out-path [option] --force [option]
