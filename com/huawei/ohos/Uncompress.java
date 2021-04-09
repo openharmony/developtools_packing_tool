@@ -60,9 +60,10 @@ public class Uncompress {
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final long FILE_TIME = 1546272000000L;
     private static final long TOO_BIG_SIZE = 0x6400000;
-    private static final long TOO_MANY_SIZE = 1024;
+    private static final long TOO_MANY_SIZE = 32768;
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
+    private static final String SO_SUFFIX = ".so";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -1042,7 +1043,11 @@ public class Uncompress {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            if (isCompression) {
+	    boolean isNeedCompress = isCompression;
+	    if (srcFile.isFile() && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(SO_SUFFIX)) {
+                isNeedCompress = false;
+            }
+            if (isNeedCompress) {
                 zipEntry.setMethod(ZipEntry.DEFLATED);
             } else {
                 zipEntry.setMethod(ZipEntry.STORED);
