@@ -767,6 +767,7 @@ public class Compressor {
      * Check whether picturingName meets specifications.
      *
      * @param name picturingName
+     * @param utility common data
      * @return false and true
      */
     private boolean isPicturing(String name, Utility utility) {
@@ -1189,7 +1190,7 @@ public class Compressor {
             inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
             bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.mark((int) srcFile.length() + 1);
-            // parse moduleName from pack.json
+            // parse moduleName from pack.info
             parsePackModuleName(bufferedReader, utility);
             bufferedReader.reset();
             parsePackFormName(bufferedReader, utility);
