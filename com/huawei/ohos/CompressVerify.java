@@ -446,6 +446,11 @@ public class CompressVerify {
 
     private static boolean isDirectoryValidStrictCase(String path, String directoryName) {
         File file = new File(path);
+        if (!file.exists()) {
+            LOG.error("CompressVerify::isDirectoryValidStrictCase directory is not exist, directoryPath: "
+                + path);
+            return false;
+        }
 	    if (file.isDirectory()) {
 	        return directoryName.equals(file.getName());
 	    }
