@@ -576,11 +576,13 @@ public class Compressor {
                     }
                     String fileLanguageCountryName = temp[temp.length - 3];
                     if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
-                        LOG.error("Compressor::compressProcess compress failed third level directory name Error!");
+                        LOG.error("Compressor::compressProcess compress failed third level directory name: "
+                            + fileLanguageCountryName + " is invalid, please check it with reference to this example: "
+                            + "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi");
                         throw new BundleException("Compress failed third level directory name Error!");
                     }
                     String filePicturingName = temp[temp.length - 1];
-                    if (!isPicturing(filePicturingName)) {
+                    if (!isPicturing(filePicturingName, utility)) {
                         LOG.error("Compressor::compressProcess Compress pack.res failed, Invalid resource file" +
                             " name: " + filePicturingName + ", correct format example is formName-2x2.png");
                         throw new BundleException("Compress pack.res failed, Invalid resource file name: "
@@ -621,17 +623,32 @@ public class Compressor {
         }
         // example: zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi
         int firstDelimiterIndex = thirdLevelDirectoryName.indexOf("_");
+        if (firstDelimiterIndex < 0) {
+            return false;
+        }
         String language = thirdLevelDirectoryName.substring(0, firstDelimiterIndex);
         int secondDelimiterIndex = thirdLevelDirectoryName.indexOf("_", firstDelimiterIndex + 1);
+        if (secondDelimiterIndex < 0) {
+            return false;
+        }
         String script = thirdLevelDirectoryName.substring(firstDelimiterIndex + 1, secondDelimiterIndex);
         int thirdDelimiterIndex = thirdLevelDirectoryName.indexOf("-", secondDelimiterIndex + 1);
+        if (thirdDelimiterIndex < 0) {
+            return false;
+        }
         String country = thirdLevelDirectoryName.substring(secondDelimiterIndex + 1, thirdDelimiterIndex);
         if (!checkLanguage(language) || !checkScript(script) || !checkCountry(country)) {
             return false;
         }
         int forthDelimiterIndex = thirdLevelDirectoryName.indexOf("-", thirdDelimiterIndex + 1);
+        if (forthDelimiterIndex < 0) {
+            return false;
+        }
         String orientation = thirdLevelDirectoryName.substring(thirdDelimiterIndex + 1, forthDelimiterIndex);
         int fifthDelimiterIndex = thirdLevelDirectoryName.indexOf("-", forthDelimiterIndex + 1);
+        if (fifthDelimiterIndex < 0) {
+            return false;
+        }
         String deviceType = thirdLevelDirectoryName.substring(forthDelimiterIndex + 1, fifthDelimiterIndex);
         if (!checkOrientation(orientation) || !checkDeviceType(deviceType)) {
             return false;
@@ -752,7 +769,7 @@ public class Compressor {
      * @param name picturingName
      * @return false and true
      */
-    private boolean isPicturing(String name) {
+    private boolean isPicturing(String name, Utility utility) {
         boolean isSpecifications = false;
         if (name == null || name.isEmpty()) {
             return isSpecifications;
@@ -767,8 +784,9 @@ public class Compressor {
             return false;
         }
         String formName = name.substring(0, delimiterIndex);
-        if (!formNamesList.contains(formName)) {
-            LOG.error("isPicturing: the name is not same as formName, name: " + formName);
+        if (!utility.getFormNameList().contains(formName)) {
+            LOG.error("isPicturing: the name is not same as formName, name: " + formName + " is not in " +
+                utility.getFormNameList().toString());
             return false;
         }
         String dimension = name.substring(delimiterIndex + 1, name.lastIndexOf("."));
@@ -1171,7 +1189,7 @@ public class Compressor {
             inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
             bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.mark((int) srcFile.length() + 1);
-            // parse moduleName from config.json
+            // parse moduleName from pack.json
             parsePackModuleName(bufferedReader, utility);
             bufferedReader.reset();
             parsePackFormName(bufferedReader, utility);
@@ -1459,20 +1477,22 @@ public class Compressor {
      */
     private void parsePackFormName(BufferedReader bufferedReader, Utility utility) throws BundleException {
         String lineStr = null;
-        boolean isDistroStart = false;
         try {
+            boolean isFormsStart = false;
             while ((lineStr = bufferedReader.readLine()) != null) {
                 if (lineStr.contains("abilities")) {
                     continue;
                 }
                 if (lineStr.contains(FORMS)) {
+                    isFormsStart = true;
                     continue;
                 }
                 if (lineStr.contains(JSON_END)) {
                     continue;
                 }
-                if (lineStr.contains(NAME)) {
+                if (isFormsStart && lineStr.contains(NAME)) {
                     getNameFromString(lineStr, utility);
+                    isFormsStart = false;
                 }
             }
         } catch (IOException exception) {
@@ -1497,14 +1517,15 @@ public class Compressor {
                 throw new BundleException("Parse module name failed, module-name is invalid");
             }
             int startIndex = lineStr.lastIndexOf(SEMICOLON, endIndex - 1) + 1;
-            String fromsName = lineStr.substring(startIndex, endIndex);
-            if (fromsName == null || fromsName.isEmpty()) {
+            String formName = lineStr.substring(startIndex, endIndex);
+            if (formName == null || formName.isEmpty()) {
                 LOG.error("Compressor::getModuleNameFromString field module-name is empty");
                 throw new BundleException("Parse module name failed, module-name is empty");
             }
-            String[] nameList = fromsName.split("\\.");
+            String[] nameList = formName.split("\\.");
             if (nameList.length <= 1) {
-                formNamesList.add(fromsName);
+                formNamesList.add(formName);
+                utility.addFormNameList(formName);
             }
         } catch (StringIndexOutOfBoundsException exception) {
             LOG.error("Compressor::parseModuleName field module-name is fault: " + exception.getMessage());

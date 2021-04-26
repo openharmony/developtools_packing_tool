@@ -84,6 +84,7 @@ public class Utility {
     private List<String> formattedJarPathList = new ArrayList<>();
     private List<String> formattedTxtPathList = new ArrayList<>();
     private List<String> formattedEntryCardPathList = new ArrayList<>();
+    private List<String> formNameList = new ArrayList<>();
 
     public String getMode() {
         return mode;
@@ -512,5 +513,21 @@ public class Utility {
                 LOG.error("Utility::closeStream io close exception: " + exception.getMessage());
             }
         }
+    }
+
+    /**
+     * Add form name.
+     */
+    public void addFormNameList(String formName) {
+        this.formNameList.add(formName);
+    }
+
+    /**
+     * Get all form names
+     *
+     * @return all form names
+     */
+    public List<String> getFormNameList() {
+        return formNameList;
     }
 }
