@@ -669,7 +669,7 @@ public class Compressor {
 
     private boolean checkCountry(String country) {
         if (!Pattern.compile(REGEX_COUNTRY).matcher(country).matches()) {
-            LOG.error("Compressor::compressProcess country " + country + ", is not in ISO 3166-1 list");
+            LOG.error("Compressor::compressProcess country " + country + " is not in ISO 3166-1 list");
             return false;
         }
         return true;
@@ -705,7 +705,7 @@ public class Compressor {
     private boolean checkColorMode(String colorMode) {
         if (!Pattern.compile(REGEX_COLOR_MODE).matcher(colorMode).matches()) {
             LOG.error("Compressor::compressProcess colorMode " + colorMode +
-                    ", is not in {light, dark} list");
+                    " is not in {light, dark} list");
             return false;
         }
         return true;
