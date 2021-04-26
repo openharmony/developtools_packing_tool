@@ -25,10 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.Files;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,6 +93,13 @@ public class Compressor {
     private static final String PIC_2X2 = "2x2";
     private static final String PIC_2X4 = "2x4";
     private static final String PIC_4X4 = "4x4";
+    private static final String REGEX_LANGUAGE = "^[A-Z]{2}$";
+    private static final String REGEX_SCRIPT = "^[A-Z][a-z]{3}$";
+    private static final String REGEX_COUNTRY = "^[A-Z]{2,3}|[0-9]{3}$";
+    private static final String REGEX_ORIENTATION = "^vertical|horizontal$";
+    private static final String REGEX_DEVICE_TYPE = "^phone|tablet|car|tv|wearable|liteWearable$";
+    private static final String REGEX_SCREEN_DENSITY = "^sdpi|mdpi|ldpi|xldpi|xxldpi$";
+    private static final String REGEX_COLOR_MODE = "^light|dark$";
 
 
     // set timestamp to get fixed MD5
@@ -109,11 +114,12 @@ public class Compressor {
     private static String versionName = "";
 
     private ZipOutputStream zipOut = null;
+    private boolean mIsContain2x2EntryCard = true;
 
     private List<String> list = new ArrayList<String>();
     private List<String> formNamesList = new ArrayList<String>();
     private List<String> fileNameList = new ArrayList<String>();
-    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X4, PIC_4X4);
+    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
 
     /**
      * start compress.
@@ -549,7 +555,10 @@ public class Compressor {
         }
         if (!utility.getEntryCardPath().isEmpty()) {
             getFileList(utility.getEntryCardPath());
-            boolean isSatisfies = true;
+	    if (!mIsContain2x2EntryCard) {
+	        LOG.error("Compressor::compressPackResMode No 2x2 resource file exists");
+		    throw new BundleException("No 2x2 resource file exists");
+	    }
             for (String fileName : fileNameList) {
                 if (fileName.endsWith(PNG_SUFFIX) || fileName.endsWith(UPPERCASE_PNG_SUFFIX)) {
                     String fName = fileName.trim();
@@ -559,33 +568,32 @@ public class Compressor {
                             + temp.length);
                         continue;
                     }
-                    String fileModelName = temp[temp.length - 4];
-                    if (!isModelName(fileModelName)) {
-                        LOG.error("Compressor::compressProcess compress failed ModelName Error!");
-                        isSatisfies = false;
-                        break;
+                    String moduleName = temp[temp.length - 4];
+                    if (!isModelName(moduleName)) {
+                        LOG.error("Compressor::compressProcess compress pack.res failed moduleName "
+                            + moduleName + " is error, please check it in config.json");
+                        throw new BundleException("Compress pack.res failed, moduleName Error");
                     }
                     String fileLanguageCountryName = temp[temp.length - 3];
-                    if (!isLanguageCountry(fileLanguageCountryName)) {
-                        LOG.error("Compressor::compressProcess compress failed LanguageCountryName Error!");
-                        isSatisfies = false;
-                        break;
+                    if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
+                        LOG.error("Compressor::compressProcess compress failed third level directory Error!");
+                        throw new BundleException("Compress failed third level directory Error!");
                     }
                     String filePicturingName = temp[temp.length - 1];
-                    if (!filePicturingName.contains(PIC_2X2) && !isPicturing(filePicturingName)) {
-                        LOG.error("Compressor::compressProcess compress failed PicturingName Error!");
-                        isSatisfies = false;
-                        break;
+                    if (!isPicturing(filePicturingName)) {
+                        LOG.error("Compressor::compressProcess Compress failed pack.res failed, Invalid resource file" +
+                            " name: " + filePicturingName + ", correct format example is formName-2x2.png");
+                        throw new BundleException("Compress failed pack.res failed, Invalid resource file name: "
+                            + filePicturingName + ", correct format example is formName-2x2.png");
                     }
 
                 } else {
-                    isSatisfies = false;
                     LOG.error("Compressor::compressProcess compress failed No image in PNG format is found!");
+		            throw new BundleException("Compress pack.res failed, compress failed No image in"
+		                + " PNG format is found");
                 }
             }
-            if (isSatisfies) {
-                pathToFile(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
-            }
+            pathToFile(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
         }
     }
 
@@ -602,6 +610,105 @@ public class Compressor {
             }
         }
         return false;
+    }
+
+    private boolean isThirdLevelDirectoryNameValid(String thirdLevelDictoryName) {
+        if (thirdLevelDictoryName == null || thirdLevelDictoryName.isEmpty()) {
+            return false;
+        }
+        if (ENTRYCARD_BASE_NAME.equals(thirdLevelDictoryName)) {
+            return false;
+        }
+        // example: zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi
+        int firstDelimiterIndex = thirdLevelDictoryName.indexOf("_");
+        String language = thirdLevelDictoryName.substring(0, firstDelimiterIndex);
+        int secondDelimiterIndex = thirdLevelDictoryName.indexOf("_", firstDelimiterIndex + 1);
+        String script = thirdLevelDictoryName.substring(firstDelimiterIndex + 1, secondDelimiterIndex);
+        int thirdDelimiterIndex = thirdLevelDictoryName.indexOf("-", secondDelimiterIndex + 1);
+        String country = thirdLevelDictoryName.substring(secondDelimiterIndex + 1, thirdDelimiterIndex);
+        if (!checkLanguage(language) || !checkScript(script) || !checkCountry(country)) {
+            return false;
+        }
+        int forthDelimiterIndex = thirdLevelDictoryName.indexOf("-", thirdDelimiterIndex + 1);
+        String orientation = thirdLevelDictoryName.substring(thirdDelimiterIndex + 1, forthDelimiterIndex);
+        int fifthDelimiterIndex = thirdLevelDictoryName.indexOf("_", forthDelimiterIndex + 1);
+        String deviceType = thirdLevelDictoryName.substring(forthDelimiterIndex + 1, fifthDelimiterIndex);
+        if (!checkOrientation(orientation) || !checkDeviceType(deviceType)) {
+            return false;
+        }
+        int sixthDelimiterIndex = thirdLevelDictoryName.indexOf("-", fifthDelimiterIndex + 1);
+        if (sixthDelimiterIndex < 0) {
+            String screenDensity = thirdLevelDictoryName.substring(fifthDelimiterIndex + 1,
+                    thirdLevelDictoryName.length());
+            return checkScreenDensity(screenDensity);
+        } else {
+            String screenDensity = thirdLevelDictoryName.substring(fifthDelimiterIndex + 1, sixthDelimiterIndex);
+            if (!checkScreenDensity(screenDensity)) {
+                return false;
+            }
+        }
+        String colorMode = thirdLevelDictoryName.substring(sixthDelimiterIndex + 1, thirdLevelDictoryName.length());
+        return checkColorMode(colorMode);
+    }
+
+    private boolean checkLanguage(String language) {
+        if (!Pattern.compile(REGEX_LANGUAGE).matcher(language).matches()) {
+            LOG.error("Compressor::compressProcess language " + language + ", is not in ISO 639-1 list");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkScript(String script) {
+        if (!Pattern.compile(REGEX_SCRIPT).matcher(script).matches()) {
+            LOG.error("Compressor::compressProcess script " + script + ", is not in ISO 15942 list");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkCountry(String country) {
+        if (!Pattern.compile(REGEX_COUNTRY).matcher(country).matches()) {
+            LOG.error("Compressor::compressProcess country " + country + ", is not in ISO 3166-1 list");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkOrientation(String orientation) {
+        if (!Pattern.compile(REGEX_ORIENTATION).matcher(orientation).matches()) {
+            LOG.error("Compressor::compressProcess orientation " + orientation +
+                ", is not in {vertical, horizontal} list");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkDeviceType(String deviceType) {
+        if (!Pattern.compile(REGEX_DEVICE_TYPE).matcher(deviceType).matches()) {
+            LOG.error("Compressor::compressProcess deviceType " + deviceType +
+                    ", is not in {phone, tablet, car, tv, wearable, liteWearable} list");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkScreenDensity(String screenDensity) {
+        if (!Pattern.compile(REGEX_SCREEN_DENSITY).matcher(screenDensity).matches()) {
+            LOG.error("Compressor::compressProcess screenDensity " + screenDensity +
+                    ", is not in {sdpi, mdpi, ldpi, xldpi, xxldpi} list");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkColorMode(String colorMode) {
+        if (!Pattern.compile(REGEX_COLOR_MODE).matcher(colorMode).matches()) {
+            LOG.error("Compressor::compressProcess colorMode " + colorMode +
+                    ", is not in {light, dark} list");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -665,16 +772,15 @@ public class Compressor {
             return false;
         }
         String dimension = name.substring(delimiterIndex + 1, name.lastIndexOf("."));
-        return supportDimensionsList.contains(dimension);
+        if (!supportDimensionsList.contains(dimension)) {
+            LOG.error("isPicturing: the dimension: " + dimension + " is invalid, is not in the following list: "
+                + "{1x2, 2x2, 2x4, 4x4}");
+            return false;
+        }
+        return true;
     }
 
-    /**
-     * get file list in filePath
-     *
-     * @param filePath file path
-     * @param fileList file path in arrayList
-     */
-    private void getFileList(final String filePath) {
+    private void getFileList(final String filePath) throws BundleException {
         File file = new File(filePath);
         if (!file.exists()) {
             LOG.error("getFileList: file is not exists");
@@ -692,6 +798,14 @@ public class Compressor {
                         deleteFile(f.getCanonicalPath());
                         continue;
                     }
+                    String snapshotDirectoryName = f.getParentFile().getName();
+                    if (!ENTRYCARD_SNAPSHOT_NAME.equals(snapshotDirectoryName)) {
+                        LOG.error("The level-4 directory of EntryCard must be named as snapshot" +
+                            ", but current is: " + snapshotDirectoryName);
+                        throw new BundleException("The level-4 directory of EntryCard must be named as snapshot" +
+                            ", but current is: " + snapshotDirectoryName);
+                    }
+                    checkContain2x2EntryCard(f.getParentFile());
                     fileNameList.add(f.getCanonicalPath());
                 } else if (f.isDirectory()) {
                     getFileList(f.getCanonicalPath());
@@ -703,6 +817,29 @@ public class Compressor {
                 return;
             }
         }
+    }
+
+    private void checkContain2x2EntryCard(final File snapshotDirectory) throws IOException, BundleException {
+        if (!snapshotDirectory.exists()) {
+            LOG.error("checkContain2x2EntryCard: file is not exist: " + snapshotDirectory.getName());
+            throw new BundleException("checkContain2x2EntryCard: file is not exist");
+        }
+        File[] files = snapshotDirectory.listFiles();
+        if (files == null) {
+            LOG.error("checkContain2x2EntryCard: no file in this file path");
+            throw new BundleException("checkContain2x2EntryCard: no file in this file path");
+        }
+
+        for (File entryCardFile : files) {
+            if (entryCardFile.isFile() && entryCardFile.getName().contains(PIC_2X2)) {
+                return;
+            }
+        }
+        mIsContain2x2EntryCard = false;
+        LOG.error("checkContain2x2EntryCard: must contains 2x2 entryCard, please check it in "
+            + snapshotDirectory.getCanonicalPath());
+        throw new BundleException("checkContain2x2EntryCard: must contains 2x2 entryCard, please check it in "
+            + snapshotDirectory.getCanonicalPath());
     }
 
     /**
