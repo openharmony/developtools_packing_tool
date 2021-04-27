@@ -323,11 +323,11 @@ public class CompressVerify {
             return false;
         }
 
-	    if (!isDirectoryValidStrictCase(utility.getEntryCardPath(), ENTRY_CARD_DIRECTORY_NAME)) {
-	        LOG.error("CompressVerify::isArgsValidInResMode the level-1 directory name must is EntryCard" +
-	            ", current is " + utility.getEntryCardPath());
-	        return false;
-	    }
+        if (!isDirectoryValidStrictCase(utility.getEntryCardPath(), ENTRY_CARD_DIRECTORY_NAME)) {
+            LOG.error("CompressVerify::isArgsValidInResMode the level-1 directory name must is EntryCard" +
+                ", current is " + utility.getEntryCardPath());
+            return false;
+        }
         if (!compatibleProcess(utility, utility.getEntryCardPath(),
                 utility.getformattedEntryCardPathList(), PNG_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInResMode entrycard-path is invalid!");
@@ -451,10 +451,10 @@ public class CompressVerify {
                 + path);
             return false;
         }
-	    if (file.isDirectory()) {
-	        return directoryName.equals(file.getName());
-	    }
-	    return false;
+        if (file.isDirectory()) {
+            return directoryName.equals(file.getName());
+        }
+        return false;
     }
 
     /**

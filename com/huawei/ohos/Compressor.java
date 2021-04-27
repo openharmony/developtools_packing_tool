@@ -555,10 +555,10 @@ public class Compressor {
         }
         if (!utility.getEntryCardPath().isEmpty()) {
             getFileList(utility.getEntryCardPath());
-	        if (!mIsContain2x2EntryCard) {
-	            LOG.error("Compressor::compressPackResMode No 2x2 resource file exists");
-		        throw new BundleException("No 2x2 resource file exists");
-	        }
+            if (!mIsContain2x2EntryCard) {
+                LOG.error("Compressor::compressPackResMode No 2x2 resource file exists");
+                throw new BundleException("No 2x2 resource file exists");
+            }
             for (String fileName : fileNameList) {
                 if (fileName.endsWith(PNG_SUFFIX) || fileName.endsWith(UPPERCASE_PNG_SUFFIX)) {
                     String fName = fileName.trim();
@@ -591,8 +591,8 @@ public class Compressor {
 
                 } else {
                     LOG.error("Compressor::compressProcess compress failed No image in PNG format is found!");
-		            throw new BundleException("Compress pack.res failed, compress failed No image in"
-		                + " PNG format is found");
+                    throw new BundleException("Compress pack.res failed, compress failed No image in"
+                        + " PNG format is found");
                 }
             }
             pathToFile(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
