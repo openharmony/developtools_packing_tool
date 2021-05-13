@@ -59,8 +59,7 @@ public class Uncompress {
     private static final int READ_BUFFER_SIZE = 1024;
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final long FILE_TIME = 1546272000000L;
-    private static final long TOO_BIG_SIZE = 0x6400000;
-    private static final long TOO_MANY_SIZE = 32768;
+    private static final long TOO_MANY_SIZE = 65536;
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
@@ -430,10 +429,6 @@ public class Uncompress {
             while (count > 0) {
                 fileOutStream.write(data, 0, count);
                 total += count;
-                if (total > TOO_BIG_SIZE) {
-                    LOG.error("Uncompress::dataTransfer exception: " + entry.getName() + " is too big.");
-                    throw new BundleException("DataTransfer failed entry is too big");
-                }
                 count = fileInputStream.read(data);
             }
         } catch (FileNotFoundException ignored) {
@@ -481,10 +476,6 @@ public class Uncompress {
                     while (count > 0) {
                         fileOutStream.write(data, 0, count);
                         total += count;
-                        if (total > TOO_BIG_SIZE) {
-                            LOG.error("Uncompress::dataTransferByInput exception: " + entryName + " is too big.");
-                            throw new BundleException("dataTransferByInput failed entry is too big");
-                        }
                         count = zipIn.read(data);
                     }
 
@@ -889,10 +880,6 @@ public class Uncompress {
             while (count > 0) {
                 fileOutStream.write(data, 0, count);
                 total += count;
-                if (total > TOO_BIG_SIZE) {
-                    LOG.error("Uncompress::parseHapInfoByTempPath exception: entry is too big.");
-                    throw new BundleException("ParseHapInfoByTempPath failed entry is too big");
-                }
                 count = zipIn.read(data);
             }
             compressResult = uncompress("", destPath, HARMONY_PROFILE);
