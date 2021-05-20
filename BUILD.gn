@@ -1,4 +1,15 @@
-# Copyright (c) Huawei Technologies Co., Ltd. 2019-2019. All rights reserved.
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import("//build/config/ohos/rules.gni")
 import("//build/ohos.gni")
@@ -6,101 +17,101 @@ import("//developtools/developtools.gni")
 
 java_library("hmos_app_packing_tool_java") {
   java_files = [
-    "com/huawei/ohos/BundleException.java",
-    "com/huawei/ohos/CommandParser.java",
-    "com/huawei/ohos/CompressEntrance.java",
-    "com/huawei/ohos/Compressor.java",
-    "com/huawei/ohos/CompressVerify.java",
-    "com/huawei/ohos/Log.java",
-    "com/huawei/ohos/ShowHelp.java",
-    "com/huawei/ohos/Utility.java",
+    "adapter/ohos/BundleException.java",
+    "adapter/ohos/CommandParser.java",
+    "adapter/ohos/CompressEntrance.java",
+    "adapter/ohos/Compressor.java",
+    "adapter/ohos/CompressVerify.java",
+    "adapter/ohos/Log.java",
+    "adapter/ohos/ShowHelp.java",
+    "adapter/ohos/Utility.java",
   ]
 
-  main_class = "com.huawei.ohos.CompressEntrance"
+  main_class = "ohos.CompressEntrance"
 
   final_jar_path = "$root_build_dir/developtools/hmos_app_packing_tool.jar"
 }
 
 java_library("hmos_app_unpacking_tool_java") {
   java_files = [
-    "com/huawei/ohos/BundleException.java",
-    "com/huawei/ohos/CommandParser.java",
-    "com/huawei/ohos/Log.java",
-    "com/huawei/ohos/ShowHelp.java",
-    "com/huawei/ohos/UncompressEntrance.java",
-    "com/huawei/ohos/Uncompress.java",
-    "com/huawei/ohos/UncompressVerify.java",
-    "com/huawei/ohos/Utility.java",
-    "com/huawei/ohos/HapInfo.java",
-    "com/huawei/ohos/ReqPermission.java",
-    "com/huawei/ohos/Distro.java",
-    "com/huawei/ohos/AbilityInfo.java",
-    "com/huawei/ohos/MetaData.java",
-    "com/huawei/ohos/MetaDataInfo.java",
-    "com/huawei/ohos/SkillInfo.java",
-    "com/huawei/ohos/UsedScene.java",
-    "com/huawei/ohos/PackInfo.java",
-    "com/huawei/ohos/FormInfo.java",
-    "com/huawei/ohos/ProfileInfo.java",
-    "com/huawei/ohos/AppInfo.java",
-    "com/huawei/ohos/DefPermission.java",
-    "com/huawei/ohos/DefPermissionGroup.java",
-    "com/huawei/ohos/CustomizeData.java",
-    "com/huawei/ohos/UncomperssResult.java",
-    "com/huawei/ohos/JsonUtil.java",
-    "com/huawei/ohos/JsInfo.java",
-    "com/huawei/ohos/DeviceConfig.java",
-    "com/huawei/ohos/CommonEvent.java",
-    "com/huawei/ohos/Shortcut.java",
-    "com/huawei/ohos/IntentInfo.java",
-    "com/huawei/ohos/ResourcesParser.java",
-    "com/huawei/ohos/DistroFilter.java",
-    "com/huawei/ohos/ApiVersion.java",
-    "com/huawei/ohos/ScreenShape.java",
-    "com/huawei/ohos/ScreenDensity.java",
-    "com/huawei/ohos/ScreenWindow.java",
-    "com/huawei/ohos/CountryCode.java",
-    "com/huawei/ohos/HapZipInfo.java",
+    "adapter/ohos/BundleException.java",
+    "adapter/ohos/CommandParser.java",
+    "adapter/ohos/Log.java",
+    "adapter/ohos/ShowHelp.java",
+    "adapter/ohos/UncompressEntrance.java",
+    "adapter/ohos/Uncompress.java",
+    "adapter/ohos/UncompressVerify.java",
+    "adapter/ohos/Utility.java",
+    "adapter/ohos/HapInfo.java",
+    "adapter/ohos/ReqPermission.java",
+    "adapter/ohos/Distro.java",
+    "adapter/ohos/AbilityInfo.java",
+    "adapter/ohos/MetaData.java",
+    "adapter/ohos/MetaDataInfo.java",
+    "adapter/ohos/SkillInfo.java",
+    "adapter/ohos/UsedScene.java",
+    "adapter/ohos/PackInfo.java",
+    "adapter/ohos/FormInfo.java",
+    "adapter/ohos/ProfileInfo.java",
+    "adapter/ohos/AppInfo.java",
+    "adapter/ohos/DefPermission.java",
+    "adapter/ohos/DefPermissionGroup.java",
+    "adapter/ohos/CustomizeData.java",
+    "adapter/ohos/UncomperssResult.java",
+    "adapter/ohos/JsonUtil.java",
+    "adapter/ohos/JsInfo.java",
+    "adapter/ohos/DeviceConfig.java",
+    "adapter/ohos/CommonEvent.java",
+    "adapter/ohos/Shortcut.java",
+    "adapter/ohos/IntentInfo.java",
+    "adapter/ohos/ResourcesParser.java",
+    "adapter/ohos/DistroFilter.java",
+    "adapter/ohos/ApiVersion.java",
+    "adapter/ohos/ScreenShape.java",
+    "adapter/ohos/ScreenDensity.java",
+    "adapter/ohos/ScreenWindow.java",
+    "adapter/ohos/CountryCode.java",
+    "adapter/ohos/HapZipInfo.java",
   ]
 
   deps = [ "//third_party/fastjson/repackaged:fastjson_utils_java" ]
 
   java_manifest_file = "META-INF/unpacking_tool/MANIFEST.MF"
 
-  main_class = "com.huawei.ohos.UncompressEntrance"
+  main_class = "ohos.UncompressEntrance"
 
   final_jar_path = "$root_build_dir/developtools/hmos_app_unpacking_tool.jar"
 }
 
 java_library("hmos_haptobin_tool_java") {
   java_files = [
-    "com/huawei/ohos/Log.java",
-    "com/huawei/ohos/BinaryTool.java",
-    "com/huawei/ohos/FileUtils.java",
-    "com/huawei/ohos/ConvertHapToBin.java",
+    "adapter/ohos/Log.java",
+    "adapter/ohos/BinaryTool.java",
+    "adapter/ohos/FileUtils.java",
+    "adapter/ohos/ConvertHapToBin.java",
   ]
 
   deps = [ "//third_party/fastjson/repackaged:fastjson_utils_java" ]
 
   java_manifest_file = "META-INF/packingbin_tool/MANIFEST.MF"
 
-  main_class = "com.huawei.ohos.ConvertHapToBin"
+  main_class = "ohos.ConvertHapToBin"
 
   final_jar_path = "$root_build_dir/developtools/hmos_haptobin_tool.jar"
 }
 
 java_library("hmos_bininfo_collecting_tool_java") {
   java_files = [
-    "com/huawei/ohos/Log.java",
-    "com/huawei/ohos/FileUtils.java",
-    "com/huawei/ohos/CollectBinInfo.java",
+    "adapter/ohos/Log.java",
+    "adapter/ohos/FileUtils.java",
+    "adapter/ohos/CollectBinInfo.java",
   ]
 
   deps = [ "//third_party/fastjson/repackaged:fastjson_utils_java" ]
 
   java_manifest_file = "META-INF/collectingbininfo_tool/MANIFEST.MF"
 
-  main_class = "com.huawei.ohos.CollectBinInfo"
+  main_class = "ohos.CollectBinInfo"
 
   final_jar_path =
       "$root_build_dir/developtools/hmos_bininfo_collecting_tool.jar"
