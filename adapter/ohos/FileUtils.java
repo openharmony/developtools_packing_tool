@@ -39,7 +39,6 @@ import java.util.zip.ZipFile;
  */
 public class FileUtils {
     private static final int BUFFER_SIZE = 1024;
-    private static final long TOO_BIG_SIZE = 0x6400000;
     private static final Log LOG = new Log(FileUtils.class.toString());
 
     /**
@@ -241,11 +240,6 @@ public class FileUtils {
             int entriesNum = 0;
             while (entries.hasMoreElements()) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("FileUtils::unzip exception: the entry num is too many.");
-                    throw new IOException("dataTransferByInput failed entry num is too many");
-                }
-
                 ZipEntry entry = entries.nextElement();
                 if (entry == null) {
                     continue;
@@ -271,11 +265,6 @@ public class FileUtils {
                 while ((count = bis.read(data, 0, BUFFER_SIZE)) != -1) {
                     bos.write(data, 0, count);
                     total += count;
-
-                    if (total > TOO_BIG_SIZE) {
-                        LOG.error("FileUtils::unzip exception: " + entry.getName() + " is too big.");
-                        throw new IOException("dataTransferByInput failed entry num is too many");
-                    }
                 }
 
                 bos.flush();
