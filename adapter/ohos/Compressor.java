@@ -105,7 +105,6 @@ public class Compressor {
 
     // set buffer size of each read
     private static final int BUFFER_SIZE = 10 * 1024;
-    private static final long TOO_MANY_SIZE = 1024;
     private static final long TOO_BIG_SIZE = 0x6400000;
     private static final Log LOG = new Log(Compressor.class.toString());
     private static String versionCode = "";

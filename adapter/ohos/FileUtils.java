@@ -40,7 +40,6 @@ import java.util.zip.ZipFile;
 public class FileUtils {
     private static final int BUFFER_SIZE = 1024;
     private static final long TOO_BIG_SIZE = 0x6400000;
-    private static final long TOO_MANY_SIZE = 1024;
     private static final Log LOG = new Log(FileUtils.class.toString());
 
     /**

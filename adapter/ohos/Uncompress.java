@@ -57,7 +57,6 @@ public class Uncompress {
     private static final int READ_BUFFER_SIZE = 1024;
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final long FILE_TIME = 1546272000000L;
-    private static final long TOO_MANY_SIZE = 65536;
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
