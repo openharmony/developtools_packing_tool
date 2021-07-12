@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
 import java.util.Locale;
@@ -54,6 +55,7 @@ public class Compressor {
     private static final String CONFIG_JSON = "config.json";
     private static final String CODE = "code";
     private static final String NAME = "name";
+    private static final String VERSION = "\"version\"";
     private static final String NULL_DIR_NAME = "";
     private static final String RES_DIR_NAME = "res/";
     private static final String RESOURCES_DIR_NAME = "resources/";
@@ -105,8 +107,6 @@ public class Compressor {
 
     // set buffer size of each read
     private static final int BUFFER_SIZE = 10 * 1024;
-    private static final long TOO_MANY_SIZE = 1024;
-    private static final long TOO_BIG_SIZE = 0x6400000;
     private static final Log LOG = new Log(Compressor.class.toString());
     private static String versionCode = "";
     private static String versionName = "";
@@ -341,9 +341,12 @@ public class Compressor {
             String[] str = temp[temp.length - 1].split("\\.");
             String outPathString = path[0] + str[0];
             fileList.add(outPathString);
-            unzip(hapPathItem, outPathString);
-            copyFileUsingFileStreams(utility.getPackInfoPath(), outPathString);
-            zipFile(outPathString);
+            try {
+                compressPackinfoIntoHap(hapPathItem, outPathString, utility.getPackInfoPath());
+            } catch ( IOException e) {
+                LOG.error("Compressor::compressAppMode compress pack.info into hap failed");
+                throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
+            }
         }
 
         for (String hapPath : fileList) {
@@ -368,6 +371,54 @@ public class Compressor {
 
         File file = new File(utility.getPackInfoPath());
         compressFile(utility, file, NULL_DIR_NAME, false);
+    }
+
+    private void copy(InputStream input, OutputStream output) throws IOException {
+        int bytesRead;
+        byte[] data = new byte[BUFFER_SIZE];
+        while ((bytesRead = input.read(data, 0, BUFFER_SIZE)) != -1) {
+            output.write(data, 0, bytesRead);
+        }
+    }
+
+    private void compressPackinfoIntoHap(String hapPathItem, String outPathString, String packInfo)
+            throws FileNotFoundException, IOException, BundleException {
+        ZipFile sourceHapFile = new ZipFile(hapPathItem);
+        ZipOutputStream append = new ZipOutputStream(new FileOutputStream(outPathString + ".hap"));
+        try {
+            Enumeration<? extends ZipEntry> entries = sourceHapFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry zipEntry = entries.nextElement();
+                if (zipEntry.getName() != null && PACKINFO_NAME.equals(zipEntry.getName())) {
+                    continue;
+                }
+                append.putNextEntry(zipEntry);
+                if (!zipEntry.isDirectory()) {
+                    copy(sourceHapFile.getInputStream(zipEntry), append);
+                }
+                append.closeEntry();
+            }
+            File packInfoFile = new File(packInfo);
+            ZipEntry zipEntry = getStoredZipEntry(packInfoFile, PACKINFO_NAME);
+            append.putNextEntry(zipEntry);
+            FileInputStream in = new FileInputStream(packInfoFile);
+            try {
+                byte[] buf = new byte[BUFFER_SIZE];
+                int len;
+                while ((len = in.read(buf)) != -1) {
+                    append.write(buf, 0, len);
+                }
+            } finally {
+                in.close();
+            }
+            append.closeEntry();
+        } catch (IOException exception) {
+            LOG.error("Compressor::compressPackinfoIntoHap io exception");
+            throw new BundleException("Compressor::compressPackinfoIntoHap io exception");
+        } finally {
+            sourceHapFile.close();
+            append.close();
+        }
     }
 
     /**
@@ -462,9 +513,6 @@ public class Compressor {
             int entriesNum = 0;
             while (entries.hasMoreElements()) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    throw new IOException("dataTransferByInput failed entry num is too many");
-                }
                 ZipEntry entry = entries.nextElement();
                 if (entry == null) {
                     continue;
@@ -515,10 +563,6 @@ public class Compressor {
         while ((count = bis.read(data, 0, BUFFER_SIZE)) != -1) {
             bos.write(data, 0, count);
             total += count;
-            if (total > TOO_BIG_SIZE) {
-                LOG.error("FileUtils::unzip exception: " + entry.getName() + " is too big.");
-                throw new IOException("dataTransferByInput failed entry num is too many");
-            }
         }
     }
 
@@ -1116,27 +1160,27 @@ public class Compressor {
                 if ((hapPath == null) || (hapPath.isEmpty()) || (!hapPath.contains(baseDir))) {
                     continue;
                 }
-                String configJson = obtainVersion(srcFile, hapPath);
-                String str = obtainInnerVersionCode(configJson);
-                if ((str == null) || (str.isEmpty())) {
+                String versionStr = obtainVersion(srcFile, hapPath);
+                String code = obtainInnerVersionCode(versionStr);
+                if ((code == null) || (code.isEmpty())) {
                     LOG.error("Compressor::checkVersionInHaps version code is null or empty");
                     return false;
                 }
-                if (!versionCode.isEmpty() && !versionCode.equals(str)) {
+                if (!versionCode.isEmpty() && !versionCode.equals(code)) {
                     LOG.error("Compressor::checkVersionInHaps some haps with different version code");
                     return false;
                 }
-                String nameStr = obtainInnerVersionName(configJson);
-                if ((nameStr == null) || (nameStr.isEmpty())) {
+                String name = obtainInnerVersionName(versionStr);
+                if ((name == null) || (name.isEmpty())) {
                     LOG.error("Compressor::checkVersionInHaps version name is null or empty");
                     return false;
                 }
-                if (!versionName.isEmpty() && !versionName.equals(nameStr)) {
+                if (!versionName.isEmpty() && !versionName.equals(name)) {
                     LOG.error("Compressor::checkVersionInHaps some haps with different version name");
                     return false;
                 }
-                versionCode = str;
-                versionName = nameStr;
+                versionCode = code;
+                versionName = name;
             }
         } catch (BundleException exception) {
             LOG.error("Compressor::checkVersionInHaps io exception: " + exception.getMessage());
@@ -1297,7 +1341,7 @@ public class Compressor {
         InputStreamReader reader = null;
         BufferedReader br = null;
         ZipEntry entry = null;
-        String versionStr = "";
+        String configJson = "";
         try {
             zipFile = new ZipFile(srcFile);
             zipInput = new FileInputStream(baseDir);
@@ -1309,7 +1353,7 @@ public class Compressor {
                     reader = new InputStreamReader(inputStream);
                     br = new BufferedReader(reader);
                     if (br != null) {
-                        versionStr = br.readLine();
+                        configJson = br.readLine();
                         break;
                     }
                 }
@@ -1326,7 +1370,34 @@ public class Compressor {
             Utility.closeStream(reader);
             Utility.closeStream(br);
         }
-        return versionStr;
+        return obtainInnerVersion(configJson);
+    }
+
+    private String obtainInnerVersion(String configJson) throws BundleException {
+        try {
+            if (configJson != null) {
+                int indexOfVersion = configJson.indexOf(VERSION);
+                if (indexOfVersion <= 0) {
+                    LOG.error("Compressor::obtainInnerVersion obtain index of version failed");
+                    throw new BundleException("Compressor::obtainInnerVersion obtain index of version failed");
+                }
+                int lastIndex = configJson.indexOf(JSON_END, indexOfVersion);
+                if (lastIndex <= 0) {
+                    LOG.error("Compressor::obtainInnerVersion obtain last index failed");
+                    throw new BundleException("Compressor::obtainInnerVersion obtain last index failed");
+                }
+                String version = configJson.substring(indexOfVersion, lastIndex + 1);
+                if (version == null || version.isEmpty()) {
+                    LOG.error("Compressor::obtainInnerVersion version is null or empty");
+                    throw new BundleException("Compressor::obtainInnerVersion failed due to null or empty version!");
+                }
+                return version.trim();
+            }
+        } catch (BundleException exception) {
+            LOG.error("Compressor::obtainInnerVersion io exception: " + exception.getMessage());
+            throw new BundleException("Compressor::obtainInnerVersion failed");
+        }
+        return "";
     }
 
     /**
