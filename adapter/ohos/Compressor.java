@@ -965,43 +965,43 @@ public class Compressor {
      * compress pack.info
      *
      * @param sourceFile source
-     * @param zos ZipOutputStream
+     * @param zipOutputStream ZipOutputStream
      * @param name filename
      * @param KeepDirStructure Empty File
      */
-    private void compress(File sourceFile, ZipOutputStream zos, String name,
+    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name,
                                 boolean KeepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
             if (sourceFile.isFile()) {
                 ZipEntry zipEntry = getStoredZipEntry(sourceFile, name);
-                zos.putNextEntry(zipEntry);
+                zipOutputStream.putNextEntry(zipEntry);
                 in = new FileInputStream(sourceFile);
                 int len;
                 while ((len = in.read(buf)) != -1) {
-                    zos.write(buf, 0, len);
+                    zipOutputStream.write(buf, 0, len);
                 }
-                zos.closeEntry();
+                zipOutputStream.closeEntry();
             } else {
                 File[] listFiles = sourceFile.listFiles();
                 if (listFiles == null || listFiles.length == 0) {
                     if (KeepDirStructure) {
                         if (!name.isEmpty()) {
                             ZipEntry zipEntry = getStoredZipEntry(sourceFile, name + "/");
-                            zos.putNextEntry(zipEntry);
+                            zipOutputStream.putNextEntry(zipEntry);
                         } else {
                             ZipEntry zipEntry = getStoredZipEntry(sourceFile, name);
-                            zos.putNextEntry(zipEntry);
+                            zipOutputStream.putNextEntry(zipEntry);
                         }
-                        zos.closeEntry();
+                        zipOutputStream.closeEntry();
                     }
                 } else {
                     for (File file : listFiles) {
                         if (KeepDirStructure) {
-                            isNameEmpty(zos, name, KeepDirStructure, file);
+                            isNameEmpty(zipOutputStream, name, KeepDirStructure, file);
                         } else {
-                            compress(file, zos, file.getName(), KeepDirStructure);
+                            compress(file, zipOutputStream, file.getName(), KeepDirStructure);
                         }
                     }
                 }
@@ -1057,16 +1057,16 @@ public class Compressor {
     /**
      * isNameEmpty
      *
-     * @param zos ZipOutputStream
+     * @param zipOutputStream ZipOutputStream
      * @param name filename
      * @param KeepDirStructure KeepDirStructure
      * @param file file
      */
-    private void isNameEmpty(ZipOutputStream zos, String name, boolean KeepDirStructure, File file) {
+    private void isNameEmpty(ZipOutputStream zipOutputStream, String name, boolean KeepDirStructure, File file) {
         if (!name.isEmpty()) {
-            compress(file, zos, name + "/" + file.getName(), KeepDirStructure);
+            compress(file, zipOutputStream, name + "/" + file.getName(), KeepDirStructure);
         } else {
-            compress(file, zos, file.getName(), KeepDirStructure);
+            compress(file, zipOutputStream, file.getName(), KeepDirStructure);
         }
     }
 
