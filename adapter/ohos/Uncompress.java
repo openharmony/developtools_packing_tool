@@ -57,7 +57,6 @@ public class Uncompress {
     private static final int READ_BUFFER_SIZE = 1024;
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final long FILE_TIME = 1546272000000L;
-    private static final long TOO_MANY_SIZE = 65536;
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
@@ -312,11 +311,6 @@ public class Uncompress {
             int entriesNum = 0;
             for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::unzipFromFile exception: the entry num is too many.");
-                    throw new BundleException("unzipFromFile failed entry num is too many");
-                }
-
                 ZipEntry entry = entries.nextElement();
                 String entryName = "";
 		if (entry == null || entry.getName().isEmpty()) {
@@ -461,11 +455,6 @@ public class Uncompress {
             int entriesNum = 0;
             while ((entry = zipIn.getNextEntry()) != null) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::dataTransferByInput exception: the entry num is too many.");
-                    throw new BundleException("dataTransferByInput failed entry num is too many");
-                }
-
                 String entryName = entry.getName();
                 if (fileName.equals(entryName)) {
                     byte[] data = new byte[BUFFER_SIZE];
@@ -507,11 +496,6 @@ public class Uncompress {
             int entriesNum = 0;
             for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::dataTransferAllFiles exception: the entry num is too many.");
-                    throw new BundleException("dataTransferAllFiles failed entry num is too many");
-                }
-
                 ZipEntry entry = entries.nextElement();
                 if (entry == null) {
                     continue;
@@ -540,11 +524,6 @@ public class Uncompress {
         try {
             for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::uncompress exception: the entry num is too many.");
-                    throw new BundleException("uncompress failed entry num is too many");
-                }
-
                 ZipEntry indexEntry = entries.nextElement();
                 if (indexEntry == null) {
                     continue;
@@ -661,11 +640,6 @@ public class Uncompress {
             int entriesNum = 0;
             while ((entry = zipIn.getNextEntry()) != null) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::uncompressByInput exception: the entry num is too many.");
-                    throw new BundleException("uncompressByInput failed entry num is too many");
-                }
-
                 if (entry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
                     hapZipInfo.setResDataBytes(getByte(zipIn));
                     continue;
@@ -815,11 +789,6 @@ public class Uncompress {
             int entriesNum = 0;
             while ((entry = zipIn.getNextEntry()) != null) {
                 entriesNum++;
-                if (entriesNum > TOO_MANY_SIZE) {
-                    LOG.error("Uncompress::uncompressAllByInput exception: the entry num is too many.");
-                    throw new BundleException("uncompressAllByInput failed entry num is too many");
-                }
-
                 if (PACK_INFO.equals(entry.getName().toLowerCase(Locale.ENGLISH))) {
                     bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
                     String line;
