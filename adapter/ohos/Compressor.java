@@ -199,6 +199,10 @@ public class Compressor {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
         }
 
+        if (!utility.getFilePath().isEmpty()) {
+            pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
+        }
+
         if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
