@@ -72,6 +72,7 @@ public class Utility {
     private String entryCardPath = "";
     private String packRes = "";
     private String packResPath = "";
+    private String filePath = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -161,6 +162,16 @@ public class Utility {
     public void setAbcPath(String abcPath) {
         if (!abcPath.startsWith(CMD_PREFIX)) {
             this.abcPath = abcPath;
+        }
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        if (!filePath.startsWith(CMD_PREFIX)) {
+            this.filePath = filePath;
         }
     }
 

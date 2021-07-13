@@ -39,6 +39,7 @@ public class CommandParser {
     private static final String CMD_ABILITY_SO_PATH = "--ability-so-path";
     private static final String CMD_DEX_PATH = "--dex-path";
     private static final String CMD_ABC_PATH = "--abc-path";
+    private static final String CMD_FILE_PATH = "--file-path";
     private static final String CMD_LIB_PATH = "--lib-path";
     private static final String CMD_RES_PATH = "--res-path";
     private static final String CMD_RESOURCES_PATH = "--resources-path";
@@ -260,6 +261,10 @@ public class CommandParser {
             }
             case CMD_ABC_PATH: {
                 utility.setAbcPath(value);
+                return true;
+            }
+            case CMD_FILE_PATH: {
+                utility.setFilePath(value);
                 return true;
             }
             case CMD_LIB_PATH: {
