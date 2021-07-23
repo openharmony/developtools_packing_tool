@@ -283,11 +283,11 @@ public class ResourcesParser {
         item.size = buf.getInt();
         item.type = buf.getInt();
         item.id = buf.getInt();
-        int len = buf.get() | (buf.get() << BUF_MOVE_LENGTH);
+        int len = buf.getShort();
         byte[] value = new byte[len];
         buf.get(value);
         item.value = new String(value, StandardCharsets.UTF_8);
-        len = buf.get() | (buf.get() << BUF_MOVE_LENGTH);
+        len = buf.getShort();
         byte[] name = new byte[len];
         buf.get(name);
         item.name = new String(name, StandardCharsets.UTF_8);
