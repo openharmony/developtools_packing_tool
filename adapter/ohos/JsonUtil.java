@@ -428,6 +428,11 @@ public class JsonUtil {
         } else {
             distro.installationFree = 2;
         }
+        if (distroObj.containsKey("virtualMachine")) {
+            distro.virtualMachine = getJsonString(distroObj, "virtualMachine");
+        } else {
+            distro.virtualMachine = "default";
+        }
         hapInfo.distro = distro;
     }
 
