@@ -328,25 +328,14 @@ public class Compressor {
             pathToFile(utility, utility.getSignaturePath(), NULL_DIR_NAME, false);
         }
 
-        String[] outPath = utility.getOutPath().replace("\\", "/").split("/");
-        if (outPath.length < 2) {
-            LOG.error("Compressor::compressAppMode the outPath is invalid, length: " + outPath.length);
-            return;
-        }
-        String[] path = utility.getOutPath().split(outPath[outPath.length - 2].toString());
+        File appOutputFile = new File(utility.getOutPath().trim());
         List<String> fileList = new ArrayList<>();
         for (String hapPathItem : utility.getFormattedHapPathList()) {
-            String fName = hapPathItem.trim();
-            String[] temp = fName.replace("\\", "/").split("/");
-            if (temp.length < 1) {
-                LOG.error("Compressor::compressAppMode the hap file path is invalid, length: " + temp.length);
-                continue;
-            }
-            String[] str = temp[temp.length - 1].split("\\.");
-            String outPathString = path[0] + str[0];
-            fileList.add(outPathString);
+            File hapFile = new File(hapPathItem.trim());
+            String hapTempPath = appOutputFile.getParentFile().getParent() + File.separator + hapFile.getName();
+            fileList.add(hapTempPath);
             try {
-                compressPackinfoIntoHap(hapPathItem, outPathString, utility.getPackInfoPath());
+                compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath());
             } catch ( IOException e) {
                 LOG.error("Compressor::compressAppMode compress pack.info into hap failed");
                 throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
@@ -354,11 +343,11 @@ public class Compressor {
         }
 
         for (String hapPath : fileList) {
-            pathToFile(utility, hapPath + HAP_SUFFIX, NULL_DIR_NAME, false);
+            pathToFile(utility, hapPath, NULL_DIR_NAME, false);
         }
 
         for (String hapPath : fileList) {
-            deleteFile(hapPath + HAP_SUFFIX);
+            deleteFile(hapPath);
         }
 
         if (!utility.getEntryCardPath().isEmpty()) {
@@ -388,7 +377,7 @@ public class Compressor {
     private void compressPackinfoIntoHap(String hapPathItem, String outPathString, String packInfo)
             throws FileNotFoundException, IOException, BundleException {
         ZipFile sourceHapFile = new ZipFile(hapPathItem);
-        ZipOutputStream append = new ZipOutputStream(new FileOutputStream(outPathString + ".hap"));
+        ZipOutputStream append = new ZipOutputStream(new FileOutputStream(outPathString));
         try {
             Enumeration<? extends ZipEntry> entries = sourceHapFile.entries();
             while (entries.hasMoreElements()) {
