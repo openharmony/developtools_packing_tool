@@ -36,7 +36,6 @@ public class ResourcesParser {
 
     private static final int VERSION_BYTE_LENGTH = 128;
     private static final int TAG_BYTE_LENGTH = 4;
-    private static final int BUF_MOVE_LENGTH = 8;
     private static final Log LOG = new Log(ResourcesParser.class.toString());
 
     /**
