@@ -1176,6 +1176,7 @@ public class Uncompress {
         for (AbilityInfo info : abilities) {
             if (info == null) {
                 size++;
+                continue;
             }
             if ((info.skills == null) || (info.skills.isEmpty())) {
                 continue;
