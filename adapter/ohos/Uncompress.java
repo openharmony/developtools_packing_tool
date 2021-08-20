@@ -103,7 +103,7 @@ public class Uncompress {
             } else if (Utility.MODE_HAR.equals(utility.getMode())) {
                 dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
             } else {
-                dataTransferAllFiles(utility.getAppPath(), utility.getOutPath());
+                dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
             }
         } catch (BundleException ignored) {
             unpackageResult = false;
@@ -506,6 +506,45 @@ public class Uncompress {
                     destFile.getParentFile().mkdirs();
                 }
                 dataTransfer(zipFile, entry, destFile);
+            }
+        } catch (FileNotFoundException ignored) {
+            LOG.error("Uncompress::unzipApk file not found exception");
+            throw new BundleException("Unzip Apk failed");
+        } catch (IOException exception) {
+            LOG.error("Uncompress::unzipApk io exception: " + exception.getMessage());
+            throw new BundleException("Unzip Apk failed");
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+    }
+
+    private static void dataTransferFilesByApp(Utility utility, String srcPath, String destDirPath)
+            throws BundleException {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(new File(srcPath));
+            int entriesNum = 0;
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+                entriesNum++;
+                ZipEntry entry = entries.nextElement();
+                if (entry == null) {
+                    continue;
+                }
+                String filePath = destDirPath + LINUX_FILE_SEPARATOR + entry.getName();
+                File destFile = new File(filePath);
+                if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
+                    destFile.getParentFile().mkdirs();
+                }
+                boolean isUnpackApk = "true".equals(utility.getUnpackApk());
+                if (isUnpackApk && filePath.toLowerCase().endsWith(HAP_SUFFIX)) {
+                    dataTransfer(zipFile, entry, destFile);
+                    unzip(utility, filePath, destDirPath, APK_SUFFIX);
+                    String[] temp = filePath.replace("\\", "/").split("/");
+                    String hapName = temp[temp.length - 1];
+                    repackHap(filePath, destDirPath, hapName, utility.getUnpackApk());
+                } else {
+                    dataTransfer(zipFile, entry, destFile);
+                }
             }
         } catch (FileNotFoundException ignored) {
             LOG.error("Uncompress::unzipApk file not found exception");

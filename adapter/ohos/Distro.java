@@ -39,4 +39,9 @@ public class Distro {
      *  Indicates the installationFree of Distro.
      */
     public int installationFree = 2;
+
+    /**
+     *  Indicates the virtualMachine of Distro.
+     */
+    public String virtualMachine = "default";
 }
