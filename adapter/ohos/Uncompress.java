@@ -313,12 +313,12 @@ public class Uncompress {
                 entriesNum++;
                 ZipEntry entry = entries.nextElement();
                 String entryName = "";
-		if (entry == null || entry.getName().isEmpty()) {
-		    continue;
-		}
+                if (entry == null || entry.getName().isEmpty()) {
+                    continue;
+                }
                 if (entry.getName().toLowerCase().endsWith(CUT_ENTRY_FILENAME) &&
-		    "false".equals(utility.getUnpackCutEntryApk())) {
-		    continue;
+                    "false".equals(utility.getUnpackCutEntryApk())) {
+                    continue;
                 }
                 entryName = entry.getName();
                 if (!entryName.toLowerCase(Locale.ENGLISH).endsWith(suffix) ||
@@ -332,6 +332,11 @@ public class Uncompress {
                     if (!destFileDir.exists()) {
                         destFileDir.mkdir();
                     }
+                }
+                if (APK_SUFFIX.equals(suffix) && "true".equals(utility.getUnpackApk())
+                    && entryName.contains(LINUX_FILE_SEPARATOR)) {
+                    // only unpack shell apk which in the root directory
+                    continue;
                 }
                 String tempPath = tempDir + LINUX_FILE_SEPARATOR + entryName;
                 File destFile = new File(tempPath);
