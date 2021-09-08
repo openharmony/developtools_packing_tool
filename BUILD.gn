@@ -21,7 +21,6 @@ ohos_prebuilt_etc("etc_file_packing") {
 
 ohos_prebuilt_etc("etc_file_unpacking") {
   source = "jar/hmos_app_unpacking_tool.jar"
-  module_install_dir = "jar"  
+  module_install_dir = "jar"
   part_name = "developtools_packing_tool"
-}
 }
