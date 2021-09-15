@@ -22,3 +22,13 @@ ohos_prebuilt_etc("app_unpacking_tool") {
   source = "hmos_app_unpacking_tool.jar"
   install_enable = false
 }
+
+ohos_prebuilt_etc("fastjson_utils_java") {
+  source = "fastjson_utils_java.jar"
+  install_enable = false
+}
+
+ohos_prebuilt_etc("haptobin_tool") {
+  source = "hmos_haptobin_tool.jar"
+  install_enable = false
+}
