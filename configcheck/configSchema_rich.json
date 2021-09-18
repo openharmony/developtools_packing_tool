@@ -1283,7 +1283,9 @@
                       "formsEnabled",
                       "forms",
                       "deviceCapability",
-                      "resizeable"
+                      "resizeable",
+                      "srcLanguage",
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -1325,7 +1327,9 @@
                       "formsEnabled",
                       "forms",
                       "deviceCapability",
-                      "resizeable"
+                      "resizeable",
+                      "srcLanguage",
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -1368,7 +1372,9 @@
                       "formsEnabled",
                       "forms",
                       "deviceCapability",
-                      "resizeable"
+                      "resizeable",
+                      "srcLanguage",
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -1409,7 +1415,9 @@
                       "formsEnabled",
                       "forms",
                       "deviceCapability",
-                      "resizeable"
+                      "resizeable",
+                      "srcLanguage",
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -1876,6 +1884,20 @@
               "resizeable": {
                 "description": "Indicates whether the ability supports the multi-window feature.",
                 "type": "boolean"
+              },
+              "srcLanguage": {
+                "description": "Type of the ability development language. The value can be java, js, or ets.The label cannot be defaulted.",
+                "type": "string",
+                "enum": [
+                  "java",
+                  "js",
+                  "ets"
+                ]
+              },
+              "srcPath": {
+                "description": "This tag indicates the JS component code path corresponding to the ability. The tag value is a character string.",
+                "type": "string",
+                "maxLength": 127
               },
               "forms": {
                 "description": "This tag identifies the embedded card attribute of the capability. This tag is valid only when formsEnabled is set to true. This tag can be left blank by default.",
