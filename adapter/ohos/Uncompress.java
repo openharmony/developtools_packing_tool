@@ -1263,9 +1263,9 @@ public class Uncompress {
     }
 
     private static String getHapNameWithoutSuffix(String hapFileName) {
-        if (hapFileName == null || hapFileName.isEmpty()) {
+        if (hapFileName == null || hapFileName.isEmpty() || hapFileName.lastIndexOf(".") == -1) {
             return "";
         }
-        return hapFileName.replace(HAP_SUFFIX, "");
+        return hapFileName.substring(0, hapFileName.lastIndexOf("."));
     }
 }
