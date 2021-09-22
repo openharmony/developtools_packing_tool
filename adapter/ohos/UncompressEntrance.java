@@ -133,6 +133,47 @@ public class UncompressEntrance {
     }
 
     /**
+     * Unpack the hap.
+     *
+     * @param hapPath Indicates the hap path.
+     * @param outPath Indicates the out path.
+     * @param unpackApk Indicates whether to decompress the apk file in the hap.The default value is {@code false},
+     *                  not unpack the apk file.
+     * @return Return the unpack result.
+     */
+    public static boolean unpackHap(String hapPath, String outPath, boolean unpackApk) {
+        if (hapPath == null || hapPath.isEmpty()) {
+            LOG.error("UncompressEntrance::unpackHap hapPath is invalid!");
+            return false;
+        }
+
+        if (outPath == null || outPath.isEmpty()) {
+            LOG.error("UncompressEntrance::unpackHap outPath is invalid!");
+            return false;
+        }
+
+        Utility utility = new Utility();
+        utility.setMode(Utility.MODE_HAP);
+        utility.setHapPath(hapPath);
+        utility.setDeviceType("");
+        utility.setOutPath(outPath);
+        utility.setUnpackApk(String.valueOf(unpackApk));
+        utility.setForceRewrite("true");
+
+        if (!UncompressVerify.commandVerify(utility)) {
+            LOG.error("CompressEntrance::unpackHap verity failed");
+            return false;
+        }
+
+        if (!Uncompress.unpackageProcess(utility)) {
+            LOG.error("UncompressEntrance::unpackageProcess failed");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Parse the app.
      *
      * @param appPath Indicates the app path.
