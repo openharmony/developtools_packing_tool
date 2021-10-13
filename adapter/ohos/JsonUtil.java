@@ -152,7 +152,7 @@ public class JsonUtil {
         }
         if (jsonObject.containsKey(APP)) {
             JSONObject appJson = jsonObject.getJSONObject(APP);
-            profileInfo.appInfo = parseAppInfo(appJson);
+            profileInfo.appInfo = parseAppInfo(appJson, data);
         }
         if (jsonObject.containsKey("module")) {
             JSONObject hapJson = jsonObject.getJSONObject("module");
@@ -161,6 +161,12 @@ public class JsonUtil {
         if (jsonObject.containsKey("deviceConfig")) {
             JSONObject deviceConfigJson = jsonObject.getJSONObject("deviceConfig");
             profileInfo.deviceConfig = parseDeviceConfigInfo(deviceConfigJson, profileInfo.hapInfo.deviceType);
+        }
+        if (!parseShellVersionInfoToAppInfo(paclInfoJsonString, profileInfo.appInfo)) {
+            profileInfo.appInfo.setDefaultShellVersion();
+        }
+        if (!profileInfo.appInfo.appName.isEmpty()) {
+            return profileInfo;
         }
 
         if (profileInfo.hapInfo.abilities.size() == 1) {
@@ -182,10 +188,6 @@ public class JsonUtil {
                 }
             }
         }
-
-        if (!parseShellVersionInfoToAppInfo(paclInfoJsonString, profileInfo.appInfo)) {
-            profileInfo.appInfo.setDefaultShellVersion();
-        }
         return profileInfo;
     }
 
@@ -193,10 +195,11 @@ public class JsonUtil {
      * parse app info
      *
      * @param appJson global json Object
+     * @param data resource index data
      * @return the parseAppInfo result
      * @throws BundleException Throws this exception if the json is not standard.
      */
-    static AppInfo parseAppInfo(JSONObject appJson) throws BundleException {
+    static AppInfo parseAppInfo(JSONObject appJson, byte[] data) throws BundleException {
         AppInfo appInfo = new AppInfo();
         if (appJson == null) {
             LOG.error("Uncompress::parseAppInfo exception: appJson is null");
@@ -215,6 +218,18 @@ public class JsonUtil {
             appInfo.compatibleApiVersion = apiVersion.getIntValue("compatible");
             appInfo.targetApiVersion = apiVersion.getIntValue("target");
             appInfo.releaseType = getJsonString(apiVersion, "releaseType");
+        }
+        String labelRes = "";
+        if (appJson.containsKey("labelId")) {
+            int labelId = appJson.getIntValue("labelId");
+            labelRes = ResourcesParser.getBaseResourceById(labelId, data);
+        }
+        if (labelRes != null && !labelRes.isEmpty()) {
+            appInfo.appName = labelRes;
+            appInfo.appNameEN = labelRes;
+        } else if (appJson.containsKey("label")) {
+            appInfo.appName = getJsonString(appJson, "label");
+            appInfo.appNameEN = getJsonString(appJson, "label");
         }
         appInfo.setMultiFrameworkBundle(appJson.getBooleanValue(MULTI_FRAMEWORK_BUNDLE));
         return appInfo;
