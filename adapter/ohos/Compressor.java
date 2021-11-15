@@ -1541,21 +1541,18 @@ public class Compressor {
     private void parsePackFormName(BufferedReader bufferedReader, Utility utility) throws BundleException {
         String lineStr = null;
         try {
-            boolean isFormsStart = false;
             while ((lineStr = bufferedReader.readLine()) != null) {
                 if (lineStr.contains("abilities")) {
                     continue;
                 }
                 if (lineStr.contains(FORMS)) {
-                    isFormsStart = true;
                     continue;
                 }
                 if (lineStr.contains(JSON_END)) {
                     continue;
                 }
-                if (isFormsStart && lineStr.contains(NAME)) {
+                if (lineStr.contains(NAME)) {
                     getNameFromString(lineStr, utility);
-                    isFormsStart = false;
                 }
             }
         } catch (IOException exception) {
