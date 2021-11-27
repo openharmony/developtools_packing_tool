@@ -132,17 +132,54 @@ public class JsonUtil {
         return true;
     }
 
+    private static void parseDeviceTypeToHapInfo(String packInfoJsonStr, HapInfo hapInfo, String hapName) {
+        LOG.info("Uncompress::parseDeviceTypeToHapInfo: begin");
+        JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
+        if (jsonObject == null || !jsonObject.containsKey("packages")) {
+            LOG.error("Uncompress::parseDeviceTypeToHapInfo error: no packages");
+            return;
+        }
+        JSONArray jsonList = JSONArray.parseArray(getJsonString(jsonObject, "packages"));
+        if (jsonList == null) {
+            LOG.error("Uncompress::parseDeviceTypeToHapInfo error: packages is null");
+            return;
+        }
+
+        for (int i = 0; i < jsonList.size(); i++) {
+            JSONObject tmpObj = jsonList.getJSONObject(i);
+            if (tmpObj == null) {
+                LOG.error("Uncompress::parseDeviceTypeToHapInfo error: obj is null");
+                continue;
+            }
+            String name = getJsonString(tmpObj, NAME);
+            if (name != null && name.equals(hapName)) {
+                String deviceTypes = getJsonString(tmpObj, DEVICE_TYPE_NEW);
+                if (deviceTypes == null || deviceTypes.isEmpty()) {
+                    deviceTypes = getJsonString(tmpObj, DEVICE_TYPE);
+                }
+                if (deviceTypes != null && !deviceTypes.isEmpty()) {
+                    hapInfo.deviceType = JSONArray.parseArray(deviceTypes
+                        .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
+                        String.class);
+                }
+                break;
+            }
+        }
+        return;
+    }
+
     /**
      * parse hap profile info
      *
      * @param harmonyProfileJsonString uncompress json String
      * @param data resource index data
      * @param paclInfoJsonString pack.info json String
+     * @param hapName hap file name
      * @return the parseProfileInfo result
      * @throws BundleException Throws this exception if the json is not standard.
      */
-    static ProfileInfo parseProfileInfo(String harmonyProfileJsonString, byte[] data, String paclInfoJsonString)
-        throws BundleException {
+    static ProfileInfo parseProfileInfo(String harmonyProfileJsonString, byte[] data, String paclInfoJsonString,
+        String hapName) throws BundleException {
         ProfileInfo profileInfo = new ProfileInfo();
         JSONObject jsonObject = JSONObject.parseObject(harmonyProfileJsonString);
         if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey("deviceConfig")
@@ -158,6 +195,7 @@ public class JsonUtil {
             JSONObject hapJson = jsonObject.getJSONObject("module");
             profileInfo.hapInfo = parseHapInfo(hapJson, data);
         }
+        parseDeviceTypeToHapInfo(paclInfoJsonString, profileInfo.hapInfo, hapName);
         if (jsonObject.containsKey("deviceConfig")) {
             JSONObject deviceConfigJson = jsonObject.getJSONObject("deviceConfig");
             profileInfo.deviceConfig = parseDeviceConfigInfo(deviceConfigJson, profileInfo.hapInfo.deviceType);
