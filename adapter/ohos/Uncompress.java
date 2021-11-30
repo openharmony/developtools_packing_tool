@@ -666,7 +666,7 @@ public class Uncompress {
     private static void uncompressProfileInfo(HapZipInfo hapZipInfo, UncomperssResult uncomperssResult)
         throws BundleException {
         ProfileInfo profileInfo = JsonUtil.parseProfileInfo(hapZipInfo.getHarmonyProfileJsonStr(),
-            hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr());
+            hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr(), hapZipInfo.getHapFileName());
         profileInfo.hapName = hapZipInfo.getHapFileName();
         uncomperssResult.addProfileInfoStr(hapZipInfo.getHarmonyProfileJsonStr());
         uncomperssResult.addProfileInfo(profileInfo);
