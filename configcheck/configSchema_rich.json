@@ -33,7 +33,8 @@
           "relatedBundleName",
           "smartWindowSize",
           "smartWindowDeviceType",
-          "targetBundleList"
+          "targetBundleList",
+          "singleUser"
         ]
       },
       "properties": {
@@ -148,6 +149,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "singleUser": {
+          "description": "Specifies whether the application is multi-instance according to the memory situation. If this attribute is set to true, the application is system application.",
+          "type": "boolean"
         }
       }
     },
@@ -1781,13 +1786,12 @@
                     "dataTransfer",
                     "audioPlayback",
                     "audioRecording",
-                    "pictureInPicture",
-                    "voip",
                     "location",
                     "bluetoothInteraction",
+                    "multiDeviceConnection",
                     "wifiInteraction",
-                    "screenFetch",
-                    "multiDeviceConnection"
+                    "voip",
+                    "taskKeeping"
                   ]
                 }
               },
