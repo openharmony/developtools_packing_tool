@@ -34,7 +34,8 @@
           "smartWindowSize",
           "smartWindowDeviceType",
           "targetBundleList",
-          "singleUser"
+          "singleUser",
+          "removable"
         ]
       },
       "properties": {
@@ -49,6 +50,10 @@
           "description": "Describes the application vendor. The value is a string with a maximum of 255 bytes. This label is a string type and can be defaulted.",
           "type": "string",
           "maxLength": 255
+        },
+        "removable": {
+          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used",
+          "type": "boolean"
         },
         "version": {
           "description": "Indicates the version information of the application.Includes two sub-labels:”code” and ”name”.This label cannot be left blank.",
@@ -1144,6 +1149,7 @@
           "colorMode",
           "theme",
           "mainAbility",
+          "srcPath",
           "resizeable",
           "entryTheme",
           "distroFilter"
@@ -1293,7 +1299,8 @@
                   },
                   "required": [
                     "name",
-                    "type"
+                    "type",
+                    "srcPath"
                   ]
                 }
               },
@@ -1338,7 +1345,8 @@
                   "required": [
                     "name",
                     "type",
-                    "uri"
+                    "uri",
+                    "srcPath"
                   ],
                   "properties": {
                     "formsEnabled": {
@@ -1382,7 +1390,8 @@
                   },
                   "required": [
                     "name",
-                    "type"
+                    "type",
+                    "srcPath"
                   ],
                   "properties": {
                     "formsEnabled": {
@@ -1425,7 +1434,8 @@
                   },
                   "required": [
                     "name",
-                    "type"
+                    "type",
+                    "srcPath"
                   ],
                   "properties": {
                     "formsEnabled": {
@@ -2727,6 +2737,11 @@
           "description": "This tag identifies the hap topic. The tag value can be the index of a user-defined theme resource or the index of a system theme resource.",
           "type": "string"
         },
+        "srcPath": {
+          "description": "This tag indicates the JS component code path corresponding to the module. The tag value is a character string (a maximum of 127 bytes)",
+          "type": "string",
+          "maxLength": 127
+        },
         "resizeable": {
           "description": "Indicates whether the application supports the multi-window feature.",
           "type": "boolean"
@@ -3155,6 +3170,7 @@
             "colorMode",
             "theme",
             "mainAbility",
+            "srcPath",
             "resizeable",
             "entryTheme"
           ]
