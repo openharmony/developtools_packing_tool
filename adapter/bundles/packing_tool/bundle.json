@@ -16,6 +16,8 @@
       "components": [],
       "third_party": [ "fastjson" ]
     },
-    "sub_component": []
+    "build": {
+      "sub_component": []
+    }
   }
 }
