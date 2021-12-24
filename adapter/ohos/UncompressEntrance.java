@@ -61,11 +61,6 @@ public class UncompressEntrance {
     public static final String DEVICE_TYPE_TV = "tv";
 
     /**
-     * Device type of pc.
-     */
-    public static final String DEVICE_TYPE_PC = "pc";
-
-    /**
      * Device type of car.
      */
     public static final String DEVICE_TYPE_CAR = "car";
