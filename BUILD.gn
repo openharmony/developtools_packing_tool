@@ -72,6 +72,7 @@ java_library("hmos_app_unpacking_tool_java") {
     "adapter/ohos/ScreenWindow.java",
     "adapter/ohos/CountryCode.java",
     "adapter/ohos/HapZipInfo.java",
+    "adapter/ohos/AbilityFormInfo.java",
   ]
 
   deps = [ "//third_party/fastjson/repackaged:fastjson_utils_java" ]
