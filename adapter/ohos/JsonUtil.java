@@ -419,7 +419,8 @@ public class JsonUtil {
         }
 
         if (hapJson.containsKey("metaData")) {
-            hapInfo.metaData = JSONObject.parseObject(getJsonString(hapJson, "metaData"), MetaData.class);
+            JSONObject metaDataJson = hapJson.getJSONObject("metaData");
+            hapInfo.metaData = parseMetaData(metaDataJson);
         }
 
         if (hapJson.containsKey("js")) {
@@ -490,6 +491,34 @@ public class JsonUtil {
     }
 
     /**
+     * parse meta data
+     *
+     * @param metaDataJson meta data json
+     * @return the parseMetaData result
+     */
+    private static MetaData parseMetaData(JSONObject metaDataJson) {
+        MetaData metaData = new MetaData();
+        if (metaDataJson == null) {
+            LOG.error("Uncompress::parseMetaData : metaDataJson is null");
+            return metaData;
+        }
+
+        if (metaDataJson.containsKey("parameters")) {
+            metaData.parameters = JSONObject.parseArray(getJsonString(metaDataJson, "parameters"),
+                    MetaDataInfo.class);
+        }
+        if (metaDataJson.containsKey("results")) {
+            metaData.results = JSONObject.parseArray(getJsonString(metaDataJson, "results"),
+                    MetaDataInfo.class);
+        }
+        if (metaDataJson.containsKey("customizeData")) {
+            metaData.customizeDatas = JSONObject.parseArray(getJsonString(metaDataJson, "customizeData"),
+                    CustomizeData.class);
+        }
+        return metaData;
+    }
+
+    /**
      * parse ability object.
      *
      * @param abilityJson ability json object
@@ -542,7 +571,8 @@ public class JsonUtil {
         }
 
         if (abilityJson.containsKey("metaData")) {
-            ability.metaData = JSONObject.parseObject(getJsonString(abilityJson, "metaData"), MetaData.class);
+            JSONObject metaDataJson = abilityJson.getJSONObject("metaData");
+            ability.metaData = parseMetaData(metaDataJson);
         }
 
         if (abilityJson.containsKey("skills")) {
@@ -563,6 +593,17 @@ public class JsonUtil {
         }
 
         parseAbilityPermissions(abilityJson, ability);
+
+        if (abilityJson.containsKey("forms")) {
+            JSONArray forms = abilityJson.getJSONArray("forms");
+            List<AbilityFormInfo> formList = new ArrayList<AbilityFormInfo>();
+            int formSize = forms.size();
+            for (int i = 0; i < formSize; i++) {
+                JSONObject tmpObj = forms.getJSONObject(i);
+                formList.add(parseAbilityFormInfo(tmpObj));
+            }
+            ability.formInfos = formList;
+        }
 
         return ability;
     }
@@ -623,6 +664,38 @@ public class JsonUtil {
             formInfo.defaultHeight = getJsonString(form, "defaultHeight");
             ability.formInfo = formInfo;
         }
+    }
+    /**
+     * parse ability forms object
+     *
+     * @param abilityFormJson ability form json object
+     * @return the ability form info result
+     */
+    static AbilityFormInfo parseAbilityFormInfo(JSONObject abilityFormJson) {
+        AbilityFormInfo abilityForm = new AbilityFormInfo();
+        if (abilityFormJson == null) {
+            LOG.error("Uncompress::parseAbilityFormInfo : abilityFormJson is null");
+            return abilityForm;
+        }
+        abilityForm.name = getJsonString(abilityFormJson, "name");
+        abilityForm.type = getJsonString(abilityFormJson, "type");
+        if (abilityFormJson.containsKey("updateEnabled")) {
+            abilityForm.updateEnabled = abilityFormJson.getBoolean("updateEnabled");
+        }
+        abilityForm.scheduledUpdateTime = getJsonString(abilityFormJson, "scheduledUpdateTime");
+        if (abilityFormJson.containsKey("updateDuration")) {
+            abilityForm.updateDuration = abilityFormJson.getIntValue("updateDuration");
+        }
+        if (abilityFormJson.containsKey("supportDimensions")) {
+            abilityForm.supportDimensions = JSONObject.parseArray(getJsonString(abilityFormJson, "supportDimensions"),
+                    String.class);
+        }
+        abilityForm.defaultDimension = getJsonString(abilityFormJson, "defaultDimension");
+        if (abilityFormJson.containsKey("metaData")) {
+            JSONObject metaDataJson = abilityFormJson.getJSONObject("metaData");
+            abilityForm.metaData = parseMetaData(metaDataJson);
+        }
+        return abilityForm;
     }
 
     /**

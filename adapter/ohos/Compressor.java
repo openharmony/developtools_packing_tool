@@ -100,6 +100,7 @@ public class Compressor {
     private static final String REGEX_DEVICE_TYPE = "^phone|tablet|car|tv|wearable|liteWearable$";
     private static final String REGEX_SCREEN_DENSITY = "^sdpi|mdpi|ldpi|xldpi|xxldpi$";
     private static final String REGEX_COLOR_MODE = "^light|dark$";
+    private static final String REGEX_SHAPE = "^circle$";
 
 
     // set timestamp to get fixed MD5
@@ -699,8 +700,16 @@ public class Compressor {
                 return false;
             }
         }
-        String colorMode = thirdLevelDirectoryName.substring(sixthDelimiterIndex + 1, thirdLevelDirectoryName.length());
-        return checkColorMode(colorMode);
+        int seventhDelimiterIndex = thirdLevelDirectoryName.indexOf("-", sixthDelimiterIndex + 1);
+        if (seventhDelimiterIndex < 0) {
+            String tmp = thirdLevelDirectoryName.substring(sixthDelimiterIndex + 1, thirdLevelDirectoryName.length());
+            return checkColorModeOrShape(tmp);
+        }
+        if (!checkColorMode(thirdLevelDirectoryName.substring(sixthDelimiterIndex + 1, seventhDelimiterIndex))) {
+            return false;
+        }
+        String shape = thirdLevelDirectoryName.substring(seventhDelimiterIndex + 1, thirdLevelDirectoryName.length());
+        return checkShape(shape);
     }
 
     private boolean checkLanguage(String language) {
@@ -761,6 +770,24 @@ public class Compressor {
             return false;
         }
         return true;
+    }
+
+    private boolean checkColorModeOrShape(String tmp) {
+        if (Pattern.compile(REGEX_COLOR_MODE).matcher(tmp).matches() ||
+            Pattern.compile(REGEX_SHAPE).matcher(tmp).matches()) {
+            return true;
+        }
+        LOG.error("Compressor::compressProcess " + tmp +
+                " is neither in colorMode list {light, dark} nor in shape list {circle}");
+        return false;
+    }
+
+    private boolean checkShape(String shape) {
+        if (Pattern.compile(REGEX_SHAPE).matcher(shape).matches()) {
+            return true;
+        }
+        LOG.error("Compressor::compressProcess shape" + shape + " is not in {circle} list");
+        return false;
     }
 
     /**

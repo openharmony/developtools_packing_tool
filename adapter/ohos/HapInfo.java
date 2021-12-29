@@ -103,4 +103,15 @@ public class HapInfo {
      */
     public DistroFilter distroFilter = new DistroFilter();
 
+    /**
+     * get the customize Data value defined in this module.
+     */
+    public String getCustomizeDataValue(String customizeDataName) {
+        for (CustomizeData data : metaData.customizeDatas) {
+            if (customizeDataName.equals(data.name)) {
+                return data.value;
+            }
+        }
+        return "";
+    }
 }
