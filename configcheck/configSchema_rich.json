@@ -1135,6 +1135,7 @@
           "abilities",
           "js",
           "reqPermissions",
+          "definePermissions",
           "deviceType",
           "distro",
           "reqCapabilities",
@@ -2482,6 +2483,72 @@
             }
           }
         },
+        "definePermissions": {
+          "description": "Indicates the permissions required by the application. The callers must acquire these permissions before calling the application.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "name",
+                "grantMode",
+                "availableLevel",
+                "provisionEnable",
+                "distributedSceneEnable",
+                "label",
+                "description"
+              ]
+            },
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "description": "Specifies the permission name. The value is a character string.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 255
+              },
+              "grantMode": {
+                "description": "This tag identifies the permission granting mode.",
+                "type": "string",
+                "enum": [
+                  "system_grant",
+                  "user_grant"
+                ]
+              },
+              "availableLevel": {
+                "description": "This tag identifies the permission available level.",
+                "type": "string",
+                "enum": [
+                  "normal",
+                  "system_basic",
+                  "system_core"
+                ]
+              },
+              "provisionEnable": {
+                "description": "This tag identifies whether the permission can be applied for by provision certificate.",
+                "type": "boolean"
+              },
+              "distributedSceneEnable": {
+                "description": "This tag identifies whether the permission can be used in distributed scene.",
+                "type": "boolean"
+              },
+              "label": {
+                "description": "This tag identifies the short description of the permission.",
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 255
+              },
+              "description": {
+                "description": "This tag indicates the detailed description of the permission.",
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 255
+              }
+            }
+          }
+        },
         "reqCapabilities": {
           "description": "indicates the device capabilities required to run the application. The value is an array of strings, each of which represents a device capability. Device capabilities are defined by the device OS.",
           "type": "array",
@@ -3156,6 +3223,7 @@
             "abilities",
             "js",
             "reqPermissions",
+            "definePermissions",
             "deviceType",
             "distro",
             "reqCapabilities",
