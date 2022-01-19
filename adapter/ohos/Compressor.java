@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
+
 /**
  * bundle compressor class, compress file and directory.
  *
@@ -53,9 +54,11 @@ public class Compressor {
     private static final String PNG_SUFFIX = ".png";
     private static final String UPPERCASE_PNG_SUFFIX = ".PNG";
     private static final String CONFIG_JSON = "config.json";
+    private static final String MODULE_JSON = "module.json";
     private static final String CODE = "code";
     private static final String NAME = "name";
     private static final String VERSION = "\"version\"";
+    private static final String VERSION_CODE = "\"versionCode\"";
     private static final String NULL_DIR_NAME = "";
     private static final String RES_DIR_NAME = "res/";
     private static final String RESOURCES_DIR_NAME = "resources/";
@@ -101,6 +104,8 @@ public class Compressor {
     private static final String REGEX_SCREEN_DENSITY = "^sdpi|mdpi|ldpi|xldpi|xxldpi$";
     private static final String REGEX_COLOR_MODE = "^light|dark$";
     private static final String REGEX_SHAPE = "^circle$";
+    private static final String JS_PATH = "js/";
+    private static final String ETS_PATH = "ets/";
 
 
     // set timestamp to get fixed MD5
@@ -119,6 +124,21 @@ public class Compressor {
     private List<String> formNamesList = new ArrayList<String>();
     private List<String> fileNameList = new ArrayList<String>();
     private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
+
+    /**
+     * check path if is a module.json file
+     *
+     * @param path   path input
+     * @return true if path is a module file
+     */
+    private static boolean isModuleJSON(String path)
+    {
+        File file = new File(path);
+        if ((file.isFile()) && file.getName().equals(MODULE_JSON)) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * start compress.
@@ -149,7 +169,11 @@ public class Compressor {
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipOutputStream(checkedOut);
             if (Utility.MODE_HAP.equals(utility.getMode())) {
-                compressHapMode(utility);
+                if (isModuleJSON(utility.getJsonPath())) {
+                    compressHapModeForModule(utility);
+                } else {
+                    compressHapMode(utility);
+                }
             } else if (Utility.MODE_HAR.equals(utility.getMode())) {
                 compressHarMode(utility);
             } else if (Utility.MODE_APP.equals(utility.getMode())) {
@@ -218,6 +242,68 @@ public class Compressor {
             String resourcesPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
             pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
+
+        if (!utility.getAssetsPath().isEmpty()) {
+            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
+        }
+
+        if (!utility.getBinPath().isEmpty()) {
+            pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getPackInfoPath().isEmpty()) {
+            pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        }
+        compressHapModeMultiple(utility);
+    }
+
+    /**
+     * compress in hap mode for module.json.
+     *
+     * @param utility common data
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private void compressHapModeForModule(Utility utility) throws BundleException {
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
+
+        if (!utility.getIndexPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String assetsPath = NULL_DIR_NAME;
+            pathToFile(utility, utility.getIndexPath(), assetsPath, false);
+        }
+
+        if (!utility.getLibPath().isEmpty()) {
+            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
+        }
+
+        if (!utility.getFilePath().isEmpty()) {
+            pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
+            String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + RESOURCES_DIR_NAME;
+            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace("\"", "").trim()) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace("\"", "").trim())) {
+                resPath = RES_DIR_NAME;
+            }
+            pathToFile(utility, utility.getResPath(), resPath, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String resourcesPath = RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
+        if (!utility.getJsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String jsPath = JS_PATH;
+            pathToFile(utility, utility.getJsPath(), jsPath, false);
+        }
+
+        if (!utility.getEtsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String etsPath = ETS_PATH;
+            pathToFile(utility, utility.getEtsPath(), etsPath, false);
         }
 
         if (!utility.getAssetsPath().isEmpty()) {
@@ -342,7 +428,6 @@ public class Compressor {
                 throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
             }
         }
-
         for (String hapPath : fileList) {
             pathToFile(utility, hapPath, NULL_DIR_NAME, false);
         }
@@ -362,7 +447,6 @@ public class Compressor {
         if (!utility.getPackResPath().isEmpty()) {
             pathToFile(utility, utility.getPackResPath(), NULL_DIR_NAME, false);
         }
-
         File file = new File(utility.getPackInfoPath());
         compressFile(utility, file, NULL_DIR_NAME, false);
     }
@@ -1107,9 +1191,12 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            if (!checkVersionInHaps(utility, srcFile, entryName)) {
-                LOG.error("Compressor::compressFile file checkVersionCodeInHaps failed");
-                throw new BundleException("Compressor::compressFile There are some haps with different version code!");
+            obtainModuleVersion(utility, srcFile, entryName);
+            if (!utility.getIsModuleJson()) {
+                if (!checkVersionInHaps(utility, srcFile, entryName)) {
+                    LOG.error("Compressor::compressFile file checkVersionCodeInHaps failed");
+                    throw new BundleException("Compressor::compressFile There are some haps with different version code!");
+                }
             }
             if (srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
@@ -1156,6 +1243,109 @@ public class Compressor {
             Utility.closeStream(bufferedInputStream);
             Utility.closeStream(fileInputStream);
         }
+    }
+
+    /**
+     * check json type code in haps.
+     *
+     * @param utility common data
+     * @param srcFile source file to zip
+     * @param baseDir current directory name of file
+     * @return true is for successful and false is for failed
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+     private void obtainModuleVersion(Utility utility, File srcFile, String baseDir) throws BundleException {
+         String moduleJson = "";
+         moduleJson = checkModuleTypeInHaps(utility, srcFile, entryName);
+         if (utility.getIsModuleJson() && !moduleJson.equals("")) {
+             Version version = ModuleJsonUtil.getVersion(moduleJson);
+
+             if (utility.getVersionCode() == -1) {
+                 utility.setVersionCode(version.versionCode);
+             }
+             if (utility.getVersionName().equals("")) {
+                 utility.setVersionName(version.versionName);
+             }
+             if (!checkModuleVersion(utility, version)) {
+                 LOG.error("Compressor::checkModuleVersion failed ");
+                 throw new BundleException("Compressor::compressFile There are some haps with different version code!");
+             }
+         }
+     }
+
+
+    /**
+     * check version in haps.
+     *
+     * @param utility common data
+     * @param version current hap version
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private boolean checkModuleVersion(Utility utility, Version version) {
+        if (version.versionName.equals("") || version.versionCode == -1) {
+            return false;
+        }
+        if (!utility.getVersionName().equals(version.versionName)) {
+            LOG.error("Compressor::checkModuleVersion versionName failed ");
+            return false;
+        }
+        if (utility.getVersionCode() != version.versionCode) {
+            LOG.error("Compressor::checkModuleVersion versionCode failed ");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check json type code in haps.
+     *
+     * @param utility common data
+     * @param srcFile source file to zip
+     * @param baseDir current directory name of file
+     * @return true is for successful and false is for failed
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private String checkModuleTypeInHaps(Utility utility, File srcFile, String baseDir) throws BundleException {
+        String fileStr = srcFile.getPath();
+        if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+            return "";
+        }
+        ZipFile zipFile = null;
+        FileInputStream zipInput = null;
+        ZipInputStream zin = null;
+        InputStream inputStream = null;
+        InputStreamReader reader = null;
+        BufferedReader br = null;
+        ZipEntry entry = null;
+        String moduleJson = "";
+        try {
+            zipFile = new ZipFile(srcFile);
+            zipInput = new FileInputStream(fileStr);
+            zin = new ZipInputStream(zipInput);
+            while ((entry = zin.getNextEntry()) != null) {
+                if (entry.getName().toLowerCase().equals(MODULE_JSON)) {
+                    utility.setIsModuleJson(true);
+                    inputStream = zipFile.getInputStream(entry);
+                    reader = new InputStreamReader(inputStream);
+                    br = new BufferedReader(reader);
+                    if (br != null) {
+                        moduleJson = br.readLine();
+                        break;
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            LOG.error("Compressor::checkModuleTypeInHaps io exception: " + exception.getMessage());
+            throw new BundleException("Compressor::checkModuleTypeInHaps failed");
+        } finally {
+            Utility.closeStream(zipFile);
+            Utility.closeStream(zipInput);
+            Utility.closeStream(zin);
+            Utility.closeStream(inputStream);
+            Utility.closeStream(reader);
+            Utility.closeStream(br);
+        }
+        return moduleJson;
     }
 
     /**
