@@ -183,7 +183,8 @@
                 "metadata",
                 "visible",
                 "skills",
-                "backgroundModes"
+                "backgroundModes",
+                "continuable"
               ]
             },
             "properties": {
@@ -389,6 +390,10 @@
                     "taskKeeping"
                   ]
                 }
+              },
+              "continuable": {
+                "description": "Identifies whether the ability can be migrated. The default value is false.",
+                "type": "boolean"
               }
             }
           }
