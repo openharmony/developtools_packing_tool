@@ -34,8 +34,9 @@
           "smartWindowSize",
           "smartWindowDeviceType",
           "targetBundleList",
-          "singleUser",
-          "removable"
+          "singleton",
+          "removable",
+          "userDataClearable"
         ]
       },
       "properties": {
@@ -155,8 +156,12 @@
             "type": "string"
           }
         },
-        "singleUser": {
+        "singleton": {
           "description": "Specifies whether the application is multi-instance according to the memory situation. If this attribute is set to true, the application is system application.",
+          "type": "boolean"
+        },
+        "userDataClearable": {
+          "description": "Specifies whether to allow clear data. only for system application",
           "type": "boolean"
         }
       }
@@ -1295,7 +1300,8 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath"
+                      "srcPath",
+                      "continuable"
                     ]
                   },
                   "required": [
@@ -2175,6 +2181,10 @@
                     ]
                   }
                 }
+              },
+              "continuable": {
+                "description": "Identifies whether the ability can be migrated. The default value is false.",
+                "type": "boolean"
               }
             }
           }
