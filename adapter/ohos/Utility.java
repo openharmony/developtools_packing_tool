@@ -73,6 +73,11 @@ public class Utility {
     private String packRes = "";
     private String packResPath = "";
     private String filePath = "";
+    private String jsPath = "";
+    private String etsPath = "";
+    private int VersionCode = -1;
+    private String VersionName = "";
+    private boolean isModuleJson = false;
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -193,6 +198,14 @@ public class Utility {
         if (!binPath.startsWith(CMD_PREFIX)) {
             this.binPath = getFormattedPath(binPath);
         }
+    }
+
+    public void setIsModuleJson(boolean isModuleJson) {
+        this.isModuleJson = isModuleJson;
+    }
+
+    public boolean getIsModuleJson() {
+        return isModuleJson;
     }
 
     public boolean isCompressNativeLibs() {
@@ -444,6 +457,30 @@ public class Utility {
 
     public void setPackResPath(String packResPath) {
         this.packResPath = packResPath;
+    }
+
+    public String getJsPath() { return jsPath; }
+
+    public void setJsPath(String jsPath) { this.jsPath = jsPath; }
+
+    public String getEtsPath() { return etsPath; }
+
+    public void setEtsPath(String etsPath) { this.etsPath = etsPath; }
+
+    public String getVersionName() {
+        return VersionName;
+    }
+
+    public void setVersionName(String VersionName) {
+        this.VersionName = VersionName;
+    }
+
+    public int getVersionCode() {
+        return VersionCode;
+    }
+
+    public void setVersionCode(int VersionCode) {
+        this.VersionCode = VersionCode;
     }
 
     public List<String> getFormattedSoPathList() {
