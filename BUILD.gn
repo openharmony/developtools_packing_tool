@@ -25,6 +25,8 @@ java_library("hmos_app_packing_tool_java") {
     "adapter/ohos/Log.java",
     "adapter/ohos/ShowHelp.java",
     "adapter/ohos/Utility.java",
+    "adapter/ohos/ModuleJsonUtil.java",
+    "adapter/ohos/Version.java",
   ]
 
   main_class = "ohos.CompressEntrance"

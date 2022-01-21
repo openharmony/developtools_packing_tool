@@ -27,6 +27,7 @@ import java.util.Locale;
 public class CompressVerify {
     private static final String COMMA_SPLIT = ",";
     private static final String JSON_PROFILE = "config.json";
+    private static final String MODULE_PROFILE = "module.json";
     private static final String PROFILE_NAME = "CAPABILITY.profile";
     private static final String INDEX_PROFILE = "resources.index";
     private static final String PACK_INFO = "pack.info";
@@ -79,8 +80,12 @@ public class CompressVerify {
         if (Utility.MODE_HAP.equals(utility.getMode())) {
             if (!utility.getJsonPath().isEmpty()) {
                 File file = new File(utility.getJsonPath());
-                if (!file.isFile() || !file.getName().equals(JSON_PROFILE)) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode json-path must be config.json file!");
+                if (!file.isFile()) {
+                    LOG.error("CompressVerify::isArgsValidInHapMode json-path is not a file!");
+                    return false;
+                }
+                if (!file.getName().equals(JSON_PROFILE) && !file.getName().equals(MODULE_PROFILE)) {
+                    LOG.error("CompressVerify::isArgsValidInHapMode json-path must be config.json or module.json file!");
                     return false;
                 }
             }
@@ -191,6 +196,7 @@ public class CompressVerify {
             return false;
         }
 
+
         if (!utility.getPackInfoPath().isEmpty() && !isPathValid(utility.getPackInfoPath(), TYPE_FILE, PACK_INFO)) {
             LOG.error("CompressVerify::isArgsValidInHapMode pack-info-path is invalid!");
             return false;
@@ -216,7 +222,13 @@ public class CompressVerify {
      * @return isVerifyValidInHarMode if verify valid in har mode.
      */
     private static boolean isVerifyValidInHarMode(Utility utility) {
-        if (utility.getJsonPath().isEmpty() || !isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)) {
+        if (utility.getJsonPath().isEmpty()) {
+            LOG.error("CompressVerify::isArgsValidInHarMode json-path is empty!");
+            return false;
+        }
+
+        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
+            && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
             LOG.error("CompressVerify::isArgsValidInHarMode json-path must be config.json file!");
             return false;
         }

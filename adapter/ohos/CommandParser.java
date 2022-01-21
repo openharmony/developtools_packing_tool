@@ -34,6 +34,8 @@ public class CommandParser {
     private static final String CMD_JSON_PATH = "--json-path";
     private static final String CMD_PROFILE_PATH = "--profile-path";
     private static final String CMD_INDEX_PATH = "--index-path";
+    private static final String CMD_JS_PATH = "--js-path";
+    private static final String CMD_ETS_PATH = "--ets-path";
     private static final String CMD_SO_PATH = "--maple-so-path";
     private static final String CMD_SO_DIR = "--maple-so-dir";
     private static final String CMD_ABILITY_SO_PATH = "--ability-so-path";
@@ -144,7 +146,7 @@ public class CommandParser {
                     i++;
                     break;
                 }
-		case CMD_UNPACK_CUT_ENTRY_APK: {
+                case CMD_UNPACK_CUT_ENTRY_APK: {
                     utility.setUnpackCutEntryApk(args[i + 1]);
                     i++;
                     break;
@@ -301,6 +303,14 @@ public class CommandParser {
             }
             case CMD_PACK_INFO_PATH: {
                 utility.setPackInfoPath(value);
+                return true;
+            }
+            case CMD_JS_PATH: {
+                utility.setJsPath(value);
+                return true;
+            }
+            case CMD_ETS_PATH: {
+                utility.setEtsPath(value);
                 return true;
             }
             default : {
