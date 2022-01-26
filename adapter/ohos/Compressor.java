@@ -244,6 +244,11 @@ public class Compressor {
             pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
         }
 
+        if (!utility.getRpcidPath().isEmpty()) {
+            String rpcidPath = NULL_DIR_NAME;
+            pathToFile(utility, utility.getRpcidPath(), rpcidPath, false);
+        }
+
         if (!utility.getAssetsPath().isEmpty()) {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
         }
@@ -304,6 +309,11 @@ public class Compressor {
         if (!utility.getEtsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String etsPath = ETS_PATH;
             pathToFile(utility, utility.getEtsPath(), etsPath, false);
+        }
+
+        if (!utility.getRpcidPath().isEmpty()) {
+            String rpcidPath = NULL_DIR_NAME;
+            pathToFile(utility, utility.getRpcidPath(), rpcidPath, false);
         }
 
         if (!utility.getAssetsPath().isEmpty()) {
@@ -1256,7 +1266,7 @@ public class Compressor {
      */
      private void obtainModuleVersion(Utility utility, File srcFile, String baseDir) throws BundleException {
          String moduleJson = "";
-         moduleJson = checkModuleTypeInHaps(utility, srcFile, entryName);
+         moduleJson = checkModuleTypeInHaps(utility, srcFile, baseDir);
          if (utility.getIsModuleJson() && !moduleJson.equals("")) {
              Version version = ModuleJsonUtil.getVersion(moduleJson);
 
