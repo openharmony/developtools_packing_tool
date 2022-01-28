@@ -75,6 +75,7 @@ public class Utility {
     private String filePath = "";
     private String jsPath = "";
     private String etsPath = "";
+    private String rpcidPath = "";
     private int VersionCode = -1;
     private String VersionName = "";
     private boolean isModuleJson = false;
@@ -466,6 +467,14 @@ public class Utility {
     public String getEtsPath() { return etsPath; }
 
     public void setEtsPath(String etsPath) { this.etsPath = etsPath; }
+
+    public String getRpcidPath() {
+        return rpcidPath;
+    }
+
+    public void setRpcidPath(String rpcidPath) {
+        this.rpcidPath = rpcidPath;
+    }
 
     public String getVersionName() {
         return VersionName;
