@@ -36,6 +36,7 @@ public class CommandParser {
     private static final String CMD_INDEX_PATH = "--index-path";
     private static final String CMD_JS_PATH = "--js-path";
     private static final String CMD_ETS_PATH = "--ets-path";
+    private static final String CMD_RPCID_PATH = "--rpcid-path";
     private static final String CMD_SO_PATH = "--maple-so-path";
     private static final String CMD_SO_DIR = "--maple-so-dir";
     private static final String CMD_ABILITY_SO_PATH = "--ability-so-path";
@@ -312,6 +313,9 @@ public class CommandParser {
             case CMD_ETS_PATH: {
                 utility.setEtsPath(value);
                 return true;
+            }
+            case CMD_RPCID_PATH: {
+                utility.setRpcidPath(value);
             }
             default : {
                 return false;
