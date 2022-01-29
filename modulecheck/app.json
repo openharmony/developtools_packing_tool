@@ -97,7 +97,8 @@
         "versionName": {
           "description": "Indicates the text description of the application version.Used for displaying to users.A string can contain a maximum of 127 bytes.This label cannot be left blank.",
           "type": "string",
-          "maxLength": 127
+          "maxLength": 127,
+          "pattern": "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
         },
         "minCompatibleVersionCode": {
           "description": "Indicates the lowest compatible historical version number, used for cross-device compatibility judgment",

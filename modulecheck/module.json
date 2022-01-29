@@ -167,11 +167,11 @@
           "type": "array",
           "items": {
             "type": "object",
+            "required": [
+              "name",
+              "srcEntrance"
+            ],
             "propertyNames": {
-              "required": [
-                "name",
-                "srcEntrance"
-              ],
               "enum": [
                 "name",
                 "srcEntrance",
@@ -403,12 +403,12 @@
           "type": "array",
           "items": {
             "type": "object",
+            "required": [
+              "name",
+              "srcEntrance",
+              "type"
+            ],
             "propertyNames": {
-              "required": [
-                "name",
-                "srcEntrance",
-                "type"
-              ],
               "enum": [
                 "name",
                 "srcEntrance",

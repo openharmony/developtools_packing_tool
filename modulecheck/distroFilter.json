@@ -112,8 +112,7 @@
               "description": "Indicates the rule of black and white list for the subtag",
               "type": "string",
               "enum": [
-                "include",
-                "exclude"
+                "include"
               ]
             },
             "value": {
