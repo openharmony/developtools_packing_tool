@@ -30,6 +30,7 @@ public class CompressVerify {
     private static final String MODULE_PROFILE = "module.json";
     private static final String PROFILE_NAME = "CAPABILITY.profile";
     private static final String INDEX_PROFILE = "resources.index";
+    private static final String RPCID_PROFILE = "rpcid.sc";
     private static final String PACK_INFO = "pack.info";
     private static final String PACK_RES = "pack.res";
     private static final String HAP_SUFFIX = ".hap";
@@ -86,6 +87,18 @@ public class CompressVerify {
                 }
                 if (!file.getName().equals(JSON_PROFILE) && !file.getName().equals(MODULE_PROFILE)) {
                     LOG.error("CompressVerify::isArgsValidInHapMode json-path must be config.json or module.json file!");
+                    return false;
+                }
+            }
+
+            if (!utility.getRpcidPath().isEmpty()) {
+                File file = new File(utility.getRpcidPath());
+                if (!file.isFile()) {
+                    LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path is not a file!");
+                    return false;
+                }
+                if (!file.getName().equals(RPCID_PROFILE)) {
+                    LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path must be rpcid.sc file!");
                     return false;
                 }
             }
