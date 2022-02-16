@@ -1,5 +1,5 @@
 {
-    "name": "@ohos/developtools_packing_tool",
+    "name": "@ohos/packing_tool",
     "version": "",
     "description": "",
     "homePage": "https://gitee.com/openharmony",
@@ -36,7 +36,7 @@
         "destPath": "developtools/packing_tool"
     },
     "component": {
-        "name": "developtools_packing_tool",
+        "name": "packing_tool",
         "subsystem": "",
         "syscap": [],
         "features": [],
