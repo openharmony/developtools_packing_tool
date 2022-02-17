@@ -402,11 +402,28 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "name",
-              "srcEntrance",
-              "type"
-            ],
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "dataShare"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "name",
+                "srcEntrance",
+                "type",
+                "uri"
+              ]
+            },
+            "else": {
+              "required": [
+                "name",
+                "srcEntrance",
+                "type"
+              ]
+            },
             "propertyNames": {
               "enum": [
                 "name",
@@ -416,6 +433,7 @@
                 "description",
                 "type",
                 "permissions",
+                "uri",
                 "readPermission",
                 "writePermission",
                 "visible",
@@ -473,6 +491,11 @@
                   "type": "string",
                   "maxLength": 255
                 }
+              },
+              "uri": {
+                "description": "Identifies the provided uri data for current extension.",
+                "type": "string",
+                "maxLength": 255
               },
               "readPermission": {
                 "description": "Indicates the readPermission required for extensionAbilities of another application to call the current extension.",
