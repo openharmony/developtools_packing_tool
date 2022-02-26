@@ -81,7 +81,6 @@
         "deviceTypes": {
           "description": "Indicates the type of devices on which the abilities can run.This label cannot be left blank.",
           "type": "array",
-          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "string",

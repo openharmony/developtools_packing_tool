@@ -1181,7 +1181,6 @@
         "deviceType": {
           "description": "Indicates the type of devices on which the abilities can run. The value can be default, tv (smart TVs), wearable (smart watches), liteWearable (basic watches), smartVision, phone, car, tablet, router or any combination of these values.This label cannot be left blank.",
           "type": "array",
-          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "string",
