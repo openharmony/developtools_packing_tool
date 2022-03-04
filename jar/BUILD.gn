@@ -13,12 +13,22 @@
 
 import("//build/ohos.gni")
 
-ohos_prebuilt_etc("app_packing_tool") {
+ohos_prebuilt_etc("ohos_app_packing_tool") {
   source = "hmos_app_packing_tool.jar"
   install_enable = false
 }
 
+ohos_prebuilt_etc("app_packing_tool") {
+  source = "app_packing_tool.jar"
+  install_enable = false
+}
+
 ohos_prebuilt_etc("app_unpacking_tool") {
+  source = "app_unpacking_tool.jar"
+  install_enable = false
+}
+
+ohos_prebuilt_etc("ohos_app_unpacking_tool") {
   source = "hmos_app_unpacking_tool.jar"
   install_enable = false
 }
@@ -28,7 +38,12 @@ ohos_prebuilt_etc("fastjson_utils_java") {
   install_enable = false
 }
 
-ohos_prebuilt_etc("haptobin_tool") {
+ohos_prebuilt_etc("ohos_haptobin_tool") {
   source = "hmos_haptobin_tool.jar"
+  install_enable = false
+}
+
+ohos_prebuilt_etc("haptobin_tool") {
+  source = "haptobin_tool.jar"
   install_enable = false
 }
