@@ -1399,12 +1399,7 @@
                     "name",
                     "type",
                     "srcPath"
-                  ],
-                  "properties": {
-                    "formsEnabled": {
-                      "const": false
-                    }
-                  }
+                  ]
                 }
               },
               {
