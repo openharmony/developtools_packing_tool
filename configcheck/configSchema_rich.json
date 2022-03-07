@@ -1158,7 +1158,8 @@
           "srcPath",
           "resizeable",
           "entryTheme",
-          "distroFilter"
+          "distroFilter",
+          "uiSyntax"
         ]
       },
       "properties": {
@@ -3211,48 +3212,104 @@
               }
             }
           }
+        },
+        "uiSyntax": {
+          "description": "Indicates the syntax type of JS Component.Default is hml",
+          "type": "string",
+          "enum": [
+            "hml",
+            "ets"
+          ],
+        "default": "hml"
         }
       },
-      "if": {
-        "properties": {
-          "distro": {
+      "allOf": [
+        {
+          "if": {
             "properties": {
-              "moduleType": {
-                "const": "feature"
+              "distro": {
+                "properties": {
+                  "moduleType": {
+                    "const": "feature"
+                  }
+                }
               }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "commonEvents",
+                "description",
+                "abilities",
+                "js",
+                "reqPermissions",
+                "definePermissions",
+                "deviceType",
+                "distro",
+                "reqCapabilities",
+                "metaData",
+                "package",
+                "name",
+                "supportedModes",
+                "shortcuts",
+                "defPermissions",
+                "defPermissionGroups",
+                "allowClassMap",
+                "colorMode",
+                "theme",
+                "mainAbility",
+                "srcPath",
+                "resizeable",
+                "entryTheme"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "distro": {
+                "properties": {
+                  "moduleType": {
+                    "const": "entry"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "commonEvents",
+                "description",
+                "abilities",
+                "js",
+                "reqPermissions",
+                "definePermissions",
+                "deviceType",
+                "distro",
+                "reqCapabilities",
+                "metaData",
+                "package",
+                "name",
+                "supportedModes",
+                "shortcuts",
+                "defPermissions",
+                "defPermissionGroups",
+                "allowClassMap",
+                "colorMode",
+                "theme",
+                "mainAbility",
+                "srcPath",
+                "resizeable",
+                "entryTheme",
+                "distroFilter"
+              ]
             }
           }
         }
-      },
-      "then": {
-        "propertyNames": {
-          "enum": [
-            "commonEvents",
-            "description",
-            "abilities",
-            "js",
-            "reqPermissions",
-            "definePermissions",
-            "deviceType",
-            "distro",
-            "reqCapabilities",
-            "metaData",
-            "package",
-            "name",
-            "supportedModes",
-            "shortcuts",
-            "defPermissions",
-            "defPermissionGroups",
-            "allowClassMap",
-            "colorMode",
-            "theme",
-            "mainAbility",
-            "srcPath",
-            "resizeable",
-            "entryTheme"
-          ]
-        }
-      }
+      ]
     }
   },
   "if": {
