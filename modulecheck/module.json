@@ -15,34 +15,73 @@
     "module": {
       "description": "Indicates the configuration of a .hap file. The module configuration is valid only for the current .hap file.",
       "type": "object",
-      "required": [
-        "name",
-        "type",
-        "deviceTypes",
-        "deliveryWithInstall",
-        "pages"
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "har"
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "name",
+                "type",
+                "srcEntrance",
+                "description",
+                "process",
+                "mainElement",
+                "deviceTypes",
+                "installationFree",
+                "virtualMachine",
+                "uiSyntax",
+                "metadata",
+                "abilities",
+                "extensionAbilities",
+                "requestPermissions",
+                "definePermissions"
+              ]
+            },
+            "required": [
+              "name",
+              "type",
+              "deviceTypes"
+            ]
+          },
+          "else": {
+            "propertyNames": {
+              "enum": [
+                "name",
+                "type",
+                "srcEntrance",
+                "description",
+                "process",
+                "mainElement",
+                "deviceTypes",
+                "deliveryWithInstall",
+                "installationFree",
+                "virtualMachine",
+                "uiSyntax",
+                "pages",
+                "metadata",
+                "abilities",
+                "extensionAbilities",
+                "requestPermissions",
+                "definePermissions"
+              ]
+            },
+            "required": [
+              "name",
+              "type",
+              "deviceTypes",
+              "deliveryWithInstall",
+              "pages"
+            ]
+          }
+        }
       ],
-      "propertyNames": {
-        "enum": [
-          "name",
-          "type",
-          "srcEntrance",
-          "description",
-          "process",
-          "mainElement",
-          "deviceTypes",
-          "deliveryWithInstall",
-          "installationFree",
-          "virtualMachine",
-          "uiSyntax",
-          "pages",
-          "metadata",
-          "abilities",
-          "extensionAbilities",
-          "requestPermissions",
-          "definePermissions"
-        ]
-      },
       "properties": {
         "name": {
           "description": "Indicates the module name.",
@@ -89,9 +128,7 @@
               "tablet",
               "tv",
               "wearable",
-              "liteWearable",
               "car",
-              "smartVision",
               "router"
             ]
           }
