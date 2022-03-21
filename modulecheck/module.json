@@ -22,33 +22,33 @@
               "type": {
                 "const": "har"
               }
-            },
-            "then": {
-              "propertyNames": {
-                "enum": [
-                  "name",
-                  "type",
-                  "srcEntrance",
-                  "description",
-                  "process",
-                  "mainElement",
-                  "deviceTypes",
-                  "installationFree",
-                  "virtualMachine",
-                  "uiSyntax",
-                  "metadata",
-                  "abilities",
-                  "extensionAbilities",
-                  "requestPermissions",
-                  "definePermissions"
-                ]
-              },
-              "required": [
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
                 "name",
                 "type",
-                "deviceTypes"
+                "srcEntrance",
+                "description",
+                "process",
+                "mainElement",
+                "deviceTypes",
+                "installationFree",
+                "virtualMachine",
+                "uiSyntax",
+                "metadata",
+                "abilities",
+                "extensionAbilities",
+                "requestPermissions",
+                "definePermissions"
               ]
-            }
+            },
+            "required": [
+              "name",
+              "type",
+              "deviceTypes"
+            ]
           },
           "else": {
             "propertyNames": {
