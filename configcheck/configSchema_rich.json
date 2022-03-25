@@ -1188,9 +1188,7 @@
             "enum": [
               "car",
               "default",
-              "liteWearable",
               "phone",
-              "smartVision",
               "tablet",
               "tv",
               "wearable",
