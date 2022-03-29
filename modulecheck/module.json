@@ -226,7 +226,7 @@
             },
             "properties": {
               "priority": {
-                "description": "Indicates the priority of the ability.This field is used for implicit query.Default value is 0",
+                "description": "Indicates the priority of the ability.Only for system application.This field is used for implicit query.Range from 0 to 10, default value is 0.",
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 10
@@ -488,7 +488,7 @@
             },
             "properties": {
               "priority": {
-                "description": "Indicates the priority of the ability.This field is used for implicit query.Default value is 0",
+                "description": "Indicates the priority of the ability.Only for system application.This field is used for implicit query.Range from 0 to 10, default value is 0.",
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 10
