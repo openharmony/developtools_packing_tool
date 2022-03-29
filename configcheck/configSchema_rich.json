@@ -1276,6 +1276,7 @@
                 "then": {
                   "propertyNames": {
                     "enum": [
+                      "priority",
                       "process",
                       "mergeRule",
                       "name",
@@ -1320,6 +1321,7 @@
                 "then": {
                   "propertyNames": {
                     "enum": [
+                      "priority",
                       "process",
                       "mergeRule",
                       "name",
@@ -1371,6 +1373,7 @@
                 "then": {
                   "propertyNames": {
                     "enum": [
+                      "priority",
                       "process",
                       "mergeRule",
                       "name",
@@ -1411,6 +1414,7 @@
                 "then": {
                   "propertyNames": {
                     "enum": [
+                      "priority",
                       "process",
                       "mergeRule",
                       "name",
@@ -1446,6 +1450,12 @@
               }
             ],
             "properties": {
+              "priority": {
+                "description": "Indicates the priority of the ability.This field is used for implicit query.Default value is 0",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10
+              },
               "name": {
                 "description": "Indicates the name of the ability. The value is a reverse domain name, in the format of \"Complete bundle name.Class name\", for example, \"com.example.myapplication.MainAbility\", where com.example.myapplication indicates the bundle name and MainAbility indicates the class name. Alternatively, the value can start with a period (.) followed by the class name, for example, \".MainAbility\", which will be resolved into a complete name prefixed with the bundle name of the application.",
                 "type": "string",
