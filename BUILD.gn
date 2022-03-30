@@ -15,7 +15,7 @@ import("//build/config/ohos/rules.gni")
 import("//build/ohos.gni")
 import("//developtools/developtools.gni")
 
-java_library("hmos_app_packing_tool_java") {
+java_library("app_packing_tool_java") {
   java_files = [
     "adapter/ohos/BundleException.java",
     "adapter/ohos/CommandParser.java",
@@ -31,10 +31,10 @@ java_library("hmos_app_packing_tool_java") {
 
   main_class = "ohos.CompressEntrance"
 
-  final_jar_path = "$root_build_dir/developtools/hmos_app_packing_tool.jar"
+  final_jar_path = "$root_build_dir/developtools/app_packing_tool.jar"
 }
 
-java_library("hmos_app_unpacking_tool_java") {
+java_library("app_unpacking_tool_java") {
   java_files = [
     "adapter/ohos/BundleException.java",
     "adapter/ohos/CommandParser.java",
@@ -83,10 +83,10 @@ java_library("hmos_app_unpacking_tool_java") {
 
   main_class = "ohos.UncompressEntrance"
 
-  final_jar_path = "$root_build_dir/developtools/hmos_app_unpacking_tool.jar"
+  final_jar_path = "$root_build_dir/developtools/app_unpacking_tool.jar"
 }
 
-java_library("hmos_haptobin_tool_java") {
+java_library("haptobin_tool_java") {
   java_files = [
     "adapter/ohos/Log.java",
     "adapter/ohos/BinaryTool.java",
@@ -100,10 +100,10 @@ java_library("hmos_haptobin_tool_java") {
 
   main_class = "ohos.ConvertHapToBin"
 
-  final_jar_path = "$root_build_dir/developtools/hmos_haptobin_tool.jar"
+  final_jar_path = "$root_build_dir/developtools/haptobin_tool.jar"
 }
 
-java_library("hmos_bininfo_collecting_tool_java") {
+java_library("bininfo_collecting_tool_java") {
   java_files = [
     "adapter/ohos/Log.java",
     "adapter/ohos/FileUtils.java",
@@ -116,15 +116,14 @@ java_library("hmos_bininfo_collecting_tool_java") {
 
   main_class = "ohos.CollectBinInfo"
 
-  final_jar_path =
-      "$root_build_dir/developtools/hmos_bininfo_collecting_tool.jar"
+  final_jar_path = "$root_build_dir/developtools/bininfo_collecting_tool.jar"
 }
 
 group("packing_tool_target") {
   deps = [
-    ":hmos_app_packing_tool_java",
-    ":hmos_app_unpacking_tool_java",
-    ":hmos_bininfo_collecting_tool_java",
-    ":hmos_haptobin_tool_java",
+    ":app_packing_tool_java",
+    ":app_unpacking_tool_java",
+    ":bininfo_collecting_tool_java",
+    ":haptobin_tool_java",
   ]
 }
