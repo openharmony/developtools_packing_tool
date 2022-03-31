@@ -103,6 +103,19 @@ public class CompressVerify {
                 }
             }
 
+            // compress pack.info into hap
+            if (!utility.getPackInfoPath().isEmpty()) {
+                File file = new File(utility.getPackInfoPath());
+                if (!file.isFile()) {
+                    LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path is not a file!");
+                    return false;
+                }
+                if (!file.getName().equals(PACK_INFO)) {
+                    LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path must be pack.info file!");
+                    return false;
+                }
+            }
+
             if (!utility.getApkPath().isEmpty() && !compatibleProcess(utility, utility.getApkPath(),
                     utility.getFormattedApkPathList(), APK_SUFFIX)) {
                 LOG.error("CompressVerify::isArgsValidInHapMode shell-apk-path is invalid!");
