@@ -249,6 +249,11 @@ public class Compressor {
             pathToFile(utility, utility.getRpcidPath(), rpcidPath, false);
         }
 
+        if (!utility.getPackInfoPath().isEmpty()) {
+            String packInfoPath = NULL_DIR_NAME;
+            pathToFile(utility, utility.getPackInfoPath(), packInfoPath, false);
+        }
+
         if (!utility.getAssetsPath().isEmpty()) {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
         }
@@ -1201,12 +1206,9 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            obtainModuleVersion(utility, srcFile, entryName);
-            if (!utility.getIsModuleJson()) {
-                if (!checkVersionInHaps(utility, srcFile, entryName)) {
-                    LOG.error("Compressor::compressFile file checkVersionCodeInHaps failed");
-                    throw new BundleException("Compressor::compressFile There are some haps with different version code!");
-                }
+            if (!checkVersionInHaps(utility, srcFile, entryName)) {
+                LOG.error("Compressor::compressFile file checkVersionCodeInHaps failed");
+                throw new BundleException("Compressor::compressFile There are some haps with different version code!");
             }
             if (srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
@@ -1256,53 +1258,72 @@ public class Compressor {
     }
 
     /**
-     * check json type code in haps.
+     * check hap type for pack app.
+     *
+     * @param hapPath source file to zip
+     * @return true is for is stage type and false is for FA type
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private boolean isModuleHap(String hapPath) throws BundleException {
+        if (!hapPath.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+            return true;
+        }
+
+        FileInputStream zipInput = null;
+        ZipInputStream zin = null;
+        ZipEntry entry = null;
+        try {
+            zipInput = new FileInputStream(hapPath);
+            zin = new ZipInputStream(zipInput);
+            while ((entry = zin.getNextEntry()) != null) {
+                if (entry.getName().toLowerCase().equals(MODULE_JSON)) {
+                    return true;
+                }
+            }
+        } catch (IOException exception) {
+            LOG.error("Compressor::isModuleHap io exception: " + exception.getMessage());
+            throw new BundleException("Compressor::isModuleHap failed");
+        } finally {
+            Utility.closeStream(zipInput);
+            Utility.closeStream(zin);
+        }
+        return false;
+    }
+
+    /**
+     * check hap version for pack app.
      *
      * @param utility common data
-     * @param srcFile source file to zip
+     * @param hapPath source file to zip
      * @param baseDir current directory name of file
      * @return true is for successful and false is for failed
      * @throws BundleException FileNotFoundException|IOException.
      */
-     private void obtainModuleVersion(Utility utility, File srcFile, String baseDir) throws BundleException {
-         String moduleJson = "";
-         moduleJson = checkModuleTypeInHaps(utility, srcFile, baseDir);
-         if (utility.getIsModuleJson() && !moduleJson.equals("")) {
-             Version version = ModuleJsonUtil.getVersion(moduleJson);
-
-             if (utility.getVersionCode() == -1) {
-                 utility.setVersionCode(version.versionCode);
-             }
-             if (utility.getVersionName().equals("")) {
-                 utility.setVersionName(version.versionName);
-             }
-             if (!checkModuleVersion(utility, version)) {
-                 LOG.error("Compressor::checkModuleVersion failed ");
-                 throw new BundleException("Compressor::compressFile There are some haps with different version code!");
-             }
-         }
-     }
-
-
-    /**
-     * check version in haps.
-     *
-     * @param utility common data
-     * @param version current hap version
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private boolean checkModuleVersion(Utility utility, Version version) {
-        if (version.versionName.equals("") || version.versionCode == -1) {
+    private boolean checkModuleVersionInApp(Utility utility, String hapPath, String baseDir) throws BundleException {
+        String moduleJson = "";
+        File srcFile = new File(hapPath);
+        moduleJson = getModuleJsonInHaps(utility, srcFile, baseDir);
+        Version version = ModuleJsonUtil.getVersion(moduleJson);
+        if ((version.versionCode == -1)) {
+            LOG.error("Compressor::checkModuleVersionInApp version code is null or empty");
             return false;
         }
-        if (!utility.getVersionName().equals(version.versionName)) {
-            LOG.error("Compressor::checkModuleVersion versionName failed ");
+        if (!versionCode.isEmpty() && !versionCode.equals(String.valueOf(version.versionCode))) {
+            LOG.error("Compressor::checkModuleVersionInApp some haps with different version code");
             return false;
         }
-        if (utility.getVersionCode() != version.versionCode) {
-            LOG.error("Compressor::checkModuleVersion versionCode failed ");
+
+        if ((version.versionName == null) || (version.versionName.isEmpty())) {
+            LOG.error("Compressor::checkModuleVersionInApp version name is null or empty");
             return false;
         }
+        version.versionName = "\"" + version.versionName + "\"";
+        if (!versionName.isEmpty() && !versionName.equals(version.versionName)) {
+            LOG.error("Compressor::checkModuleVersionInApp some haps with different version name");
+            return false;
+        }
+        versionCode = String.valueOf(version.versionCode);
+        versionName = version.versionName;
         return true;
     }
 
@@ -1315,7 +1336,7 @@ public class Compressor {
      * @return true is for successful and false is for failed
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private String checkModuleTypeInHaps(Utility utility, File srcFile, String baseDir) throws BundleException {
+    private String getModuleJsonInHaps(Utility utility, File srcFile, String baseDir) throws BundleException {
         String fileStr = srcFile.getPath();
         if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
             return "";
@@ -1334,7 +1355,6 @@ public class Compressor {
             zin = new ZipInputStream(zipInput);
             while ((entry = zin.getNextEntry()) != null) {
                 if (entry.getName().toLowerCase().equals(MODULE_JSON)) {
-                    utility.setIsModuleJson(true);
                     inputStream = zipFile.getInputStream(entry);
                     reader = new InputStreamReader(inputStream);
                     br = new BufferedReader(reader);
@@ -1380,6 +1400,14 @@ public class Compressor {
                 if ((hapPath == null) || (hapPath.isEmpty()) || (!hapPath.contains(baseDir))) {
                     continue;
                 }
+                if (isModuleHap(hapPath)) {
+                    if (checkModuleVersionInApp(utility, hapPath, baseDir)) {
+                        continue;
+                    } else {
+                        return false;
+                    }
+                }
+
                 String versionStr = obtainVersion(srcFile, hapPath);
                 String code = obtainInnerVersionCode(versionStr);
                 if ((code == null) || (code.isEmpty())) {
