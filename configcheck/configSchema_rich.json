@@ -1160,7 +1160,8 @@
           "entryTheme",
           "distroFilter",
           "uiSyntax",
-          "testRunner"
+          "testRunner",
+          "dependencies"
         ]
       },
       "properties": {
@@ -3252,6 +3253,13 @@
               "maxLength": 255
             }
           }
+        },
+        "dependencies": {
+          "description": "Indicates the module names that this module depends on",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "allOf": [
@@ -3293,7 +3301,8 @@
                 "srcPath",
                 "resizeable",
                 "entryTheme",
-                "testRunner"
+                "testRunner",
+                "dependencies"
               ]
             }
           }
@@ -3337,7 +3346,8 @@
                 "resizeable",
                 "entryTheme",
                 "distroFilter",
-                "testRunner"
+                "testRunner",
+                "dependencies"
               ]
             }
           }
