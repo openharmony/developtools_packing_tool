@@ -43,6 +43,7 @@
           "singleton",
           "userDataClearable",
           "accessible",
+          "targetBundleList",
           "phone",
           "tablet",
           "tv",
@@ -170,6 +171,14 @@
           "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
           "type": "boolean",
           "default": false
+        },
+        "targetBundleList": {
+          "description": "This tag specifies the list of services that can be installed without the application. The list contains the bundle name of each service. A maximum of five bundle names can be configured. This label is a string array type and can be defaulted.",
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "string"
+          }
         },
         "phone": {
           "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
