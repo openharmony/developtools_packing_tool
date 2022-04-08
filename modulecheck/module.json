@@ -42,7 +42,8 @@
                 "extensionAbilities",
                 "requestPermissions",
                 "definePermissions",
-                "testRunner"
+                "testRunner",
+                "dependencies"
               ]
             },
             "required": [
@@ -71,7 +72,8 @@
                 "extensionAbilities",
                 "requestPermissions",
                 "definePermissions",
-                "testRunner"
+                "testRunner",
+                "dependencies"
               ]
             },
             "required": [
@@ -845,6 +847,13 @@
               "type": "string",
               "maxLength": 255
             }
+          }
+        },
+        "dependencies": {
+          "description": "Indicates the module names that this module depends on",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
