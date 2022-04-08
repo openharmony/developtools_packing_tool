@@ -533,7 +533,8 @@
                   "dataShare",
                   "fileShare",
                   "staticSubscriber",
-                  "wallpaper"
+                  "wallpaper",
+                  "backup"
                 ]
               },
               "permissions": {
