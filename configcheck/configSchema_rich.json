@@ -3230,10 +3230,6 @@
         "testRunner": {
           "description": "This tag is used for configure the test properties.",
           "type":"object",
-          "required": [
-            "name",
-            "srcPath"
-          ],
           "propertyNames": {
             "enum": [
               "name",
