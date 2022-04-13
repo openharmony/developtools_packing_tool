@@ -262,9 +262,6 @@ public class Compressor {
             pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
         }
 
-        if (!utility.getPackInfoPath().isEmpty()) {
-            pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
-        }
         compressHapModeMultiple(utility);
     }
 
