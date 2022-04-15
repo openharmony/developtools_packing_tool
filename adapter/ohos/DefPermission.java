@@ -49,4 +49,14 @@ public class DefPermission {
      * Indicates the description of DefPermission.
      */
     public String description = "";
+
+    // stage module attributes
+    /**
+     * Indicates the provisionEnable of ModuleDefinePermissions.
+     */
+    public boolean provisionEnabled = true;
+    /**
+     * Indicates the distributedSceneEnable of ModuleDefinePermissions.
+     */
+    public boolean distributedSceneEnable = false;
 }

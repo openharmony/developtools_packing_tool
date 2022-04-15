@@ -15,6 +15,11 @@
 
 package ohos;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+
 /**
  * Hap zip info
  *
@@ -24,6 +29,7 @@ class HapZipInfo {
     private String harmonyProfileJsonStr = "";
     private String packInfoJsonStr = "";
     private String hapFileName = "";
+    public HashMap<String, String> resourcemMap = new HashMap<>();
 
     /**
      * Get resource data bytes.
@@ -95,5 +101,18 @@ class HapZipInfo {
      */
     public void setHapFileName(String hapFileName) {
         this.hapFileName = hapFileName;
+    }
+
+    /**
+     * push json file to map.
+     *
+     * @param fileName Indicates the file name of json file.
+     * @param fileContent Indicates the file content of json file.
+     */
+    public void pushResourceMap(String fileName, String fileContent) {
+        if (fileName == null || fileContent == null) {
+            return;
+        }
+        resourcemMap.put(fileName, fileContent);
     }
 }

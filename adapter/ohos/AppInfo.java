@@ -16,7 +16,9 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * App AppInfo info.
@@ -73,10 +75,39 @@ public class AppInfo {
      */
     public String releaseType = "";
 
-
     private String shellVersionCode = "";
     private String shellVersionName = "";
     private boolean multiFrameworkBundle;
+
+    // character for stage module
+    /**
+     * Indicates the debug of app AppJson.
+     */
+    public boolean debug = false;
+    /**
+     * Indicates the icon of app AppJson.
+     */
+    public String icon = "";
+    /**
+     * Indicates the label of app AppJson.
+     */
+    public String label = "";
+    /**
+     * Indicates the description of app AppJson.
+     */
+    public String description = "";
+    /**
+     * Indicates the minCompatibleVersionCode of app AppJson.
+     */
+    public int minCompatibleVersionCode = -1;
+    /**
+     * Indicates the distributedNotificationEnabled of app AppJson.
+     */
+    public boolean distributedNotificationEnabled = false;
+    /**
+     * Indicates the entityType of app AppJson.
+     */
+    public String entityType = "unspecified";
 
     /**
      * Get shell version code.
