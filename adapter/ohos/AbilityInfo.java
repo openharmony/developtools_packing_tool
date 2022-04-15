@@ -173,6 +173,17 @@ public class AbilityInfo {
      */
     public List<AbilityFormInfo> formInfos = new ArrayList<AbilityFormInfo>();
 
+    // stage module character
+    /**
+     * Indicates the srcEntrance of module ModuleJson.
+     */
+    public String srcEntrance = "";
+
+    /**
+     * Indicates the continuable of module ModuleJson.
+     */
+    public boolean continuable = false;
+
     /**
      * get the customize Data value defined in this ability.
      */

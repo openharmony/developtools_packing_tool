@@ -23,6 +23,22 @@ import java.util.List;
  *
  */
 public class AbilityFormInfo {
+
+    /**
+     * Module window info.
+     *
+     */
+    public static class ModuleWindowInfo {
+        /**
+         * Indicates the designWidth of ModuleUsedScene.
+         */
+        public int designWidth = 0;
+        /**
+         * Indicates the autoDesignWidth of ModuleUsedScene.
+         */
+        public boolean autoDesignWidth = false;
+    }
+
     /**
      * Indicates the name of ability form.
      */
@@ -62,6 +78,42 @@ public class AbilityFormInfo {
      * Indicates the metaData of ability form.
      */
     public MetaData metaData = new MetaData();
+
+    // stage module attributes
+    /**
+     * Indicates the description of ability form.
+     */
+    public String description = "";
+
+    /**
+     * Indicates the src of ability form the attribute is corresponding to the UI code of the form.
+     */
+    public String src = "";
+
+    /**
+     * Indicates the window of ability form.
+     */
+    public ModuleWindowInfo windowInfo = new ModuleWindowInfo();
+
+    /**
+     * Indicates the isDefault of ability form.
+     */
+    public boolean isDefault = false;
+
+    /**
+     * Indicates the colorMode of ability form.
+     */
+    public String colorMode = "auto";
+
+    /**
+     * Indicates the formConfigAbility of ability form, it is the ability name for card.
+     */
+    public String formConfigAbility = "";
+
+    /**
+     * Indicates the formVisibleNotify of ability form.
+     */
+    public boolean formVisibleNotify = false;
 
     /**
      * get the customize Data value defined in this ability form.
