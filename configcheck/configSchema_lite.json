@@ -223,11 +223,7 @@
             "enum": [
               "car",
               "liteWearable",
-              "phone",
               "smartVision",
-              "tablet",
-              "tv",
-              "wearable",
               "router"
             ]
           }
