@@ -2362,11 +2362,15 @@
               },
               "startWindowIcon": {
                 "description": "Indicates the icon of the startup page. The value is the index to the resource file.",
-                "type": "string"
+                "type": "string",
+                "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                "maxLength": 255
               },
               "startWindowBackground": {
                 "description": "Indicates the color of the startup page. The value is the index to the resource file.",
-                "type": "string"
+                "type": "string",
+                "pattern": "^[$]color:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                "maxLength": 255
               }
             }
           }
