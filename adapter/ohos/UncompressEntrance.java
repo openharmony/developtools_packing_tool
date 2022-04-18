@@ -354,7 +354,7 @@ public class UncompressEntrance {
         }
 
         if (!UncompressVerify.commandVerify(utility)) {
-            LOG.error("UncompressEntrance::main exit, verity failed");
+            LOG.error("UncompressEntrance::main exit, verify failed");
             ShowHelp.uncompressHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
