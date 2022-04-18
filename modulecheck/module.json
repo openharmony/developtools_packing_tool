@@ -226,7 +226,9 @@
                 "visible",
                 "skills",
                 "backgroundModes",
-                "continuable"
+                "continuable",
+                "startWindowIcon",
+                "startWindowBackground"
               ]
             },
             "properties": {
@@ -442,6 +444,14 @@
               "continuable": {
                 "description": "Identifies whether the ability can be migrated. The default value is false.",
                 "type": "boolean"
+              },
+              "startWindowIcon": {
+                "description": "Indicates the icon of the startup page. The value is the index to the resource file.",
+                "type": "string"
+              },
+              "startWindowBackground": {
+                "description": "Indicates the color of the startup page. The value is the index to the resource file.",
+                "type": "string"
               }
             }
           }
@@ -859,7 +869,8 @@
           "description": "Indicates the module names that this module depends on",
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 127
           }
         }
       }
