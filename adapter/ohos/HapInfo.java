@@ -103,6 +103,42 @@ public class HapInfo {
      */
     public DistroFilter distroFilter = new DistroFilter();
 
+    // stage module character
+    /**
+     * Indicates the srcEntrance of ModuleInfo.
+     */
+    public String srcEntrance = "";
+
+    /**
+     * Indicates the process of ModuleInfo.
+     */
+    public String process = "";
+
+    /**
+     * Indicates the mainElement of ModuleInfo.
+     */
+    public String mainElement = "";
+
+    /**
+     * Indicates the uiSyntax of ModuleInfo.
+     */
+    public String uiSyntax = "hml";
+
+    /**
+     * Indicates the pages of ModuleInfo.
+     */
+    public List<String> pages = new ArrayList<>();
+
+    /**
+     * Indicates the extensionAbilityInfo of ModuleInfo.
+     */
+    public  List<ExtensionAbilityInfo> extensionAbilityInfos = new ArrayList<>();
+
+    /**
+     * Indicates the metadata of ModuleInfo.
+     */
+    public List<ModuleMetadataInfo> moduleMetadataInfos = new ArrayList<>();
+
     /**
      * get the customize Data value defined in this module.
      */

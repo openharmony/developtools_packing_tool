@@ -59,4 +59,14 @@ public class DeviceConfig {
      * Indicates the directLaunch of app DeviceConfig.
      */
     public boolean directLaunch = false;
+
+    // stage module character
+    /**
+     * Indicates the minAPIVersion of app AppJson.
+     */
+    public int minAPIVersion = -1;
+    /**
+     * Indicates the distributedNotificationEnabled of app AppJson.
+     */
+    public boolean distributedNotificationEnabled = false;
 }

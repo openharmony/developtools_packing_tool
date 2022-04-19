@@ -336,7 +336,6 @@ public class UncompressEntrance {
         }
 
         compressResult = Uncompress.uncompressHapByInput(utility, input);
-
         return compressResult;
     }
 
