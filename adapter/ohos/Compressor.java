@@ -1243,7 +1243,6 @@ public class Compressor {
                 count = bufferedInputStream.read(data);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error("Compressor::compressFile file not found exception");
             throw new BundleException("CoompressFile failed");
         } catch (IOException exception) {
             LOG.error("Compressor::compressFile io exception: " + exception.getMessage());
@@ -1455,7 +1454,6 @@ public class Compressor {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error("Compressor::getCrcFromFile file not found exception");
             throw new BundleException("Get Crc from file failed");
         } catch (IOException exception) {
             LOG.error("Compressor::getCrcFromFile io exception: " + exception.getMessage());

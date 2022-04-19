@@ -90,7 +90,7 @@ public class CompressEntrance {
         }
 
         if (!CompressVerify.commandVerify(utility)) {
-            LOG.error("CompressEntrance::main exit, verity failed");
+            LOG.error("CompressEntrance::main exit, verify failed");
             ShowHelp.compressHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }

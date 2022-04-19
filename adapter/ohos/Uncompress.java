@@ -27,9 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.attribute.FileTime;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
@@ -47,6 +45,7 @@ public class Uncompress {
     private static final String JSON_SUFFIX = ".json";
     private static final String PACK_INFO = "pack.info";
     private static final String HARMONY_PROFILE = "config.json";
+    private static final String MODULE_JSON = "module.json";
     private static final String RESOURCE_INDEX = "resources.index";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
@@ -60,6 +59,7 @@ public class Uncompress {
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
+    private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -230,7 +230,13 @@ public class Uncompress {
     static UncomperssResult uncompressHap(Utility utility) {
         UncomperssResult compressResult = new UncomperssResult();
         try {
-            compressResult = uncompress(utility.getDeviceType(), utility.getHapPath(), HARMONY_PROFILE);
+            if (isModuleHap(utility.getHapPath(), compressResult)) {
+                ModuleResult moduleResult = Uncompress.unCompressModuleHap(utility);
+                ModuleAdaption moduleAdaption = new ModuleAdaption();
+                compressResult = moduleAdaption.convertToUncompressResult(moduleResult);
+            } else {
+                compressResult = uncompress(utility.getDeviceType(), utility.getHapPath(), HARMONY_PROFILE);
+            }
         } catch (BundleException ignored) {
             LOG.error("Uncompress::uncompressHap Bundle exception");
             compressResult.setResult(false);
@@ -248,12 +254,25 @@ public class Uncompress {
      */
     static UncomperssResult uncompressHapByInput(Utility utility, InputStream input) {
         UncomperssResult compressResult = new UncomperssResult();
+        ByteArrayOutputStream outputStream = null;
         try {
-            compressResult = uncompressByInput(utility.getDeviceType(), input, HARMONY_PROFILE);
+            outputStream = getOutputStream(input);
+            InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+            if (isModuleInput(inputStream, compressResult)) {
+                InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
+                ModuleResult moduleResult = uncompressModuleHapByInput(utility, parseInput);
+                ModuleAdaption moduleAdaption = new ModuleAdaption();
+                compressResult = moduleAdaption.convertToUncompressResult(moduleResult);
+            } else {
+                InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
+                compressResult = uncompressByInput(utility.getDeviceType(), parseInput, HARMONY_PROFILE);
+            }
         } catch (BundleException ignored) {
             LOG.error("Uncompress::uncompressHapByInput Bundle exception");
             compressResult.setResult(false);
             compressResult.setMessage("uncompressHapByInput Bundle exception");
+        } finally {
+            Utility.closeStream(outputStream);
         }
         return compressResult;
     }
@@ -672,6 +691,8 @@ public class Uncompress {
         uncomperssResult.addProfileInfo(profileInfo);
     }
 
+
+
     private static HapZipInfo unZipHapFileFromInputStream(InputStream input) throws BundleException, IOException {
         BufferedInputStream bufIn = null;
         ZipInputStream zipIn = null;
@@ -734,6 +755,32 @@ public class Uncompress {
                 uncompressPackInfo(deviceType, hapZipInfo, result);
             } else {
                 uncompressProfileInfo(hapZipInfo, result);
+            }
+        } catch (IOException exception) {
+            LOG.error("Uncompress::uncompressByInput io exception: " + exception.getMessage());
+            throw new BundleException("Uncompress by input failed");
+        }
+        return result;
+    }
+
+    /**
+     * uncompress process by InputStream
+     *
+     * @param deviceType device type
+     * @param input the InputStream about the package.
+     * @param fileName uncompress file name
+     * @return the module uncompress result
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static ModuleResult uncompressModuleByInput(String deviceType, InputStream input, String fileName)
+            throws BundleException {
+        ModuleResult result = new ModuleResult();
+        try {
+            HapZipInfo hapZipInfo = unZipModuleHapFileFromInputStream(input);
+            if (isPackInfo(fileName)) {
+                // for parse app
+            } else {
+                uncompressModuleJsonInfo(hapZipInfo, result);
             }
         } catch (IOException exception) {
             LOG.error("Uncompress::uncompressByInput io exception: " + exception.getMessage());
@@ -1268,4 +1315,263 @@ public class Uncompress {
         }
         return hapFileName.substring(0, hapFileName.lastIndexOf("."));
     }
+
+    private static HapZipInfo unZipModuleHapFile(String srcPath)
+            throws BundleException, IOException {
+        HapZipInfo hapZipInfo = new HapZipInfo();
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            getProfileJson(zipFile, hapZipInfo.resourcemMap);
+            hapZipInfo.setHarmonyProfileJsonStr(readStringFromFile(MODULE_JSON, zipFile));
+            hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
+            hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+        return hapZipInfo;
+    }
+
+    /**
+     * uncompress from HapZipInfo
+     *
+     * @param hapZipInfo hap zip info
+     * @return the parse moduleResult
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static void uncompressModuleJsonInfo(HapZipInfo hapZipInfo, ModuleResult moduleResult)
+            throws BundleException {
+        ModuleProfileInfo moduleProfileInfo = JsonUtil.parseModuleProfileInfo(hapZipInfo.getHarmonyProfileJsonStr(),
+                hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr(), hapZipInfo.getHapFileName(),
+                hapZipInfo.resourcemMap);
+        moduleProfileInfo.hapName = hapZipInfo.getHapFileName();
+        moduleResult.addModuleProfileInfo(moduleProfileInfo);
+    }
+
+    /**
+     * uncompress from specified file name
+     *
+     * @param deviceType device type
+     * @param srcPath source file path
+     * @param fileName uncompress file name
+     * @return the uncompress result
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static ModuleResult uncompressModule(String deviceType, String srcPath, String fileName)
+            throws BundleException {
+        if (srcPath.isEmpty() || fileName.isEmpty()) {
+            LOG.error("Uncompress::uncompressModule srcPath, fileName is empty!");
+            throw new BundleException("uncompressModule failed, srcPath or fileName is empty");
+        }
+        ModuleResult moduleResult = new ModuleResult();
+        try {
+            HapZipInfo hapZipInfo = unZipModuleHapFile(srcPath);
+            if (isPackInfo(fileName)) {
+                // for app parse
+            } else {
+                uncompressModuleJsonInfo(hapZipInfo, moduleResult);
+            }
+        } catch (IOException exception) {
+            moduleResult.setResult(false);
+            LOG.error("Uncompress::uncompressModule parseMode is invalid!");
+        }
+        return moduleResult;
+    }
+
+    /**
+     * uncompress module hap.
+     *
+     * @param utility common data
+     * @return the uncompress result
+     */
+    static ModuleResult unCompressModuleHap(Utility utility) {
+        ModuleResult moduleResult = new ModuleResult();
+        try {
+            moduleResult = uncompressModule(utility.getDeviceType(), utility.getHapPath(), MODULE_JSON);
+        } catch (BundleException ignored) {
+            LOG.error("Uncompress::uncompressHap Bundle exception");
+            moduleResult.setResult(false);
+            moduleResult.setMessage("uncompressHap Bundle exception");
+        }
+        return moduleResult;
+    }
+    /**
+     * get all resource in profile.
+     *
+     * @param zipFile is the hap file
+     * @return the parse resource result
+     */
+    static void getProfileJson(ZipFile zipFile, HashMap<String, String> resourceMap) throws BundleException, IOException {
+        try {
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                final ZipEntry entry = entries.nextElement();
+                if (entry.getName().contains(RESOURCE_PATH)) {
+                    String filePath = entry.getName();
+                    String fileName = filePath.replaceAll(RESOURCE_PATH, "");
+                    String fileContent = readStringFromFile(filePath, zipFile);
+                    resourceMap.put(fileName, fileContent);
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("Uncompress::uncompressHap IOException");
+        }
+    }
+
+    /**
+     * uncompress module hap.
+     *
+     * @param utility common data
+     * @param input the InputStream about the app package.
+     * @return the uncompress result
+     */
+    static ModuleResult uncompressModuleHapByInput(Utility utility, InputStream input) {
+        ModuleResult moduleResult = new ModuleResult();
+        try {
+            moduleResult = uncompressModuleByInput(utility.getDeviceType(), input, MODULE_JSON);
+        } catch (BundleException ignored) {
+            LOG.error("Uncompress::uncompressHapByInput Bundle exception");
+            moduleResult.setResult(false);
+            moduleResult.setMessage("uncompressHapByInput Bundle exception");
+        }
+        return moduleResult;
+    }
+
+    /**
+     * unzip module hap from zip file.
+     *
+     * @param input Indicates the InputStream about the package.
+     * @return Return the uncomperss result of parseHap
+     */
+    private static HapZipInfo unZipModuleHapFileFromInputStream(InputStream input) throws BundleException, IOException {
+        BufferedInputStream bufIn = null;
+        ZipInputStream zipIn = null;
+        BufferedReader bufferedReader = null;
+        HapZipInfo hapZipInfo = new HapZipInfo();
+        try {
+            ZipEntry entry = null;
+            bufIn = new BufferedInputStream(input);
+            zipIn = new ZipInputStream(bufIn);
+            int entriesNum = 0;
+            while ((entry = zipIn.getNextEntry()) != null) {
+                entriesNum++;
+                if (entry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
+                    hapZipInfo.setResDataBytes(getByte(zipIn));
+                    continue;
+                }
+                if (isPackInfo(entry.getName())) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
+                    hapZipInfo.setPackInfoJsonStr(readStringFromInputStream(zipIn, bufferedReader));
+                    continue;
+                }
+                if (entry.getName().equals(MODULE_JSON)) {
+                    bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
+                    hapZipInfo.setHarmonyProfileJsonStr(readStringFromInputStream(zipIn, bufferedReader));
+                }
+                if (entry.getName().contains(RESOURCE_PATH)) {
+                    String filePath = entry.getName();
+                    String fileName = filePath.replaceAll(RESOURCE_PATH, "");
+                    String fileContent = readStringFromInputStream(zipIn, bufferedReader);
+                    hapZipInfo.pushResourceMap(fileName, fileContent);
+                }
+            }
+        } finally {
+            Utility.closeStream(bufferedReader);
+            Utility.closeStream(bufIn);
+            Utility.closeStream(zipIn);
+        }
+        return hapZipInfo;
+    }
+
+    /**
+     * Parse the hap type.
+     *
+     * @param hapPath Indicates the hap path.
+     * @param compressResult Indicates the result of parse hap.
+     * @return Return the type result of isModuleHap
+     */
+    public static boolean isModuleHap(String hapPath, UncomperssResult compressResult) {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(new File(hapPath));
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                final ZipEntry entry = entries.nextElement();
+                if (entry.getName().equals(MODULE_JSON)) {
+                    return true;
+                }
+            }
+        } catch (FileNotFoundException ignored) {
+            LOG.error("Uncompress::isModuleHap file not found exception");
+            compressResult.setResult(false);
+            compressResult.setMessage("judge is module failed");
+        } catch (IOException exception) {
+            LOG.error("Uncompress::isModuleHap io exception: " + exception.getMessage());
+            compressResult.setResult(false);
+            compressResult.setMessage("judge is module failed");
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+        return false;
+    }
+
+    /**
+     * Parse the hap type.
+     *
+     * @param input Indicates the hap FileInputStream.
+     * @param compressResult Indicates the result of parse hap.
+     * @return Return the type result of isModuleHap.
+     */
+    public static boolean isModuleInput(InputStream input, UncomperssResult compressResult) {
+        BufferedInputStream bufIn = null;
+        ZipInputStream zipIn = null;
+        BufferedReader bufferedReader = null;
+        try {
+            ZipEntry entry = null;
+            bufIn = new BufferedInputStream(input);
+            zipIn = new ZipInputStream(bufIn);
+            while((entry = zipIn.getNextEntry()) != null) {
+                if (entry.getName().toLowerCase().endsWith(MODULE_JSON)) {
+                    return true;
+                }
+            }
+        } catch (FileNotFoundException ignored) {
+            LOG.error("Uncompress::isModuleHap file not found exception");
+            compressResult.setResult(false);
+            compressResult.setMessage("judge is module failed");
+        } catch (IOException exception) {
+            LOG.error("Uncompress::isModuleHap io exception: " + exception.getMessage());
+            compressResult.setResult(false);
+            compressResult.setMessage("judge is module failed");
+        }  finally {
+            Utility.closeStream(bufferedReader);
+            Utility.closeStream(bufIn);
+            Utility.closeStream(zipIn);
+        }
+        return false;
+    }
+
+    /**
+     * create outputStream from InputStream .
+     *
+     * @param input Indicates the input stream of hap.
+     * @return Return the outputStream.
+     */
+    static ByteArrayOutputStream getOutputStream(InputStream input) throws BundleException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[1024];
+            int len;
+            while((len = input.read(buffer)) > -1) {
+                outputStream.write(buffer, 0, len);
+            }
+            outputStream.flush();
+        } catch (IOException e) {
+            LOG.error("Uncompress::getOutputStream io exception: " + e.getMessage());
+            throw new BundleException("getOutputStream by input failed");
+        }
+        return outputStream;
+    }
+
 }
