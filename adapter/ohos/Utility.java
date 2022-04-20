@@ -79,6 +79,7 @@ public class Utility {
     private int VersionCode = -1;
     private String VersionName = "";
     private boolean isModuleJson = false;
+    private String rpcid = "false";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -474,6 +475,12 @@ public class Utility {
 
     public void setRpcidPath(String rpcidPath) {
         this.rpcidPath = rpcidPath;
+    }
+
+    public String getRpcid() { return rpcid; }
+
+    public void setRpcid(String rpcid) {
+        this.rpcid = rpcid;
     }
 
     public String getVersionName() {

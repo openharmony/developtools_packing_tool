@@ -47,6 +47,7 @@ public class Uncompress {
     private static final String HARMONY_PROFILE = "config.json";
     private static final String MODULE_JSON = "module.json";
     private static final String RESOURCE_INDEX = "resources.index";
+    private static final String RPCID_SC = "rpcid.sc";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
     private static final String HAP_SUFFIXI = ".hap";
@@ -85,21 +86,16 @@ public class Uncompress {
         }
 
         try {
-            if (!utility.getForceRewrite().isEmpty() && "true".equals(utility.getForceRewrite())) {
-                File outPath = new File(utility.getOutPath());
-                deleteFile(outPath);
-                outPath.mkdirs();
+            if (!utility.getMode().equals(Utility.MODE_HAP) || !utility.getRpcid().equals("true")) {
+                if (!utility.getForceRewrite().isEmpty() && "true".equals(utility.getForceRewrite())) {
+                    File outPath = new File(utility.getOutPath());
+                    deleteFile(outPath);
+                    outPath.mkdirs();
+                }
             }
 
             if (Utility.MODE_HAP.equals(utility.getMode())) {
-                if ("true".equals(utility.getUnpackApk())) {
-                    unzip(utility, utility.getHapPath(), utility.getOutPath(), APK_SUFFIX);
-                    String[] temp = utility.getHapPath().replace("\\", "/").split("/");
-                    String hapName = temp[temp.length - 1];
-                    repackHap(utility.getHapPath(), utility.getOutPath(), hapName, utility.getUnpackApk());
-                } else {
-                    dataTransferAllFiles(utility.getHapPath(), utility.getOutPath());
-                }
+                unpackageHapMode(utility);
             } else if (Utility.MODE_HAR.equals(utility.getMode())) {
                 dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
             } else {
@@ -116,6 +112,34 @@ public class Uncompress {
         }
 
         return unpackageResult;
+    }
+
+    /**
+     * unpack hap.
+     *
+     * @param utility common data
+     */
+    static void unpackageHapMode(Utility utility) throws BundleException {
+        if (!utility.getMode().equals(Utility.MODE_HAP)) {
+            throw new BundleException("Uncompress::unpackageHapMode input wrong unpack mode");
+        }
+        try {
+            if (utility.getRpcid().equals("true")) {
+                getRpcidFromHap(utility.getHapPath(), utility.getOutPath());
+                return;
+            }
+            if ("true".equals(utility.getUnpackApk())) {
+                unzip(utility, utility.getHapPath(), utility.getOutPath(), APK_SUFFIX);
+                String[] temp = utility.getHapPath().replace("\\", "/").split("/");
+                String hapName = temp[temp.length - 1];
+                repackHap(utility.getHapPath(), utility.getOutPath(), hapName, utility.getUnpackApk());
+            } else {
+                dataTransferAllFiles(utility.getHapPath(), utility.getOutPath());
+            }
+        } catch (BundleException e) {
+            LOG.error("Uncompress::unpackageHapMode failed");
+            throw new BundleException("Uncompress::unpackageHapMode failed");
+        }
     }
 
     /**
@@ -1402,7 +1426,7 @@ public class Uncompress {
      * @param zipFile is the hap file
      * @return the parse resource result
      */
-    static void getProfileJson(ZipFile zipFile, HashMap<String, String> resourceMap) throws BundleException, IOException {
+    static void getProfileJson(ZipFile zipFile, HashMap<String, String> resourceMap) throws BundleException {
         try {
             final Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
@@ -1415,7 +1439,8 @@ public class Uncompress {
                 }
             }
         } catch (IOException e) {
-            LOG.error("Uncompress::uncompressHap IOException");
+            LOG.error("Uncompress::getProfileJson IOException");
+            throw new BundleException("Uncompress::getProfileJson failed");
         }
     }
 
@@ -1574,4 +1599,51 @@ public class Uncompress {
         return outputStream;
     }
 
+    /**
+     * copy rpcid.sc file.
+     *
+     * @param srcFile Indicates the path of hap.
+     * @param rpcidPath Indicates the output path of rpcid.sc file.
+     */
+    static void getRpcidFromHap(String srcFile, String rpcidPath) throws BundleException {
+        ZipFile zipFile = null;
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+        try {
+            zipFile = new ZipFile(srcFile);
+            String filePath = null;
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                final ZipEntry entry = entries.nextElement();
+                if (entry.getName().equals(RPCID_SC)) {
+                    filePath = entry.getName();
+                    break;
+                }
+            }
+            if (filePath != null) {
+                File rpcidFile = new File(rpcidPath, RPCID_SC);
+                if (rpcidFile.getParentFile() != null && !rpcidFile.getParentFile().exists()) {
+                    rpcidFile.getParentFile().mkdirs();
+                }
+                ZipEntry rpcidEntry = zipFile.getEntry(filePath);
+                inputStream = zipFile.getInputStream(rpcidEntry);
+                byte[] buffer = new byte[1024];
+                int noBytes = 0;
+                outputStream = new FileOutputStream(rpcidFile);
+                while((noBytes = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, noBytes);
+                }
+            } else {
+                LOG.error("Uncompress::getRpcidFromHap hap has no rpcid.sc file");
+                throw new BundleException("Uncompress::getRpcidFromHap hap has no rpcid.sc file");
+            }
+        } catch (IOException e) {
+            LOG.error("Uncompress::getRpcidFromHap IOException " + e.getMessage());
+            throw new BundleException("Uncompress::getRpcidFromHap failed");
+        } finally {
+            Utility.closeStream(zipFile);
+            Utility.closeStream(inputStream);
+            Utility.closeStream(outputStream);
+        }
+    }
 }
