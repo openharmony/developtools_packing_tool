@@ -27,6 +27,9 @@ public class UncompressVerify {
     private static final String HAP_SUFFIX = ".hap";
     private static final String HAR_SUFFIX = ".har";
     private static final String APP_SUFFIX = ".app";
+    private static final String FALSE = "false";
+    private static final String RPCID_SC = "rpcid.sc";
+    private static final String TRUE = "true";
     private static final Log LOG = new Log(UncompressVerify.class.toString());
 
     /**
@@ -124,8 +127,26 @@ public class UncompressVerify {
             LOG.error("UncompressVerify::isArgsValidInHapMode hap-path must end with.hap!");
             return false;
         }
+        if (TRUE.equals(utility.getRpcid())) {
+            return rpcidCommandVerify(utility);
+        }
 
         return verifyOutPath(utility, file);
+    }
+
+    /**
+     * parse and check args if valid in hap mode.
+     *
+     * @param utility common data
+     * @return isVerifyValidInRpcidMode if verify valid in hap mode.
+     */
+    private static boolean rpcidCommandVerify(Utility utility) {
+        File outPath = new File(utility.getOutPath(), RPCID_SC);
+        if (outPath.exists() && FALSE.equals(utility.getForceRewrite())) {
+            LOG.error("UncompressVerify::rpcidCommandVerify outPath already exists");
+            return false;
+        }
+        return true;
     }
 
     /**
