@@ -106,6 +106,7 @@ public class Compressor {
     private static final String REGEX_SHAPE = "^circle$";
     private static final String JS_PATH = "js/";
     private static final String ETS_PATH = "ets/";
+    private static final String TEMP_HAP_DIR = "tempHapDir";
 
 
     // set timestamp to get fixed MD5
@@ -429,13 +430,18 @@ public class Compressor {
 
         File appOutputFile = new File(utility.getOutPath().trim());
         List<String> fileList = new ArrayList<>();
+        String tempPath = appOutputFile.getParentFile().getParent() + File.separator + TEMP_HAP_DIR;
+        File tempDir = new File(tempPath);
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
         for (String hapPathItem : utility.getFormattedHapPathList()) {
             File hapFile = new File(hapPathItem.trim());
-            String hapTempPath = appOutputFile.getParentFile().getParent() + File.separator + hapFile.getName();
+            String hapTempPath = tempDir + File.separator + hapFile.getName();
             fileList.add(hapTempPath);
             try {
                 compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath());
-            } catch ( IOException e) {
+            } catch (IOException e) {
                 LOG.error("Compressor::compressAppMode compress pack.info into hap failed");
                 throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
             }
@@ -447,6 +453,7 @@ public class Compressor {
         for (String hapPath : fileList) {
             deleteFile(hapPath);
         }
+        deleteFile(tempPath);
 
         if (!utility.getEntryCardPath().isEmpty()) {
             String entryCardPath = ENTRYCARD_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
