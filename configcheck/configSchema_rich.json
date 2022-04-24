@@ -1688,8 +1688,7 @@
                 "type": "string",
                 "enum": [
                   "singleton",
-                  "standard",
-                  "singleMission"
+                  "standard"
                 ]
               },
               "metaData": {
