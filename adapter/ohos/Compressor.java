@@ -418,56 +418,67 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private void compressAppMode(Utility utility) throws BundleException {
-        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
-
-        if (!utility.getCertificatePath().isEmpty()) {
-            pathToFile(utility, utility.getCertificatePath(), NULL_DIR_NAME, false);
-        }
-
-        if (!utility.getSignaturePath().isEmpty()) {
-            pathToFile(utility, utility.getSignaturePath(), NULL_DIR_NAME, false);
-        }
-
-        File appOutputFile = new File(utility.getOutPath().trim());
         List<String> fileList = new ArrayList<>();
+        File appOutputFile = new File(utility.getOutPath().trim());
         String tempPath = appOutputFile.getParentFile().getParent() + File.separator + TEMP_HAP_DIR;
-        File tempDir = new File(tempPath);
-        if (!tempDir.exists()) {
-            tempDir.mkdirs();
-        }
-        for (String hapPathItem : utility.getFormattedHapPathList()) {
-            File hapFile = new File(hapPathItem.trim());
-            String hapTempPath = tempDir + File.separator + hapFile.getName();
-            fileList.add(hapTempPath);
-            try {
-                compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath());
-            } catch (IOException e) {
-                LOG.error("Compressor::compressAppMode compress pack.info into hap failed");
-                throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
+        try {
+            pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+            if (!utility.getCertificatePath().isEmpty()) {
+                pathToFile(utility, utility.getCertificatePath(), NULL_DIR_NAME, false);
             }
-        }
-        for (String hapPath : fileList) {
-            pathToFile(utility, hapPath, NULL_DIR_NAME, false);
-        }
 
-        for (String hapPath : fileList) {
-            deleteFile(hapPath);
-        }
-        deleteFile(tempPath);
-
-        if (!utility.getEntryCardPath().isEmpty()) {
-            String entryCardPath = ENTRYCARD_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
-                    + ENTRYCARD_BASE_NAME + ENTRYCARD_SNAPSHOT_NAME;
-            for (String entryCardPathItem : utility.getformattedEntryCardPathList()) {
-                pathToFile(utility, entryCardPathItem, entryCardPath, true);
+            if (!utility.getSignaturePath().isEmpty()) {
+                pathToFile(utility, utility.getSignaturePath(), NULL_DIR_NAME, false);
             }
-        }
 
-        if (!utility.getPackResPath().isEmpty()) {
-            pathToFile(utility, utility.getPackResPath(), NULL_DIR_NAME, false);
+            File tempDir = new File(tempPath);
+            if (!tempDir.exists()) {
+                tempDir.mkdirs();
+            }
+            for (String hapPathItem : utility.getFormattedHapPathList()) {
+                File hapFile = new File(hapPathItem.trim());
+                String hapTempPath = tempDir + File.separator + hapFile.getName();
+                fileList.add(hapTempPath);
+                try {
+                    compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath());
+                } catch (IOException e) {
+                    LOG.error("Compressor::compressAppMode compress pack.info into hap failed");
+                    throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
+                }
+            }
+            for (String hapPath : fileList) {
+                pathToFile(utility, hapPath, NULL_DIR_NAME, false);
+            }
+
+            for (String hapPath : fileList) {
+                deleteFile(hapPath);
+            }
+            deleteFile(tempPath);
+
+            if (!utility.getEntryCardPath().isEmpty()) {
+                String entryCardPath = ENTRYCARD_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                        + ENTRYCARD_BASE_NAME + ENTRYCARD_SNAPSHOT_NAME;
+                for (String entryCardPathItem : utility.getformattedEntryCardPathList()) {
+                    pathToFile(utility, entryCardPathItem, entryCardPath, true);
+                }
+            }
+
+            if (!utility.getPackResPath().isEmpty()) {
+                pathToFile(utility, utility.getPackResPath(), NULL_DIR_NAME, false);
+            }
+            File file = new File(utility.getPackInfoPath());
+            compressFile(utility, file, NULL_DIR_NAME, false);
+        } catch (BundleException e) {
+            LOG.error("Compressor::compressAppMode compress failed");
+            throw new BundleException("Compressor::compressAppMode compress failed");
+        } finally {
+            // delete temp file if compress app failed
+            for (String hapPath : fileList) {
+                deleteFile(hapPath);
+            }
+            deleteFile(tempPath);
         }
-        File file = new File(utility.getPackInfoPath());
-        compressFile(utility, file, NULL_DIR_NAME, false);
     }
 
     private void copy(InputStream input, OutputStream output) throws IOException {
