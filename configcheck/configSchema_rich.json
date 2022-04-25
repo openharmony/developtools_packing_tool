@@ -1463,7 +1463,9 @@
                       "resizeable",
                       "srcLanguage",
                       "srcPath",
-                      "continuable"
+                      "continuable",
+                      "startWindowIcon",
+                      "startWindowBackground"
                     ]
                   },
                   "required": [
@@ -1509,7 +1511,9 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath"
+                      "srcPath",
+                      "startWindowIcon",
+                      "startWindowBackground"
                     ]
                   },
                   "required": [
@@ -1556,7 +1560,9 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath"
+                      "srcPath",
+                      "startWindowIcon",
+                      "startWindowBackground"
                     ]
                   },
                   "required": [
@@ -1596,7 +1602,9 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath"
+                      "srcPath",
+                      "startWindowIcon",
+                      "startWindowBackground"
                     ]
                   },
                   "required": [
@@ -2350,6 +2358,18 @@
               "continuable": {
                 "description": "Identifies whether the ability can be migrated. The default value is false.",
                 "type": "boolean"
+              },
+              "startWindowIcon": {
+                "description": "Indicates the icon of the startup page. The value is the index to the resource file.",
+                "type": "string",
+                "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                "maxLength": 255
+              },
+              "startWindowBackground": {
+                "description": "Indicates the color of the startup page. The value is the index to the resource file.",
+                "type": "string",
+                "pattern": "^[$]color:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                "maxLength": 255
               }
             }
           }
@@ -3418,7 +3438,8 @@
           "description": "Indicates the module names that this module depends on",
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 127
           }
         }
       },
