@@ -1,10 +1,10 @@
 package ohos;
 
-public class ModuleUriInfo {
+public class UriInfo {
     /**
      * Indicates the schema of ModuleUriInfo.
      */
-    public String schema = "";
+    public String scheme = "";
     /**
      * Indicates the host of ModuleUriInfo.
      */

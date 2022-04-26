@@ -7,7 +7,7 @@ import java.util.List;
  * ModuleJson Meta data info.
  *
  */
-public class ModuleMetadataInfo {
+class ModuleMetadataInfo {
     /**
      * Indicates the name of ModuleMetadataInfo.
      */
