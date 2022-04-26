@@ -171,7 +171,7 @@ public class Uncompress {
                 }
                 unzipByName(srcPath, tmpPath, hapName);
                 srcPath = tmpPath + LINUX_FILE_SEPARATOR + hapName;
-                compressResult = uncompress(utility.getDeviceType(), srcPath, HARMONY_PROFILE);
+                compressResult = uncompressHapByPath(utility.getDeviceType(), srcPath);
                 if (deletePath) {
                     deleteFile(tempDir);
                 } else {
@@ -254,17 +254,33 @@ public class Uncompress {
     static UncomperssResult uncompressHap(Utility utility) {
         UncomperssResult compressResult = new UncomperssResult();
         try {
-            if (isModuleHap(utility.getHapPath(), compressResult)) {
-                ModuleResult moduleResult = Uncompress.unCompressModuleHap(utility);
-                ModuleAdaption moduleAdaption = new ModuleAdaption();
-                compressResult = moduleAdaption.convertToUncompressResult(moduleResult);
-            } else {
-                compressResult = uncompress(utility.getDeviceType(), utility.getHapPath(), HARMONY_PROFILE);
-            }
+            compressResult = uncompressHapByPath(utility.getDeviceType(), utility.getHapPath());
         } catch (BundleException ignored) {
             LOG.error("Uncompress::uncompressHap Bundle exception");
             compressResult.setResult(false);
             compressResult.setMessage("uncompressHap Bundle exception");
+        }
+        return compressResult;
+    }
+
+    /**
+     * uncompress hap by path, it can adapt stage module and fa module.
+     *
+     * @param deviceType indicates the device type of parse type.
+     * @param hapPath indicates the hap path of hap.
+     * @return the uncompress result
+     */
+    static UncomperssResult uncompressHapByPath(String deviceType, String hapPath) throws BundleException {
+        UncomperssResult compressResult = new UncomperssResult();
+        try {
+            if (isModuleHap(hapPath, compressResult)) {
+                compressResult = unCompressModuleHap(deviceType, hapPath, MODULE_JSON);
+            } else {
+                compressResult = uncompress(deviceType, hapPath, HARMONY_PROFILE);
+            }
+        } catch (BundleException e) {
+            LOG.error("Uncompress::uncompressHapByPath Bundle exception");
+            throw new BundleException("Uncompress::uncompressHapByPath failed");
         }
         return compressResult;
     }
@@ -278,24 +294,40 @@ public class Uncompress {
      */
     static UncomperssResult uncompressHapByInput(Utility utility, InputStream input) {
         UncomperssResult compressResult = new UncomperssResult();
+        try {
+            compressResult = uncompressHapByStream(utility.getDeviceType(), input);
+        } catch (BundleException ignored) {
+            LOG.error("Uncompress::uncompressHapByInput Bundle exception");
+            compressResult.setResult(false);
+            compressResult.setMessage("uncompressHapByInput Bundle exception");
+        }
+        return compressResult;
+    }
+
+    /**
+     * uncompress hap by InputStream, it can adapt stage module and fa module.
+     *
+     * @param deviceType indicates the device type of parse type.
+     * @param input indicates the input stream of hap.
+     * @return the uncompress result
+     */
+    static UncomperssResult uncompressHapByStream(String deviceType, InputStream input) throws BundleException {
+        UncomperssResult compressResult = new UncomperssResult();
         ByteArrayOutputStream outputStream = null;
         try {
             outputStream = getOutputStream(input);
             InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
             if (isModuleInput(inputStream, compressResult)) {
                 InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
-                ModuleResult moduleResult = uncompressModuleHapByInput(utility, parseInput);
-                ModuleAdaption moduleAdaption = new ModuleAdaption();
-                compressResult = moduleAdaption.convertToUncompressResult(moduleResult);
+                compressResult = uncompressModuleHapByInput(deviceType, parseInput, MODULE_JSON);
             } else {
                 InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
-                compressResult = uncompressByInput(utility.getDeviceType(), parseInput, HARMONY_PROFILE);
+                compressResult = uncompressByInput(deviceType, parseInput, HARMONY_PROFILE);
             }
-        } catch (BundleException ignored) {
-            LOG.error("Uncompress::uncompressHapByInput Bundle exception");
-            compressResult.setResult(false);
-            compressResult.setMessage("uncompressHapByInput Bundle exception");
-        } finally {
+        } catch (BundleException e) {
+            LOG.error("Uncompress::uncompressHapByStream Bundle exception");
+            throw new BundleException("Uncompress::uncompressHapByStream failed");
+        }  finally {
             Utility.closeStream(outputStream);
         }
         return compressResult;
@@ -964,7 +996,7 @@ public class Uncompress {
                 total += count;
                 count = zipIn.read(data);
             }
-            compressResult = uncompress("", destPath, HARMONY_PROFILE);
+            compressResult = uncompressHapByPath("", destPath);
             deleteFile(destFile);
         } catch (IOException exception) {
             LOG.error("Uncompress::uncompressAllByInput io exception: " + exception.getMessage());
@@ -1406,19 +1438,29 @@ public class Uncompress {
     /**
      * uncompress module hap.
      *
-     * @param utility common data
+     * @param deviceType indicates the device type of uncompress mode.
+     * @param srcPath indicates the path type of hap.
+     * @param fileName indicates json file name.
      * @return the uncompress result
      */
-    static ModuleResult unCompressModuleHap(Utility utility) {
+    static UncomperssResult unCompressModuleHap(String deviceType, String srcPath, String fileName)
+            throws BundleException{
+        if (srcPath.isEmpty() || fileName.isEmpty()) {
+            LOG.error("Uncompress::uncompress srcPath, fileName is empty!");
+            throw new BundleException("Uncompress failed, srcPath or fileName is empty");
+        }
+        UncomperssResult uncomperssResult = new UncomperssResult();
         ModuleResult moduleResult = new ModuleResult();
         try {
-            moduleResult = uncompressModule(utility.getDeviceType(), utility.getHapPath(), MODULE_JSON);
+            moduleResult = uncompressModule(deviceType, srcPath, fileName);
+            ModuleAdaption moduleAdaption = new ModuleAdaption();
+            uncomperssResult = moduleAdaption.convertToUncompressResult(moduleResult);
         } catch (BundleException ignored) {
             LOG.error("Uncompress::uncompressHap Bundle exception");
-            moduleResult.setResult(false);
-            moduleResult.setMessage("uncompressHap Bundle exception");
+            uncomperssResult.setResult(false);
+            uncomperssResult.setMessage("uncompressHap Bundle exception");
         }
-        return moduleResult;
+        return uncomperssResult;
     }
     /**
      * get all resource in profile.
@@ -1447,20 +1489,24 @@ public class Uncompress {
     /**
      * uncompress module hap.
      *
-     * @param utility common data
+     * @param deviceType indicates the deviceType of parse hap.
      * @param input the InputStream about the app package.
+     * @param fileName the file name of json file.
      * @return the uncompress result
      */
-    static ModuleResult uncompressModuleHapByInput(Utility utility, InputStream input) {
+    static UncomperssResult uncompressModuleHapByInput(String deviceType, InputStream input, String fileName) {
+        UncomperssResult uncomperssResult = new UncomperssResult();
         ModuleResult moduleResult = new ModuleResult();
         try {
-            moduleResult = uncompressModuleByInput(utility.getDeviceType(), input, MODULE_JSON);
+            moduleResult = uncompressModuleByInput(deviceType, input, MODULE_JSON);
+            ModuleAdaption moduleAdaption = new ModuleAdaption();
+            uncomperssResult = moduleAdaption.convertToUncompressResult(moduleResult);
         } catch (BundleException ignored) {
             LOG.error("Uncompress::uncompressHapByInput Bundle exception");
-            moduleResult.setResult(false);
-            moduleResult.setMessage("uncompressHapByInput Bundle exception");
+            uncomperssResult.setResult(false);
+            uncomperssResult.setMessage("uncompressHapByInput Bundle exception");
         }
-        return moduleResult;
+        return uncomperssResult;
     }
 
     /**

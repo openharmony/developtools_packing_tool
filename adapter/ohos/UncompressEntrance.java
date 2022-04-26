@@ -211,9 +211,9 @@ public class UncompressEntrance {
         }
 
         if (!UncompressVerify.commandVerify(utility)) {
-            LOG.error("CompressEntrance::parseApp verity failed");
+            LOG.error("CompressEntrance::parseApp verify failed");
             compressResult.setResult(false);
-            compressResult.setMessage("ParseApp verity failed");
+            compressResult.setMessage("ParseApp verify failed");
             return compressResult;
         }
 

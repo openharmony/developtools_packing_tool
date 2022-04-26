@@ -26,7 +26,7 @@ public class UsedScene {
     /**
      * Indicates the ability of UsedScene.
      */
-    public List<String> ability = new ArrayList<String>();
+    public List<String> abilities = new ArrayList<String>();
 
     /**
      * Indicates the when of UsedScene.
