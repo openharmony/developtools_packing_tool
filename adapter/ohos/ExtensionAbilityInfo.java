@@ -52,16 +52,15 @@ public class ExtensionAbilityInfo {
      * Indicates the skill of module ModuleJson.
      */
     public List<SkillInfo> skills = new ArrayList<>();
+
+    List<ModuleMetadataInfo> metadataInfos = new ArrayList<>();
+
     /**
      * Indicates the metadata of module ModuleJson.
      */
-    public List<ModuleMetadataInfo> metadata = new ArrayList<>();
+    public MetaData metadata = new MetaData();
     /**
      * Indicates the uri of module ModuleJson.
      */
     public String uri = "";
-    /**
-     * Indicates the form of module ModuleJson.
-     */
-    public List<AbilityFormInfo> formInfos = new ArrayList<>();
 }

@@ -104,10 +104,6 @@ public class AppInfo {
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
     public boolean distributedNotificationEnabled = false;
-    /**
-     * Indicates the entityType of app AppJson.
-     */
-    public String entityType = "unspecified";
 
     /**
      * Get shell version code.

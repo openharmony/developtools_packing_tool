@@ -84,7 +84,19 @@ class ModuleInfo {
      */
     public List<ModuleDefinePermissions> definePermissions = new ArrayList<ModuleDefinePermissions>();
     /**
+     * Indicates the shortcuts of ModuleInfo.
+     */
+    public List<ModuleShortcut> moduleShortcuts = new ArrayList<>();
+    /**
      * Indicates the distrofilter of ModuleInfo.
      */
     public DistroFilter distroFilter = new DistroFilter();
+    /**
+     * Indicates the common events of ModuleInfo.
+     */
+    public List<CommonEvent> commonEvents = new ArrayList<CommonEvent>();
+    /**
+     * Indicates the common events of ModuleInfo.
+     */
+    List<AbilityFormInfo> abilityFormInfos = new ArrayList<>();
 }

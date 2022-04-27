@@ -31,7 +31,7 @@ public class ModuleJsonUtil {
     /**
      * get the versionCode from json file.
      *
-     * @param jsonStr uncompress json object
+     * @param jsonString uncompress json object
      * @return the result
      */
      public static Version getVersion(String jsonString) throws BundleException {

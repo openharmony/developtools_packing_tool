@@ -1,7 +1,9 @@
 package ohos;
 
+import jdk.internal.util.xml.impl.Pair;
 import ohos.utils.fastjson.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -10,9 +12,10 @@ class ModuleAdaption {
 
     private static final Log LOG = new Log(ModuleAdaption.class.toString());
     /**
-     * adapte moduleResult to uncompressResult function.
+     * convert moduleResult to uncompressResult function.
      *
      * @param moduleResult for module.json result
+     * @return  UncomperssResult
      */
     UncomperssResult convertToUncompressResult(ModuleResult moduleResult) {
         UncomperssResult uncomperssResult = new UncomperssResult();
@@ -23,38 +26,33 @@ class ModuleAdaption {
             ModuleProfileInfo moduleProfileInfo = moduleResult.moduleProfileInfos.get(i);
             ProfileInfo profileInfo = new ProfileInfo();
             // adapt appInfo
-            profileInfo.appInfo = new AppInfo();
-            if (!convertToAppInfo(profileInfo.appInfo, moduleProfileInfo.moduleAppInfo)) {
-                LOG.error("convertToAppInfo failed");
-                uncomperssResult.setResult(false);
-                uncomperssResult.setMessage("convertToAppInfo failed");
-                return uncomperssResult;
-            }
+            profileInfo.appInfo = convertToAppInfo(moduleProfileInfo.moduleAppInfo);
             //adapt deviceconfig
-            if (!convertToDeviceConfig(profileInfo.deviceConfig,
-                    moduleProfileInfo.moduleAppInfo.deviceTypes, moduleProfileInfo.moduleAppInfo)) {
-                LOG.error("convertToDeviceConfig failed");
-                uncomperssResult.setResult(false);
-                uncomperssResult.setMessage("convertToDeviceConfig failed");
-                return uncomperssResult;
-            }
+            profileInfo.deviceConfig = convertToDeviceConfig(moduleProfileInfo.moduleAppInfo);
             // adapt hapInfo
-            profileInfo.hapInfo = new HapInfo();
-            if(!convertToHapInfo(profileInfo.hapInfo, moduleProfileInfo.moduleInfo)) {
-                LOG.error("convertToHapInfo failed");
-                uncomperssResult.setResult(false);
-                uncomperssResult.setMessage("convertToHapInfo failed");
-                return uncomperssResult;
-            }
+            profileInfo.hapInfo = convertToHapInfo(moduleProfileInfo.moduleInfo);
             uncomperssResult.addProfileInfo(profileInfo);
+        }
+        for (ModuleProfileInfo profileInfo : moduleResult.moduleProfileInfos) {
+            if (profileInfo.moduleAppInfo != null) {
+                uncomperssResult.setLabel(profileInfo.moduleAppInfo.label);
+                uncomperssResult.setIcon(profileInfo.moduleAppInfo.icon);
+            }
         }
         return uncomperssResult;
     }
 
-    boolean convertToAppInfo(AppInfo appInfo, ModuleAppInfo moduleAppInfo) {
+    /**
+     * convert ModuleAppInfo to AppInfo function.
+     *
+     * @param moduleAppInfo for module.json app result
+     * @return  AppInfo
+     */
+    AppInfo convertToAppInfo(ModuleAppInfo moduleAppInfo) {
+        AppInfo appInfo = new AppInfo();
         if (moduleAppInfo == null) {
             LOG.error("convertToAppInfo failed: moduleAppInfo is null");
-            return false;
+            return appInfo;
         }
         appInfo.bundleName = moduleAppInfo.bundleName;
         appInfo.debug = moduleAppInfo.debug;
@@ -69,29 +67,41 @@ class ModuleAdaption {
         appInfo.targetApiVersion = moduleAppInfo.targetAPIVersion;
         appInfo.releaseType = moduleAppInfo.apiReleaseType;
         appInfo.distributedNotificationEnabled = moduleAppInfo.distributedNotificationEnabled;
-        appInfo.entityType = moduleAppInfo.entityType;
-        return true;
+        appInfo.appName = moduleAppInfo.appName;
+        appInfo.appNameEN = moduleAppInfo.appNameEN;
+        return appInfo;
     }
 
-    boolean convertToDeviceConfig(Map<String, DeviceConfig> deviceConfigMap,
-                           Map<String, ModuleDeviceType> moduleDeviceTypeMap, ModuleAppInfo moduleAppInfo) {
+    /**
+     * convert moduleAppInfo deviceTypes to DeviceConfig function.
+     *
+     * @param moduleAppInfo for module.json app result
+     * @return Map<String, DeviceConfig>
+     */
+    Map<String, DeviceConfig> convertToDeviceConfig(ModuleAppInfo moduleAppInfo) {
+        Map<String, DeviceConfig> deviceConfigMap = new HashMap<>();
         if (moduleAppInfo == null) {
-            LOG.error("convertToDeviceConfig failed: moduleAppInfo is null");
-            return false;
+            return deviceConfigMap;
         }
-        for(Map.Entry<String, ModuleDeviceType> entrty : moduleDeviceTypeMap.entrySet()) {
+        for(Map.Entry<String, ModuleDeviceType> entrty : moduleAppInfo.deviceTypes.entrySet()) {
             DeviceConfig deviceConfig = new DeviceConfig();
-            deviceConfig.minAPIVersion = entrty.getValue().minAPIVersion;
             deviceConfig.distributedNotificationEnabled = entrty.getValue().distributedNotificationEnabled;
             deviceConfigMap.put(entrty.getKey(), deviceConfig);
         }
-        return true;
+        return deviceConfigMap;
     }
 
-    boolean convertToHapInfo(HapInfo hapInfo, ModuleInfo moduleInfo) {
+    /**
+     * convert moduleInfo to HapInfo function.
+     *
+     * @param moduleInfo for module.json module result
+     * @return HapInfo
+     */
+    HapInfo convertToHapInfo(ModuleInfo moduleInfo) {
+        HapInfo hapInfo = new HapInfo();
         if (moduleInfo == null) {
             LOG.error("convertToHapInfo failed: moduleInfo is null");
-            return false;
+            return hapInfo;
         }
         hapInfo.name = moduleInfo.name;
         hapInfo.distro = new Distro();
@@ -106,65 +116,101 @@ class ModuleAdaption {
         hapInfo.mainElement = moduleInfo.mainElement;
         hapInfo.deviceType = moduleInfo.deviceTypes;
         hapInfo.uiSyntax = moduleInfo.uiSyntax;
-        // adapt pages
+        // convert pages
         hapInfo.pages = moduleInfo.pages;
-        // adapt metadata
-        hapInfo.moduleMetadataInfos = moduleInfo.moduleMetadataInfos;
-        // adapt abilities
-        convertToAbilityInfo(hapInfo.abilities, moduleInfo.abilities);
-        // adapt extension abilities to abilities
+        // convert moduleshortcut to short
+        hapInfo.shortcuts = convertToShortcut(moduleInfo.moduleShortcuts);
+        // convert metadata
+        hapInfo.metaData = convertToMetadata(moduleInfo.moduleMetadataInfos);
+        // convert abilities
+        hapInfo.abilities = convertToAbilityInfo(moduleInfo.abilities);
+        // convert extension abilities to abilities
         hapInfo.extensionAbilityInfos = moduleInfo.extensionAbilityInfos;
-        // adapt request permissions
+        // convert request permissions
         hapInfo.reqPermissions = moduleInfo.requestPermissions;
-        // adapt distrofilter
+        // convert distrofilter
         hapInfo.distroFilter = moduleInfo.distroFilter;
-        // adapt definePermissions
-        convertToDefinePermissions(hapInfo.defPermissions, moduleInfo.definePermissions);
-        return true;
+        hapInfo.formInfos = moduleInfo.abilityFormInfos;
+        hapInfo.commonEvents = moduleInfo.commonEvents;
+        return hapInfo;
     }
 
-    void convertToAbilityInfo(List<AbilityInfo> abilityInfos, List<ModuleAbilityInfo> moduleAbilityInfos) {
-        if (moduleAbilityInfos.isEmpty()) {
-            return;
+    /**
+     * convert moduleShortcuts to HapInfo Shortcut.
+     *
+     * @param moduleShortcuts for module.json shortcut  result
+     * @return List<Shortcut>
+     */
+    List<Shortcut> convertToShortcut(List<ModuleShortcut> moduleShortcuts) {
+        List<Shortcut> shortcuts = new ArrayList<>();
+        for (ModuleShortcut value : moduleShortcuts) {
+            Shortcut shortcut = new Shortcut();
+            shortcut.shortcutId = value.shortcutId;
+            shortcut.label = value.label;
+            shortcut.icon = value.icon;
+            shortcut.intents = new ArrayList<>();
+            for (int j = 0; j < value.wants.size(); ++j) {
+                Want want = value.wants.get(j);
+                IntentInfo intentInfo = new IntentInfo();
+                intentInfo.targetBundle = want.bundleName;
+                intentInfo.targetClass = want.abilityName;
+                shortcut.intents.add(intentInfo);
+            }
+            shortcuts.add(shortcut);
         }
-        for (int i = 0; i < moduleAbilityInfos.size(); ++i) {
+        return shortcuts;
+    }
+
+    /**
+     * convert metadataInfos to MetaData function.
+     *
+     * @param metadataInfos for module.json metadata  result
+     * @return MetaData
+     */
+    MetaData convertToMetadata(List<ModuleMetadataInfo> metadataInfos) {
+        MetaData metaData = new MetaData();
+        List<CustomizeData> customizeDatas = new ArrayList<>();
+        for (ModuleMetadataInfo metadataInfo : metadataInfos) {
+            CustomizeData customizeData = new CustomizeData();
+            customizeData.name = metadataInfo.name;
+            customizeData.value = metadataInfo.value;
+            customizeData.extra = metadataInfo.resource;
+            customizeDatas.add(customizeData);
+        }
+        metaData.customizeDatas = customizeDatas;
+        return metaData;
+    }
+
+    /**
+     * convert ModuleAbilityInfo to AbilityInfo function.
+     *
+     * @param moduleAbilityInfos for module.json ability  result
+     * @return List<AbilityInfo>
+     */
+    List<AbilityInfo> convertToAbilityInfo(List<ModuleAbilityInfo> moduleAbilityInfos) {
+        List<AbilityInfo> abilityInfos = new ArrayList<>();
+        for (ModuleAbilityInfo info : moduleAbilityInfos) {
             AbilityInfo abilityInfo = new AbilityInfo();
-            ModuleAbilityInfo moduleAbilityInfo = moduleAbilityInfos.get(i);
-            abilityInfo.name = moduleAbilityInfo.name;
-            abilityInfo.srcEntrance = moduleAbilityInfo.srcEntrance;
-            abilityInfo.description = moduleAbilityInfo.description;
-            abilityInfo.icon = moduleAbilityInfo.icon;
-            abilityInfo.iconPath = moduleAbilityInfo.icon;
-            abilityInfo.label = moduleAbilityInfo.label;
-            abilityInfo.labelRes = moduleAbilityInfo.label;
-            abilityInfo.permissions = moduleAbilityInfo.permissions;
-            abilityInfo.visible = moduleAbilityInfo.visible;
-            abilityInfo.continuable = moduleAbilityInfo.continuable;
-            // adapt skillInfo
-            abilityInfo.skills = moduleAbilityInfo.skills;
-            // adapt configchanges
-            abilityInfo.backgroundModes = moduleAbilityInfo.backgroundModes;
+            abilityInfo.type = "page";
+            abilityInfo.name = info.name;
+            abilityInfo.srcEntrance = info.srcEntrance;
+            abilityInfo.description = info.description;
+            abilityInfo.launchType = info.launchType;
+            abilityInfo.icon = info.icon;
+            abilityInfo.iconPath = info.icon;
+            abilityInfo.label = info.label;
+            abilityInfo.labelRes = info.label;
+            abilityInfo.permissions = info.permissions;
+            abilityInfo.visible = info.visible;
+            abilityInfo.continuable = info.continuable;
+            // convert metadata
+            abilityInfo.metaData = convertToMetadata(info.metadata);
+            // convert skillInfo
+            abilityInfo.skills = info.skills;
+            // convert configchanges
+            abilityInfo.backgroundModes = info.backgroundModes;
             abilityInfos.add(abilityInfo);
         }
+        return abilityInfos;
     }
-
-    void convertToDefinePermissions(List<DefPermission> defPermissions,
-                                   List<ModuleDefinePermissions> moduleDefinePermissions) {
-        if (moduleDefinePermissions.isEmpty()) {
-            return;
-        }
-        for (int i = 0; i < moduleDefinePermissions.size(); ++i) {
-            ModuleDefinePermissions moduleDefinePermission = moduleDefinePermissions.get(i);
-            DefPermission defPermission = new DefPermission();
-            defPermission.name = moduleDefinePermission.name;
-            defPermission.grantMode = moduleDefinePermission.grantMode;
-            defPermission.availableScope = moduleDefinePermission.availableLevel;
-            defPermission.provisionEnabled = moduleDefinePermission.provisionEnabled;
-            defPermission.distributedSceneEnable = moduleDefinePermission.distributedSceneEnable;
-            defPermission.label = moduleDefinePermission.label;
-            defPermission.description = moduleDefinePermission.description;
-            defPermissions.add(defPermission);
-        }
-    }
-
 }
