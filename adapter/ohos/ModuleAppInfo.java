@@ -70,6 +70,14 @@ class ModuleAppInfo {
      */
     public String entityType = UNSPECIFIED;
     /**
+     * Indicates the appName of app AppJson.
+     */
+    public String appName = "";
+    /**
+     * Indicates the appNameEn of app AppJson.
+     */
+    public String appNameEN = "";
+    /**
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();

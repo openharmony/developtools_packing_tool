@@ -36,5 +36,5 @@ public class SkillInfo {
     /**
      * Indicates the uris of SkillInfo.
      */
-    public List<ModuleUriInfo> uris = new ArrayList<ModuleUriInfo>();
+    public List<UriInfo> uris = new ArrayList<UriInfo>();
 }

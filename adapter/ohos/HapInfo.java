@@ -50,11 +50,13 @@ public class HapInfo {
 
     /**
      * Indicates the defPermissions of HapInfo.
+     * @Deprecated
      */
     public List<DefPermission> defPermissions = new ArrayList<DefPermission>();
 
     /**
      * Indicates the defPermissionsGroups of HapInfo.
+     * @Deprecated
      */
     public List<DefPermissionGroup> defPermissionsGroups = new ArrayList<DefPermissionGroup>();
 
@@ -135,9 +137,9 @@ public class HapInfo {
     public  List<ExtensionAbilityInfo> extensionAbilityInfos = new ArrayList<>();
 
     /**
-     * Indicates the metadata of ModuleInfo.
+     * Indicates the form of module ModuleJson.
      */
-    public List<ModuleMetadataInfo> moduleMetadataInfos = new ArrayList<>();
+    public List<AbilityFormInfo> formInfos = new ArrayList<>();
 
     /**
      * get the customize Data value defined in this module.

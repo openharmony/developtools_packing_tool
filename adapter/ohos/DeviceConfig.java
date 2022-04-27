@@ -22,11 +22,13 @@ package ohos;
 public class DeviceConfig {
     /**
      * Indicates the target request Sdk Version of app DeviceConfig.
+     * @Deprecated
      */
     public String targetReqSdk = "";
 
     /**
      * Indicates the compatible request Sdk Version of app DeviceConfig.
+     * @Deprecated
      */
     public String compatibleReqSdk = "";
 
@@ -42,16 +44,19 @@ public class DeviceConfig {
 
     /**
      * Indicates the arkFlag of app DeviceConfig.
+     * @Deprecated
      */
     public String arkFlag = "";
 
     /**
      * Indicates the targetArkVersion of app DeviceConfig.
+     * @Deprecated
      */
     public String targetArkVersion = "";
 
     /**
      * Indicates the compatibleArkVersion of app DeviceConfig.
+     * @Deprecated
      */
     public String compatibleArkVersion = "";
 
@@ -61,10 +66,6 @@ public class DeviceConfig {
     public boolean directLaunch = false;
 
     // stage module character
-    /**
-     * Indicates the minAPIVersion of app AppJson.
-     */
-    public int minAPIVersion = -1;
     /**
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
