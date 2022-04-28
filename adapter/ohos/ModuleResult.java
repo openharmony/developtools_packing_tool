@@ -27,11 +27,11 @@ class ModuleResult {
     /**
      * Indicates the result of ModuleJson.
      */
-    private boolean result = false;
+    private boolean result = true;
     /**
      * Indicates the message of ModuleJson.
      */
-    private String message = "";
+    private String message = "Success";
 
     public boolean getResult() {
         return result;
