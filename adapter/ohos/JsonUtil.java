@@ -845,17 +845,12 @@ public class JsonUtil {
         }
 
         // parse appName
-        if (moduleProfileInfo.moduleInfo.abilities.size() == 1) {
-            moduleProfileInfo.moduleAppInfo.appName = moduleProfileInfo.moduleInfo.abilities.get(0).label;
-            moduleProfileInfo.moduleAppInfo.appNameEN = moduleProfileInfo.moduleInfo.abilities.get(0).label;
-        } else {
-            for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
-                for (SkillInfo skill : abilityInfo.skills) {
-                    if (skill.actions.contains(ACTION_SYSTEM_HOME) && skill.entities.contains(ENTITY_SYSTEM_HOME)) {
-                        moduleProfileInfo.moduleAppInfo.appName = abilityInfo.label;
-                        moduleProfileInfo.moduleAppInfo.appNameEN = abilityInfo.label;
-                        break;
-                    }
+        for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
+            for (SkillInfo skill : abilityInfo.skills) {
+                if (skill.actions.contains(ACTION_SYSTEM_HOME) && skill.entities.contains(ENTITY_SYSTEM_HOME)) {
+                    moduleProfileInfo.moduleAppInfo.appName = abilityInfo.label;
+                    moduleProfileInfo.moduleAppInfo.appNameEN = abilityInfo.label;
+                    break;
                 }
             }
         }
@@ -942,6 +937,9 @@ public class JsonUtil {
         // parse abilities
         if (moduleJson.containsKey("abilities")) {
             moduleInfo.abilities = parseModuleAbilities(moduleJson, data, profileJsons);
+            for (ModuleAbilityInfo abilityInfo : moduleInfo.abilities) {
+                moduleInfo.moduleShortcuts.addAll(parseShortcut(abilityInfo.metadata, data));
+            }
         }
         // parse extensionabilities
         if (moduleJson.containsKey("extensionAbilities")) {
