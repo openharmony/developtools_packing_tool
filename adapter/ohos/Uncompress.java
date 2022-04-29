@@ -277,6 +277,7 @@ public class Uncompress {
                 compressResult = unCompressModuleHap(deviceType, hapPath, MODULE_JSON);
             } else {
                 compressResult = uncompress(deviceType, hapPath, HARMONY_PROFILE);
+                compressResult = obtainLabelAndIcon(compressResult);
             }
         } catch (BundleException e) {
             LOG.error("Uncompress::uncompressHapByPath Bundle exception");
@@ -323,6 +324,7 @@ public class Uncompress {
             } else {
                 InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
                 compressResult = uncompressByInput(deviceType, parseInput, HARMONY_PROFILE);
+                compressResult = obtainLabelAndIcon(compressResult);
             }
         } catch (BundleException e) {
             LOG.error("Uncompress::uncompressHapByStream Bundle exception");

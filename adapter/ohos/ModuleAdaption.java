@@ -25,6 +25,7 @@ class ModuleAdaption {
         for (int i = 0; i < moduleResult.moduleProfileInfos.size(); ++i) {
             ModuleProfileInfo moduleProfileInfo = moduleResult.moduleProfileInfos.get(i);
             ProfileInfo profileInfo = new ProfileInfo();
+            profileInfo.hapName = moduleProfileInfo.hapName;
             // adapt appInfo
             profileInfo.appInfo = convertToAppInfo(moduleProfileInfo.moduleAppInfo);
             //adapt deviceconfig
