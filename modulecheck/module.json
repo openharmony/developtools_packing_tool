@@ -210,7 +210,9 @@
             "type": "object",
             "required": [
               "name",
-              "srcEntrance"
+              "srcEntrance",
+              "startWindowIcon",
+              "startWindowBackground"
             ],
             "propertyNames": {
               "enum": [
