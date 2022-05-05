@@ -17,7 +17,7 @@ package ohos;
 
 /**
  * DefPermission info.
- *
+ * @deprecated
  */
 public class DefPermission {
     /**
@@ -54,7 +54,7 @@ public class DefPermission {
     /**
      * Indicates the provisionEnable of ModuleDefinePermissions.
      */
-    public boolean provisionEnabled = true;
+    public boolean provisionEnable  = true;
     /**
      * Indicates the distributedSceneEnable of ModuleDefinePermissions.
      */
