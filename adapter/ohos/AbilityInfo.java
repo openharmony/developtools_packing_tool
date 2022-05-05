@@ -64,9 +64,9 @@ public class AbilityInfo {
     public String type = "";
 
     /**
-     * Indicates the formEnabled of ability.
+     * Indicates the formsEnabled of ability.
      */
-    public boolean formEnabled = false;
+    public boolean formsEnabled = false;
 
     /**
      * Indicates the formInfo of ability.
@@ -172,6 +172,16 @@ public class AbilityInfo {
      * Indicates the forms of ability.
      */
     public List<AbilityFormInfo> formInfos = new ArrayList<AbilityFormInfo>();
+
+    /**
+     * Indicates the srcLanguage of ability.
+     */
+    public String srcLanguage = "js";
+
+    /**
+     * Indicates the srcPath of ability.
+     */
+    public String srcPath = "";
 
     // stage module character
     /**

@@ -47,7 +47,7 @@ public class ExtensionAbilityInfo {
     /**
      * Indicates the visible of module ModuleJson.
      */
-    public boolean visible = true;
+    public boolean visible = false;
     /**
      * Indicates the skill of module ModuleJson.
      */

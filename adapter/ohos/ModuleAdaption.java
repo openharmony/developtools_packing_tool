@@ -133,6 +133,7 @@ class ModuleAdaption {
         hapInfo.distroFilter = moduleInfo.distroFilter;
         hapInfo.formInfos = moduleInfo.abilityFormInfos;
         hapInfo.commonEvents = moduleInfo.commonEvents;
+        hapInfo.defPermissions = moduleInfo.defPermissions;
         return hapInfo;
     }
 

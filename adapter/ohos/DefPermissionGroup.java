@@ -17,7 +17,7 @@ package ohos;
 
 /**
  * DefPermissionGroup info.
- *
+ * @deprecated
  */
 public class DefPermissionGroup {
     /**
