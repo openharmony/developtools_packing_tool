@@ -144,7 +144,6 @@
             "enum": [
               "default",
               "car",
-              "phone",
               "router",
               "tablet",
               "tv",
@@ -177,7 +176,6 @@
         "enum": [
           "car",
           "default",
-          "phone",
           "tablet",
           "tv",
           "wearable",
@@ -500,163 +498,6 @@
           }
         },
         "wearable": {
-          "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "keepAlive",
-              "jointUserId",
-              "process",
-              "ark",
-              "directLaunch",
-              "network",
-              "supportBackup",
-              "compressNativeLibs",
-              "allowComponentsProxy"
-            ]
-          },
-          "properties": {
-            "keepAlive": {
-              "description": "Specifies whether the application will keep alive.If this attribute is set to true, the application will start during the OS startup. If the application process exits, the OS will restart it. This attribute applies only to system applications.This attribute is not supported by basic watches.This label can be left blank by default.",
-              "type": "boolean"
-            },
-            "jointUserId": {
-              "description": "Indicates the user ID shared by applications.Generally, applications run in different processes, and resources used by the applications are isolated. However, in some cases, you may develop multiple applications that need to share resources with each other. This resource sharing is implemented based on the same jointUserId value on the premise that the applications have the same signature.This attribute is not supported by devices running the OHOS.",
-              "type": "string"
-            },
-            "process": {
-              "description": "Indicates the name of the process running the application or ability.If a process is configured in the deviceConfig tag, all abilities of the application run in this process. You can also set the process attribute for a specific ability, so that the ability can run in this process. If this attribute is set to the same process name as other applications, all these applications can run in the same process on the premise that they have the same jointUserId and the same signature.This attribute is not supported by devices running the OHOS.",
-              "type": "string",
-              "maxLength": 31
-            },
-            "ark": {
-              "description": "This tag identifies maple configuration information.",
-              "type": "object",
-              "propertyNames": {
-                "enum": [
-                  "reqVersion",
-                  "flag"
-                ]
-              },
-              "properties": {
-                "reqVersion": {
-                  "description": "Maple version number that supports the application.",
-                  "type": "object",
-                  "propertyNames": {
-                    "enum": [
-                      "compatible",
-                      "target"
-                    ]
-                  },
-                  "properties": {
-                    "compatible": {
-                      "description": "Indicates the minimum maple version that supports the application. This label is an integer.",
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "target": {
-                      "description": "Specifies the target maple version of the application. This label is an integer.",
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  }
-                },
-                "flag": {
-                  "description": "Specifies the type of the maple application.",
-                  "type": "string",
-                  "enum": [
-                    "m",
-                    "mo",
-                    "z"
-                  ]
-                }
-              }
-            },
-            "directLaunch": {
-              "description": "Specifies whether the application can be started when the device is locked. Set this attribute to true if you want to start the application without unlocking the device.This attribute is not supported by devices running the OHOS.",
-              "type": "boolean"
-            },
-            "network": {
-              "description": "Indicates the network security configuration. You can customize the network security settings of the application in a security statement configuration file without modifying the application code.",
-              "type": "object",
-              "propertyNames": {
-                "enum": [
-                  "cleartextTraffic",
-                  "securityConfig"
-                ]
-              },
-              "properties": {
-                "cleartextTraffic": {
-                  "description": "Specifies whether an application can use plaintext network transmission. The value is of the Boolean type. The value true indicates that plaintext network transmission is enabled.",
-                  "type": "boolean"
-                },
-                "securityConfig": {
-                  "description": "Indicates the network security configuration of the application.",
-                  "type": "object",
-                  "propertyNames": {
-                    "enum": [
-                      "domainSettings"
-                    ]
-                  },
-                  "properties": {
-                    "domainSettings": {
-                      "description": "Indicates the security settings of the custom network domain. This attribute allows nested domains. To be more specific, the domainSettings object of a large domain can be nested with the domainSettings objects of small network domains.",
-                      "type": "object",
-                      "propertyNames": {
-                        "enum": [
-                          "cleartextPermitted",
-                          "domains"
-                        ]
-                      },
-                      "properties": {
-                        "cleartextPermitted": {
-                          "description": "Specifies whether plaintext traffic can be transmitted in the custom network domain. If both cleartextTraffic and securityConfig are declared, whether plaintext traffic can be transmitted in the custom network domain is determined by the cleartextPermitted attribute.",
-                          "type": "boolean"
-                        },
-                        "domains": {
-                          "description": "Indicates the domain name configuration. This attribute consists of the subDomains and name sub-attributes.",
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "propertyNames": {
-                              "enum": [
-                                "subdomains",
-                                "name"
-                              ]
-                            },
-                            "properties": {
-                              "subdomains": {
-                                "description": "Subdomain name",
-                                "type": "boolean"
-                              },
-                              "name": {
-                                "description": "Domain name",
-                                "type": "string"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "supportBackup": {
-              "description": "Specifies whether the application supports backup and restoration. If this attribute is set to false, backup or restoration will never be performed for the application.This attribute is not supported by devices running the OHOS.",
-              "type": "boolean"
-            },
-            "compressNativeLibs": {
-              "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.This attribute is not supported by devices running the OHOS.",
-              "type": "boolean"
-            },
-            "allowComponentsProxy": {
-              "description": "Indicates whether the application supports the ability proxy.If this property is set to true, the ability component can be hooked.",
-              "type": "boolean"
-            }
-          }
-        },
-        "phone": {
           "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
           "type": "object",
           "propertyNames": {
@@ -1343,7 +1184,7 @@
           "maxLength": 255
         },
         "deviceType": {
-          "description": "Indicates the type of devices on which the abilities can run. The value can be default, tv (smart TVs), wearable (smart watches), liteWearable (basic watches), smartVision, phone, car, tablet, router or any combination of these values.This label cannot be left blank.",
+          "description": "Indicates the type of devices on which the abilities can run. The value can be default, tv (smart TVs), wearable (smart watches), liteWearable (basic watches), smartVision, car, tablet, router or any combination of these values.This label cannot be left blank.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -1351,7 +1192,6 @@
             "enum": [
               "car",
               "default",
-              "phone",
               "tablet",
               "tv",
               "wearable",
@@ -3566,13 +3406,6 @@
             }
           },
           "wearable": {
-            "properties": {
-              "keepAlive": {
-                "const": false
-              }
-            }
-          },
-          "phone": {
             "properties": {
               "keepAlive": {
                 "const": false
