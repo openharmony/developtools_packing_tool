@@ -125,7 +125,6 @@
             "type": "string",
             "enum": [
               "default",
-              "phone",
               "tablet",
               "tv",
               "wearable",
