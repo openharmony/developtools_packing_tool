@@ -550,7 +550,8 @@
                   "fileShare",
                   "staticSubscriber",
                   "wallpaper",
-                  "backup"
+                  "backup",
+		  "window",
                 ]
               },
               "permissions": {
