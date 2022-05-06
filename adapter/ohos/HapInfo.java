@@ -15,6 +15,8 @@
 
 package ohos;
 
+import org.omg.CORBA.DefinitionKind;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,12 @@ public class HapInfo {
      * @Deprecated
      */
     public List<DefPermission> defPermissions = new ArrayList<DefPermission>();
+
+    /**
+     * Indicates the definePermissions of HapInfo.
+     * @Deprecated
+     */
+    public List<DefinePermission> definePermissions = new ArrayList<>();
 
     /**
      * Indicates the defPermissionsGroups of HapInfo.

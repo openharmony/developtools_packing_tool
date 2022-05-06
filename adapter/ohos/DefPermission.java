@@ -15,6 +15,9 @@
 
 package ohos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * DefPermission info.
  * @deprecated
@@ -33,7 +36,7 @@ public class DefPermission {
     /**
      * Indicates the availableScope of DefPermission.
      */
-    public String availableScope = "";
+    public List<String> availableScope = new ArrayList<>();
 
     /**
      * Indicates the group of DefPermission.
@@ -49,14 +52,4 @@ public class DefPermission {
      * Indicates the description of DefPermission.
      */
     public String description = "";
-
-    // stage module attributes
-    /**
-     * Indicates the provisionEnable of ModuleDefinePermissions.
-     */
-    public boolean provisionEnable  = true;
-    /**
-     * Indicates the distributedSceneEnable of ModuleDefinePermissions.
-     */
-    public boolean distributedSceneEnable = false;
 }
