@@ -551,7 +551,7 @@
                   "staticSubscriber",
                   "wallpaper",
                   "backup",
-		  "window",
+                  "window",
                 ]
               },
               "permissions": {
