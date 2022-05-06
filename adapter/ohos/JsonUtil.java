@@ -683,8 +683,8 @@ public class JsonUtil {
         ability.launchType = getJsonString(abilityJson, "launchType");
         ability.orientation = getJsonString(abilityJson, "orientation");
         ability.uri = getJsonString(abilityJson, "uri");
-        if (abilityJson.containsKey("formEnabled")) {
-            ability.formEnabled = abilityJson.getBoolean("formEnabled");
+        if (abilityJson.containsKey("formsEnabled")) {
+            ability.formsEnabled = abilityJson.getBoolean("formsEnabled");
         }
 
         if (abilityJson.containsKey("metaData")) {
@@ -709,6 +709,14 @@ public class JsonUtil {
             ability.configChanges = JSONObject.parseArray(getJsonString(abilityJson, "configChanges"), String.class);
         }
 
+        if (abilityJson.containsKey("srcLanguage")) {
+            ability.srcLanguage = getJsonString(abilityJson, "srcLanguage");
+        }
+
+        if (abilityJson.containsKey("srcPath")) {
+            ability.srcPath = getJsonString(abilityJson, "srcPath");
+        }
+
         parseAbilityPermissions(abilityJson, ability);
 
         if (abilityJson.containsKey("forms")) {
@@ -717,7 +725,7 @@ public class JsonUtil {
             int formSize = forms.size();
             for (int i = 0; i < formSize; i++) {
                 JSONObject tmpObj = forms.getJSONObject(i);
-                formList.add(parseAbilityFormInfo(tmpObj));
+                formList.add(parseAbilityFormInfo(tmpObj, data));
             }
             ability.formInfos = formList;
         }
@@ -788,7 +796,7 @@ public class JsonUtil {
      * @param abilityFormJson ability form json object
      * @return the ability form info result
      */
-    static AbilityFormInfo parseAbilityFormInfo(JSONObject abilityFormJson) {
+    static AbilityFormInfo parseAbilityFormInfo(JSONObject abilityFormJson, byte[] data) throws BundleException {
         AbilityFormInfo abilityForm = new AbilityFormInfo();
         if (abilityFormJson == null) {
             LOG.error("Uncompress::parseAbilityFormInfo : abilityFormJson is null");
@@ -796,6 +804,13 @@ public class JsonUtil {
         }
         abilityForm.name = getJsonString(abilityFormJson, "name");
         abilityForm.type = getJsonString(abilityFormJson, "type");
+        abilityForm.description = parseResourceByKey(abilityFormJson, data, "description", "descriptionId");
+        if (abilityFormJson.containsKey("colorMode")) {
+            abilityForm.colorMode = getJsonString(abilityFormJson, "colorMode");
+        }
+        if (abilityFormJson.containsKey("formConfigAbility")) {
+            abilityForm.formConfigAbility = getJsonString(abilityFormJson, "formConfigAbility");
+        }
         if (abilityFormJson.containsKey("updateEnabled")) {
             abilityForm.updateEnabled = abilityFormJson.getBoolean("updateEnabled");
         }
@@ -952,6 +967,10 @@ public class JsonUtil {
         // parse request permission
         if (moduleJson.containsKey("requestPermissions")) {
             moduleInfo.requestPermissions = parseReqPermission(moduleJson, data);
+        }
+        // parse define permission
+        if (moduleJson.containsKey("definePermissions")) {
+            moduleInfo.defPermissions = parseDefPermissions(moduleJson, data);
         }
         return moduleInfo;
     }
@@ -1438,6 +1457,53 @@ public class JsonUtil {
             moduleFormInfo.formVisibleNotify = formObj.getBoolean("formVisibleNotify");
         }
         return moduleFormInfo;
+    }
+
+    /**
+     * parse define permission objects
+     *
+     * @param moduleJson is module json object
+     * @param data is resource byte in hap
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    static List<DefPermission> parseDefPermissions(JSONObject moduleJson, byte[] data) throws BundleException {
+        List<DefPermission> defPermissions = new ArrayList<>();
+        if (moduleJson.containsKey("definePermissions")) {
+            JSONArray defPermissionObjs = moduleJson.getJSONArray("definePermissions");
+            for (int i = 0; i < defPermissionObjs.size(); ++i) {
+                defPermissions.add(parseDefPermission(defPermissionObjs.getJSONObject(i), data));
+            }
+        }
+        return defPermissions;
+    }
+
+    /**
+     * parse define permission objects
+     *
+     * @param defPermissionObj is def permission json object
+     * @param data is resource byte in hap
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    static DefPermission parseDefPermission(JSONObject defPermissionObj, byte[] data) throws BundleException {
+        DefPermission defPermission = new DefPermission();
+        if (defPermissionObj.containsKey("name")) {
+            defPermission.name = getJsonString(defPermissionObj, "name");
+        }
+        if (defPermissionObj.containsKey("grantMode")) {
+            defPermission.grantMode = getJsonString(defPermissionObj, "grantMode");
+        }
+        if (defPermissionObj.containsKey("availableLevel")) {
+            defPermission.availableScope = getJsonString(defPermissionObj, "availableLevel");
+        }
+        defPermission.label = parseResourceByKey(defPermissionObj, data, "label", "labelId");
+        defPermission.description = parseResourceByKey(defPermissionObj, data, "description", "descriptionId");
+        if (defPermissionObj.containsKey("provisionEnable")) {
+            defPermission.provisionEnable = defPermissionObj.getBoolean("provisionEnable");
+        }
+        if (defPermissionObj.containsKey("distributedSceneEnable")) {
+            defPermission.distributedSceneEnable = defPermissionObj.getBoolean("distributedSceneEnable");
+        }
+        return defPermission;
     }
 
     /**
