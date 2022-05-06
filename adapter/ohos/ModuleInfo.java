@@ -80,10 +80,6 @@ class ModuleInfo {
      */
     public List<ReqPermission> requestPermissions = new ArrayList<ReqPermission>();
     /**
-     * Indicates the definePermissions of ModuleInfo.
-     */
-    public List<ModuleDefinePermissions> definePermissions = new ArrayList<ModuleDefinePermissions>();
-    /**
      * Indicates the shortcuts of ModuleInfo.
      */
     public List<ModuleShortcut> moduleShortcuts = new ArrayList<>();
@@ -102,5 +98,5 @@ class ModuleInfo {
     /**
      * Indicates the define permissions of ModuleInfo.
      */
-    List<DefPermission> defPermissions = new ArrayList<>();
+    List<DefinePermission> definePermissions = new ArrayList<>();
 }

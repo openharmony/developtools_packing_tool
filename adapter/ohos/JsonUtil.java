@@ -502,7 +502,7 @@ public class JsonUtil {
         }
         hapInfo.packageStr = getJsonString(hapJson, "package");
         hapInfo.name = getJsonString(hapJson, "name");
-        hapInfo.description = getJsonString(hapJson, "description");
+        hapInfo.description = parseResourceByKey(hapJson, data, "description", "descriptionId");
 
         if (hapJson.containsKey("supportedModes")) {
             hapInfo.supportedModes = JSONObject.parseArray(getJsonString(hapJson, "supportedModes"),
@@ -510,8 +510,11 @@ public class JsonUtil {
         }
 
         if (hapJson.containsKey("defPermissions")) {
-            hapInfo.defPermissions = JSONArray.parseArray(getJsonString(hapJson, "defPermissions"),
-                    DefPermission.class);
+            hapInfo.defPermissions = parseDefPermissions(hapJson, data);
+        }
+
+        if (hapJson.containsKey("definePermissions")) {
+            hapInfo.definePermissions = parseDefinePermissions(hapJson, data);
         }
 
         if (hapJson.containsKey("defPermissiongroups")) {
@@ -557,7 +560,7 @@ public class JsonUtil {
         }
 
         if (hapJson.containsKey("shortcuts")) {
-            hapInfo.shortcuts = JSONObject.parseArray(getJsonString(hapJson, "shortcuts"), Shortcut.class);
+            hapInfo.shortcuts = parseShoruCuts(hapJson, data);
         }
 
         if (hapJson.containsKey("abilities")) {
@@ -943,7 +946,7 @@ public class JsonUtil {
         }
         // parse shortcuts
         if (!moduleInfo.moduleMetadataInfos.isEmpty()) {
-            moduleInfo.moduleShortcuts = parseShortcut(moduleInfo.moduleMetadataInfos, data);
+            moduleInfo.moduleShortcuts = parseModuleShortcut(moduleInfo.moduleMetadataInfos, data);
         }
         // parse distrofilter
         if (!moduleInfo.moduleMetadataInfos.isEmpty()) {
@@ -953,7 +956,7 @@ public class JsonUtil {
         if (moduleJson.containsKey("abilities")) {
             moduleInfo.abilities = parseModuleAbilities(moduleJson, data, profileJsons);
             for (ModuleAbilityInfo abilityInfo : moduleInfo.abilities) {
-                moduleInfo.moduleShortcuts.addAll(parseShortcut(abilityInfo.metadata, data));
+                moduleInfo.moduleShortcuts.addAll(parseModuleShortcut(abilityInfo.metadata, data));
             }
         }
         // parse extensionabilities
@@ -970,7 +973,7 @@ public class JsonUtil {
         }
         // parse define permission
         if (moduleJson.containsKey("definePermissions")) {
-            moduleInfo.defPermissions = parseDefPermissions(moduleJson, data);
+            moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
         }
         return moduleInfo;
     }
@@ -1313,14 +1316,14 @@ public class JsonUtil {
     }
 
     /**
-     * parse shortcuts info
+     * parse stage shortcuts info
      *
      * @param moduleMetadataInfos is the list of ModuleMetadataInfo
      * @param data is resource byte in hap
      * @return the List<moduleShortcut> result
      * @throws BundleException Throws this exception when parse failed.
      */
-    static List<ModuleShortcut> parseShortcut(List<ModuleMetadataInfo> moduleMetadataInfos, byte[] data)
+    static List<ModuleShortcut> parseModuleShortcut(List<ModuleMetadataInfo> moduleMetadataInfos, byte[] data)
             throws BundleException {
         List<ModuleShortcut> shortcuts = new ArrayList<>();
         // find shortcut and parse in metadata
@@ -1334,7 +1337,7 @@ public class JsonUtil {
                 ModuleShortcut shortcut = new ModuleShortcut();
                 JSONArray shortcutObjs = jsonObj.getJSONArray("shortcuts");
                 for (int j = 0; j < shortcutObjs.size(); ++j) {
-                    shortcuts.add(parseShortcutObj(shortcutObjs.getJSONObject(j), data));
+                    shortcuts.add(parseModuleShortcutObj(shortcutObjs.getJSONObject(j), data));
                 }
             }
         }
@@ -1342,17 +1345,17 @@ public class JsonUtil {
     }
 
     /**
-     * parse shortcuts json object array
+     * parse stage shortcuts json object array
      *
      * @param shortcutObj is the objects of shortcut
      * @param data is resource byte in hap
      * @return the List<ModuleShortcuts> result
      * @throws BundleException Throws this exception when parse failed.
      */
-    static ModuleShortcut parseShortcutObj(JSONObject shortcutObj, byte[] data) throws BundleException {
+    static ModuleShortcut parseModuleShortcutObj(JSONObject shortcutObj, byte[] data) throws BundleException {
         if (shortcutObj == null) {
-            LOG.error("JsonUtil::parseShortcutArray failed");
-            throw new BundleException("JsonUtil::parseShortcutArray failed");
+            LOG.error("JsonUtil::parseModuleShortcutObj failed");
+            throw new BundleException("JsonUtil::parseModuleShortcutObj failed");
         }
         ModuleShortcut moduleShortcut = new ModuleShortcut();
         if (shortcutObj.containsKey("shortcutId")) {
@@ -1365,11 +1368,58 @@ public class JsonUtil {
             String iconPath = parseResourceByStringID(data, getJsonString(shortcutObj, "icon"));
             moduleShortcut.icon = iconPath.substring(iconPath.indexOf("resources"));
         }
-
         if (shortcutObj.containsKey("wants")) {
             moduleShortcut.wants = JSON.parseArray(getJsonString(shortcutObj, "wants"), Want.class);
         }
         return moduleShortcut;
+    }
+
+    /**
+     * parse fa shortcuts json object array
+     *
+     * @param moduleJson is the object of module
+     * @param data is resource byte in hap
+     * @return the List<ModuleShortcuts> result
+     * @throws BundleException Throws this exception when parse failed.
+     */
+    static List<Shortcut> parseShoruCuts(JSONObject moduleJson, byte[] data) throws BundleException {
+        List<Shortcut> shortcuts = new ArrayList<>();
+        if (moduleJson.containsKey("shortcuts")) {
+            JSONArray shortcutObjs = moduleJson.getJSONArray("shortcuts");
+            for (int i =  0; i < shortcutObjs.size(); ++i) {
+                shortcuts.add(parseShortObj(shortcutObjs.getJSONObject(i), data));
+            }
+        }
+        return shortcuts;
+    }
+
+    /**
+     * parse fa shortcuts json object array
+     *
+     * @param shortcutObj is the object of shortcut
+     * @param data is resource byte in hap
+     * @return the List<ModuleShortcuts> result
+     * @throws BundleException Throws this exception when parse failed.
+     */
+    static Shortcut parseShortObj(JSONObject shortcutObj, byte[] data) throws BundleException {
+        if (shortcutObj == null) {
+            LOG.error("JsonUtil::parseModuleShortcutObj failed");
+            throw new BundleException("JsonUtil::parseModuleShortcutObj failed");
+        }
+        Shortcut shortcut = new Shortcut();
+        if (shortcutObj.containsKey("shortcutId")) {
+            shortcut.shortcutId = shortcutObj.getString("shortcutId");
+        }
+        if (shortcutObj.containsKey("label")) {
+            shortcut.label = parseResourceByKey(shortcutObj, data, "label", "labelId");
+        }
+        if (shortcutObj.containsKey("icon")) {
+            shortcut.icon = parseIconById(shortcutObj, data);
+        }
+        if (shortcutObj.containsKey("intents")) {
+            shortcut.intents = JSON.parseArray(getJsonString(shortcutObj, "intents"), IntentInfo.class);
+        }
+        return shortcut;
     }
 
     /**
@@ -1460,7 +1510,52 @@ public class JsonUtil {
     }
 
     /**
+     * parse definepermission objects
+     *
+     * @param moduleJson is module json object
+     * @param data is resource byte in hap
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    static List<DefinePermission> parseDefinePermissions(JSONObject moduleJson, byte[] data) throws BundleException {
+        List<DefinePermission> definePermissions = new ArrayList<>();
+        if (moduleJson.containsKey("definePermissions")) {
+            JSONArray definePermissionObjs = moduleJson.getJSONArray("definePermissions");
+            for (int i = 0; i < definePermissionObjs.size(); ++i) {
+                definePermissions.add(parseDefinePermission(definePermissionObjs.getJSONObject(i), data));
+            }
+        }
+        return definePermissions;
+    }
+
+    /**
      * parse define permission objects
+     *
+     * @param definePermissionObj is def permission json object
+     * @param data is resource byte in hap
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    static DefinePermission parseDefinePermission(JSONObject definePermissionObj, byte[] data) throws BundleException {
+        DefinePermission definePermission = new DefinePermission();
+        definePermission.name = getJsonString(definePermissionObj, "name", definePermission.name);
+        definePermission.grantMode = getJsonString(definePermissionObj, "grantMode", definePermission.grantMode);
+        definePermission.availableLevel =
+                getJsonString(definePermissionObj, "availableLevel", definePermission.availableLevel);
+        if (definePermissionObj.containsKey("provisionEnable")) {
+            definePermission.provisionEnable = definePermissionObj.getBoolean("provisionEnable");
+        }
+        if (definePermissionObj.containsKey("distributedSceneEnable")) {
+            definePermission.distributedSceneEnable = definePermissionObj.getBoolean("distributedSceneEnable");
+        }
+        definePermission.label =
+                parseResourceByKey(definePermissionObj, data, "label", "labelId");
+        definePermission.description =
+                parseResourceByKey(definePermissionObj, data, "description", "descriptionId");
+
+        return definePermission;
+    }
+
+    /**
+     * parse defpermission objects
      *
      * @param moduleJson is module json object
      * @param data is resource byte in hap
@@ -1468,8 +1563,8 @@ public class JsonUtil {
      */
     static List<DefPermission> parseDefPermissions(JSONObject moduleJson, byte[] data) throws BundleException {
         List<DefPermission> defPermissions = new ArrayList<>();
-        if (moduleJson.containsKey("definePermissions")) {
-            JSONArray defPermissionObjs = moduleJson.getJSONArray("definePermissions");
+        if (moduleJson.containsKey("defPermissions")) {
+            JSONArray defPermissionObjs = moduleJson.getJSONArray("defPermissions");
             for (int i = 0; i < defPermissionObjs.size(); ++i) {
                 defPermissions.add(parseDefPermission(defPermissionObjs.getJSONObject(i), data));
             }
@@ -1478,7 +1573,7 @@ public class JsonUtil {
     }
 
     /**
-     * parse define permission objects
+     * parse defpermission objects
      *
      * @param defPermissionObj is def permission json object
      * @param data is resource byte in hap
@@ -1492,16 +1587,14 @@ public class JsonUtil {
         if (defPermissionObj.containsKey("grantMode")) {
             defPermission.grantMode = getJsonString(defPermissionObj, "grantMode");
         }
-        if (defPermissionObj.containsKey("availableLevel")) {
-            defPermission.availableScope = getJsonString(defPermissionObj, "availableLevel");
+        if (defPermissionObj.containsKey("availableScope")) {
+            defPermission.availableScope =
+                    JSONObject.parseArray(getJsonString(defPermissionObj, "availableScope"), String.class);
         }
         defPermission.label = parseResourceByKey(defPermissionObj, data, "label", "labelId");
         defPermission.description = parseResourceByKey(defPermissionObj, data, "description", "descriptionId");
-        if (defPermissionObj.containsKey("provisionEnable")) {
-            defPermission.provisionEnable = defPermissionObj.getBoolean("provisionEnable");
-        }
-        if (defPermissionObj.containsKey("distributedSceneEnable")) {
-            defPermission.distributedSceneEnable = defPermissionObj.getBoolean("distributedSceneEnable");
+        if (defPermissionObj.containsKey("group")) {
+            defPermission.group = getJsonString(defPermissionObj, "group");
         }
         return defPermission;
     }
