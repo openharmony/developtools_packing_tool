@@ -99,4 +99,8 @@ class ModuleInfo {
      * Indicates the common events of ModuleInfo.
      */
     List<AbilityFormInfo> abilityFormInfos = new ArrayList<>();
+    /**
+     * Indicates the define permissions of ModuleInfo.
+     */
+    List<DefPermission> defPermissions = new ArrayList<>();
 }
