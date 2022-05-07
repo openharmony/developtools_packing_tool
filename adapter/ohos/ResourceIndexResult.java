@@ -15,31 +15,24 @@
 
 package ohos;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * module Shortcut info.
- *
- */
-class ModuleShortcut {
+public class ResourceIndexResult {
     /**
-     * Indicates the shortcutId of module Shortcut.
+     * Indicates the id of resource.
      */
-    public String shortcutId = "";
-
+    public int id;
     /**
-     * Indicates the label of module Shortcut.
+     * Indicates the type of resource.
      */
-    public String label = "";
-
+    public String type = "";
     /**
-     * Indicates the icon of module Shortcut.
+     * Indicates the name of resource.
      */
-    public String icon = "";
-
+    public String name = "";
     /**
-     * Indicates the intents of module Shortcut.
+     * Indicates the value of resource.
      */
-    public List<Want> wants = new ArrayList<Want>();
+    public String value = "";
 }

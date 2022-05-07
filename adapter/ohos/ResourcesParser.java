@@ -36,6 +36,59 @@ public class ResourcesParser {
 
     private static final int VERSION_BYTE_LENGTH = 128;
     private static final int TAG_BYTE_LENGTH = 4;
+    private static final String LEFT_BRACKET = "<";
+    private static final String RIGHT_BRACKET = ">";
+    private static final int CHAR_LENGTH = 1;
+    private enum ResType {
+        Values(0, "Values"),
+        Animator(1, "Animator"),
+        Drawable(2, "Drawable"),
+        Layout(3, "Layout"),
+        Menu(4, "Menu"),
+        Mipmap(5, "Mipmap"),
+        Raw(6, "Raw"),
+        Xml(7, "Xml"),
+        Integer(8, "Integer"),
+        String(9, "String"),
+        StrArray(10, "StrArray"),
+        IntArray(11, "IntArray"),
+        Boolean(12, "Boolean"),
+        Dimen(13, "Dimen"),
+        Color(14, "Color"),
+        Id(15, "Id"),
+        Theme(16, "Theme"),
+        Plurals(17, "Plurals"),
+        Float(18, "Float"),
+        Media(19, "Media"),
+        Prof(20, "Prof"),
+        Svg(21, "Svg"),
+        Pattern(22, "Pattern");
+
+        private final int index;
+        private final String type;
+
+        private ResType(int index, String type) {
+            this.index = index;
+            this.type = type;
+        }
+
+        public static String getType(int index) {
+            for (ResType resType : ResType.values()) {
+                if (resType.getIndex() == index) {
+                    return resType.type;
+                }
+            }
+            return "";
+        }
+
+        public int getIndex() {
+            return index;
+        }
+        public String getType() {
+            return type;
+        }
+    }
+
     private static final Log LOG = new Log(ResourcesParser.class.toString());
 
     /**
@@ -275,7 +328,6 @@ public class ResourcesParser {
      *
      * @param buf config byte buffer
      * @return the item info
-     * @throws BundleException IOException.
      */
     static DataItem readItem(ByteBuffer buf) {
         DataItem item = new DataItem();
@@ -291,6 +343,95 @@ public class ResourcesParser {
         buf.get(name);
         item.name = new String(name, StandardCharsets.UTF_8);
         return item;
+    }
+
+    /**
+     * Read all config item.
+     *
+     * @param data config byte buffer
+     * @return the item info.
+     */
+    static List<ResourceIndexResult> getAllDataItem(byte[] data) {
+        ByteBuffer byteBuf = ByteBuffer.wrap(data);
+        byteBuf.order(ByteOrder.LITTLE_ENDIAN);
+        byte[] version = new byte[VERSION_BYTE_LENGTH];
+        byteBuf.get(version);
+        byteBuf.getInt();
+        int configCount = byteBuf.getInt();
+        List<ConfigIndex> cfg = loadConfig(byteBuf, configCount);
+        return readDataAllItem(cfg, byteBuf);
+    }
+
+    /**
+     * Read all config item.
+     *
+     * @param configs the config list
+     * @param buf config byte buffer
+     * @return the item list
+     */
+    static List<ResourceIndexResult> readDataAllItem(List<ConfigIndex> configs, ByteBuffer buf) {
+        List<ResourceIndexResult> resourceIndexResults = new ArrayList<>();
+        for (ConfigIndex index : configs) {
+            buf.rewind();
+            buf.position(index.offset);
+            byte[] tag = new byte[TAG_BYTE_LENGTH];
+            buf.get(tag);
+            int count = buf.getInt();
+            buf.getInt();
+            int offset = buf.getInt();
+            buf.rewind();
+            buf.position(offset);
+            for (int i = 0; i < count; i++) {
+                DataItem item = readItem(buf);
+                resourceIndexResults.add(parseDataItems(item));
+            }
+        }
+        return resourceIndexResults;
+    }
+
+    /**
+     * convert DataItems to ResourceIndexResult.
+     *
+     * @param item Indicates the DataItem.
+     */
+    static ResourceIndexResult parseDataItems(DataItem item) {
+        ResourceIndexResult resourceIndexResult = new ResourceIndexResult();
+        if (item != null) {
+            resourceIndexResult.type = ResType.getType(item.type);
+            resourceIndexResult.id = item.id;
+            resourceIndexResult.name = item.name.substring(0, item.name.length() - 1);
+            if (item.type == ResType.StrArray.getIndex() || item.type == ResType.IntArray.getIndex()
+                    || item.type == ResType.Theme.getIndex() || item.type == ResType.Plurals.getIndex()
+                    || item.type == ResType.Pattern.getIndex()) {
+                byte[] bytes =
+                        item.value.substring(0, item.value.length() - 1).getBytes(StandardCharsets.UTF_8);
+                resourceIndexResult.value = convertBytesToString(bytes);
+            } else {
+                resourceIndexResult.value = item.value.substring(0, item.value.length() - 1);
+            }
+        }
+        return resourceIndexResult;
+    }
+
+    /**
+     * convert bytes to string.
+     *
+     * @param data Indicates the bytes of data.
+     */
+    static String convertBytesToString(byte[] data) {
+        StringBuilder result = new StringBuilder();
+        ByteBuffer byteBuf = ByteBuffer.wrap(data);
+        byteBuf.order(ByteOrder.LITTLE_ENDIAN);
+        while(byteBuf.hasRemaining()) {
+            result.append(LEFT_BRACKET);
+            int len = byteBuf.getShort();
+            byte[] value = new byte[len + CHAR_LENGTH];
+            byteBuf.get(value);
+            String item = new String(value, StandardCharsets.UTF_8);
+            result.append(item, 0, item.length() - 1);
+            result.append(RIGHT_BRACKET);
+        }
+        return result.toString();
     }
 }
 

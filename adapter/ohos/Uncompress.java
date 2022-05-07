@@ -1694,4 +1694,21 @@ public class Uncompress {
             Utility.closeStream(outputStream);
         }
     }
+
+    /**
+     * parse resource.index file.
+     *
+     * @param srcPath Indicates the path of hap.
+     */
+    static List<ResourceIndexResult> getResourceFromHap(String srcPath) throws BundleException, IOException {
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            byte[] data = getResourceDataFromHap(zipFile);
+            return ResourcesParser.getAllDataItem(data);
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+    }
 }
