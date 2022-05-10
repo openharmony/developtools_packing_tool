@@ -41,7 +41,8 @@
                 "abilities",
                 "extensionAbilities",
                 "requestPermissions",
-                "definePermissions"
+                "definePermissions",
+                "testRunner"
               ]
             },
             "required": [
@@ -69,7 +70,8 @@
                 "abilities",
                 "extensionAbilities",
                 "requestPermissions",
-                "definePermissions"
+                "definePermissions",
+                "testRunner"
               ]
             },
             "required": [
@@ -820,6 +822,32 @@
                   }
                 }
               }
+            }
+          }
+        },
+        "testRunner": {
+          "description": "This tag is used for configure the test properties.",
+          "type":"object",
+          "required": [
+            "name",
+            "srcPath"
+          ],
+          "propertyNames": {
+            "enum": [
+              "name",
+              "srcPath"
+            ]
+          },
+          "properties":{
+            "name": {
+              "description": "Indicates the name of testRunner,  The value is a string with a maximum of 255 bytes",
+              "type": "string",
+              "maxLength": 255
+            },
+            "srcPath": {
+              "description": "Indicates the srcPath testRunner,  The value is a string with a maximum of 255 bytes",
+              "type": "string",
+              "maxLength": 255
             }
           }
         }
