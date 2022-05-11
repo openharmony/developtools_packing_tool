@@ -15,7 +15,13 @@
 
 package ohos;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static ohos.Uncompress.getResourceFromHap;
 
 /**
  * bundle uncompress.
@@ -337,6 +343,16 @@ public class UncompressEntrance {
 
         compressResult = Uncompress.uncompressHapByInput(utility, input);
         return compressResult;
+    }
+
+    /**
+     * Parse the hap.
+     *
+     * @param hapPath Indicates the hap path.
+     * @return Return the List<ResourceIndexResult> result of parseHap
+     */
+    public static List<ResourceIndexResult> parseResource(String hapPath) throws BundleException, IOException {
+        return getResourceFromHap(hapPath);
     }
 
     /**
