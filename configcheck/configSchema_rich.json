@@ -1305,7 +1305,8 @@
                       "srcPath",
                       "continuable",
                       "startWindowIcon",
-                      "startWindowBackground"
+                      "startWindowBackground",
+                      "removeMissionAfterTerminate"
                     ]
                   },
                   "required": [
@@ -1351,9 +1352,7 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath",
-                      "startWindowIcon",
-                      "startWindowBackground"
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -1400,9 +1399,7 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath",
-                      "startWindowIcon",
-                      "startWindowBackground"
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -1442,9 +1439,7 @@
                       "deviceCapability",
                       "resizeable",
                       "srcLanguage",
-                      "srcPath",
-                      "startWindowIcon",
-                      "startWindowBackground"
+                      "srcPath"
                     ]
                   },
                   "required": [
@@ -2210,6 +2205,11 @@
                 "type": "string",
                 "pattern": "^[$]color:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
                 "maxLength": 255
+              },
+              "removeMissionAfterTerminate": {
+                "description": "Specifies whether to remove the mission after the ability termination.",
+                "type": "boolean",
+                "default": false
               }
             }
           }

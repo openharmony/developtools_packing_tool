@@ -229,7 +229,8 @@
                 "backgroundModes",
                 "continuable",
                 "startWindowIcon",
-                "startWindowBackground"
+                "startWindowBackground",
+                "removeMissionAfterTerminate"
               ]
             },
             "properties": {
@@ -457,6 +458,11 @@
                 "type": "string",
                 "pattern": "^[$]color:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
                 "maxLength": 255
+              },
+              "removeMissionAfterTerminate": {
+                "description": "Specifies whether to remove the mission after the ability termination.",
+                "type": "boolean",
+                "default": false
               }
             }
           }
