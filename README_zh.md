@@ -49,7 +49,7 @@ resource.index的文件将被放入assets/entry/目录下。
 ## 使用说明<a name="section_usage_instruction"></a>
 打包hap包命令示例：
 ```
-java -jar hmos_app_packing_tool.jar --mode <option> --json-path <option> --maple-so-path [option] --profile-path [option] --maple-so-dir [option] --dex-path [option] --lib-path [option] --resources-path [option] --shell-apk-path [option] --index-path [option] --out-path <option> --force [option]
+java -jar app_packing_tool.jar --mode <option> --json-path <option> --maple-so-path [option] --profile-path [option] --maple-so-dir [option] --dex-path [option] --lib-path [option] --resources-path [option] --shell-apk-path [option] --index-path [option] --out-path <option> --force [option]
 ```
 参数含义及规范:
 
@@ -70,14 +70,14 @@ java -jar hmos_app_packing_tool.jar --mode <option> --json-path <option> --maple
 
 打包har包命令示例：
 ```
-java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option> --jar-path <option> --lib-path [option] --resources-path [option] --out-path <option> --force [option]
+java -jar app_packing_tool.jar --mode <options> --json-path <option> --jar-path <option> --lib-path [option] --resources-path [option] --out-path <option> --force [option]
 ```
 参数含义及规范:
 
 | 参数 | 是否必选 | 描述 |
 | ---- | ---- | ---- |
 |--mode|是|打包类型（har）|
-|--json-path|是|.json文件路径，文件名必须为config.json|
+|--json-path|是|.json文件路径，文件名必须为config.json，对于stage模型必须是module.json|
 |--jar-path|否|1.jar文件路径，文件名必须以.jar为后缀。如果是多个jar需要用“，”分隔<br>2.jar文件路径也可以为目录|
 |--lib-path|否|lib库文件路径|
 |--res-path|否|resource资源包路径|
@@ -86,7 +86,7 @@ java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option> --jar-
 
 打包app包命令示例：
 ```
-java -jar hmos_app_packing_tool.jar --mode <options> --hap-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info-path <option> --force [option]
+java -jar app_packing_tool.jar --mode <options> --hap-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info-path <option> --force [option]
 ```
 参数含义及规范:
 
@@ -102,7 +102,7 @@ java -jar hmos_app_packing_tool.jar --mode <options> --hap-path <option> --out-p
 
 拆hap包命令示例：
 ```
-java -jar hmos_app_unpacking_tool.jar --mode <options> --hap-path <option> --out-path [option] --force [option] --unpackapk [option]
+java -jar app_unpacking_tool.jar --mode <options> --hap-path <option> --out-path [option] --force [option] --unpackapk [option]
 ```
 参数含义及规范:
 
@@ -116,7 +116,7 @@ java -jar hmos_app_unpacking_tool.jar --mode <options> --hap-path <option> --out
 
 拆har包命令示例：
 ```
-java -jar hmos_app_unpacking_tool.jar --mode <options> --har-path <option> --out-path [option] --force [option]
+java -jar app_unpacking_tool.jar --mode <options> --har-path <option> --out-path [option] --force [option]
 ```
 参数含义及规范:
 
@@ -129,7 +129,7 @@ java -jar hmos_app_unpacking_tool.jar --mode <options> --har-path <option> --out
 
 拆app包命令示例：
 ```
-java -jar hmos_app_unpacking_tool.jar --mode <options> --app-path <option> --out-path [option] --force [option] --unpackapk [option]
+java -jar app_unpacking_tool.jar --mode <options> --app-path <option> --out-path [option] --force [option] --unpackapk [option]
 ```
 参数含义及规范:
 
