@@ -79,16 +79,14 @@ public class CompressVerify {
      */
     private static boolean commandPathVerify(Utility utility) {
         if (Utility.MODE_HAP.equals(utility.getMode())) {
-            if (!utility.getJsonPath().isEmpty()) {
-                File file = new File(utility.getJsonPath());
-                if (!file.isFile()) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode json-path is not a file!");
-                    return false;
-                }
-                if (!file.getName().equals(JSON_PROFILE) && !file.getName().equals(MODULE_PROFILE)) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode json-path must be config.json or module.json file!");
-                    return false;
-                }
+            if (utility.getJsonPath().isEmpty()) {
+                LOG.error("CompressVerify::commandPathVerify json-path is empty!");
+                return false;
+            }
+            if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
+                    && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
+                LOG.error("CompressVerify::isArgsValidInHarMode json-path must be config.json file!");
+                return false;
             }
 
             if (!utility.getRpcidPath().isEmpty()) {
