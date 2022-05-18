@@ -15,8 +15,6 @@
 
 package ohos;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +36,15 @@ public class ResourcesParser {
     private static final int TAG_BYTE_LENGTH = 4;
     private static final String LEFT_BRACKET = "<";
     private static final String RIGHT_BRACKET = ">";
+    private static final String VERTICAL = "vertical";
+    private static final String HORIZONTAL = "horizontal";
+    private static final String DARK = "dark";
+    private static final String LIGHT = "light";
+    private static final String MCC = "mcc";
+    private static final String MNC = "mnc";
+    private static final String CONFIG_CONJUNCTION = "-";
+    private static final String MCC_CONJUNCTION = "_";
+    private static final String BASE = "base";
     private static final int CHAR_LENGTH = 1;
     private enum ResType {
         Values(0, "Values"),
@@ -87,6 +94,79 @@ public class ResourcesParser {
         public String getType() {
             return type;
         }
+    }
+
+    private enum DeviceType {
+        Phone(0, "phone"),
+        Tablet(1, "tablet"),
+        Car(2, "car"),
+        Pc(3, "pc"),
+        Tv(4, "tv"),
+        Speaker(5, "speaker"),
+        Wearable(6, "wearable"),
+        Glasses(7, "glasses"),
+        Headset(8, "headset");
+
+        private final int index;
+        private final String type;
+        private DeviceType(int index, String type) {
+            this.index = index;
+            this.type = type;
+        }
+
+        public static String getType(int index) {
+            for (DeviceType deviceType : DeviceType.values()) {
+                if (deviceType.getIndex() == index) {
+                    return deviceType.type;
+                }
+            }
+            return "";
+        }
+
+        public int getIndex() {
+            return index;
+        }
+        public String getType() {
+            return type;
+        }
+    }
+
+    private enum Resolution {
+        Nodpi(-2, "nodpi"),
+        Anydpi(-1, "anydpi"),
+        Sdpi(120, "sdpi"),
+        Mdpi(160, "mdpi"),
+        Tvdpi(213, "tvdpi"),
+        Ldpi(240, "ldpi"),
+        Xldpi(320, "xldpi"),
+        Xxldpi(480, "xxldpi"),
+        Xxxldpi(640, "xxxldpi");
+
+        private final int index;
+        private final String type;
+        private Resolution(int index, String type) {
+            this.index = index;
+            this.type = type;
+        }
+        public static String getType(int index) {
+            for (Resolution resolution : Resolution.values()) {
+                if (resolution.getIndex() == index) {
+                    return resolution.type;
+                }
+            }
+            return "";
+        }
+
+        public int getIndex() {
+            return index;
+        }
+        public String getType() {
+            return type;
+        }
+    }
+
+    private enum ConfigType {
+        Language, Region, Resolution, Direction, DeviceType, Script, LightMode, MCC, MNC
     }
 
     private static final Log LOG = new Log(ResourcesParser.class.toString());
@@ -372,18 +452,22 @@ public class ResourcesParser {
     static List<ResourceIndexResult> readDataAllItem(List<ConfigIndex> configs, ByteBuffer buf) {
         List<ResourceIndexResult> resourceIndexResults = new ArrayList<>();
         for (ConfigIndex index : configs) {
+            String configClass = convertConfigIndexToString(index);
             buf.rewind();
             buf.position(index.offset);
             byte[] tag = new byte[TAG_BYTE_LENGTH];
             buf.get(tag);
             int count = buf.getInt();
-            buf.getInt();
-            int offset = buf.getInt();
-            buf.rewind();
-            buf.position(offset);
-            for (int i = 0; i < count; i++) {
+            int position = buf.position();
+            for (int i = 0; i < count; ++i) {
+                buf.position(position);
+                buf.getInt();
+                int offset = buf.getInt();
+                position = buf.position();
+                buf.rewind();
+                buf.position(offset);
                 DataItem item = readItem(buf);
-                resourceIndexResults.add(parseDataItems(item));
+                resourceIndexResults.add(parseDataItems(item, configClass));
             }
         }
         return resourceIndexResults;
@@ -393,9 +477,11 @@ public class ResourcesParser {
      * convert DataItems to ResourceIndexResult.
      *
      * @param item Indicates the DataItem.
+     *  @return the final ResourceIndexResult
      */
-    static ResourceIndexResult parseDataItems(DataItem item) {
+    static ResourceIndexResult parseDataItems(DataItem item, String configClass) {
         ResourceIndexResult resourceIndexResult = new ResourceIndexResult();
+        resourceIndexResult.configClass = configClass;
         if (item != null) {
             resourceIndexResult.type = ResType.getType(item.type);
             resourceIndexResult.id = item.id;
@@ -417,6 +503,7 @@ public class ResourcesParser {
      * convert bytes to string.
      *
      * @param data Indicates the bytes of data.
+     * @return the final string
      */
     static String convertBytesToString(byte[] data) {
         StringBuilder result = new StringBuilder();
@@ -431,6 +518,107 @@ public class ResourcesParser {
             result.append(item, 0, item.length() - 1);
             result.append(RIGHT_BRACKET);
         }
+        return result.toString();
+    }
+
+    /**
+     * convert config to string.
+     *
+     * @param configIndex Indicates the configIndex.
+     *  @return the final string
+     */
+    static String convertConfigIndexToString(ConfigIndex configIndex) {
+        StringBuilder configClass = new StringBuilder();
+        int lastKeyType = -1;
+        for (int i = 0; i < configIndex.keyCount; ++i) {
+            KeyParam param = configIndex.params[i];
+            if (param.keyType == ConfigType.Language.ordinal() || param.keyType == ConfigType.Region.ordinal()
+                    || param.keyType == ConfigType.Script.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(parseAscii(param.value));
+                } else {
+                    if (lastKeyType == ConfigType.Language.ordinal() ||
+                            lastKeyType == ConfigType.Region.ordinal() || lastKeyType == ConfigType.Script.ordinal()) {
+                        configClass.append(MCC_CONJUNCTION).append(parseAscii(param.value));
+                    } else {
+                        configClass.append(CONFIG_CONJUNCTION).append(parseAscii(param.value));
+                    }
+                }
+                lastKeyType = param.keyType;
+            } else if (param.keyType == ConfigType.Resolution.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(Resolution.getType(param.value));
+                } else {
+                    configClass.append(CONFIG_CONJUNCTION).append(Resolution.getType(param.value));
+                }
+            } else if (param.keyType == ConfigType.Direction.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(param.value == 0 ? VERTICAL : HORIZONTAL);
+                } else {
+                    configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? VERTICAL : HORIZONTAL);
+                }
+            } else if (param.keyType == ConfigType.DeviceType.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(DeviceType.getType(param.value));
+                } else {
+                    configClass.append(CONFIG_CONJUNCTION).append(DeviceType.getType(param.value));
+                }
+            } else if (param.keyType == ConfigType.LightMode.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(param.value == 0 ? DARK : LIGHT);
+                } else {
+                    configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? DARK : LIGHT);
+                }
+            } else if (param.keyType == ConfigType.MCC.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(MCC).append(String.valueOf(param.value));
+                } else {
+                    configClass.append(MCC_CONJUNCTION).append(MCC).append(String.valueOf(param.value));
+                }
+            } else if (param.keyType == ConfigType.MNC.ordinal()) {
+                if (configClass.toString().equals("")) {
+                    configClass.append(MNC).append(fillUpZero(String.valueOf(param.value), 3));
+                } else {
+                    configClass.append(MCC_CONJUNCTION).append(MNC).append(fillUpZero(String.valueOf(param.value), 3));
+                }
+            }
+        }
+        if (configClass.toString().equals("")) {
+            configClass = new StringBuilder(BASE);
+        }
+        return configClass.toString();
+    }
+
+    /**
+     * convert integer to string.
+     *
+     * @param value Indicates the Integer.
+     *  @return the final string
+     */
+    private static String parseAscii(Integer value) {
+        StringBuilder result = new StringBuilder();
+        while(value > 0) {
+            result.insert(0, (char) (value & 0xFF));
+            value = value >> 8;
+        }
+        return result.toString();
+    }
+
+    /**
+     * fillup zero to string.
+     * @param inputString Indicates the string shoule to be filled.
+     * @param length Indicates the final length of String.
+     * @return the final string
+     */
+    private static String fillUpZero(String inputString, int length) {
+        if (inputString.length() >= length) {
+            return inputString;
+        }
+        StringBuilder result = new StringBuilder();
+        while(result.length() < length - inputString.length()) {
+            result.append('0');
+        }
+        result.append(inputString);
         return result.toString();
     }
 }
