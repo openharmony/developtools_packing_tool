@@ -35,4 +35,8 @@ public class ResourceIndexResult {
      * Indicates the value of resource.
      */
     public String value = "";
+    /**
+     * Indicates the resClass of resource.
+     */
+    public String configClass = "";
 }
