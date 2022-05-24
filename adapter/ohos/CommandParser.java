@@ -66,6 +66,8 @@ public class CommandParser {
     private static final String CMD_UNPACK_CUT_ENTRY_APK = "--unpack-cut_entry";
     private static final String CMD_SHAREDLIBS_PATH = "--shared-libs-path";
     private static final String CMD_ENTRYCARD_PATH = "--entrycard-path";
+    private static final String CMD_HAP_LIST = "--hap-list";
+    private static final String CMD_APP_LIST = "--app-list";
     private static final Log LOG = new Log(CommandParser.class.toString());
 
     /**
@@ -218,6 +220,13 @@ public class CommandParser {
             case CMD_PACK_RES_PATH: {
                 utility.setPackResPath(value);
                 return true;
+            }
+            case CMD_HAP_LIST: {
+                utility.setHapList(value);
+                return true;
+            }
+            case CMD_APP_LIST: {
+                utility.setAppList(value);
             }
             default : {
                 return false;
