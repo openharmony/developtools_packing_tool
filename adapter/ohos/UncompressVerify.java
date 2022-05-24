@@ -127,6 +127,11 @@ public class UncompressVerify {
             LOG.error("UncompressVerify::isArgsValidInHapMode hap-path must end with.hap!");
             return false;
         }
+
+        if (!(TRUE.equals(utility.getRpcid()) || FALSE.equals(utility.getRpcid()))) {
+            LOG.error("UncompressVerify::isArgsValidInHapMode --rpcid must be true or false");
+            return false;
+        }
         if (TRUE.equals(utility.getRpcid())) {
             return rpcidCommandVerify(utility);
         }
