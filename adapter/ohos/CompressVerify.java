@@ -147,6 +147,8 @@ public class CompressVerify {
             return isVerifyValidInAppMode(utility);
         } else if (Utility.MODE_RES.equals(utility.getMode())) {
             return isVerifyValidInResMode(utility);
+        } else if (Utility.MODE_MULTI_APP.equals(utility.getMode())) {
+            return isVerifyValidInMultiAppMode(utility);
         } else {
             LOG.error("CompressVerify::commandVerify mode is invalid!");
             return false;
@@ -342,6 +344,42 @@ public class CompressVerify {
         }
 
         return isOutPathValid(utility, APP_SUFFIX);
+    }
+
+    /**
+     * parse and check args if valid in multiApp mode.
+     *
+     * @param utility common data
+     * @return isVerifyValidInMultiAppMode if verify valid in multiApp mode.
+     */
+    private static boolean isVerifyValidInMultiAppMode(Utility utility) {
+        if (utility.getAppList().isEmpty() && utility.getHapList().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInMultiAppMode input app-list and hap-list are null!");
+            return false;
+        }
+        if (!utility.getAppList().isEmpty()) {
+            if (!compatibleProcess(utility,utility.getAppList(), utility.getFormattedAppList(), APP_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode app-list is invalid!");
+                return false;
+            }
+        }
+        if (!utility.getHapList().isEmpty()) {
+            if (!compatibleProcess(utility, utility.getHapList(), utility.getFormattedHapList(), HAP_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hap-list is invalid!");
+                return false;
+            }
+        }
+
+        File outFile = new File(utility.getOutPath());
+        if (("false".equals(utility.getForceRewrite())) && outFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInMultiAppMode out file already existed!");
+            return false;
+        }
+        if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
+            LOG.error("CompressVerify::isVerifyValidInMultiAppMode out-path must end with .app!");
+            return false;
+        }
+        return true;
     }
 
 

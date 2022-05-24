@@ -17,16 +17,7 @@ package ohos;
 
 import ohos.utils.fastjson.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Optional;
@@ -354,5 +345,49 @@ public class FileUtils {
             return false;
         }
         return true;
+    }
+
+    /**
+     * copy a file to another place.
+     *
+     * @param sourceFile is the source file
+     * @param destFile is the destination file
+     * @throws IOException FileNotFoundException|IOException.
+     */
+    public static void copyFile(File sourceFile, File destFile) throws IOException, BundleException {
+        if (sourceFile == null || destFile == null) {
+            String errMsg = "CompressorFileUtil::copyFile input file is null!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            inputStream = new FileInputStream(sourceFile);
+            outputStream = new FileOutputStream(destFile);
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+        } finally {
+            Utility.closeStream(inputStream);
+            Utility.closeStream(outputStream);
+        }
+    }
+
+    /**
+     * make a directory if not exist.
+     *
+     * @param dirFile is the directory file
+     * @throws IOException FileNotFoundException|IOException.
+     */
+    public static void makeDir(File dirFile) throws IOException, BundleException {
+        if (dirFile == null) {
+            String errMsg = "CompressorFileUtil::makeDir input file is null!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        dirFile.mkdirs();
     }
 }

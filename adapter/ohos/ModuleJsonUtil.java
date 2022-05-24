@@ -16,15 +16,12 @@
 package ohos;
 
 import ohos.utils.fastjson.JSON;
+import ohos.utils.fastjson.JSONArray;
 import ohos.utils.fastjson.JSONObject;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.Map;
-
-import java.util.Locale;
 
 public class ModuleJsonUtil {
     private static final String  VERSION_CODE = "\"versionCode\"";
@@ -36,9 +33,16 @@ public class ModuleJsonUtil {
     private static final String CODE = "code";
     private static final String NAME = "name";
     private static final String MODULE = "module";
+    private static final String MODULES = "modules";
     private static final String MODULENAME = "moduleName";
+    private static final String MODULETYPE= "moduleType";
     private static final String DISTRO = "distro";
     private static final String PACKAGE = "package";
+    private static final String PACKAGES = "packages";
+    private static final String SUMMARY = "summary";
+    private static final String BUNDLENAME = "bundleName";
+    private static final String ENTRY = "entry";
+    private static final char DOT = '.';
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -105,16 +109,19 @@ public class ModuleJsonUtil {
                     version.versionCode = appObj.getIntValue(VERSIONCODE);
                     version.versionName = appObj.getString(VERSIONNAME);
                 } else {
-                    LOG.error("parseStageVersion json file do not contain version.");
-                    throw new BundleException("parseStageVersion json file do not contain version.");
+                    String errMsg = "ModuleJsonUtil:parseStageVersion json file do not contain version!";
+                    LOG.error(errMsg);
+                    throw new BundleException(errMsg);
                 }
             } else {
-                LOG.error("parseStageVersion json file do not contain app.");
-                throw new BundleException("parseStageVersion json file do not contain app.");
+                String errMsg = "ModuleJsonUtil:parseStageVersion json file do not contain app!";
+                LOG.error(errMsg);
+                throw new BundleException(errMsg);
             }
         } catch (BundleException e) {
-            LOG.error("parseStageVersion failed!");
-            throw new BundleException("parseStageVersion failed!");
+            String errMsg = "ModuleJsonUtil:parseStageVersion failed!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
         }
 
         return version;
@@ -133,23 +140,23 @@ public class ModuleJsonUtil {
             JSONObject jsonObject = JSON.parseObject(jsonString);
             JSONObject appObj = jsonObject.getJSONObject(APP);
             if (appObj == null) {
-                LOG.error("parseFaVersion failed : json file do not contain app.");
-                throw new BundleException("parseFaVersion failed : json file do not contain app.");
+                LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
+                throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
             }
             JSONObject versionObj = appObj.getJSONObject(VERSION);
             if (versionObj == null) {
-                LOG.error("parseFaVersion failed : json file do not version.");
-                throw new BundleException("parseFaVersion failed : json file do not version.");
+                LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
+                throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
             }
             if (versionObj.containsKey(CODE) && versionObj.containsKey(NAME)) {
                 version.versionName = versionObj.getString(NAME);
                 version.versionCode = versionObj.getIntValue(CODE);
             } else {
-                LOG.error("parseFaVersion failed : json file do not version name or version code.");
-                throw new BundleException("parseFaVersion failed : json file do not version name or version code.");
+                LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
+                throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
             }
         } catch (BundleException e) {
-            throw new BundleException("parseFaVersion failed!");
+            throw new BundleException("ModuleJsonUtil:parseFaVersion failed!");
         }
         return version;
     }
@@ -167,18 +174,18 @@ public class ModuleJsonUtil {
             JSONObject jsonObject = JSON.parseObject(jsonString);
             JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
             if (moduleObj == null) {
-                LOG.error("parseStageModuleName failed: json file do not contain module.");
-                throw new BundleException("parseStageModuleName failed: json file do not contain module.");
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module.");
             }
             if (moduleObj.containsKey(NAME)) {
                 moduleName = moduleObj.getString(NAME);
             } else {
-                LOG.error("parseStageModuleName failed: json file do not contain module name.");
-                throw new BundleException("parseStageModuleName failed: json file do not contain module name.");
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
             }
         } catch (BundleException e) {
-            LOG.error("parseStageModuleName failed!");
-            throw new BundleException("parseStageModuleName failed!");
+            LOG.error("ModuleJsonUtil:parseStageModuleName failed!");
+            throw new BundleException("ModuleJsonUtil:parseStageModuleName failed!");
         }
         return moduleName;
     }
@@ -196,22 +203,22 @@ public class ModuleJsonUtil {
             JSONObject jsonObject = JSON.parseObject(jsonString);
             JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
             if (moduleObj == null) {
-                LOG.error("parseFaModuleName failed: json file do not contain module.");
-                throw new BundleException("parseFaModuleName failed: json file do not contain module.");
+                LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain module.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain module.");
             }
             JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
             if (distroObj == null) {
-                LOG.error("parseFaModuleName failed: json file do not contain distro.");
-                throw new BundleException("parseFaModuleName failed: json file do not contain distro.");
+                LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain distro.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain distro.");
             }
             if (!distroObj.containsKey(MODULENAME)) {
-                LOG.error("parseFaModuleName failed: json file do not contain moduleName.");
-                throw new BundleException("parseFaModuleName failed: json file do not contain moduleName.");
+                LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
             }
             moduleName = distroObj.getString(MODULENAME);
         } catch (BundleException e) {
-            LOG.error("parseFaModuleName failed!");
-            throw new BundleException("parseFaModuleName failed!");
+            LOG.error("ModuleJsonUtil:parseFaModuleName failed!");
+            throw new BundleException("ModuleJsonUtil:parseFaModuleName failed!");
         }
         return moduleName;
     }
@@ -229,19 +236,373 @@ public class ModuleJsonUtil {
             JSONObject jsonObject = JSON.parseObject(jsonString);
             JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
             if (moduleObj == null) {
-                LOG.error("parseFaPackageStr failed: json file do not contain module.");
-                throw new BundleException("parseFaPackageStr failed: json file do not contain module.");
+                LOG.error("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain module.");
+                throw new BundleException("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain module.");
             }
             if (moduleObj.containsKey(PACKAGE)) {
                 packageStr = moduleObj.getString(PACKAGE);
             } else {
-                LOG.error("parseFaPackageStr failed: json file do not contain package.");
-                throw new BundleException("parseFaPackageStr failed: json file do not contain package.");
+                LOG.error("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain package.");
+                throw new BundleException("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain package.");
             }
         } catch (BundleException e) {
-            LOG.error("parseFaPackageStr failed!");
-            throw new BundleException("parseFaPackageStr failed!");
+            LOG.error("ModuleJsonUtil:parseFaPackageStr failed!");
+            throw new BundleException("ModuleJsonUtil:parseFaPackageStr failed!");
         }
         return packageStr;
+    }
+
+    /**
+     * merge two pack.info file into one pack.info file.
+     *
+     * @param finalPackInfo is the final packInfo
+     * @param srcPackInfo is the packInfo to be merged
+     * @throws BundleException Throws this exception if the json is not standard.
+     * @return the result
+     */
+    public static String mergeTwoPackInfo(String finalPackInfo, String srcPackInfo) throws BundleException {
+        String desPackInfo = "";
+        try {
+            JSONObject finalPackObj = JSON.parseObject(finalPackInfo);
+            JSONObject srcPackObj = JSON.parseObject(srcPackInfo);
+            if (!verifyPackInfo(finalPackObj, srcPackObj)) {
+                LOG.error("ModuleJsonUtil:mergeTwoPackInfo verify pack.info failed!");
+                throw new BundleException("ModuleJsonUtil:mergeTwoPackInfo verify pack.info failed!");
+            }
+            desPackInfo = mergePackInfoObj(finalPackObj, srcPackObj);
+        } catch (BundleException e) {
+            LOG.error("ModuleJsonUtil:mergeTwoPackInfo merge pack.info failed!");
+            throw new BundleException("ModuleJsonUtil:mergeTwoPackInfo merge pack.info failed!");
+        }
+        return desPackInfo;
+    }
+
+    /**
+     * verify pack.info file.
+     *
+     * @param finalPackObj is the final pack.info object
+     * @param srcPackObj is the src pack.info object
+     * @return the result
+     */
+    public static boolean verifyPackInfo(JSONObject finalPackObj, JSONObject srcPackObj) throws BundleException {
+        if (finalPackObj == null || srcPackObj == null) {
+            LOG.error("ModuleJsonUtil:verifyPackInfo fail to read pack.info!");
+            return false;
+        }
+        JSONObject finalSummaryObj = finalPackObj.getJSONObject(SUMMARY);
+        JSONObject srcSummaryObj = srcPackObj.getJSONObject(SUMMARY);
+        if (finalSummaryObj == null || srcSummaryObj == null) {
+            LOG.error("ModuleJsonUtil:verifyPackInfo pack.info do not contain summary!");
+            return false;
+        }
+        // check app info
+        JSONObject finalAppObj = finalSummaryObj.getJSONObject(APP);
+        JSONObject srcAppObj = srcSummaryObj.getJSONObject(APP);
+        if (finalAppObj == null || srcAppObj == null) {
+            LOG.error("ModuleJsonUtil:verifyPackInfo pack.info do not contain app!");
+            return false;
+        }
+        if (!verifyAppInPackInfo(finalAppObj, srcAppObj)) {
+            LOG.error("ModuleJsonUtil:verifyPackInfo verify app failed!");
+            return false;
+        }
+        // check modules info
+        if (!verifyModuleInPackInfo(finalSummaryObj.getJSONArray(MODULES), srcSummaryObj.getJSONArray(MODULES))) {
+            LOG.error("ModuleJsonUtil:verifyPackInfo verify module failed!");
+            return false;
+        }
+        // check packageName info
+        if (!verifyPackageName(finalPackObj.getJSONArray(PACKAGES), srcPackObj.getJSONArray(PACKAGES))) {
+            LOG.error("ModuleJsonUtil:verifyPackInfo verify package failed!");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * verify app in pack.info file.
+     *
+     * @param finalAppObj is the final pack.info app object
+     * @param srcAppObj is the src pack.info app object
+     * @return the result
+     */
+    public static boolean verifyAppInPackInfo(JSONObject finalAppObj, JSONObject srcAppObj) {
+        if (finalAppObj == null || srcAppObj == null) {
+            LOG.error("ModuleJsonUtil:verifyAppInPackInfo input null json object!");
+            return false;
+        }
+        // check bundleName
+        String finalBundleName = finalAppObj.getString(BUNDLENAME);
+        String srcBundleName = srcAppObj.getString(BUNDLENAME);
+        if (!finalBundleName.equals(srcBundleName)) {
+            LOG.error("ModuleJsonUtil:verifyAppInPackInfo bundleName is different!");
+            return false;
+        }
+        // check version
+        JSONObject finalVersionObj = finalAppObj.getJSONObject(VERSION);
+        JSONObject srcVersionObj = srcAppObj.getJSONObject(VERSION);
+        if (finalVersionObj == null || srcVersionObj == null) {
+            LOG.error("ModuleJsonUtil:verifyAppInPackInfo version object is empty!");
+            return false;
+        }
+        String finalVersionName = finalVersionObj.getString(NAME);
+        String srcVersionName = srcVersionObj.getString(NAME);
+        if (!finalVersionName.equals(srcVersionName)) {
+            LOG.error("ModuleJsonUtil:verifyAppInPackInfo versionName is different!");
+            return false;
+        }
+        int finalVersionCode = finalVersionObj.getIntValue(CODE);
+        int srcVersionCode = srcVersionObj.getIntValue(CODE);
+        if (finalVersionCode != srcVersionCode) {
+            LOG.error("ModuleJsonUtil:verifyAppInPackInfo versionCode is different!");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * verify module in pack.info file.
+     *
+     * @param finalModuleObs is the final pack.info module objects
+     * @param srcModuleObs is the src pack.info module objects
+     * @return the result
+     */
+    public static boolean verifyModuleInPackInfo(JSONArray finalModuleObs, JSONArray srcModuleObs)
+            throws BundleException {
+        if (finalModuleObs.isEmpty() || srcModuleObs.isEmpty()) {
+            LOG.error("ModuleJsonUtil:verifyModuleInPackInfo pack.info has empty module!");
+            throw new BundleException("ModuleJsonUtil:verifyModuleInPackInfo pack.info has empty module!");
+        }
+        List<String> moduleNames = new ArrayList<>();
+        for (int i = 0; i < finalModuleObs.size(); ++i) {
+            JSONObject finalModuleObj = finalModuleObs.getJSONObject(i);
+            String moduleName = parseDistroModuleName(finalModuleObj);
+            if (moduleNames.contains(moduleName)) {
+                LOG.error("ModuleJsonUtil:verifyModuleInPackInfo duplicated moduleName!");
+                return false;
+            } else {
+                moduleNames.add(moduleName);
+            }
+        }
+        for (int i = 0; i < srcModuleObs.size(); ++i) {
+            JSONObject srcModuleObj = srcModuleObs.getJSONObject(i);
+            String moduleName = parseDistroModuleName(srcModuleObj);
+            if (moduleNames.contains(moduleName)) {
+                LOG.error("ModuleJsonUtil:verifyModuleInPackInfo duplicated moduleName!");
+                return false;
+            } else {
+                moduleNames.add(moduleName);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * verify package name in pack.info file.
+     *
+     * @param finalPackageObs is the final pack.info objects
+     * @param srcPackageObs is the src pack.info objects
+     * @return the result
+     */
+    public static boolean verifyPackageName(JSONArray finalPackageObs, JSONArray srcPackageObs) {
+        if (finalPackageObs == null || finalPackageObs.isEmpty() || srcPackageObs == null || srcPackageObs.isEmpty()) {
+            LOG.error("ModuleJsonUtil:verifyPackageName pack.info has empty packages!");
+            return false;
+        }
+        List<String> packageNames = new ArrayList<>();
+        for (int i = 0; i < finalPackageObs.size(); ++i) {
+            JSONObject packageObj = finalPackageObs.getJSONObject(i);
+            String packageName = packageObj.getString(NAME);
+            if (packageNames.contains(packageName)) {
+                LOG.error("ModuleJsonUtil:verifyPackageName duplicated package name!");
+                return false;
+            } else {
+                packageNames.add(packageName);
+            }
+        }
+        for (int i = 0; i < srcPackageObs.size(); ++i) {
+            JSONObject packageObj = srcPackageObs.getJSONObject(i);
+            String packageName = packageObj.getString(NAME);
+            if (packageNames.contains(packageName)) {
+                LOG.error("ModuleJsonUtil:verifyPackageName duplicated package name!");
+                return false;
+            } else {
+                packageNames.add(packageName);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * parse moduleName in pack.info file.
+     *
+     * @param moduleObj is the final pack.info objects
+     * @return the result
+     */
+    public static String parseDistroModuleName(JSONObject moduleObj) throws BundleException {
+        String moduleName = "";
+        try {
+            if (moduleObj == null) {
+                LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain module.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain module.");
+            }
+            JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
+            if (distroObj == null) {
+                LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain distro.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain distro.");
+            }
+            if (!distroObj.containsKey(MODULENAME)) {
+                LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
+            }
+            moduleName = distroObj.getString(MODULENAME);
+        } catch (BundleException e) {
+            LOG.error("ModuleJsonUtil:parseFaModuleName failed!");
+            throw new BundleException("ModuleJsonUtil:parseFaModuleName failed!");
+        }
+        return moduleName;
+    }
+
+    /**
+     * merge pack.info file.
+     *
+     * @param finalPackinfoObj is the final pack.info objects
+     * @param srcPackinfoObj is the final pack.info objects
+     * @return the result
+     */
+    public static String mergePackInfoObj(JSONObject finalPackinfoObj, JSONObject srcPackinfoObj) throws BundleException {
+        if (finalPackinfoObj == null || srcPackinfoObj == null) {
+            String errMsg = "ModuleJsonUtil:mergePackInfoObj input an invalid json object!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject finalSummaryObj = finalPackinfoObj.getJSONObject(SUMMARY);
+        JSONObject srcSummaryObj = srcPackinfoObj.getJSONObject(SUMMARY);
+        if (finalSummaryObj == null || srcSummaryObj == null) {
+            String errMsg = "ModuleJsonUtil:mergePackInfoObj input json file has empty summary!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        // merge modules
+        JSONArray finalModuleObs = finalSummaryObj.getJSONArray(MODULES);
+        JSONArray srcModuleObs = srcSummaryObj.getJSONArray(MODULES);
+        if (finalModuleObs == null || srcModuleObs == null) {
+            String errMsg = "ModuleJsonUtil:mergePackInfoObj input json file has empty module";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        finalModuleObs.addAll(srcModuleObs);
+        // merge packages
+        JSONArray finalPackageObs = finalPackinfoObj.getJSONArray(PACKAGES);
+        JSONArray srcPackageObs = srcPackinfoObj.getJSONArray(PACKAGES);
+        if (finalPackageObs == null || srcPackageObs == null) {
+            String errMsg = "ModuleJsonUtil:mergePackInfoObj input json file has empty packages!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        finalPackageObs.addAll(srcPackageObs);
+        return finalPackinfoObj.toString();
+    }
+
+    /**
+     * merge two pack.info file into one pack.info file by packagePair.
+     *
+     * @param finalPackInfo is the final packInfo
+     * @param srcPackInfo is the packInfo to be merged
+     * @param packagePair is the selected packageName-moduleName pair map
+     * @throws BundleException Throws this exception if the json is not standard.
+     * @return the result
+     */
+    public static String mergeTwoPackInfoByPackagePair(String finalPackInfo, String srcPackInfo,
+                                                       HashMap<String, String> packagePair) throws BundleException {
+        JSONObject finalPackObj = JSON.parseObject(finalPackInfo);
+        JSONObject srcPackObj = JSON.parseObject(srcPackInfo);
+        // verify app in pack.info
+        JSONObject finalSummaryObj = finalPackObj.getJSONObject(SUMMARY);
+        JSONObject finalAppObj = finalSummaryObj.getJSONObject(APP);
+        JSONObject srcSummaryObj = srcPackObj.getJSONObject(SUMMARY);
+        JSONObject srcAppObj = srcSummaryObj.getJSONObject(APP);
+        if (!verifyAppInPackInfo(finalAppObj, srcAppObj)) {
+            String errMsg = "verify pack.info failed, different version or bundleName!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        for (HashMap.Entry<String, String> entry : packagePair.entrySet()) {
+            String packageName = entry.getKey().substring(0, entry.getKey().lastIndexOf(DOT));
+            mergeTwoPackInfoObjByPackagePair(finalPackObj, srcPackObj, packageName, entry.getValue());
+        }
+        return finalPackObj.toString();
+    }
+
+    /**
+     * merge two pack.info file into one pack.info file by packagePair.
+     *
+     * @param finalPackObj is the final packInfo
+     * @param srcPackObj is the packInfo to be merged
+     * @param packageName is the selected packageName
+     * @param moduleName is the selected moduleName
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static void mergeTwoPackInfoObjByPackagePair(JSONObject finalPackObj, JSONObject srcPackObj,
+                                                        String packageName, String moduleName) throws BundleException {
+        if (finalPackObj == null || srcPackObj == null) {
+            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info is not json object!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        // merge module
+        JSONObject finalSummaryObj = finalPackObj.getJSONObject(SUMMARY);
+        JSONObject srcSummaryObj = srcPackObj.getJSONObject(SUMMARY);
+        if (finalSummaryObj == null || srcSummaryObj == null) {
+            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info do not contain summary!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONArray finalModules = finalSummaryObj.getJSONArray(MODULES);
+        JSONArray srcModules = srcSummaryObj.getJSONArray(MODULES);
+        if (finalModules == null || srcModules == null) {
+            LOG.error("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module!");
+            throw new BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module!");
+        }
+        boolean findModule = false;
+        for (int index = 0; index < srcModules.size(); ++index) {
+            JSONObject moduleObj = srcModules.getJSONObject(index);
+            JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
+            if (distroObj.getString(MODULENAME).equals(moduleName)) {
+                finalModules.add(moduleObj);
+                findModule = true;
+                break;
+            }
+        }
+        if (!findModule) {
+            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair" +
+                    " input json do not contain " + moduleName + "!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        // merge package
+        JSONArray finalPackages = finalPackObj.getJSONArray(PACKAGES);
+        JSONArray srcPackages = srcPackObj.getJSONArray(PACKAGES);
+        if (finalPackages == null || srcPackages == null) {
+            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info do not contain packages!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        boolean findPackage = false;
+        for (int index = 0; index < srcPackages.size(); ++index) {
+            JSONObject srcPackageObj = srcPackages.getJSONObject(index);
+            if (srcPackageObj.getString(NAME).equals(packageName)) {
+                finalPackages.add(srcPackageObj);
+                findPackage = true;
+                break;
+            }
+        }
+        if (!findPackage) {
+            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json do not contain "
+                    + packageName + "!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
     }
 }
