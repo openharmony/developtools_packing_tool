@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -41,6 +43,7 @@ import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 /**
@@ -52,6 +55,7 @@ public class Compressor {
     private static final String INFO_SUFFIX = ".info";
     private static final String HAP_SUFFIX = ".hap";
     private static final String PNG_SUFFIX = ".png";
+    private static final String APP_SUFFIX = ".app";
     private static final String UPPERCASE_PNG_SUFFIX = ".PNG";
     private static final String CONFIG_JSON = "config.json";
     private static final String MODULE_JSON = "module.json";
@@ -107,6 +111,7 @@ public class Compressor {
     private static final String JS_PATH = "js/";
     private static final String ETS_PATH = "ets/";
     private static final String TEMP_HAP_DIR = "tempHapDir";
+    private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
     private static Version version = new Version();
 
 
@@ -180,6 +185,8 @@ public class Compressor {
                 compressHarMode(utility);
             } else if (Utility.MODE_APP.equals(utility.getMode())) {
                 compressAppMode(utility);
+            } else if (Utility.MODE_MULTI_APP.equals(utility.getMode())) {
+                compressAppModeForMultiProject(utility);
             } else {
                 compressPackResMode(utility);
             }
@@ -437,6 +444,7 @@ public class Compressor {
             if (!tempDir.exists()) {
                 tempDir.mkdirs();
             }
+
             for (String hapPathItem : utility.getFormattedHapPathList()) {
                 File hapFile = new File(hapPathItem.trim());
                 String hapTempPath = tempDir + File.separator + hapFile.getName();
@@ -485,6 +493,253 @@ public class Compressor {
                 deleteFile(hapPath);
             }
             deleteFile(tempPath);
+        }
+    }
+
+    /**
+     * compress in app mode for multi project.
+     *
+     * @param utility common data
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private void compressAppModeForMultiProject(Utility utility) throws BundleException {
+        List<String> fileList = new ArrayList<>();
+        File appOutputFile = new File(utility.getOutPath().trim());
+        String tempPath = appOutputFile.getParentFile().getParent() + File.separator + TEMP_HAP_DIR;
+        String tempSelectedHapPath = appOutputFile.getParentFile().getParent() +File.separator + TEMP_SELECTED_HAP_DIR;
+        try {
+            File tempSelectedHapDir = new File(tempSelectedHapPath);
+            FileUtils.makeDir(tempSelectedHapDir);
+            File tempHapDir = new File(tempPath);
+            FileUtils.makeDir(tempHapDir);
+            // pack app and dispose conflict
+            // save hap name into list
+            List<String> seletedHaps = new ArrayList<>();
+            String finalPackInfoStr = disposeApp(utility, seletedHaps, tempSelectedHapPath);
+            // pack hap and dispose conflict
+            finalPackInfoStr = disposeHap(utility, seletedHaps, tempSelectedHapPath, finalPackInfoStr);
+
+            // save final pack.info file
+            String finalPackInfoPath = tempSelectedHapDir.getPath() + File.separator + PACKINFO_NAME;
+            writePackInfo(finalPackInfoPath, finalPackInfoStr);
+            // pack haps
+            for (String selectedHapName : seletedHaps) {
+                String hapPathItem = tempSelectedHapDir.getPath() + File.separator + selectedHapName;
+                File hapFile = new File(hapPathItem.trim());
+                String hapTempPath = tempHapDir.getPath() + File.separator + hapFile.getName();
+                fileList.add(hapTempPath);
+                compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath);
+            }
+            // check hap is valid
+            if (!checkHapIsValid(fileList)) {
+                String errMsg = "Compressor::compressAppModeForMultiProject There are some " +
+                        "haps with different version code or duplicated moduleName or packageName!";
+                LOG.error(errMsg);
+                throw new BundleException(errMsg);
+            }
+            for (String hapPath : fileList) {
+                pathToFile(utility, hapPath, NULL_DIR_NAME, false);
+            }
+            File file = new File(finalPackInfoPath);
+            compressFile(utility, file, NULL_DIR_NAME, false);
+        } catch (BundleException | IOException exception) {
+            String errMsg = "Compressor::compressAppModeForMultiProject file failed!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        } finally {
+            deleteFile(tempPath);
+            deleteFile(tempSelectedHapPath);
+        }
+    }
+
+    /**
+     * pack hap in app to selectedHaps
+     *
+     * @param utility is common data
+     * @param seletedHaps is seleted haps should be pack into app
+     * @return the final pack.info string after dispose app
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static String disposeApp(Utility utility, List<String> seletedHaps,
+                                   String tempDir) throws BundleException {
+        // dispose app conflict
+        if (utility.getFormattedAppList().isEmpty()) {
+            return "";
+        }
+        String finalAppPackInfo = "";
+        try {
+            for (String appPath : utility.getFormattedAppList()) {
+                // select hap in app
+                finalAppPackInfo = selectHapInApp(appPath, seletedHaps, tempDir, finalAppPackInfo);
+            }
+        } catch (BundleException | IOException e) {
+            String errMsg = "Compressor:disposeApp disposeApp failed!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        return finalAppPackInfo;
+    }
+
+    /**
+     * select hap from app file list
+     *
+     * @param appPath is common data
+     * @param selectedHaps is list of packInfos
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static String selectHapInApp(String appPath, List<String> selectedHaps, String tempDir,
+                                         String finalAppPackInfo) throws BundleException, IOException {
+        List<String> selectedHapsInApp = new ArrayList<>();
+        // classify hap in app
+        copyHapFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
+        // rebuild pack.info
+        String packInfoStr = getJsonInZips(new File(appPath), PACKINFO_NAME);
+        if (packInfoStr.isEmpty()) {
+            String errorMsg = "Compressor:selectHapInApp failed, app has no pack.info!";
+            LOG.error(errorMsg);
+            throw new BundleException(errorMsg);
+        }
+        if (finalAppPackInfo.isEmpty()) {
+            finalAppPackInfo = packInfoStr;
+            return finalAppPackInfo;
+        }
+        // read selected module in temp hap
+        HashMap<String, String> packagePair = new HashMap<>();
+        for (String hapName : selectedHapsInApp) {
+            packagePair.put(hapName, readModlueNameFromHap(tempDir + File.separator + hapName));
+        }
+        return ModuleJsonUtil.mergeTwoPackInfoByPackagePair(finalAppPackInfo, packInfoStr, packagePair);
+    }
+
+    /**
+     * copy hap from app file
+     *
+     * @param appPath is common data
+     * @param selectedHapsInApp is list of haps selected in app file
+     * @param selectedHaps is the list of haps selected in input
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static void copyHapFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
+                                       String tempDir) throws BundleException, IOException {
+        ZipInputStream zipInput = null;
+        ZipFile zipFile = null;
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
+        ZipEntry zipEntry = null;
+        try {
+            zipInput = new ZipInputStream(new FileInputStream(appPath));
+            zipFile = new ZipFile(appPath);
+            while((zipEntry = zipInput.getNextEntry()) != null) {
+                File file = null;
+                if (!zipEntry.getName().endsWith(HAP_SUFFIX)) {
+                    continue;
+                }
+                // copy duplicated hap to duplicated dir and get moduleName of duplicated hap
+                if (selectedHaps.contains(zipEntry.getName())) {
+                    continue;
+                } else {
+                    // copy selectedHap to tempDir
+                    file = new File(tempDir + File.separator + zipEntry.getName());
+                    selectedHaps.add(file.getName());
+                    selectedHapsInApp.add(file.getName());
+                }
+                outputStream = new FileOutputStream(file);
+                inputStream = zipFile.getInputStream(zipEntry);
+                int len;
+                while((len = inputStream.read()) != -1) {
+                    outputStream.write(len);
+                }
+                outputStream.close();
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            String errMsg = "Compressor:copyHapFromApp app path not found!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        } finally {
+            Utility.closeStream(zipInput);
+            Utility.closeStream(zipFile);
+            Utility.closeStream(outputStream);
+            Utility.closeStream(inputStream);
+        }
+    }
+
+    /**
+     * read moduleName in hap
+     *
+     * @param hapPath is path of hap file
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static String readModlueNameFromHap(String hapPath) throws BundleException {
+        String moduleName = "";
+        File hapFile = new File(hapPath);
+        if (isModuleHap(hapPath)) {
+            String jsonString = getJsonInZips(hapFile, MODULE_JSON);
+            moduleName = ModuleJsonUtil.parseStageModuleName(jsonString);
+        } else {
+            String jsonString = getJsonInZips(hapFile, CONFIG_JSON);
+            moduleName = ModuleJsonUtil.parseFaModuleName(jsonString);
+        }
+        return moduleName;
+    }
+
+    /**
+     * dispose input of hap
+     *
+     * @param utility is common data
+     * @param seletedHaps is the selected  haps of all input
+     * @param tempDir is the path of temp directory
+     * @param finalPackInfoStr is the pack.info of the final app
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static String disposeHap(Utility utility, List<String> seletedHaps, String tempDir,
+                                   String finalPackInfoStr) throws BundleException, IOException {
+        // dispose hap conflict
+        if (utility.getFormattedHapList().isEmpty()) {
+            return finalPackInfoStr;
+        }
+        for (String hapPath : utility.getFormattedHapList()) {
+            if (seletedHaps.contains(new File(hapPath).getName())) {
+                continue;
+            }
+            File hapFile = new File(hapPath);
+            seletedHaps.add(hapFile.getName());
+            // copy hap to tempDir
+            FileUtils.copyFile(hapFile, new File((tempDir +File.separator + hapFile.getName())));
+            String packInfo = getJsonInZips(hapFile, PACKINFO_NAME);
+            if (packInfo.isEmpty()) {
+                String errMsg = "Compressor::disposeHap failed, hap has no pack.info!";
+                LOG.error(errMsg);
+                throw new BundleException(errMsg);
+            }
+            if (finalPackInfoStr.isEmpty()) {
+                finalPackInfoStr = packInfo;
+            } else {
+                finalPackInfoStr = ModuleJsonUtil.mergeTwoPackInfo(finalPackInfoStr, packInfo);
+            }
+        }
+        return finalPackInfoStr;
+    }
+
+    /**
+     * write string to pack.info
+     *
+     * @param filePath pack.info file path
+     * @param packInfoStr is the string of pack.info
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private void writePackInfo(String filePath, String packInfoStr) throws BundleException, IOException {
+        FileWriter fwriter = null;
+        try {
+            fwriter = new FileWriter(filePath);
+            fwriter.write(packInfoStr);
+        } catch (IOException e) {
+            String errMsg = "Compressor:writePackInfo failed!";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        } finally {
+            fwriter.flush();
+            fwriter.close();
         }
     }
 
@@ -1209,7 +1464,6 @@ public class Compressor {
         }
     }
 
-
     /**
      * compress process.
      *
@@ -1279,7 +1533,7 @@ public class Compressor {
      * @return true is for is stage type and false is for FA type
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private boolean isModuleHap(String hapPath) throws BundleException {
+    private static boolean isModuleHap(String hapPath) throws BundleException {
         if (!hapPath.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
             return true;
         }
@@ -1317,7 +1571,7 @@ public class Compressor {
     private boolean checkModuleVersionInApp(Utility utility, String hapPath, String baseDir) throws BundleException {
         String moduleJson = "";
         File srcFile = new File(hapPath);
-        moduleJson = getJsonInHaps(srcFile, MODULE_JSON);
+        moduleJson = getJsonInZips(srcFile, MODULE_JSON);
         Version version = ModuleJsonUtil.getVersion(moduleJson);
         if ((version.versionCode == -1)) {
             LOG.error("Compressor::checkModuleVersionInApp version code is null or empty");
@@ -1349,11 +1603,8 @@ public class Compressor {
      * @return true is for successful and false is for failed
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static String getJsonInHaps(File srcFile, String jsonName) throws BundleException {
+    private static String getJsonInZips(File srcFile, String jsonName) throws BundleException {
         String fileStr = srcFile.getPath();
-        if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-            return "";
-        }
         ZipFile zipFile = null;
         FileInputStream zipInput = null;
         ZipInputStream zin = null;
@@ -1361,7 +1612,7 @@ public class Compressor {
         InputStreamReader reader = null;
         BufferedReader br = null;
         ZipEntry entry = null;
-        String jsonStr = "";
+        StringBuilder jsonStr = new StringBuilder();
         try {
             zipFile = new ZipFile(srcFile);
             zipInput = new FileInputStream(fileStr);
@@ -1371,12 +1622,14 @@ public class Compressor {
                     inputStream = zipFile.getInputStream(entry);
                     reader = new InputStreamReader(inputStream);
                     br = new BufferedReader(reader);
-                    if (br != null) {
-                        jsonStr = br.readLine();
-                        break;
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        jsonStr.append(line);
                     }
+                    inputStream.close();
                 }
             }
+            jsonStr = new StringBuilder(jsonStr.toString().replaceAll("\r|\n|\t", ""));
         } catch (IOException exception) {
             LOG.error("Compressor::checkModuleTypeInHaps io exception: " + exception.getMessage());
             throw new BundleException("Compressor::checkModuleTypeInHaps failed");
@@ -1388,7 +1641,7 @@ public class Compressor {
             Utility.closeStream(reader);
             Utility.closeStream(br);
         }
-        return jsonStr;
+        return jsonStr.toString();
     }
 
     /**
@@ -2007,7 +2260,7 @@ public class Compressor {
     private static boolean checkStageHap(String hapPath, List<String> moduleNames)
             throws BundleException {
         File stageHap = new File(hapPath);
-        String moduleJson = getJsonInHaps(stageHap, MODULE_JSON);
+        String moduleJson = getJsonInZips(stageHap, MODULE_JSON);
         // check version
         Version stageVersion = ModuleJsonUtil.parseStageVersion(moduleJson);
         if (version.versionName.equals("") && version.versionCode == -1) {
@@ -2040,7 +2293,7 @@ public class Compressor {
     private static boolean checkFaHap(String hapPath, List<String> moduleNames,
                                       List<String> packageNames) throws BundleException {
         File faHap = new File(hapPath);
-        String configJson = getJsonInHaps(faHap, CONFIG_JSON);
+        String configJson = getJsonInZips(faHap, CONFIG_JSON);
         // check version
         Version faVersion = ModuleJsonUtil.parseFaVersion(configJson);
         if (version.versionName.equals("") && version.versionCode == -1) {

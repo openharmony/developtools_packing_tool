@@ -30,6 +30,7 @@ public class Utility {
     static final String MODE_HAP = "hap";
     static final String MODE_HAR = "har";
     static final String MODE_APP = "app";
+    static final String MODE_MULTI_APP = "multiApp";
     static final String MODE_RES = "res";
     static final String FALSE_STRING = "false";
 
@@ -79,7 +80,8 @@ public class Utility {
     private int VersionCode = -1;
     private String VersionName = "";
     private boolean isModuleJson = false;
-    private String rpcid = "false";
+    private String rpcid = FALSE_STRING;
+    private String packPath = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -91,6 +93,10 @@ public class Utility {
     private List<String> formattedTxtPathList = new ArrayList<>();
     private List<String> formattedEntryCardPathList = new ArrayList<>();
     private List<String> formNameList = new ArrayList<>();
+    private List<String> formattedAppList = new ArrayList<>();
+    private List<String> formattedHapList = new ArrayList<>();
+    private String appList = "";
+    private String hapList = "";
 
     public String getMode() {
         return mode;
@@ -98,7 +104,7 @@ public class Utility {
 
     public void setMode(String mode) {
         if (!mode.startsWith(CMD_PREFIX)) {
-            this.mode = mode.toLowerCase(Locale.ENGLISH);
+            this.mode = mode;
         }
     }
 
@@ -529,6 +535,30 @@ public class Utility {
 
     public List<String> getFormattedTxtPathList() {
         return formattedTxtPathList;
+    }
+
+    public List<String> getFormattedAppList() {
+        return formattedAppList;
+    }
+
+    public List<String> getFormattedHapList() {
+        return formattedHapList;
+    }
+
+    public void setAppList(String appList) {
+        this.appList = appList;
+    }
+
+    public String getAppList() {
+        return this.appList;
+    }
+
+    public void setHapList(String hapList) {
+        this.hapList = hapList;
+    }
+
+    public String getHapList() {
+        return this.hapList;
     }
 
     /**
