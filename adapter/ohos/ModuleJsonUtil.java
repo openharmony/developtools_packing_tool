@@ -19,6 +19,7 @@ import ohos.utils.fastjson.JSON;
 import ohos.utils.fastjson.JSONArray;
 import ohos.utils.fastjson.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -43,6 +44,11 @@ public class ModuleJsonUtil {
     private static final String BUNDLENAME = "bundleName";
     private static final String ENTRY = "entry";
     private static final char DOT = '.';
+    private static final String CONFIG_JSON = "config.json";
+    private static final String MODULE_JSON = "module.json";
+    private static final String DEVICE_TYPE = "deviceType";
+    private static final String DEVICE_TYPES = "deviceTypes";
+    private static final String TYPE= "type";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -604,5 +610,103 @@ public class ModuleJsonUtil {
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
+    }
+
+    /**
+     * parse FA hap is entry hap, if it is, return device type.
+     *
+     * @param hapPath is the path of hap.
+     *
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static List<String> parseFaEntry(String hapPath) throws BundleException {
+        String configJson = FileUtils.getJsonInZips(new File(hapPath), CONFIG_JSON);
+        JSONObject faObj = JSONObject.parseObject(configJson);
+        JSONObject moduleObj = faObj.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            String errMSg = "ModuleJsonUtil::isFaEntry error, json do not contain module!";
+            LOG.error(errMSg);
+            throw new BundleException(errMSg);
+        }
+        List<String> deviceTypes = new ArrayList<>();
+        JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
+        if (distroObj == null) {
+            String errMSg = "ModuleJsonUtil::isFaEntry error, json do not contain distro!";
+            LOG.error(errMSg);
+            throw new BundleException(errMSg);
+        }
+        String moduleType = distroObj.getString(MODULETYPE);
+        if (moduleType.equals(ENTRY)) {
+            deviceTypes = getDeviceTypeFromFAModule(moduleObj);
+        }
+        return deviceTypes;
+    }
+
+    /**
+     * parse stage hap is entry hap, if it is, record device type.
+     *
+     * @param hapPath is the path of hap.
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static List<String> parseStageEntry(String hapPath) throws BundleException {
+        String moduleJson = FileUtils.getJsonInZips(new File(hapPath), MODULE_JSON);
+        JSONObject stageObj = JSONObject.parseObject(moduleJson);
+        JSONObject moduleObj = stageObj.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            String errMSg = "ModuleJsonUtil::isFaEntry error, json do not contain module!";
+            LOG.error(errMSg);
+            throw new BundleException(errMSg);
+        }
+        List<String> deviceTypes = new ArrayList<>();
+        String type = moduleObj.getString(TYPE);
+        if (type.equals(ENTRY)) {
+            deviceTypes = getDeviceTypesFromStageModule(moduleObj);
+        }
+        return deviceTypes;
+    }
+
+    /**
+     * get deviceType from fa module.
+     *
+     * @param moduleObj is the object of module.
+     * @return true is for entry hap  and false is other kind of hap
+     */
+    public static List<String> getDeviceTypeFromFAModule(JSONObject moduleObj) {
+        List<String> deviceTypes = new ArrayList<>();
+        if (moduleObj == null) {
+            return deviceTypes;
+        }
+        deviceTypes = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPE), String.class);
+        return deviceTypes;
+    }
+
+    /**
+     * get deviceType from stage module.
+     *
+     * @param moduleObj is the object of module.
+     * @return true is for entry hap  and false is other kind of hap
+     */
+    public static List<String> getDeviceTypesFromStageModule(JSONObject moduleObj) {
+        List<String> deviceTypes = new ArrayList<>();
+        if (moduleObj == null) {
+            return deviceTypes;
+        }
+        deviceTypes = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
+        return deviceTypes;
+    }
+
+    /**
+     * get the String from JSONObject by the key.
+     *
+     * @param jsonObject uncompress json object
+     * @param key value key
+     * @return the result
+     */
+    private static String getJsonString(JSONObject jsonObject, String key) {
+        String value = "";
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.get(key).toString();
+        }
+        return value;
     }
 }
