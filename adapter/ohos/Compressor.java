@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Collections;
 
 
 /**
@@ -530,6 +531,12 @@ public class Compressor {
                 fileList.add(hapTempPath);
                 compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath);
             }
+            // check duplicated entry
+            if (!checkEntryNotDuplicated(fileList)) {
+                String errMsg = "Compressor::compressAppModeForMultiProject duplicated entry for same deviceType";
+                LOG.error(errMsg);
+                throw new BundleException(errMsg);
+            }
             // check hap is valid
             if (!checkHapIsValid(fileList)) {
                 String errMsg = "Compressor::compressAppModeForMultiProject There are some " +
@@ -593,7 +600,7 @@ public class Compressor {
         // classify hap in app
         copyHapFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
         // rebuild pack.info
-        String packInfoStr = getJsonInZips(new File(appPath), PACKINFO_NAME);
+        String packInfoStr = FileUtils.getJsonInZips(new File(appPath), PACKINFO_NAME);
         if (packInfoStr.isEmpty()) {
             String errorMsg = "Compressor:selectHapInApp failed, app has no pack.info!";
             LOG.error(errorMsg);
@@ -674,10 +681,10 @@ public class Compressor {
         String moduleName = "";
         File hapFile = new File(hapPath);
         if (isModuleHap(hapPath)) {
-            String jsonString = getJsonInZips(hapFile, MODULE_JSON);
+            String jsonString = FileUtils.getJsonInZips(hapFile, MODULE_JSON);
             moduleName = ModuleJsonUtil.parseStageModuleName(jsonString);
         } else {
-            String jsonString = getJsonInZips(hapFile, CONFIG_JSON);
+            String jsonString = FileUtils.getJsonInZips(hapFile, CONFIG_JSON);
             moduleName = ModuleJsonUtil.parseFaModuleName(jsonString);
         }
         return moduleName;
@@ -706,7 +713,9 @@ public class Compressor {
             seletedHaps.add(hapFile.getName());
             // copy hap to tempDir
             FileUtils.copyFile(hapFile, new File((tempDir +File.separator + hapFile.getName())));
-            String packInfo = getJsonInZips(hapFile, PACKINFO_NAME);
+            String packInfo = FileUtils.getJsonInZips(hapFile, PACKINFO_NAME);
+
+
             if (packInfo.isEmpty()) {
                 String errMsg = "Compressor::disposeHap failed, hap has no pack.info!";
                 LOG.error(errMsg);
@@ -1533,7 +1542,7 @@ public class Compressor {
      * @return true is for is stage type and false is for FA type
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static boolean isModuleHap(String hapPath) throws BundleException {
+    public static boolean isModuleHap(String hapPath) throws BundleException {
         if (!hapPath.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
             return true;
         }
@@ -1571,7 +1580,7 @@ public class Compressor {
     private boolean checkModuleVersionInApp(Utility utility, String hapPath, String baseDir) throws BundleException {
         String moduleJson = "";
         File srcFile = new File(hapPath);
-        moduleJson = getJsonInZips(srcFile, MODULE_JSON);
+        moduleJson = FileUtils.getJsonInZips(srcFile, MODULE_JSON);
         Version version = ModuleJsonUtil.getVersion(moduleJson);
         if ((version.versionCode == -1)) {
             LOG.error("Compressor::checkModuleVersionInApp version code is null or empty");
@@ -1594,54 +1603,6 @@ public class Compressor {
         versionCode = String.valueOf(version.versionCode);
         versionName = version.versionName;
         return true;
-    }
-
-    /**
-     * check json type code in haps.
-     *
-     * @param srcFile source file to zip
-     * @return true is for successful and false is for failed
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private static String getJsonInZips(File srcFile, String jsonName) throws BundleException {
-        String fileStr = srcFile.getPath();
-        ZipFile zipFile = null;
-        FileInputStream zipInput = null;
-        ZipInputStream zin = null;
-        InputStream inputStream = null;
-        InputStreamReader reader = null;
-        BufferedReader br = null;
-        ZipEntry entry = null;
-        StringBuilder jsonStr = new StringBuilder();
-        try {
-            zipFile = new ZipFile(srcFile);
-            zipInput = new FileInputStream(fileStr);
-            zin = new ZipInputStream(zipInput);
-            while ((entry = zin.getNextEntry()) != null) {
-                if (entry.getName().toLowerCase().equals(jsonName)) {
-                    inputStream = zipFile.getInputStream(entry);
-                    reader = new InputStreamReader(inputStream);
-                    br = new BufferedReader(reader);
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        jsonStr.append(line);
-                    }
-                    inputStream.close();
-                }
-            }
-            jsonStr = new StringBuilder(jsonStr.toString().replaceAll("\r|\n|\t", ""));
-        } catch (IOException exception) {
-            LOG.error("Compressor::checkModuleTypeInHaps io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::checkModuleTypeInHaps failed");
-        } finally {
-            Utility.closeStream(zipFile);
-            Utility.closeStream(zipInput);
-            Utility.closeStream(zin);
-            Utility.closeStream(inputStream);
-            Utility.closeStream(reader);
-            Utility.closeStream(br);
-        }
-        return jsonStr.toString();
     }
 
     /**
@@ -2216,7 +2177,7 @@ public class Compressor {
     }
 
     /**
-     * check hap is vaild in haps when pack app.
+     * check hap is valid in haps when pack app, check class has version, moduleName, packageName .
      *
      * @param fileLists is the list of hapPath.
      * @return true is for successful and false is for failed
@@ -2251,6 +2212,50 @@ public class Compressor {
     }
 
     /**
+     * check entry is duplicated for the same deviceType.
+     *
+     * @param fileLists is the list of hapPath.
+     * @return true is for same device not duplicated and false otherwise
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static boolean checkEntryNotDuplicated(List<String> fileLists) throws BundleException {
+        List<String> hasEntryDeviceType = new ArrayList<>();
+        for (String hapPath : fileLists) {
+            if (hapPath.isEmpty()) {
+                throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
+            }
+            File srcFile = new File(hapPath);
+            String fileStr = srcFile.getName();
+            if (fileStr.isEmpty()) {
+                throw new BundleException("Compressor::checkHapIsValid get file name failed!");
+            }
+            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
+            }
+            if (isModuleHap(hapPath)) {
+                List<String> deviceTypes = ModuleJsonUtil.parseStageEntry(hapPath);
+                if (Collections.disjoint(hasEntryDeviceType, deviceTypes)) {
+                    hasEntryDeviceType.addAll(deviceTypes);
+                } else {
+                    LOG.error("Compress::checkEntry failed, " +
+                            fileStr + " make duplicated entry for " + deviceTypes.retainAll(hasEntryDeviceType));
+                    return false;
+                }
+            } else {
+                List<String> deviceTypes = ModuleJsonUtil.parseFaEntry(hapPath);
+                if (Collections.disjoint(hasEntryDeviceType, deviceTypes)) {
+                    hasEntryDeviceType.addAll(deviceTypes);
+                } else {
+                    LOG.error("Compress::checkEntry failed, " +
+                            fileStr + " make duplicated entry for " + deviceTypes.retainAll(hasEntryDeviceType));
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * check stage hap is vaild in haps when pack app.
      *
      * @param hapPath is the path of hap.
@@ -2260,7 +2265,7 @@ public class Compressor {
     private static boolean checkStageHap(String hapPath, List<String> moduleNames)
             throws BundleException {
         File stageHap = new File(hapPath);
-        String moduleJson = getJsonInZips(stageHap, MODULE_JSON);
+        String moduleJson = FileUtils.getJsonInZips(stageHap, MODULE_JSON);
         // check version
         Version stageVersion = ModuleJsonUtil.parseStageVersion(moduleJson);
         if (version.versionName.equals("") && version.versionCode == -1) {
@@ -2283,7 +2288,7 @@ public class Compressor {
     }
 
     /**
-     * check fa hap is vaild in haps when pack app.
+     * check fa hap is valid in haps when pack app.
      *
      * @param hapPath is the path of hap.
      * @param moduleNames is the moduleNames of all hap.
@@ -2293,7 +2298,7 @@ public class Compressor {
     private static boolean checkFaHap(String hapPath, List<String> moduleNames,
                                       List<String> packageNames) throws BundleException {
         File faHap = new File(hapPath);
-        String configJson = getJsonInZips(faHap, CONFIG_JSON);
+        String configJson = FileUtils.getJsonInZips(faHap, CONFIG_JSON);
         // check version
         Version faVersion = ModuleJsonUtil.parseFaVersion(configJson);
         if (version.versionName.equals("") && version.versionCode == -1) {
