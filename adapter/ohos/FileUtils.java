@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
  * file tools
@@ -389,5 +390,53 @@ public class FileUtils {
             throw new BundleException(errMsg);
         }
         dirFile.mkdirs();
+    }
+
+    /**
+     * check json type code in haps.
+     *
+     * @param srcFile source file to zip
+     * @return true is for successful and false is for failed
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static String getJsonInZips(File srcFile, String jsonName) throws BundleException {
+        String fileStr = srcFile.getPath();
+        ZipFile zipFile = null;
+        FileInputStream zipInput = null;
+        ZipInputStream zin = null;
+        InputStream inputStream = null;
+        InputStreamReader reader = null;
+        BufferedReader br = null;
+        ZipEntry entry = null;
+        StringBuilder jsonStr = new StringBuilder();
+        try {
+            zipFile = new ZipFile(srcFile);
+            zipInput = new FileInputStream(fileStr);
+            zin = new ZipInputStream(zipInput);
+            while ((entry = zin.getNextEntry()) != null) {
+                if (entry.getName().toLowerCase().equals(jsonName)) {
+                    inputStream = zipFile.getInputStream(entry);
+                    reader = new InputStreamReader(inputStream);
+                    br = new BufferedReader(reader);
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        jsonStr.append(line);
+                    }
+                    inputStream.close();
+                }
+            }
+            jsonStr = new StringBuilder(jsonStr.toString().replaceAll("\r|\n|\t", ""));
+        } catch (IOException exception) {
+            LOG.error("Compressor::checkModuleTypeInHaps io exception: " + exception.getMessage());
+            throw new BundleException("Compressor::checkModuleTypeInHaps failed");
+        } finally {
+            Utility.closeStream(zipFile);
+            Utility.closeStream(zipInput);
+            Utility.closeStream(zin);
+            Utility.closeStream(inputStream);
+            Utility.closeStream(reader);
+            Utility.closeStream(br);
+        }
+        return jsonStr.toString();
     }
 }
