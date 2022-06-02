@@ -208,15 +208,9 @@ public class UncompressVerify {
      * @return isVerifyValidInHapMode if verify valid in hap mode.
      */
     private static boolean verifyOutPath(Utility utility, File file) {
-        if (utility.getOutPath().isEmpty() && utility.getParseMode().isEmpty()) {
-            String tempStr = file.getName();
-            File parentFile = file.getParentFile();
-            if (parentFile == null) {
-                utility.setOutPath(tempStr.substring(0, tempStr.lastIndexOf(".")));
-            } else {
-                utility.setOutPath(parentFile.toString() + File.separator
-                    + tempStr.substring(0, tempStr.lastIndexOf(".")));
-            }
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("--out-path is empty!");
+            return false;
         }
 
         File outFile = new File(utility.getOutPath());
