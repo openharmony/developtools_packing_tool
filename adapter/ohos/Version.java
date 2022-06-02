@@ -32,4 +32,9 @@ public class Version {
      * Indicates the versionName of version.
      */
     public String versionName = "";
+
+    /**
+     * Indicates the minCompatibleVersionCode of version.
+     */
+    public int minCompatibleVersionCode = -1;
 }
