@@ -95,8 +95,11 @@ public class Utility {
     private List<String> formNameList = new ArrayList<>();
     private List<String> formattedAppList = new ArrayList<>();
     private List<String> formattedHapList = new ArrayList<>();
+    private List<String> formatedDirList = new ArrayList<>();
+
     private String appList = "";
     private String hapList = "";
+    private String dirList = "";
 
     public String getMode() {
         return mode;
@@ -559,6 +562,18 @@ public class Utility {
 
     public String getHapList() {
         return this.hapList;
+    }
+
+    public String getDirList() {
+        return this.dirList;
+    }
+
+    public void setDirList(String dirList) {
+        this.dirList = dirList;
+    }
+
+    public List<String> getFormatedDirList() {
+        return this.formatedDirList;
     }
 
     /**
