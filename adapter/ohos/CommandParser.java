@@ -68,6 +68,7 @@ public class CommandParser {
     private static final String CMD_ENTRYCARD_PATH = "--entrycard-path";
     private static final String CMD_HAP_LIST = "--hap-list";
     private static final String CMD_APP_LIST = "--app-list";
+    private static final String CMD_DIR_LIST = "--dir-list";
     private static final Log LOG = new Log(CommandParser.class.toString());
 
     /**
@@ -329,6 +330,9 @@ public class CommandParser {
             }
             case CMD_RPCID:{
                 utility.setRpcid(value);
+            }
+            case CMD_DIR_LIST: {
+                utility.setDirList(value);
             }
             default : {
                 return false;
