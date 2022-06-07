@@ -140,6 +140,10 @@ public class CompressVerify {
                 return false;
             }
 
+            if (!utility.getDirList().isEmpty() && !splitDirList(utility, utility.getDirList(), utility.getFormatedDirList())) {
+                LOG.error("CompressVerify::isArgsValidInHapMode --dir-list is invalid!");
+                return false;
+            }
             return isVerifyValidInHapMode(utility);
         } else if (Utility.MODE_HAR.equals(utility.getMode())) {
             return isVerifyValidInHarMode(utility);
@@ -444,6 +448,18 @@ public class CompressVerify {
             }
             return true;
         }
+    }
+
+    private static boolean splitDirList(Utility utility, String dirList, List<String> fileList) {
+        List<String> pathList = removeDuplicatePath(dirList);
+        for (String pathItem : pathList) {
+            String formattedPathItem = utility.getFormattedPath(pathItem);
+            if (!isPathValid(formattedPathItem, TYPE_DIR, null)) {
+                return false;
+            }
+            fileList.add(formattedPathItem);
+        }
+        return true;
     }
 
     /**
