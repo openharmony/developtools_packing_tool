@@ -327,12 +327,15 @@ public class CommandParser {
             }
             case CMD_RPCID_PATH: {
                 utility.setRpcidPath(value);
+                return true;
             }
             case CMD_RPCID:{
                 utility.setRpcid(value);
+                return true;
             }
             case CMD_DIR_LIST: {
                 utility.setDirList(value);
+                return true;
             }
             default : {
                 return false;
