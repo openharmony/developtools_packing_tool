@@ -158,11 +158,10 @@
           "description": "Indicates the syntax type of JS Component.Default is hml",
           "type": "string",
           "enum": [
-            "js",
             "ets",
             "hml"
           ],
-        "default": "js"
+        "default": "hml"
         },
         "pages": {
           "description": "Used to list the information of each page in JS Component.",
