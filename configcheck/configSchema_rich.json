@@ -2867,7 +2867,7 @@
           },
           "properties": {
             "apiVersion": {
-              "description": "Indicates the supported apiVersion range. The value can be 3, 4, or 5. This label is optional.",
+              "description": "Indicates the supported apiVersion range.This label is optional.",
               "type": "object",
               "propertyNames": {
                 "enum": [
@@ -3242,11 +3242,10 @@
           "description": "Indicates the syntax type of JS Component.Default is hml",
           "type": "string",
           "enum": [
-            "js",
             "ets",
             "hml"
           ],
-        "default": "js"
+        "default": "hml"
         },
         "testRunner": {
           "description": "This tag is used for configure the test properties.",
