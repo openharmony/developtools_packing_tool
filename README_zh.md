@@ -143,4 +143,4 @@ java -jar app_unpacking_tool.jar --mode <options> --app-path <option> --out-path
 
 ## 相关仓<a name="section_related_repo"></a>
 
-[用户程序框架子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6%E5%AD%90%E7%B3%BB%E7%BB%9F.md)
+[包管理子系统](https://gitee.com/openharmony/bundlemanager_bundle_framework)

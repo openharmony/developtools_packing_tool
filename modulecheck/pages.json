@@ -8,7 +8,8 @@
   ],
   "propertyNames": {
     "enum": [
-      "src"
+      "src",
+      "window"
     ]
   },
   "properties": {
@@ -19,6 +20,27 @@
       "uniqueItems": true,
       "items": {
         "type": "string"
+      }
+    },
+    "window": {
+      "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "designWidth",
+          "autoDesignWidth"
+        ]
+      },
+      "properties": {
+        "designWidth": {
+          "description": "Indicates the baseline width for page design, in pixels. The size of an element is scaled by the actual device width. This label is an integer.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "autoDesignWidth": {
+          "description": "Specifies whether to automatically calculate the baseline width for page design. If it is set to true, the designWidth attribute becomes invalid. The baseline width is calculated based on the device width and screen density.",
+          "type": "boolean"
+        }
       }
     }
   }
