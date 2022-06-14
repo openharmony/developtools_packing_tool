@@ -82,6 +82,7 @@ public class Utility {
     private boolean isModuleJson = false;
     private String rpcid = FALSE_STRING;
     private String packPath = "";
+    private boolean isParse = false;
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -100,6 +101,14 @@ public class Utility {
     private String appList = "";
     private String hapList = "";
     private String dirList = "";
+
+    public void setIsParse(boolean isParse) {
+        this.isParse = isParse;
+    }
+
+    public boolean getIsParse() {
+        return isParse;
+    }
 
     public String getMode() {
         return mode;
