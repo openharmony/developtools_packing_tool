@@ -208,7 +208,7 @@ public class UncompressVerify {
      * @return isVerifyValidInHapMode if verify valid in hap mode.
      */
     private static boolean verifyOutPath(Utility utility, File file) {
-        if (utility.getOutPath().isEmpty()) {
+        if (utility.getOutPath().isEmpty() && !utility.getIsParse()) {
             LOG.error("--out-path is empty!");
             return false;
         }
