@@ -212,6 +212,7 @@ public class UncompressEntrance {
         utility.setDeviceType(deviceType == null ? "" : deviceType);
         utility.setHapName(hapName == null ? "" : hapName);
         utility.setForceRewrite("true");
+        utility.setIsParse(true);
         if (outPath != null && !outPath.isEmpty()) {
             utility.setOutPath(outPath);
         }
@@ -266,6 +267,7 @@ public class UncompressEntrance {
         utility.setHapName(hapName == null ? "" : hapName);
         utility.setForceRewrite("true");
         utility.setOutPath(outPath == null ? "" : outPath);
+        utility.setIsParse(true);
 
         if (!UncompressVerify.inputParseVerify(utility, input)) {
             LOG.error("CompressEntrance::parseApp verity failed");
@@ -300,6 +302,7 @@ public class UncompressEntrance {
         utility.setParseMode(PARSE_MODE_HAPINFO);
         utility.setHapPath(hapPath);
         utility.setForceRewrite("true");
+        utility.setIsParse(true);
 
         if (!UncompressVerify.commandVerify(utility)) {
             LOG.error("UncompressEntrance::parseHap verity failed");
@@ -333,6 +336,7 @@ public class UncompressEntrance {
         utility.setMode(Utility.MODE_HAP);
         utility.setParseMode(PARSE_MODE_HAPINFO);
         utility.setForceRewrite("true");
+        utility.setIsParse(true);
 
         if (!UncompressVerify.inputParseVerify(utility, input)) {
             LOG.error("UncompressEntrance::parseHap verity failed");
