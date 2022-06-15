@@ -49,6 +49,12 @@ public class JsonUtil {
     private static final String MULTI_FRAMEWORK_BUNDLE = "multiFrameworkBundle";
     private static final String ACTION_SYSTEM_HOME = "action.system.home";
     private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
+    private static final String MAIN_ABILITY = "mainAbility";
+    private static final String MAIN_ELEMENT = "mainElement";
+    private static final String PAGE = "page";
+    private static final String SERVICE = "service";
+    private static final String FORM = "form";
+
 
     /**
      * parse hap list by device type
@@ -504,6 +510,10 @@ public class JsonUtil {
         hapInfo.name = getJsonString(hapJson, "name");
         hapInfo.description = parseResourceByKey(hapJson, data, "description", "descriptionId");
 
+        if (hapJson.containsKey(MAIN_ABILITY)) {
+            hapInfo.mainElement = getJsonString(hapJson, MAIN_ABILITY);
+        }
+
         if (hapJson.containsKey("supportedModes")) {
             hapInfo.supportedModes = JSONObject.parseArray(getJsonString(hapJson, "supportedModes"),
                     String.class);
@@ -572,6 +582,7 @@ public class JsonUtil {
                 abilitieList.add(parseAbility(tmpObj, data));
             }
             hapInfo.abilities = abilitieList;
+            setFAProviderAbility(hapJson, hapInfo, hapInfo.abilities);
         }
 
         if (hapJson.containsKey("distroFilter")) {
@@ -961,12 +972,16 @@ public class JsonUtil {
         }
         // parse extensionabilities
         if (moduleJson.containsKey("extensionAbilities")) {
+            // parse service providerAbility
+            String serviceProviderAbility = parseStageServiceProvider(moduleJson, moduleInfo.abilities);
             moduleInfo.extensionAbilityInfos = parseModuleExtensionAbilities(moduleJson, data, profileJsons);
             // parse abilityform
-            moduleInfo.abilityFormInfos = parseModuleAbilityforms(moduleInfo.extensionAbilityInfos, data);
+            moduleInfo.abilityFormInfos = parseModuleAbilityforms(moduleInfo.extensionAbilityInfos,
+                    data, serviceProviderAbility);
             // parse commonEvent
             moduleInfo.commonEvents = parseModuleCommonEvents(moduleInfo.extensionAbilityInfos);
         }
+
         // parse request permission
         if (moduleJson.containsKey("requestPermissions")) {
             moduleInfo.requestPermissions = parseReqPermission(moduleJson, data);
@@ -1234,7 +1249,8 @@ public class JsonUtil {
      * @return the List<AbilityFormInfo> result
      * @throws BundleException Throws this exception if the json is not standard.
      */
-    static List<AbilityFormInfo> parseModuleAbilityforms(List<ExtensionAbilityInfo> extensionAbilityInfos, byte[] data)
+    static List<AbilityFormInfo> parseModuleAbilityforms(List<ExtensionAbilityInfo> extensionAbilityInfos,
+                                                         byte[] data, String serviceProviderAbility)
             throws BundleException {
         List<AbilityFormInfo> abilityFormInfos = new ArrayList<>();
         if (extensionAbilityInfos.isEmpty()) {
@@ -1243,6 +1259,11 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
+            if (extensionAbilityInfo.type.equals(FORM)) {
+                for (AbilityFormInfo formInfo : formInfos) {
+                    formInfo.providerAbility = serviceProviderAbility;
+                }
+            }
             abilityFormInfos.addAll(formInfos);
         }
         return abilityFormInfos;
@@ -1725,4 +1746,78 @@ public class JsonUtil {
         }
         return value;
     }
+
+    private static void setFAProviderAbility(JSONObject moduleJson, HapInfo hapInfo,
+                                             List<AbilityInfo> abilityInfos) throws BundleException {
+        if (abilityInfos.isEmpty()) {
+            throw new BundleException("JsonUtil::setProviderAbility abilityInfo is empty!");
+        }
+        String serviceProviderAbility = parseFAServiceProviderAbility(moduleJson, abilityInfos);
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (!abilityInfo.formInfos.isEmpty()) {
+                if (abilityInfo.type.equals(SERVICE)) {
+                    setProviderAbilityForForm(abilityInfo.formInfos, serviceProviderAbility);
+                }
+                if (abilityInfo.type.equals(PAGE)) {
+                    setProviderAbilityForForm(abilityInfo.formInfos, abilityInfo.name);
+                }
+                hapInfo.formInfos.addAll(abilityInfo.formInfos);
+            }
+        }
+    }
+
+    private static void setProviderAbilityForForm(List<AbilityFormInfo> abilityFormInfos, String providerAbility) {
+        for (AbilityFormInfo abilityFormInfo : abilityFormInfos) {
+            abilityFormInfo.providerAbility = providerAbility;
+        }
+    }
+
+    private static String parseStageServiceProvider(JSONObject moduleJson,
+                                                    List<ModuleAbilityInfo> moduleAbilityInfos) throws BundleException {
+        if (moduleJson.containsKey(MAIN_ELEMENT)) {
+            return getJsonString(moduleJson, MAIN_ELEMENT);
+        }
+        if (!moduleAbilityInfos.isEmpty()) {
+            for (ModuleAbilityInfo moduleAbilityInfo : moduleAbilityInfos) {
+                if (isSystemHomeAbility(moduleAbilityInfo.skills)) {
+                    return moduleAbilityInfo.name;
+                }
+            }
+            return moduleAbilityInfos.get(0).name;
+        }
+        return "";
+    }
+
+    private static String parseFAServiceProviderAbility(JSONObject moduleJson,
+                                                        List<AbilityInfo> abilityInfos) throws BundleException {
+        if (abilityInfos.isEmpty()) {
+            throw new BundleException("JsonUtil::parseServiceProviderAbility abilityInfos is empty!");
+        }
+
+        if (moduleJson.containsKey(MAIN_ABILITY)) {
+            return getJsonString(moduleJson, MAIN_ABILITY);
+        }
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (isSystemHomeAbility(abilityInfo.skills)) {
+                return abilityInfo.name;
+            }
+        }
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (abilityInfo.type.equals(PAGE)) {
+                return abilityInfo.name;
+            }
+        }
+        return "";
+    }
+
+    private static boolean isSystemHomeAbility(List<SkillInfo> skills) {
+        for (SkillInfo skillInfo : skills) {
+            if (skillInfo.entities.contains(ENTITY_SYSTEM_HOME) && skillInfo.actions.contains(ACTION_SYSTEM_HOME)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

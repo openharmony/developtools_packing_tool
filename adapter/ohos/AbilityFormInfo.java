@@ -116,6 +116,11 @@ public class AbilityFormInfo {
     public boolean formVisibleNotify = false;
 
     /**
+     * Indicates the providerAbility of ability form.
+     */
+    public String providerAbility = "";
+
+    /**
      * get the customize Data value defined in this ability form.
      */
     public String getCustomizeDataValue(String customizeDataName) {
