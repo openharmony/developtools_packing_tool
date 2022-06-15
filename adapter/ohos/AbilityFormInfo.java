@@ -64,6 +64,11 @@ public class AbilityFormInfo {
     public MetaData metaData = new MetaData();
 
     /**
+     * Indicates the providerAbility of ability form.
+     */
+    public String providerAbility = "";
+
+    /**
      * get the customize Data value defined in this ability form.
      */
     public String getCustomizeDataValue(String customizeDataName) {
