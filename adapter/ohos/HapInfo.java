@@ -104,6 +104,16 @@ public class HapInfo {
     public DistroFilter distroFilter = new DistroFilter();
 
     /**
+     * Indicates the mainElement of ModuleInfo.
+     */
+    public String mainElement = "";
+
+    /**
+     * Indicates the forms of ability.
+     */
+    public List<AbilityFormInfo> formInfos = new ArrayList<AbilityFormInfo>();
+
+    /**
      * get the customize Data value defined in this module.
      */
     public String getCustomizeDataValue(String customizeDataName) {

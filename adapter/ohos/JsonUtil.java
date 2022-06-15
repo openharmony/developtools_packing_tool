@@ -46,6 +46,11 @@ public class JsonUtil {
     private static final String LEGACY_VERSION_CODE = "legacyVersionCode";
     private static final String LEGACY_VERSION_NAME = "legacyVersionName";
     private static final String MULTI_FRAMEWORK_BUNDLE = "multiFrameworkBundle";
+    private static final String ACTION_SYSTEM_HOME = "action.system.home";
+    private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
+    private static final String MAIN_ABILITY = "mainAbility";
+    private static final String PAGE = "page";
+    private static final String SERVICE = "service";
 
     /**
      * parse hap list by device type
@@ -388,6 +393,10 @@ public class JsonUtil {
         hapInfo.name = getJsonString(hapJson, "name");
         hapInfo.description = getJsonString(hapJson, "description");
 
+        if (hapJson.containsKey(MAIN_ABILITY)) {
+            hapInfo.mainElement = getJsonString(hapJson, MAIN_ABILITY);
+        }
+
         if (hapJson.containsKey("supportedModes")) {
             hapInfo.supportedModes = JSONObject.parseArray(getJsonString(hapJson, "supportedModes"),
                     String.class);
@@ -453,6 +462,7 @@ public class JsonUtil {
                 abilitieList.add(parseAbility(tmpObj, data));
             }
             hapInfo.abilities = abilitieList;
+            setFAProviderAbility(hapJson, hapInfo, hapInfo.abilities);
         }
         if (hapJson.containsKey("distroFilter")) {
             hapInfo.distroFilter = JSONObject.parseObject(getJsonString(hapJson, "distroFilter"), DistroFilter.class);
@@ -727,5 +737,61 @@ public class JsonUtil {
             value = jsonObject.get(key).toString();
         }
         return value;
+    }
+
+    private static void setFAProviderAbility(JSONObject moduleJson, HapInfo hapInfo,
+                                             List<AbilityInfo> abilityInfos) throws BundleException {
+        if (abilityInfos.isEmpty()) {
+            throw new BundleException("JsonUtil::setProviderAbility abilityInfo is empty!");
+        }
+        String serviceProviderAbility = parseFAServiceProviderAbility(moduleJson, abilityInfos);
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (!abilityInfo.formInfos.isEmpty()) {
+                if (abilityInfo.type.equals(SERVICE)) {
+                    setProviderAbilityForForm(abilityInfo.formInfos, serviceProviderAbility);
+                }
+                if (abilityInfo.type.equals(PAGE)) {
+                    setProviderAbilityForForm(abilityInfo.formInfos, abilityInfo.name);
+                }
+                hapInfo.formInfos.addAll(abilityInfo.formInfos);
+            }
+        }
+    }
+
+    private static void setProviderAbilityForForm(List<AbilityFormInfo> abilityFormInfos, String providerAbility) {
+        for (AbilityFormInfo abilityFormInfo : abilityFormInfos) {
+            abilityFormInfo.providerAbility = providerAbility;
+        }
+    }
+
+    private static String parseFAServiceProviderAbility(JSONObject moduleJson,
+                                                        List<AbilityInfo> abilityInfos) throws BundleException {
+        if (abilityInfos.isEmpty()) {
+            throw new BundleException("JsonUtil::parseServiceProviderAbility abilityInfos is empty!");
+        }
+
+        if (moduleJson.containsKey(MAIN_ABILITY)) {
+            return getJsonString(moduleJson, MAIN_ABILITY);
+        }
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (isSystemHomeAbility(abilityInfo.skills)) {
+                return abilityInfo.name;
+            }
+        }
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (abilityInfo.type.equals(PAGE)) {
+                return abilityInfo.name;
+            }
+        }
+        return "";
+    }
+
+    private static boolean isSystemHomeAbility(List<SkillInfo> skills) {
+        for (SkillInfo skillInfo : skills) {
+            if (skillInfo.entities.contains(ENTITY_SYSTEM_HOME) && skillInfo.actions.contains(ACTION_SYSTEM_HOME)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
