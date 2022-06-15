@@ -2723,17 +2723,12 @@
                   "propertyNames": {
                     "enum": [
                       "targetClass",
-                      "targetModule",
                       "targetBundle"
                     ]
                   },
                   "properties": {
                     "targetClass": {
                       "description": "Indicates the class name for the target ability of the shortcut.",
-                      "type": "string"
-                    },
-                    "targetModule": {
-                      "description": "Indicates the module name for the target ability of the shortcut.",
                       "type": "string"
                     },
                     "targetBundle": {
