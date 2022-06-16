@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * compress commend parser.
+ * compress comment,command parser.
  *
  */
 public class CompressVerify {
