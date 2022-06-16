@@ -57,10 +57,6 @@
                   "abilityName"
                 ]
               },
-              "required": [
-                "bundleName",
-                "abilityName"
-              ],
               "properties": {
                 "bundleName": {
                   "description": "Indicates the application bundle name for the target ability of the shortcut.",
