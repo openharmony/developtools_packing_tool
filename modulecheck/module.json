@@ -237,7 +237,8 @@
                 "maxWindowWidth",
                 "minWindowWidth",
                 "maxWindowHeight",
-                "minWindowHeight"
+                "minWindowHeight",
+                "excludeFromMissions"
               ]
             },
             "properties": {
@@ -531,6 +532,11 @@
                 "description": "This tag identifies the min window ratio. The value is an integer.",
                 "type": "integer",
                 "minimum": 0
+              },
+              "excludeFromMissions": {
+                "description": "Specifies whether to display in the recent missions list. For system application only.",
+                "type": "boolean",
+                "default": false
               }
             }
           }
