@@ -54,6 +54,7 @@ public class JsonUtil {
     private static final String PAGE = "page";
     private static final String SERVICE = "service";
     private static final String FORM = "form";
+    private static final String PACKAGES = "packages";
 
 
     /**
@@ -100,6 +101,18 @@ public class JsonUtil {
                 packInfos.add(packInfo);
             }
         }
+        return packInfos;
+    }
+
+    static List<PackInfo> parsePackInfos(String jsonString) throws BundleException {
+        List<PackInfo> packInfos = new ArrayList<PackInfo>();
+        JSONObject jsonObject = JSONObject.parseObject(jsonString);
+        if (jsonObject == null || !jsonObject.containsKey("packages")) {
+            LOG.error("JsonUtil::parsePackInfos exception: packages is null");
+            throw new BundleException("Parse hap list failed, packages is null");
+        }
+        String packages = getJsonString(jsonObject, PACKAGES);
+        packInfos = JSONArray.parseArray(packages, PackInfo.class);
         return packInfos;
     }
 
@@ -819,6 +832,9 @@ public class JsonUtil {
         abilityForm.name = getJsonString(abilityFormJson, "name");
         abilityForm.type = getJsonString(abilityFormJson, "type");
         abilityForm.description = parseResourceByKey(abilityFormJson, data, "description", "descriptionId");
+        if (abilityFormJson.containsKey("isDefault")) {
+            abilityForm.isDefault = abilityFormJson.getBoolean("isDefault");
+        }
         if (abilityFormJson.containsKey("colorMode")) {
             abilityForm.colorMode = getJsonString(abilityFormJson, "colorMode");
         }
