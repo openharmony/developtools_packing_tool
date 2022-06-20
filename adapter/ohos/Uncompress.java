@@ -51,7 +51,7 @@ public class Uncompress {
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
     private static final String HAP_SUFFIXI = ".hap";
-    private static final String HAP_TYPE = "entry";
+    private static final String ENTRY_TYPE = "entry";
     private static final String SYSTEM_ACTION = "action.system.home";
     private static final String SYSTEM_ENTITY = "entity.system.home";
     private static final int READ_BUFFER_SIZE = 1024;
@@ -665,7 +665,7 @@ public class Uncompress {
         throws IOException {
         ZipEntry entry = zipFile.getEntry(fileName);
         if (entry == null) {
-            LOG.error("Uncompress::readStringFromFile " + fileName + " not found exception");
+            LOG.debug("Uncompress::readStringFromFile " + fileName + " not found exception");
             return "";
         }
         InputStream fileInputStream = null;
@@ -1301,7 +1301,7 @@ public class Uncompress {
                 continue;
             }
             String moduleType = distro.moduleType;
-            if (HAP_TYPE.equals(moduleType.toLowerCase(Locale.ENGLISH))) {
+            if (ENTRY_TYPE.equals(moduleType.toLowerCase(Locale.ENGLISH))) {
                 return obtainInnerLabelAndIcon(result, hapInfo, distro);
             }
         }
@@ -1383,6 +1383,7 @@ public class Uncompress {
             zipFile = new ZipFile(srcFile);
             getProfileJson(zipFile, hapZipInfo.resourcemMap);
             hapZipInfo.setHarmonyProfileJsonStr(readStringFromFile(MODULE_JSON, zipFile));
+            hapZipInfo.setPackInfoJsonStr(readStringFromFile(PACK_INFO, zipFile));
             hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
             hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
         } finally {
@@ -1405,6 +1406,7 @@ public class Uncompress {
                 hapZipInfo.resourcemMap);
         moduleProfileInfo.hapName = hapZipInfo.getHapFileName();
         moduleResult.addModuleProfileInfo(moduleProfileInfo);
+        moduleResult.moduleProfileStr.add(hapZipInfo.getHarmonyProfileJsonStr());
     }
 
     /**
@@ -1425,10 +1427,9 @@ public class Uncompress {
         ModuleResult moduleResult = new ModuleResult();
         try {
             HapZipInfo hapZipInfo = unZipModuleHapFile(srcPath);
-            if (isPackInfo(fileName)) {
-                // for app parse
-            } else {
-                uncompressModuleJsonInfo(hapZipInfo, moduleResult);
+            uncompressModuleJsonInfo(hapZipInfo, moduleResult);
+            if (moduleResult.packInfos.isEmpty() && !hapZipInfo.getPackInfoJsonStr().isEmpty()) {
+                moduleResult.packInfos = JsonUtil.parsePackInfos(hapZipInfo.getPackInfoJsonStr());
             }
         } catch (IOException exception) {
             moduleResult.setResult(false);
