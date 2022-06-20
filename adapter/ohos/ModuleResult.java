@@ -24,6 +24,10 @@ import java.util.ArrayList;
  */
 class ModuleResult {
     /**
+     * Indicates the packages in pack.info.
+     */
+    public List<PackInfo> packInfos = new ArrayList<PackInfo>();
+    /**
      * Indicates the ModuleProfileInfo of ModuleJson.
      */
     public List<ModuleProfileInfo> moduleProfileInfos = new ArrayList<ModuleProfileInfo>();
