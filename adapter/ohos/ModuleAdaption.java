@@ -36,6 +36,11 @@ class ModuleAdaption {
         UncomperssResult uncomperssResult = new UncomperssResult();
         uncomperssResult.setResult(moduleResult.getResult());
         uncomperssResult.setMessage(moduleResult.getMessage());
+        for (String moduelProfile : moduleResult.moduleProfileStr) {
+            uncomperssResult.addProfileInfoStr(moduelProfile);
+        }
+        // adapt pack.info
+        uncomperssResult.setPackInfos(moduleResult.packInfos);
         // adapt profileInfos
         for (int i = 0; i < moduleResult.moduleProfileInfos.size(); ++i) {
             ModuleProfileInfo moduleProfileInfo = moduleResult.moduleProfileInfos.get(i);
