@@ -129,7 +129,7 @@ public class ModuleJsonUtil {
                 throw new BundleException(errMsg);
             }
             if (appObj.containsKey(MIN_COMPATIBLE_VERSIONCODE)) {
-                version.minCompatibleVersionCode = appObj.getShortValue(MIN_COMPATIBLE_VERSIONCODE);
+                version.minCompatibleVersionCode = appObj.getIntValue(MIN_COMPATIBLE_VERSIONCODE);
             } else {
                 version.minCompatibleVersionCode = version.versionCode;
             }
