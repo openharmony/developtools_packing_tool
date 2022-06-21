@@ -746,7 +746,7 @@ public class ModuleJsonUtil {
             throw new BundleException(errMSg);
         }
         String moduleType = distroObj.getString(MODULETYPE);
-        if (moduleType.equals(ENTRY)) {
+        if (moduleType != null && moduleType.equals(ENTRY)) {
             deviceTypes = getDeviceTypeFromFAModule(moduleObj);
         }
         return deviceTypes;
@@ -769,9 +769,10 @@ public class ModuleJsonUtil {
         }
         List<String> deviceTypes = new ArrayList<>();
         String type = moduleObj.getString(TYPE);
-        if (type.equals(ENTRY)) {
+        if (type != null && type.equals(ENTRY)) {
             deviceTypes = getDeviceTypesFromStageModule(moduleObj);
         }
+        
         return deviceTypes;
     }
 
