@@ -484,11 +484,6 @@ public class Compressor {
                 pathToFile(utility, hapPath, NULL_DIR_NAME, false);
             }
 
-            for (String hapPath : fileList) {
-                deleteFile(hapPath);
-            }
-            deleteFile(tempPath);
-
             if (!utility.getEntryCardPath().isEmpty()) {
                 String entryCardPath = ENTRYCARD_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                         + ENTRYCARD_BASE_NAME + ENTRYCARD_SNAPSHOT_NAME;
@@ -506,7 +501,7 @@ public class Compressor {
             LOG.error("Compressor::compressAppMode compress failed");
             throw new BundleException("Compressor::compressAppMode compress failed");
         } finally {
-            // delete temp file if compress app failed
+            // delete temp file
             for (String hapPath : fileList) {
                 deleteFile(hapPath);
             }
@@ -1586,102 +1581,6 @@ public class Compressor {
     }
 
     /**
-     * check hap version for pack app.
-     *
-     * @param utility common data
-     * @param hapPath source file to zip
-     * @param baseDir current directory name of file
-     * @return true is for successful and false is for failed
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private boolean checkModuleVersionInApp(Utility utility, String hapPath, String baseDir) throws BundleException {
-        String moduleJson = "";
-        File srcFile = new File(hapPath);
-        moduleJson = FileUtils.getJsonInZips(srcFile, MODULE_JSON);
-        Version version = ModuleJsonUtil.getVersion(moduleJson);
-        if ((version.versionCode == -1)) {
-            LOG.error("Compressor::checkModuleVersionInApp version code is null or empty");
-            return false;
-        }
-        if (!versionCode.isEmpty() && !versionCode.equals(String.valueOf(version.versionCode))) {
-            LOG.error("Compressor::checkModuleVersionInApp some haps with different version code");
-            return false;
-        }
-
-        if ((version.versionName == null) || (version.versionName.isEmpty())) {
-            LOG.error("Compressor::checkModuleVersionInApp version name is null or empty");
-            return false;
-        }
-        version.versionName = "\"" + version.versionName + "\"";
-        if (!versionName.isEmpty() && !versionName.equals(version.versionName)) {
-            LOG.error("Compressor::checkModuleVersionInApp some haps with different version name");
-            return false;
-        }
-        versionCode = String.valueOf(version.versionCode);
-        versionName = version.versionName;
-        return true;
-    }
-
-    /**
-     * check version code in haps.
-     *
-     * @param utility common data
-     * @param srcFile source file to zip
-     * @param baseDir current directory name of file
-     * @return true is for successful and false is for failed
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private boolean checkVersionInHaps(Utility utility, File srcFile, String baseDir) throws BundleException {
-        try {
-            String fileStr = srcFile.getName();
-            if ((fileStr == null) || (fileStr.isEmpty())) {
-                throw new BundleException("Compressor::checkVersionInHaps get file name failed");
-            }
-            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-                return true;
-            }
-            for (String hapPath : utility.getFormattedHapPathList()) {
-                if ((hapPath == null) || (hapPath.isEmpty()) || (!hapPath.contains(baseDir))) {
-                    continue;
-                }
-                if (isModuleHap(hapPath)) {
-                    if (checkModuleVersionInApp(utility, hapPath, baseDir)) {
-                        continue;
-                    } else {
-                        return false;
-                    }
-                }
-
-                String versionStr = obtainVersion(srcFile, hapPath);
-                String code = obtainInnerVersionCode(versionStr);
-                if ((code == null) || (code.isEmpty())) {
-                    LOG.error("Compressor::checkVersionInHaps version code is null or empty");
-                    return false;
-                }
-                if (!versionCode.isEmpty() && !versionCode.equals(code)) {
-                    LOG.error("Compressor::checkVersionInHaps some haps with different version code");
-                    return false;
-                }
-                String name = obtainInnerVersionName(versionStr);
-                if ((name == null) || (name.isEmpty())) {
-                    LOG.error("Compressor::checkVersionInHaps version name is null or empty");
-                    return false;
-                }
-                if (!versionName.isEmpty() && !versionName.equals(name)) {
-                    LOG.error("Compressor::checkVersionInHaps some haps with different version name");
-                    return false;
-                }
-                versionCode = code;
-                versionName = name;
-            }
-        } catch (BundleException exception) {
-            LOG.error("Compressor::checkVersionInHaps io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::checkVersionInHaps failed");
-        }
-        return true;
-    }
-
-    /**
      * get CRC32 from file.
      *
      * @param utility common data
@@ -1813,160 +1712,6 @@ public class Compressor {
             Utility.closeStream(inputStreamReader);
             Utility.closeStream(fileInputStream);
         }
-    }
-
-    /**
-     * get string of config.json from hap file.
-     *
-     * @param srcFile    source file
-     * @param baseDir current directory name of file
-     * @return string of config.json
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private String obtainVersion(File srcFile, String baseDir) throws BundleException {
-        ZipFile zipFile = null;
-        FileInputStream zipInput = null;
-        InputStream in = null;
-        ZipInputStream zin = null;
-        InputStream inputStream = null;
-        InputStreamReader reader = null;
-        BufferedReader br = null;
-        ZipEntry entry = null;
-        String configJson = "";
-        try {
-            zipFile = new ZipFile(srcFile);
-            zipInput = new FileInputStream(baseDir);
-            in = new BufferedInputStream(zipInput);
-            zin = new ZipInputStream(in);
-            while ((entry = zin.getNextEntry()) != null) {
-                if (entry.getName().toLowerCase().equals(CONFIG_JSON)) {
-                    inputStream = zipFile.getInputStream(entry);
-                    reader = new InputStreamReader(inputStream);
-                    br = new BufferedReader(reader);
-                    if (br != null) {
-                        configJson = br.readLine();
-                        break;
-                    }
-                }
-            }
-        } catch (IOException exception) {
-            LOG.error("Compressor::ObtainVersionCode io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::ObtainVersionCode failed");
-        } finally {
-            Utility.closeStream(zipFile);
-            Utility.closeStream(zipInput);
-            Utility.closeStream(in);
-            Utility.closeStream(zin);
-            Utility.closeStream(inputStream);
-            Utility.closeStream(reader);
-            Utility.closeStream(br);
-        }
-        return obtainInnerVersion(configJson);
-    }
-
-    private String obtainInnerVersion(String configJson) throws BundleException {
-        try {
-            if (configJson != null) {
-                int indexOfVersion = configJson.indexOf(VERSION);
-                if (indexOfVersion <= 0) {
-                    LOG.error("Compressor::obtainInnerVersion obtain index of version failed");
-                    throw new BundleException("Compressor::obtainInnerVersion obtain index of version failed");
-                }
-                int lastIndex = configJson.indexOf(JSON_END, indexOfVersion);
-                if (lastIndex <= 0) {
-                    LOG.error("Compressor::obtainInnerVersion obtain last index failed");
-                    throw new BundleException("Compressor::obtainInnerVersion obtain last index failed");
-                }
-                String version = configJson.substring(indexOfVersion, lastIndex + 1);
-                if (version == null || version.isEmpty()) {
-                    LOG.error("Compressor::obtainInnerVersion version is null or empty");
-                    throw new BundleException("Compressor::obtainInnerVersion failed due to null or empty version!");
-                }
-                return version.trim();
-            }
-        } catch (BundleException exception) {
-            LOG.error("Compressor::obtainInnerVersion io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::obtainInnerVersion failed");
-        }
-        return "";
-    }
-
-    /**
-     * get version code from hap file.
-     *
-     * @param configJson config.json from hap file
-     * @return version code
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private String obtainInnerVersionCode(String configJson) throws BundleException {
-        try {
-            if (configJson != null) {
-                int indexOfCode = configJson.indexOf(CODE);
-                if (indexOfCode <= 0) {
-                    LOG.error("Compressor::ObtainInnerVersionCode obtain index failed");
-                    throw new BundleException("Compressor::ObtainInnerVersionCode obtain index failed");
-                }
-                int index = configJson.indexOf(COLON, indexOfCode);
-                if (index <= 0) {
-                    LOG.error("Compressor::ObtainInnerVersionCode obtain index failed");
-                    throw new BundleException("Compressor::ObtainInnerVersionCode obtain index failed");
-                }
-                int lastIndex = configJson.indexOf(COMMA, index);
-                if (lastIndex <= 0) {
-                    LOG.error("Compressor::ObtainInnerVersionCode obtain index failed");
-                    throw new BundleException("Compressor::ObtainInnerVersionCode obtain index failed");
-                }
-                String code = configJson.substring(index + 1, lastIndex);
-                if (code == null || code.isEmpty()) {
-                    LOG.error("Compressor::ObtainInnerVersionCode code is null or empty");
-                    throw new BundleException("Compressor::ObtainInnerVersionCode failed due to null or empty code!");
-                }
-                return code.trim();
-            }
-        } catch (BundleException exception) {
-            LOG.error("Compressor::ObtainInnerVersionCode io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::ObtainInnerVersionCode failed");
-        }
-        return "";
-    }
-
-    /**
-     * get version name from hap file.
-     *
-     * @param configJson config.json from hap file
-     * @return version name
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private String obtainInnerVersionName(String configJson) throws BundleException {
-        try {
-            if (configJson != null) {
-                int indexOfCode = configJson.indexOf(NAME);
-                if (indexOfCode <= 0) {
-                    LOG.error("Compressor::obtainInnerVersionName obtain index failed");
-                    throw new BundleException("Compressor::obtainInnerVersionName obtain index failed");
-                }
-                int index = configJson.indexOf(COLON, indexOfCode);
-                if (index <= 0) {
-                    LOG.error("Compressor::obtainInnerVersionName obtain index failed");
-                    throw new BundleException("Compressor::obtainInnerVersionName obtain index failed");
-                }
-                int lastIndex = configJson.indexOf(JSON_END, index);
-                if (lastIndex <= 0) {
-                    LOG.error("Compressor::obtainInnerVersionName obtain index failed");
-                    throw new BundleException("Compressor::obtainInnerVersionName obtain index failed");
-                }
-                String name = configJson.substring(index + 1, lastIndex);
-                if (name == null || name.isEmpty()) {
-                    LOG.error("Compressor::obtainInnerVersionName name is null or empty");
-                    throw new BundleException("Compressor::obtainInnerVersionName failed due to null or empty name!");
-                }
-                return name.trim();
-            }
-        } catch (BundleException exception) {
-            LOG.error("Compressor::obtainInnerVersionName io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::obtainInnerVersionName failed");
-        }
-        return "";
     }
 
     /**

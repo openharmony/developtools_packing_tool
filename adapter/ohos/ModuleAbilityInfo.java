@@ -23,7 +23,7 @@ import java.util.List;
  * ModuleJson ability info in module
  *
  */
-public class ModuleAbilityInfo {
+class ModuleAbilityInfo {
     /**
      * Indicates the name of module ModuleJson.
      */
