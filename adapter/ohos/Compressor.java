@@ -2351,28 +2351,29 @@ public class Compressor {
      * check apiRelease is same, if apiRelease same, return true, otherwise return false.
      *
      */
-    private static boolean checkApiVersion(VerifyCollection verifyCollection, APIVersion apiVersion) {
+    private static boolean checkModuleApiVersion(VerifyCollection verifyCollection,
+                                                 ModuleApiVersion moduleApiVersion) {
         // check compatibleApiVersion
         if (verifyCollection.compatibleApiVersion == -1) {
-            verifyCollection.compatibleApiVersion = apiVersion.compatibleApiVersion;
+            verifyCollection.compatibleApiVersion = moduleApiVersion.compatibleApiVersion;
         }
-        if (verifyCollection.compatibleApiVersion != apiVersion.compatibleApiVersion) {
+        if (verifyCollection.compatibleApiVersion != moduleApiVersion.compatibleApiVersion) {
             LOG.error("Compress::checkApiVersion compatibleApiVersion is different!");
             return false;
         }
         // check targetApiVersion
         if (verifyCollection.targetApiVersion == -1) {
-            verifyCollection.targetApiVersion = apiVersion.targetApiVersion;
+            verifyCollection.targetApiVersion = moduleApiVersion.targetApiVersion;
         }
-        if (verifyCollection.targetApiVersion != apiVersion.targetApiVersion) {
+        if (verifyCollection.targetApiVersion != moduleApiVersion.targetApiVersion) {
             LOG.error("Compress::checkApiVersion targetApiVersion is different!");
             return false;
         }
         // check releaseType
         if (verifyCollection.releaseType.equals("")) {
-            verifyCollection.releaseType = apiVersion.releaseType;
+            verifyCollection.releaseType = moduleApiVersion.releaseType;
         }
-        if (!verifyCollection.releaseType.equals(apiVersion.releaseType)) {
+        if (!verifyCollection.releaseType.equals(moduleApiVersion.releaseType)) {
             LOG.error("Compress::checkApiVersion releaseType is different!");
             return false;
         }
@@ -2380,7 +2381,7 @@ public class Compressor {
     }
 
     /**
-     * check stage hap is vaild in haps when pack app.
+     * check stage hap is valid in haps when pack app.
      *
      */
     private static boolean checkStageHap(String hapPath, VerifyCollection verifyCollection)
@@ -2406,8 +2407,8 @@ public class Compressor {
             return false;
         }
         // check apiVersion
-        APIVersion apiVersion = ModuleJsonUtil.parseStageAPIVersion(moduleJson);
-        if (!checkApiVersion(verifyCollection, apiVersion)) {
+        ModuleApiVersion moduleApiVersion = ModuleJsonUtil.parseStageModuleApiVersion(moduleJson);
+        if (!checkModuleApiVersion(verifyCollection, moduleApiVersion)) {
             LOG.error("Compress::checkStageHap apiVersion is different!");
             return false;
         }
@@ -2448,8 +2449,8 @@ public class Compressor {
             return false;
         }
         // check apiVersion
-        APIVersion apiVersion = ModuleJsonUtil.parseFAAPIVersion(configJson);
-        if (!checkApiVersion(verifyCollection, apiVersion)) {
+        ModuleApiVersion moduleApiVersion = ModuleJsonUtil.parseFAModuleApiVersion(configJson);
+        if (!checkModuleApiVersion(verifyCollection, moduleApiVersion)) {
             LOG.error("Compress::checkStageHap apiVersion is different!");
             return false;
         }
