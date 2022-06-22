@@ -15,7 +15,6 @@
 
 package ohos;
 
-import com.sun.istack.internal.FinalArrayList;
 import ohos.utils.fastjson.JSON;
 import ohos.utils.fastjson.JSONArray;
 import ohos.utils.fastjson.JSONObject;
@@ -184,23 +183,23 @@ public class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
      */
-    public static APIVersion parseStageAPIVersion(String jsonString) throws BundleException {
-        APIVersion apiVersion = new APIVersion();
+    public static ModuleApiVersion parseStageModuleApiVersion(String jsonString) throws BundleException {
+        ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         JSONObject jsonObject = JSON.parseObject(jsonString);
         JSONObject appObj = jsonObject.getJSONObject(APP);
         if (appObj == null) {
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
         }
         if (appObj.containsKey(MIN_API_VERSION)) {
-            apiVersion.compatibleApiVersion = appObj.getIntValue(MIN_API_VERSION);
+            moduleApiVersion.compatibleApiVersion = appObj.getIntValue(MIN_API_VERSION);
         }
         if (appObj.containsKey(TARGET_API_VERSION)) {
-            apiVersion.targetApiVersion = appObj.getIntValue(TARGET_API_VERSION);
+            moduleApiVersion.targetApiVersion = appObj.getIntValue(TARGET_API_VERSION);
         }
         if (appObj.containsKey(API_RELEASE_TYPE)) {
-            apiVersion.releaseType = appObj.getString(API_RELEASE_TYPE);
+            moduleApiVersion.releaseType = appObj.getString(API_RELEASE_TYPE);
         }
-        return apiVersion;
+        return moduleApiVersion;
     }
 
     /**
@@ -210,8 +209,8 @@ public class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
      */
-    public static APIVersion parseFAAPIVersion(String jsonString) throws BundleException {
-        APIVersion apiVersion = new APIVersion();
+    public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
+        ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         JSONObject jsonObject = JSON.parseObject(jsonString);
         JSONObject appObj = jsonObject.getJSONObject(APP);
         if (appObj == null) {
@@ -222,15 +221,15 @@ public class ModuleJsonUtil {
         }
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
         if (apiVersionObj.containsKey(COMPATIBLE)) {
-            apiVersion.compatibleApiVersion = apiVersionObj.getIntValue(COMPATIBLE);
+            moduleApiVersion.compatibleApiVersion = apiVersionObj.getIntValue(COMPATIBLE);
         }
         if (apiVersionObj.containsKey(RELEASE_TYPE)) {
-            apiVersion.releaseType = apiVersionObj.getString(RELEASE_TYPE);
+            moduleApiVersion.releaseType = apiVersionObj.getString(RELEASE_TYPE);
         }
         if (apiVersionObj.containsKey(TARGET)) {
-            apiVersion.targetApiVersion = apiVersionObj.getIntValue(TARGET);
+            moduleApiVersion.targetApiVersion = apiVersionObj.getIntValue(TARGET);
         }
-        return apiVersion;
+        return moduleApiVersion;
     }
 
     /**
