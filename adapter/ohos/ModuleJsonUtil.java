@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
-public class ModuleJsonUtil {
+class ModuleJsonUtil {
     private static final String  VERSION_CODE = "\"versionCode\"";
     private static final String VERSION_NAME = "\"versionName\"";
     private static final String APP = "app";
@@ -59,53 +59,6 @@ public class ModuleJsonUtil {
     private static final String TYPE= "type";
     private static final String VENDOR = "vendor";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
-
-    /**
-     * get the versionCode from json file.
-     *
-     * @param jsonString uncompress json object
-     * @return the result
-     */
-     public static Version getVersion(String jsonString) throws BundleException {
-         Version version = new Version();
-         try {
-             if (jsonString != null) {
-                // find versionName
-                int indexOfVersionName = jsonString.indexOf(VERSION_NAME);
-                if (indexOfVersionName <= 0) {
-                    LOG.error("ModuleJsonUtil::getVersion obtain index of VERSION_NAME failed");
-                    return version;
-                }
-                indexOfVersionName += VERSION_NAME.length();
-                int nameStart = jsonString.indexOf("\"", indexOfVersionName);
-                int nameEnd = nameStart + 1;
-                while(jsonString.charAt(nameEnd) != '\"') {
-                    ++nameEnd;
-                }
-                version.versionName = jsonString.substring(nameStart + 1, nameEnd).trim();
-                //find versionCode
-                int indexOfVersionCode = jsonString.indexOf(VERSION_CODE);
-                if (indexOfVersionCode <= 0) {
-                    LOG.error("ModuleJsonUtil::getVersion obtain index of VERSION_CODE failed");
-                    return version;
-                }
-                indexOfVersionCode += VERSION_CODE.length();
-                while(!Character.isDigit(jsonString.charAt(indexOfVersionCode))) {
-                    ++indexOfVersionCode;
-                }
-                String versionCode = "";
-                while(Character.isDigit(jsonString.charAt(indexOfVersionCode))) {
-                    versionCode += jsonString.charAt(indexOfVersionCode);
-                    ++indexOfVersionCode;
-                }
-                version.versionCode = Integer.parseInt(versionCode.trim());
-            }
-         } catch (NumberFormatException exception) {
-             LOG.error("ModuleJsonUtil::getVersion NumberFormatException exception: " + exception.getMessage());
-             throw new BundleException("ModuleJsonUtil::getVersion failed");
-         }
-         return version;
-     }
 
     /**
      * get the version from json file for stage module.
