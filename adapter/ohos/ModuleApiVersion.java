@@ -1,6 +1,6 @@
 package ohos;
 
-public class APIVersion {
+class ModuleApiVersion {
     /**
      * Indicates the compatibleApiVersion of app.
      */
