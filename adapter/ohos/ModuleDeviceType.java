@@ -19,7 +19,7 @@ package ohos;
  * App AppJson device type.
  *
  */
-public class ModuleDeviceType {
+class ModuleDeviceType {
     /**
      * Indicates the minAPIVersion of app AppJson.
      */

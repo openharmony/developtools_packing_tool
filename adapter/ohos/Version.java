@@ -22,7 +22,7 @@ import java.util.List;
  * Version info.
  *
  */
-public class Version {
+class Version {
     /**
      * Indicates the versionCode of version.
      */
