@@ -633,7 +633,8 @@
                   "staticSubscriber",
                   "wallpaper",
                   "backup",
-                  "window"
+                  "window",
+                  "enterpriseAdmin"
                 ]
               },
               "permissions": {
