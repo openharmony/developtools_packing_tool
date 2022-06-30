@@ -2846,7 +2846,7 @@
           },
           "properties": {
             "apiVersion": {
-              "description": "Indicates the supported apiVersion range. The value can be 3, 4, or 5. This label is optional.",
+              "description": "Indicates the supported apiVersion range.This label is optional.",
               "type": "object",
               "propertyNames": {
                 "enum": [
