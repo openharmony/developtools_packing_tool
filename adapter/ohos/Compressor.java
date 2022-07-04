@@ -655,7 +655,9 @@ public class Compressor {
                 }
                 // copy duplicated hap to duplicated dir and get moduleName of duplicated hap
                 if (selectedHaps.contains(zipEntry.getName())) {
-                    continue;
+                    LOG.error("Compressor::copyHapFromApp file duplicated, file is " + zipEntry.getName());
+                    throw new BundleException("Compressor::copyHapFromApp file duplicated, file is "
+                            + zipEntry.getName());
                 } else {
                     // copy selectedHap to tempDir
                     file = new File(tempDir + File.separator + zipEntry.getName());
@@ -719,14 +721,15 @@ public class Compressor {
         }
         for (String hapPath : utility.getFormattedHapList()) {
             if (seletedHaps.contains(new File(hapPath).getName())) {
-                continue;
+                LOG.error("Compressor::disposeHap file duplicated, file is " + new File(hapPath).getName());
+                throw new BundleException("Compressor::disposeHap file duplicated, file is "
+                        + new File(hapPath).getName());
             }
             File hapFile = new File(hapPath);
             seletedHaps.add(hapFile.getName());
             // copy hap to tempDir
             FileUtils.copyFile(hapFile, new File((tempDir +File.separator + hapFile.getName())));
             String packInfo = FileUtils.getJsonInZips(hapFile, PACKINFO_NAME);
-
 
             if (packInfo.isEmpty()) {
                 String errMsg = "Compressor::disposeHap failed, hap has no pack.info!";
