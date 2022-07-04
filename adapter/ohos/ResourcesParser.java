@@ -606,7 +606,7 @@ public class ResourcesParser {
 
     /**
      * fillup zero to string.
-     * @param inputString Indicates the string shoule to be filled.
+     * @param inputString Indicates the string should to be filled.
      * @param length Indicates the final length of String.
      * @return the final string
      */
