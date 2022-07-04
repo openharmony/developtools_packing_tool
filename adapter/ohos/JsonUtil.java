@@ -1260,7 +1260,7 @@ public class JsonUtil {
     /**
      * parse abilityform in stage module.
      *
-     * @param extensionAbilityInfos is exten ability in module object.
+     * @param extensionAbilityInfos is extent ability in module object.
      * @param data is resource byte in hap.
      * @return the List<AbilityFormInfo> result
      * @throws BundleException Throws this exception if the json is not standard.
