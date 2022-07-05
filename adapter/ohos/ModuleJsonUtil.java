@@ -21,6 +21,7 @@ import ohos.utils.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.HashMap;
 
@@ -28,6 +29,7 @@ class ModuleJsonUtil {
     private static final String  VERSION_CODE = "\"versionCode\"";
     private static final String VERSION_NAME = "\"versionName\"";
     private static final String APP = "app";
+    private static final String ABILITIES = "abilities";
     private static final String VERSIONCODE = "versionCode";
     private static final String VERSIONNAME = "versionName";
     private static final String MIN_COMPATIBLE_VERSIONCODE = "minCompatibleVersionCode";
@@ -58,6 +60,14 @@ class ModuleJsonUtil {
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String TYPE= "type";
     private static final String VENDOR = "vendor";
+    private static final String METADATA = "metadata";
+    private static final String RESOURCE = "resource";
+    private static final String PROFILE = "$profile:";
+    private static final String VALUE = "value";
+    private static final String JSON_PERFIX = ".json";
+    private static final String DISTROFILTER = "distroFilter";
+    private static final String DEPENDENCIES = "dependencies";
+    private static final String EXTENSIONABILITIES = "extensionAbilities";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -141,6 +151,7 @@ class ModuleJsonUtil {
         JSONObject jsonObject = JSON.parseObject(jsonString);
         JSONObject appObj = jsonObject.getJSONObject(APP);
         if (appObj == null) {
+            LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
         }
         if (appObj.containsKey(MIN_API_VERSION)) {
@@ -288,11 +299,13 @@ class ModuleJsonUtil {
         JSONObject jsonObject = JSON.parseObject(jsonString);
         JSONObject appObject = jsonObject.getJSONObject(APP);
         if (appObject == null) {
+            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
         }
         if (appObject.containsKey(BUNDLENAME)) {
             bundleName = appObject.getString(BUNDLENAME);
         } else {
+            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain bundleNames!");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain bundleNames!");
         }
         return bundleName;
@@ -310,6 +323,7 @@ class ModuleJsonUtil {
         JSONObject jsonObject = JSON.parseObject(jsonString);
         JSONObject appObject = jsonObject.getJSONObject(APP);
         if (appObject == null) {
+            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
         }
         if (appObject.containsKey(VENDOR)) {
@@ -372,16 +386,6 @@ class ModuleJsonUtil {
         }
         if (!verifyAppInPackInfo(finalAppObj, srcAppObj)) {
             LOG.error("ModuleJsonUtil:verifyPackInfo verify app failed!");
-            return false;
-        }
-        // check modules info
-        if (!verifyModuleInPackInfo(finalSummaryObj.getJSONArray(MODULES), srcSummaryObj.getJSONArray(MODULES))) {
-            LOG.error("ModuleJsonUtil:verifyPackInfo verify module failed!");
-            return false;
-        }
-        // check packageName info
-        if (!verifyPackageName(finalPackObj.getJSONArray(PACKAGES), srcPackObj.getJSONArray(PACKAGES))) {
-            LOG.error("ModuleJsonUtil:verifyPackInfo verify package failed!");
             return false;
         }
 
@@ -756,6 +760,278 @@ class ModuleJsonUtil {
         }
         deviceTypes = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
         return deviceTypes;
+    }
+
+    /**
+     * parse stage hapVerifyInfo.
+     *
+     * @param hapVerifyInfo is the parse result
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static void parseStageHapVerifyInfo(HapVerifyInfo hapVerifyInfo) throws BundleException {
+        if (hapVerifyInfo.profileStr.isEmpty()) {
+            throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, module.json is empty!");
+        }
+        hapVerifyInfo.bundleName = parseBundleName(hapVerifyInfo.profileStr);
+        hapVerifyInfo.vendor = parseVendor(hapVerifyInfo.profileStr);
+        hapVerifyInfo.version = parseStageVersion(hapVerifyInfo.profileStr);
+        hapVerifyInfo.apiVersion = parseStageModuleApiVersion(hapVerifyInfo.profileStr);
+        hapVerifyInfo.moduleName = parseStageModuleName(hapVerifyInfo.profileStr);
+        List<ModuleMetadataInfo> moduleMetadataInfos =
+                parseModuleAllMetadata(hapVerifyInfo.profileStr, hapVerifyInfo.resourceMap);
+        hapVerifyInfo.distroFilter = parseStageDistroFilter(moduleMetadataInfos);
+        hapVerifyInfo.deviceType = parseDeviceType(hapVerifyInfo.profileStr);
+        hapVerifyInfo.abilityNames = parseAbilityNames(hapVerifyInfo.profileStr);
+        List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.profileStr);
+        hapVerifyInfo.abilityNames.addAll(extensionAbilityNames);
+        hapVerifyInfo.isEntry = parseStageIsEntry(hapVerifyInfo.profileStr);
+        hapVerifyInfo.dependencies = parseDependencies(hapVerifyInfo.profileStr);
+    }
+
+    /**
+     * parse FA hapVerifyInfo.
+     *
+     * @param hapVerifyInfo is the parse result
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static void parseFAHapVerifyInfo(HapVerifyInfo hapVerifyInfo) throws BundleException {
+        if (hapVerifyInfo.profileStr.isEmpty()) {
+            LOG.error("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
+            throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
+        }
+        hapVerifyInfo.bundleName = parseBundleName(hapVerifyInfo.profileStr);
+        hapVerifyInfo.vendor = parseVendor(hapVerifyInfo.profileStr);
+        hapVerifyInfo.version = parseFaVersion(hapVerifyInfo.profileStr);
+        hapVerifyInfo.apiVersion = parseFAModuleApiVersion(hapVerifyInfo.profileStr);
+        hapVerifyInfo.moduleName = parseFaModuleName(hapVerifyInfo.profileStr);
+        hapVerifyInfo.distroFilter = parseFADistroFilter(hapVerifyInfo.profileStr);
+        hapVerifyInfo.deviceType = parseDeviceType(hapVerifyInfo.profileStr);
+        hapVerifyInfo.abilityNames = parseAbilityNames(hapVerifyInfo.profileStr);
+        hapVerifyInfo.isEntry = parseFAIsEntry(hapVerifyInfo.profileStr);
+        hapVerifyInfo.packageName = parseFaPackageStr(hapVerifyInfo.profileStr);
+        hapVerifyInfo.dependencies = parseDependencies(hapVerifyInfo.profileStr);
+    }
+
+    /**
+     * parse stage distroFilter.
+     *
+     * @param moduleMetadataInfos all metadata of module
+     * @return DistroFilter is the result of parsed distroFilter
+     */
+    public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
+        DistroFilter distroFilter = new DistroFilter();
+        for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
+            if (moduleMetadataInfo.resource.isEmpty()) {
+                continue;
+            }
+            JSONObject distroFilterObj = JSON.parseObject(moduleMetadataInfo.resource);
+            if (distroFilterObj.containsKey(DISTROFILTER)) {
+                distroFilter = JSONObject.parseObject(getJsonString(distroFilterObj,
+                        DISTROFILTER), DistroFilter.class);
+                return distroFilter;
+            }
+        }
+        return distroFilter;
+    }
+
+    /**
+     * parse stage parseModuleAllMetadata.
+     *
+     * @param jsonString is the string of module.json
+     * @param profileJson is the <fileName,fileString> of profile
+     * @return DistroFilter is the result of parsed distroFilter
+     */
+    public static List<ModuleMetadataInfo> parseModuleAllMetadata(
+            String jsonString, HashMap<String, String> profileJson) throws BundleException {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("ModuleJsonUtil::parseModuleAllMetadata failed, module is null!");
+            throw new BundleException("ModuleJsonUtil::parseModuleAllMetadata failed, module is null!");
+        }
+        List<ModuleMetadataInfo> moduleMetadataInfos = new ArrayList<>();
+        if (moduleObj.containsKey(METADATA)) {
+            JSONArray metadatas = moduleObj.getJSONArray(METADATA);
+            for (int i = 0; i < metadatas.size(); ++i) {
+                JSONObject metadata = metadatas.getJSONObject(i);
+                moduleMetadataInfos.add(parseModuleMetadata(metadata, profileJson));
+            }
+        }
+        return moduleMetadataInfos;
+    }
+
+    /**
+     * parse metadata info
+     *
+     * @param jsonObject Json hap json Object
+     * @param profileJson is the <fileName,fileString> of profile
+     * @return the ModuleMetadataInfo result
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static ModuleMetadataInfo parseModuleMetadata(JSONObject jsonObject, HashMap<String, String> profileJson)
+            throws BundleException {
+        if (jsonObject == null) {
+            throw new BundleException("ModuleJsonUtil::parseModuleMetadata failed, jsonObject is null");
+        }
+        ModuleMetadataInfo moduleMetadataInfo = new ModuleMetadataInfo();
+        if (jsonObject.containsKey(NAME)) {
+            moduleMetadataInfo.name = getJsonString(jsonObject, NAME);
+        }
+        if (jsonObject.containsKey(VALUE)) {
+            moduleMetadataInfo.value = getJsonString(jsonObject, VALUE);
+        }
+        if (jsonObject.containsKey(RESOURCE)) {
+            moduleMetadataInfo.resource = getJsonString(jsonObject, RESOURCE);
+            String fileName = moduleMetadataInfo.resource;
+            fileName = fileName.replace(PROFILE, "");
+            fileName = fileName + JSON_PERFIX;
+            moduleMetadataInfo.resource = profileJson.get(fileName);
+        }
+        return moduleMetadataInfo;
+    }
+
+    /**
+     * parse metadata info
+     *
+     * @param jsonString Json string of config.json
+     * @return the ModuleMetadataInfo result
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static DistroFilter parseFADistroFilter(String jsonString) {
+        DistroFilter distroFilter = new DistroFilter();
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        if (jsonObj.containsKey(MODULE)) {
+            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+            if (moduleObj.containsKey(DISTROFILTER)) {
+                distroFilter = JSONObject.parseObject(getJsonString(moduleObj,
+                        DISTROFILTER), DistroFilter.class);
+            }
+        }
+        return distroFilter;
+    }
+
+    /**
+     * get deviceType from json file.
+     *
+     * @param jsonString is the json String of module.json or config.json
+     */
+    public static List<String> parseDeviceType(String jsonString) {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        List<String> deviceType = new ArrayList<>();
+        if (jsonObj.containsKey(MODULE)) {
+            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+            if (moduleObj.containsKey(DEVICE_TYPE)) {
+                deviceType = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPE), String.class);
+            } else if (moduleObj.containsKey(DEVICE_TYPES)) {
+                deviceType = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
+            }
+        }
+        return deviceType;
+    }
+
+    /**
+     * get ability names from json file.
+     *
+     * @param jsonString is the json String of module.json or config.json
+     * @return ability names
+     */
+    public static List<String> parseAbilityNames(String jsonString) {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        List<String> abilityNames = new ArrayList<>();
+        if (jsonObj.containsKey(MODULE)) {
+            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+            if (moduleObj.containsKey(ABILITIES)) {
+                JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
+                for (int i = 0; i < abilityObjs.size(); ++i) {
+                    JSONObject abilityObj = abilityObjs.getJSONObject(i);
+                    if (abilityObj.containsKey(NAME)) {
+                        abilityNames.add(getJsonString(abilityObj, NAME));
+                    }
+                }
+            }
+        }
+        return abilityNames;
+    }
+
+    /**
+     * parse stage ExtensionAbility names
+     *
+     * @param jsonString is the json String of module.json
+     * @return extensionAbilityNames
+     */
+    public static List<String> parseExtensionAbilityName(String jsonString) throws BundleException {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("ModuleJsonUtil::parseExtensionAbilityName failed, module is null!");
+            throw new BundleException("ModuleJsonUtil::parseExtensionAbilityName failed, module is null!");
+        }
+        List<String> extensionAbilityNames = new ArrayList<>();
+        if (moduleObj.containsKey(EXTENSIONABILITIES)) {
+            JSONArray extensionAbilityObjs = moduleObj.getJSONArray(EXTENSIONABILITIES);
+            for (int i = 0; i < extensionAbilityObjs.size(); ++i) {
+                JSONObject extensionAbilityObj = extensionAbilityObjs.getJSONObject(i);
+                if (extensionAbilityObj.containsKey(NAME)) {
+                    extensionAbilityNames.add(getJsonString(extensionAbilityObj, NAME));
+                }
+            }
+        }
+        return extensionAbilityNames;
+    }
+
+    /**
+     * parse stage module is entry.
+     *
+     * @param jsonString is the json String of module.json or config.json
+     * @return is entry
+     */
+    public static boolean parseStageIsEntry(String jsonString) {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        if (jsonObj.containsKey(MODULE)) {
+            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+            if (moduleObj.containsKey(TYPE)) {
+                if (getJsonString(moduleObj, TYPE).equals(ENTRY)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * parse FA module is entry.
+     *
+     * @param jsonString is the json String of module.json or config.json
+     * @return is entry
+     */
+    public static boolean parseFAIsEntry(String jsonString) {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        if (jsonObj.containsKey(MODULE)) {
+            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+            if (moduleObj.containsKey(DISTRO)) {
+                JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
+                if (distroObj.containsKey(MODULETYPE) && getJsonString(distroObj, MODULETYPE).equals(ENTRY)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * parse dependencies form json string.
+     *
+     * @param jsonString is the json String of module.json or config.json
+     * @return dependencies
+     */
+    static List<String> parseDependencies(String jsonString) {
+        List<String> dependencies = new ArrayList<>();
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        if (jsonObj.containsKey(MODULE)) {
+            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+            dependencies = JSONObject.parseArray(getJsonString(moduleObj, DEPENDENCIES), String.class);
+        }
+        return dependencies;
     }
 
     /**
