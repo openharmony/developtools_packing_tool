@@ -94,9 +94,6 @@
             "description": "Indicates the type of the patch.",
             "type": "string",
             "enum": [
-              "entry",
-              "feature",
-              "har",
               "patch"
             ]
           },
@@ -107,15 +104,20 @@
             "items": {
               "type": "string",
               "enum": [
-                "phone",
-                "tablet"
+                "default",
+                "tablet",
+                "tv",
+                "wearable",
+                "car",
+                "router"
               ]
             }
           },
           "originalModuleHash": {
-            "description": "Indicates the sha256 of the module hash value.",
+            "description": "Indicates the sha256 of the module hash value. The value is a string with 64 bytes.",
             "type": "string",
-            "maxLength": 512
+            "maxLength": 64,
+            "minLength": 64
         }
       }
     }
