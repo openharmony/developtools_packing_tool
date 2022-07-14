@@ -16,13 +16,15 @@
 package ohos;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class HapVerify {
+class HapVerify {
     private static final String INCLUDE = "include";
     private static final String EXCLUDE = "exclude";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
@@ -230,34 +232,17 @@ public class HapVerify {
      */
     private static boolean checkEntryIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         List<HapVerifyInfo> entryHapVerifyInfos = new ArrayList<>();
-        HashMap<String, Integer> deviceTypeMap = new HashMap<>();
+        List<HapVerifyInfo> featureHapVerifyInfos = new ArrayList<>();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.isEntry) {
                 entryHapVerifyInfos.add(hapVerifyInfo);
-                for (String device : hapVerifyInfo.deviceType) {
-                    if (deviceTypeMap.containsKey(device)) {
-                        deviceTypeMap.replace(device, deviceTypeMap.get(device) + 1);
-                    } else {
-                        deviceTypeMap.put(device, 1);
-                    }
-                }
             } else {
-                for (String device : hapVerifyInfo.deviceType) {
-                    if (!deviceTypeMap.containsKey(device)) {
-                        deviceTypeMap.put(device, 0);
-                    }
-                }
+                featureHapVerifyInfos.add(hapVerifyInfo);
             }
         }
         if (entryHapVerifyInfos.isEmpty()) {
-            LOG.error("HapVerify::checkEntryIsValid failed, no entry module!");
+            LOG.error("HapVerify::checkEntryIsValid failed, has no entry module");
             return false;
-        }
-        for (String device : deviceTypeMap.keySet()) {
-            if (deviceTypeMap.get(device) == 0) {
-                LOG.error("HapVerify::checkEntryIsValid failed, " + device + " has no entry!");
-                return false;
-            }
         }
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
@@ -266,6 +251,13 @@ public class HapVerify {
                             " " + entryHapVerifyInfos.get(j).moduleName + " entry duplicated!");
                     return false;
                 }
+            }
+        }
+        Map<String, List<HapVerifyInfo>> deviceHap = classifyEntry(entryHapVerifyInfos);
+        for (HapVerifyInfo hapVerifyInfo : featureHapVerifyInfos) {
+            if (!checkFeature(hapVerifyInfo, deviceHap)) {
+                LOG.error("HapVerify::checkEntryIsValid failed, feature is not covered!");
+                return false;
             }
         }
         return true;
@@ -351,12 +343,12 @@ public class HapVerify {
      */
     private static boolean checkPolicyValueDisjoint(String policyLeft, List<String> valueLeft,
                                        String policyRight, List<String> valueRight) throws BundleException {
-        if (valueLeft == null || valueLeft.isEmpty() || valueRight == null || valueRight.isEmpty()) {
-            LOG.error("HapVerify::policyValueDisjoint value should not empty!");
-            throw new BundleException("HapVerify::policyValueDisjoint value should not empty!");
+        if (valueLeft == null || valueRight == null) {
+            LOG.error("HapVerify::checkPolicyValueDisjoint value should not empty!");
+            throw new BundleException("HapVerify::checkPolicyValueDisjoint value should not empty!");
         }
         if (policyLeft.equals(EXCLUDE) && policyRight.equals(INCLUDE)) {
-            if (valueLeft.containsAll(valueRight)) {
+            if (valueRight.isEmpty() || valueLeft.containsAll(valueRight)) {
                 return true;
             }
         } else if (policyLeft.equals(INCLUDE) && policyRight.equals(INCLUDE)) {
@@ -364,12 +356,387 @@ public class HapVerify {
                 return true;
             }
         } else if (policyLeft.equals(INCLUDE) && policyRight.equals(EXCLUDE)) {
-            if (valueRight.containsAll(valueLeft)) {
+            if (valueLeft.isEmpty() || valueRight.containsAll(valueLeft)) {
                 return true;
             }
         } else if (policyLeft.equals(EXCLUDE) && policyRight.equals(EXCLUDE)) {
             return false;
         }
         return false;
+    }
+
+    /**
+     * classify entry haps by deviceType.
+     *
+     * @param entryHapVerifyInfos is the list od entry hapVerifyInfos
+     * @return deviceHap that is classfied
+     */
+    private static Map<String, List<HapVerifyInfo>> classifyEntry(List<HapVerifyInfo> entryHapVerifyInfos) {
+        HashMap<String, List<HapVerifyInfo>> deviceHaps = new HashMap<>();
+        for (HapVerifyInfo hapVerifyInfo : entryHapVerifyInfos) {
+            for (String device : hapVerifyInfo.deviceType) {
+                if (deviceHaps.containsKey(device)) {
+                    deviceHaps.get(device).add(hapVerifyInfo);
+                } else {
+                    deviceHaps.put(device, new ArrayList<HapVerifyInfo>());
+                    deviceHaps.get(device).add(hapVerifyInfo);
+                }
+            }
+        }
+        return deviceHaps;
+    }
+
+    /**
+     * check feature is valid, deviceType is subset of entry, distroFilter is subset of entry
+     *
+     * @param featureHap the feature hap will be checked
+     * @param deviceHap is the haps that feature matched
+     * @return feature is valid
+     */
+    private static boolean checkFeature(HapVerifyInfo featureHap, Map<String, List<HapVerifyInfo>> deviceHap) {
+        // check deviceType and distroFilter
+        for (String device : featureHap.deviceType) {
+            if (!deviceHap.containsKey(device)) {
+                LOG.error("HapVerify::checkFeature " + device + " has no entry!");
+                return false;
+            }
+            List<HapVerifyInfo> entryHaps = deviceHap.get(device);
+            if (!checkFeatureDistroFilter(featureHap, entryHaps)) {
+                LOG.error("HapVerify::checkFeature failed, " + featureHap.moduleName +
+                        " distroFilter has not covered!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * check feature is valid, deviceType is subset of entry, distroFilter is subset of entry
+     *
+     * @param featureHap the feature hap will be checked
+     * @param entryHaps is the haps that feature matched
+     * @return feature is valid
+     */
+    private static boolean checkFeatureDistroFilter(HapVerifyInfo featureHap, List<HapVerifyInfo> entryHaps) {
+        if (featureHap.distroFilter == null) {
+            return checkApiVersionCovered(null, entryHaps) &&
+                    checkScreenShapeCovered(null, entryHaps) &&
+                    checkScreenWindowCovered(null, entryHaps) &&
+                    checkScreenDensityCovered(null, entryHaps) &&
+                    checkCountryCodeCovered(null, entryHaps);
+        }
+        if (!checkApiVersionCovered(featureHap.distroFilter.apiVersion, entryHaps)) {
+            LOG.error("HapVerify::checkFeatureDistroFilter failed, apiVersion is not covered!");
+            return false;
+        }
+        if (!checkScreenShapeCovered(featureHap.distroFilter.screenShape, entryHaps)) {
+            LOG.error("HapVerify::checkFeatureDistroFilter failed, screenShape is not covered!");
+            return false;
+        }
+        if (!checkScreenWindowCovered(featureHap.distroFilter.screenWindow, entryHaps)) {
+            LOG.error("HapVerify::checkFeatureDistroFilter failed, screenWindow is not covered!");
+            return false;
+        }
+        if (!checkScreenDensityCovered(featureHap.distroFilter.screenDensity, entryHaps)) {
+            LOG.error("HapVerify::checkFeatureDistroFilter failed, screenDensity is not covered!");
+            return false;
+        }
+        if (!checkCountryCodeCovered(featureHap.distroFilter.countryCode, entryHaps)) {
+            LOG.error("HapVerify::checkFeatureDistroFilter failed, countryCode is not covered!");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check feature apiVersion is subset of entry apiVersion
+     *
+     * @param apiVersion is the apiVersion of feature hap
+     * @param entryHaps is the haps that feature matched
+     * @return apiVersion is valid
+     */
+    private static boolean checkApiVersionCovered(ApiVersion apiVersion, List<HapVerifyInfo> entryHaps) {
+        List<String> include = null;
+        List<String> exclude = null;
+        for (HapVerifyInfo hapVerifyInfo : entryHaps) {
+            if (hapVerifyInfo.distroFilter == null || hapVerifyInfo.distroFilter.apiVersion == null) {
+                return true;
+            }
+            if (hapVerifyInfo.distroFilter.apiVersion.policy == null) {
+                LOG.error("HapVerify::checkApiVersionCovered input none policy!");
+                return false;
+            }
+            if (hapVerifyInfo.distroFilter.apiVersion.policy.equals(INCLUDE)) {
+                if (include == null) {
+                    include = new ArrayList<>();
+                }
+                // take collection of two include value
+                include.addAll(hapVerifyInfo.distroFilter.apiVersion.value);
+            } else if (hapVerifyInfo.distroFilter.apiVersion.policy.equals(EXCLUDE)) {
+                if (exclude == null) {
+                    exclude = new ArrayList<>();
+                }
+                // take intersection of two exclude value
+                exclude = Stream.of(exclude, hapVerifyInfo.distroFilter.apiVersion.value).
+                        flatMap(Collection::stream).distinct().collect(Collectors.toList());
+            }
+        }
+        if (include != null) {
+            include = include.stream().distinct().collect(Collectors.toList());
+        }
+        if (exclude != null) {
+            exclude = exclude.stream().distinct().collect(Collectors.toList());
+        }
+        if (apiVersion == null) {
+            return checkEntryPolicyValueCoverAll(include, exclude);
+        }
+        return checkPolicyValueCovered(apiVersion.policy, apiVersion.value, include, exclude);
+    }
+
+    /**
+     * check feature screenShape is subset of entry screenShape
+     *
+     * @param screenShape is the screenShape of feature hap
+     * @param entryHaps is the haps that feature matched
+     * @return screenShape is valid
+     */
+    private static boolean checkScreenShapeCovered(ScreenShape screenShape, List<HapVerifyInfo> entryHaps) {
+        List<String> include = null;
+        List<String> exclude = null;
+        for (HapVerifyInfo hapVerifyInfo : entryHaps) {
+            if (hapVerifyInfo.distroFilter == null || hapVerifyInfo.distroFilter.screenShape == null) {
+                return true;
+            }
+            if (hapVerifyInfo.distroFilter.screenShape.policy == null) {
+                LOG.error("HapVerify::checkScreenShapeCovered input none policy!");
+                return false;
+            }
+            if (hapVerifyInfo.distroFilter.screenShape.policy.equals(INCLUDE)) {
+                if (include == null) {
+                    include = new ArrayList<>();
+                }
+                include.addAll(hapVerifyInfo.distroFilter.screenShape.value);
+            } else if (hapVerifyInfo.distroFilter.screenShape.policy.equals(EXCLUDE)) {
+                if (exclude == null) {
+                    exclude = new ArrayList<>();
+                }
+                exclude = Stream.of(exclude, hapVerifyInfo.distroFilter.screenShape.value).
+                        flatMap(Collection::stream).distinct().collect(Collectors.toList());
+            }
+        }
+        if (include != null) {
+            include = include.stream().distinct().collect(Collectors.toList());
+        }
+        if (exclude != null) {
+            exclude = exclude.stream().distinct().collect(Collectors.toList());
+        }
+        if (screenShape == null) {
+            return checkEntryPolicyValueCoverAll(include, exclude);
+        }
+        return checkPolicyValueCovered(screenShape.policy, screenShape.value, include, exclude);
+    }
+
+    /**
+     * check feature screenWindow is subset of entry screenWindow
+     *
+     * @param screenWindow is the screenWindow of feature hap
+     * @param entryHaps is the haps that feature matched
+     * @return screenWindow is valid
+     */
+    private static boolean checkScreenWindowCovered(ScreenWindow screenWindow, List<HapVerifyInfo> entryHaps) {
+        List<String> include = null;
+        List<String> exclude = null;
+        for (HapVerifyInfo hapVerifyInfo : entryHaps) {
+            if (hapVerifyInfo.distroFilter == null || hapVerifyInfo.distroFilter.screenWindow == null) {
+                return true;
+            }
+            if (hapVerifyInfo.distroFilter.screenWindow.policy == null) {
+                LOG.error("HapVerify::checkScreenWindowCovered input none policy!");
+                return false;
+            }
+            if (hapVerifyInfo.distroFilter.screenWindow.policy.equals(INCLUDE)) {
+                if (include == null) {
+                    include = new ArrayList<>();
+                }
+                include.addAll(hapVerifyInfo.distroFilter.screenWindow.value);
+            } else if (hapVerifyInfo.distroFilter.screenWindow.policy.equals(EXCLUDE)) {
+                if (exclude == null) {
+                    exclude = new ArrayList<>();
+                }
+                exclude = Stream.of(exclude, hapVerifyInfo.distroFilter.screenWindow.value).
+                        flatMap(Collection::stream).distinct().collect(Collectors.toList());
+            }
+        }
+        if (include != null) {
+            include = include.stream().distinct().collect(Collectors.toList());
+        }
+        if (exclude != null) {
+            exclude = exclude.stream().distinct().collect(Collectors.toList());
+        }
+        if (screenWindow == null) {
+            return checkEntryPolicyValueCoverAll(include, exclude);
+        }
+        return checkPolicyValueCovered(screenWindow.policy, screenWindow.value, include, exclude);
+    }
+
+    /**
+     * check feature screenDensity is subset of entry screenDensity
+     *
+     * @param screenDensity is the screenDensity of feature hap
+     * @param entryHaps is the haps that feature matched
+     * @return screenDensity is valid
+     */
+    private static boolean checkScreenDensityCovered(ScreenDensity screenDensity, List<HapVerifyInfo> entryHaps) {
+        List<String> include = null;
+        List<String> exclude = null;
+        for (HapVerifyInfo hapVerifyInfo : entryHaps) {
+            if (hapVerifyInfo.distroFilter == null || hapVerifyInfo.distroFilter.screenDensity == null) {
+                return true;
+            }
+            if (hapVerifyInfo.distroFilter.screenDensity.policy == null) {
+                LOG.error("HapVerify::checkScreenDensityCovered input none policy!");
+                return false;
+            }
+            if (hapVerifyInfo.distroFilter.screenDensity.policy.equals(INCLUDE)) {
+                if (include == null) {
+                    include = new ArrayList<>();
+                }
+                include.addAll(hapVerifyInfo.distroFilter.screenDensity.value);
+            } else if (hapVerifyInfo.distroFilter.screenDensity.policy.equals(EXCLUDE)) {
+                if (exclude == null) {
+                    exclude = new ArrayList<>();
+                }
+                exclude = Stream.of(exclude, hapVerifyInfo.distroFilter.screenDensity.value).
+                        flatMap(Collection::stream).distinct().collect(Collectors.toList());
+            }
+        }
+        if (include != null) {
+            include = include.stream().distinct().collect(Collectors.toList());
+        }
+        if (exclude != null) {
+            exclude = exclude.stream().distinct().collect(Collectors.toList());
+        }
+        if (screenDensity == null) {
+            return checkEntryPolicyValueCoverAll(include, exclude);
+        }
+        return checkPolicyValueCovered(screenDensity.policy, screenDensity.value, include, exclude);
+    }
+
+    /**
+     * check feature countryCode is subset of entry countryCode
+     *
+     * @param countryCode is the countryCode of feature hap
+     * @param entryHaps is the haps that feature matched
+     * @return countryCode is valid
+     */
+    private static boolean checkCountryCodeCovered(CountryCode countryCode, List<HapVerifyInfo> entryHaps) {
+        List<String> include = null;
+        List<String> exclude = null;
+        for (HapVerifyInfo hapVerifyInfo : entryHaps) {
+            if (hapVerifyInfo.distroFilter == null || hapVerifyInfo.distroFilter.countryCode == null) {
+                return true;
+            }
+            if (hapVerifyInfo.distroFilter.countryCode.policy == null) {
+                LOG.error("HapVerify::checkCountryCodeCovered input none policy!");
+                return false;
+            }
+            if (hapVerifyInfo.distroFilter.countryCode.policy.equals(INCLUDE)) {
+                if (include == null) {
+                    include = new ArrayList<>();
+                }
+                include.addAll(hapVerifyInfo.distroFilter.countryCode.value);
+            } else if (hapVerifyInfo.distroFilter.countryCode.policy.equals(EXCLUDE)) {
+                if (exclude == null) {
+                    exclude = new ArrayList<>();
+                }
+                exclude = Stream.of(exclude, hapVerifyInfo.distroFilter.countryCode.value).
+                        flatMap(Collection::stream).distinct().collect(Collectors.toList());
+            }
+        }
+        if (include != null) {
+            include = include.stream().distinct().collect(Collectors.toList());
+        }
+        if (exclude != null) {
+            exclude = exclude.stream().distinct().collect(Collectors.toList());
+        }
+        if (countryCode == null) {
+            return checkEntryPolicyValueCoverAll(include, exclude);
+        }
+        return checkPolicyValueCovered(countryCode.policy, countryCode.value, include, exclude);
+    }
+
+    /**
+     * check entry policy value covered all value
+     *
+     * @param include is the collection of included value
+     * @param exclude is the collection of excluded value
+     * @return entry policy value covered all value
+     */
+    private static boolean checkEntryPolicyValueCoverAll(List<String> include, List<String> exclude) {
+        if (include == null) {
+            return exclude == null || exclude.isEmpty();
+        }
+        return exclude != null && include.containsAll(exclude);
+    }
+
+    /**
+     * check entry policy value covered all value
+     *
+     * @param include is the collection of included value
+     * @param exclude is the collection of excluded value
+     * @return entry policy value covered all value
+     */
+    private static boolean checkPolicyValueCovered(String policy, List<String> value,
+                                                   List<String> include, List<String> exclude) {
+        if (value == null || policy == null) {
+            LOG.error("checkPolicyValueCovered::failed value is null!");
+            return false;
+        }
+        if (policy.equals(EXCLUDE)) {
+            return checkCoveredExcludePolicyValue(value, include, exclude);
+        } else if (policy.equals(INCLUDE)) {
+            return checkCoveredIncludePolicyValue(value, include, exclude);
+        }
+        return false;
+    }
+
+    /**
+     * check entry covered feature value when feature policy is exclude
+     *
+     * @param value is the feature value
+     * @param include is the included value of entry
+     * @param exclude is the excluded value of entry
+     * @return entry policy value covered feature value
+     */
+    private static boolean checkCoveredExcludePolicyValue(List<String> value, List<String> include,
+                                                          List<String> exclude) {
+        if (include == null) {
+            return exclude == null || value.containsAll(exclude);
+        }
+        if (exclude == null) {
+            return false;
+        }
+        exclude.removeAll(include);
+        return value.containsAll(exclude);
+    }
+
+    /**
+     * check entry covered feature value when feature policy is include
+     *
+     * @param value is the feature value
+     * @param include is the included value of entry
+     * @param exclude is the excluded value of entry
+     * @return entry policy value covered feature value
+     */
+    private static boolean checkCoveredIncludePolicyValue(List<String> value, List<String> include,
+                                                          List<String> exclude) {
+        if (include == null) {
+            return exclude == null || Collections.disjoint(exclude, value);
+        }
+        if (exclude == null) {
+            return include.containsAll(value);
+        }
+        exclude.removeAll(include);
+        return Collections.disjoint(exclude, value);
     }
 }
