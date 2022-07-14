@@ -543,12 +543,6 @@ public class Compressor {
                 fileList.add(hapTempPath);
                 compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath);
             }
-            // check duplicated entry
-            if (!checkEntryNotDuplicated(fileList)) {
-                String errMsg = "Compressor::compressAppModeForMultiProject duplicated entry for same deviceType";
-                LOG.error(errMsg);
-                throw new BundleException(errMsg);
-            }
             // check hap is valid
             if (!checkHapIsValid(fileList)) {
                 String errMsg = "Compressor::compressAppModeForMultiProject There are some " +
@@ -1950,275 +1944,58 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private boolean checkHapIsValid(List<String> fileLists) throws BundleException {
-        VerifyCollection verifyCollection = new VerifyCollection();
+        List<HapVerifyInfo> hapVerifyInfos = new ArrayList<>();
         for (String hapPath : fileLists) {
             if (hapPath.isEmpty()) {
+                LOG.error("Compressor::checkHapIsValid input wrong hap file!");
                 throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
             }
             File srcFile = new File(hapPath);
             String fileStr = srcFile.getName();
             if (fileStr.isEmpty()) {
+                LOG.error("Compressor::checkHapIsValid get file name failed!");
                 throw new BundleException("Compressor::checkHapIsValid get file name failed!");
             }
             if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                LOG.error("Compressor::checkHapIsValid input wrong hap file!");
                 throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
             }
             if (isModuleHap(hapPath)) {
-                if (!checkStageHap(hapPath, verifyCollection)) {
-                    return false;
-                }
+                hapVerifyInfos.add(parseStageHapVerifyInfo(hapPath));
             } else {
-                if (!checkFaHap(hapPath, verifyCollection)) {
-                    return false;
-                }
+                hapVerifyInfos.add(parseFAHapVerifyInfo(hapPath));
             }
         }
-        return true;
-    }
-
-    /**
-     * check entry is duplicated for the same deviceType.
-     *
-     * @param fileLists is the list of hapPath.
-     * @return true is for same device not duplicated and false otherwise
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private static boolean checkEntryNotDuplicated(List<String> fileLists) throws BundleException {
-        List<String> hasEntryDeviceType = new ArrayList<>();
-        for (String hapPath : fileLists) {
-            if (hapPath.isEmpty()) {
-                throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
-            }
-            File srcFile = new File(hapPath);
-            String fileStr = srcFile.getName();
-            if (fileStr.isEmpty()) {
-                throw new BundleException("Compressor::checkHapIsValid get file name failed!");
-            }
-            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-                throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
-            }
-            if (isModuleHap(hapPath)) {
-                List<String> deviceTypes = ModuleJsonUtil.parseStageEntry(hapPath);
-                if (Collections.disjoint(hasEntryDeviceType, deviceTypes)) {
-                    hasEntryDeviceType.addAll(deviceTypes);
-                } else {
-                    LOG.error("Compress::checkEntry failed, " +
-                            fileStr + " make duplicated entry");
-                    return false;
-                }
-            } else {
-                List<String> deviceTypes = ModuleJsonUtil.parseFaEntry(hapPath);
-                if (Collections.disjoint(hasEntryDeviceType, deviceTypes)) {
-                    hasEntryDeviceType.addAll(deviceTypes);
-                } else {
-                    List<String> intersection = deviceTypes.stream().filter(hasEntryDeviceType::contains)
-                            .distinct().collect(Collectors.toList());
-                    LOG.error("Compress::checkEntry failed, " +
-                            fileStr + " make duplicated entry for " + intersection);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * check bundleName is duplicated.
-     *
-     * @param verifyCollection is the type should be verified when pack app.
-     * @param bundleName is the bundleName form hap json file.
-     * @return true is for successful and false is for failed
-     */
-    private static boolean checkBundleName(VerifyCollection verifyCollection, String bundleName) {
-        if (verifyCollection.bundleName.equals("")) {
-            verifyCollection.bundleName = bundleName;
-            return true;
-        }
-        if (!verifyCollection.bundleName.equals(bundleName)) {
-            LOG.error("Compress::checkBundleName bundleName is different!");
+        if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
+            LOG.error("Compressor::checkHapIsValid input hap is invalid!");
             return false;
         }
         return true;
     }
 
     /**
-     * check vendor is duplicated.
+     * parse stage file to hap verify info from hap path.
      *
-     * @param verifyCollection is the type should be verified when pack app.
-     * @param vendor is the vendor form hap json file.
-     * @return true is for successful and false is for failed
+     * @param filePath is the hap path
+     * @return hapVerifyInfo
      */
-    private static boolean checkVendor(VerifyCollection verifyCollection, String vendor) {
-        if (verifyCollection.vendor.equals("")) {
-            verifyCollection.vendor = vendor;
-            return true;
-        }
-        if (!verifyCollection.vendor.equals(vendor)) {
-            LOG.error("Compress::checkBundleName vendor is different!");
-            return false;
-        }
-        return true;
+    public static HapVerifyInfo parseStageHapVerifyInfo(String filePath) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = FileUtils.readStageHapVerifyInfo(filePath);
+        hapVerifyInfo.isStageModule = true;
+        ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
+        return hapVerifyInfo;
     }
 
     /**
-     * check version is same, if version same, return true, otherwise return false.
+     * parse fa file to hap verify info from hap path.
      *
-     * @param verifyCollection is the type should be verified when pack app.
-     * @param version is the version form hap json file.
-     * @return true is for successful and false is for failed
+     * @param filePath is the hap path
+     * @return hapVerifyInfo
      */
-    private static boolean checkVersion(VerifyCollection verifyCollection, Version version) {
-        // check versionCode
-        if (verifyCollection.versionCode == -1) {
-            verifyCollection.versionCode = version.versionCode;
-        }
-        if (verifyCollection.versionCode != version.versionCode) {
-            LOG.error("Compress::checkVersion versionCode is different!");
-            return false;
-        }
-        // check versionName
-        if (verifyCollection.versionName.equals("")) {
-            verifyCollection.versionName = version.versionName;
-        }
-        if (!verifyCollection.versionName.equals(version.versionName)) {
-            LOG.error("Compress::checkVersion versionName is different!");
-            return false;
-        }
-        // check minCompatibleVersionCode
-        if (verifyCollection.minCompatibleVersionCode == -1) {
-            verifyCollection.minCompatibleVersionCode = version.minCompatibleVersionCode;
-        }
-        if (verifyCollection.minCompatibleVersionCode != version.minCompatibleVersionCode) {
-            LOG.error("Compress::checkVersion minCompatibleVersionCodes is different!");
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * check apiRelease is same, if apiRelease same, return true, otherwise return false.
-     *
-     */
-    private static boolean checkModuleApiVersion(VerifyCollection verifyCollection,
-                                                 ModuleApiVersion moduleApiVersion) {
-        // check compatibleApiVersion
-        if (verifyCollection.compatibleApiVersion == -1) {
-            verifyCollection.compatibleApiVersion = moduleApiVersion.compatibleApiVersion;
-        }
-        if (verifyCollection.compatibleApiVersion != moduleApiVersion.compatibleApiVersion) {
-            LOG.error("Compress::checkApiVersion compatibleApiVersion is different!");
-            return false;
-        }
-        // check targetApiVersion
-        if (verifyCollection.targetApiVersion == -1) {
-            verifyCollection.targetApiVersion = moduleApiVersion.targetApiVersion;
-        }
-        if (verifyCollection.targetApiVersion != moduleApiVersion.targetApiVersion) {
-            LOG.error("Compress::checkApiVersion targetApiVersion is different!");
-            return false;
-        }
-        // check releaseType
-        if (verifyCollection.releaseType.equals("")) {
-            verifyCollection.releaseType = moduleApiVersion.releaseType;
-        }
-        if (!verifyCollection.releaseType.equals(moduleApiVersion.releaseType)) {
-            LOG.error("Compress::checkApiVersion releaseType is different!");
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * check stage hap is valid in haps when pack app.
-     *
-     */
-    private static boolean checkStageHap(String hapPath, VerifyCollection verifyCollection)
-            throws BundleException {
-        File stageHap = new File(hapPath);
-        String moduleJson = FileUtils.getJsonInZips(stageHap, MODULE_JSON);
-        // check bundleName
-        String bundleName = ModuleJsonUtil.parseBundleName(moduleJson);
-        if (!checkBundleName(verifyCollection, bundleName)) {
-            LOG.error("Compress::checkStageHap bundleName duplicated");
-            return false;
-        }
-        // check vendor
-        String vendor = ModuleJsonUtil.parseVendor(moduleJson);
-        if (!checkVendor(verifyCollection, vendor)) {
-            LOG.error("Compress::checkStageHap vendor duplicated!");
-            return false;
-        }
-        // check version
-        Version stageVersion = ModuleJsonUtil.parseStageVersion(moduleJson);
-        if (!checkVersion(verifyCollection, stageVersion)) {
-            LOG.error("Compress::checkStageHap version is different!");
-            return false;
-        }
-        // check apiVersion
-        ModuleApiVersion moduleApiVersion = ModuleJsonUtil.parseStageModuleApiVersion(moduleJson);
-        if (!checkModuleApiVersion(verifyCollection, moduleApiVersion)) {
-            LOG.error("Compress::checkStageHap apiVersion is different!");
-            return false;
-        }
-        // check moduleName
-        String moduleName = ModuleJsonUtil.parseStageModuleName(moduleJson);
-        if (verifyCollection.moduleNames.contains(moduleName)) {
-            LOG.error("Compress::checkStageHap moduleName duplicated!");
-            return false;
-        } else {
-            verifyCollection.moduleNames.add(moduleName);
-        }
-        return true;
-    }
-
-    /**
-     * check fa hap is valid in haps when pack app.
-     *
-     */
-    private static boolean checkFaHap(String hapPath, VerifyCollection verifyCollection) throws BundleException {
-        File faHap = new File(hapPath);
-        String configJson = FileUtils.getJsonInZips(faHap, CONFIG_JSON);
-        // check bundleName
-        String bundleName = ModuleJsonUtil.parseBundleName(configJson);
-        if (!checkBundleName(verifyCollection, bundleName)) {
-            LOG.error("Compress::checkStageHap bundleName is different!");
-            return false;
-        }
-        // check vendor
-        String vendor = ModuleJsonUtil.parseVendor(configJson);
-        if (!checkVendor(verifyCollection, vendor)) {
-            LOG.error("Compress::checkStageHap vendor is different!");
-            return false;
-        }
-        // check version
-        Version faVersion = ModuleJsonUtil.parseFaVersion(configJson);
-        if (!checkVersion(verifyCollection, faVersion)) {
-            LOG.error("Compress::checkStageHap version is different!");
-            return false;
-        }
-        // check apiVersion
-        ModuleApiVersion moduleApiVersion = ModuleJsonUtil.parseFAModuleApiVersion(configJson);
-        if (!checkModuleApiVersion(verifyCollection, moduleApiVersion)) {
-            LOG.error("Compress::checkStageHap apiVersion is different!");
-            return false;
-        }
-
-        // check moduleName
-        String moduleName = ModuleJsonUtil.parseFaModuleName(configJson);
-        if (verifyCollection.moduleNames.contains(moduleName)) {
-            LOG.error("moduleName duplicated!");
-            return false;
-        } else {
-            verifyCollection.moduleNames.add(moduleName);
-        }
-        // check package
-        String packageName = ModuleJsonUtil.parseFaPackageStr(configJson);
-        if (verifyCollection.packageNames.contains(packageName)) {
-            LOG.error("package duplicated!");
-            return false;
-        } else {
-            verifyCollection.packageNames.add(packageName);
-        }
-        return true;
+    public static HapVerifyInfo parseFAHapVerifyInfo(String filePath) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = FileUtils.readFAHapVerifyInfo(filePath);
+        hapVerifyInfo.isStageModule = false;
+        ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
+        return hapVerifyInfo;
     }
 }

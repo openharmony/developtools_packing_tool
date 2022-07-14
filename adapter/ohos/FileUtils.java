@@ -20,6 +20,7 @@ import ohos.utils.fastjson.JSONObject;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -32,6 +33,9 @@ import java.util.zip.ZipInputStream;
 public class FileUtils {
     private static final int BUFFER_SIZE = 1024;
     private static final Log LOG = new Log(FileUtils.class.toString());
+    private static final String RESOURCE_PATH = "resources/base/profile/";
+    private static final String MODULE_JSON = "module.json";
+    private static final String CONFIG_JSON = "config.json";
 
     /**
      * generate fileData byte stream
@@ -438,5 +442,106 @@ public class FileUtils {
             Utility.closeStream(br);
         }
         return jsonStr.toString();
+    }
+
+    /**
+     * read stage hap verify info from hap file.
+     *
+     * @param srcPath source file to zip
+     * @return HapVerifyInfo of parse result
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static HapVerifyInfo readStageHapVerifyInfo(String srcPath) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            getProfileJson(zipFile, hapVerifyInfo.resourceMap);
+            hapVerifyInfo.profileStr = getFileStringFromZip(MODULE_JSON, zipFile);
+        } catch (IOException e) {
+            LOG.error("FileUtil::parseStageHapVerifyInfo file not available!");
+            throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available!");
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+        return hapVerifyInfo;
+    }
+
+    /**
+     * read fa hap verify info from hap file.
+     *
+     * @param srcPath source file to zip
+     * @return HapVerifyInfo of parse result
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static HapVerifyInfo readFAHapVerifyInfo(String srcPath) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            hapVerifyInfo.profileStr = getFileStringFromZip(CONFIG_JSON, zipFile);
+        } catch (IOException e) {
+            LOG.error("FileUtil::parseStageHapVerifyInfo file not available.");
+            throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available.");
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+        return hapVerifyInfo;
+    }
+
+    /**
+     * get all resource file in profile.
+     *
+     * @param zipFile is the hap file
+     * @param resourceMap store file name and file content
+     */
+    static void getProfileJson(ZipFile zipFile, HashMap<String, String> resourceMap) throws BundleException {
+        try {
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                final ZipEntry entry = entries.nextElement();
+                if (entry.getName().contains(RESOURCE_PATH)) {
+                    String filePath = entry.getName();
+                    String fileName = filePath.replaceAll(RESOURCE_PATH, "");
+                    String fileContent = getFileStringFromZip(filePath, zipFile);
+                    resourceMap.put(fileName, fileContent);
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("FileUtil::getProfileJson IOException");
+            throw new BundleException("FileUtil::getProfileJson failed");
+        }
+    }
+
+    /**
+     * get file content in string from zip
+     *
+     * @param fileName is the file name we want to read
+     * @param zipFile is the zip file
+     */
+    private static String getFileStringFromZip(String fileName, ZipFile zipFile)
+            throws IOException {
+        ZipEntry entry = zipFile.getEntry(fileName);
+        if (entry == null) {
+            LOG.debug("Uncompress::readStringFromFile " + fileName + " not found exception");
+            return "";
+        }
+        InputStream fileInputStream = null;
+        BufferedReader bufferedReader = null;
+        try {
+            fileInputStream = zipFile.getInputStream(entry);
+            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        } finally {
+            Utility.closeStream(bufferedReader);
+            Utility.closeStream(fileInputStream);
+        }
     }
 }
