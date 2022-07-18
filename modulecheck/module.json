@@ -155,7 +155,7 @@
           "default": "default"
         },
         "uiSyntax": {
-          "description": "Indicates the syntax type of JS Component.Default is hml",
+          "description": "Indicates the syntax type of JS Component.Default is hml.@deprecated",
           "type": "string",
           "enum": [
             "ets",
