@@ -28,6 +28,8 @@ class HapVerify {
     private static final String INCLUDE = "include";
     private static final String EXCLUDE = "exclude";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
+    private static final int SERVICE_DEPTH = 2;
+    private static final int APPLICATION_DEPTH = 5;
 
     /**
      * check hap is verify.
@@ -37,7 +39,7 @@ class HapVerify {
      * @return the result
      */
     public static boolean checkHapIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
-        if (hapVerifyInfos.isEmpty()) {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
             LOG.error("HapVerify::checkHapIsValid hapVerifyInfos is empty!");
             return false;
         }
@@ -64,6 +66,11 @@ class HapVerify {
         // check entry is valid
         if (!checkEntryIsValid(hapVerifyInfos)) {
             LOG.error("HapVerify::checkHapIsValid failed, entry is not valid!");
+            return false;
+        }
+        // check dependency is valid
+        if (!checkDependencyIsValid(hapVerifyInfos)) {
+            LOG.error("HapVerify::checkHapIsValid failed, dependency is invalid");
             return false;
         }
         return true;
@@ -281,6 +288,7 @@ class HapVerify {
         if (checkDistroFilterDisjoint(hapVerifyInfoLeft.distroFilter, hapVerifyInfoRight.distroFilter)) {
             return true;
         }
+
         return false;
     }
 
@@ -327,7 +335,6 @@ class HapVerify {
                 return true;
             }
         }
-        LOG.error("HapVerify::checkDistroFilterDisjoint two distroFilter duplicated!");
         return false;
     }
 
@@ -738,5 +745,130 @@ class HapVerify {
         }
         exclude.removeAll(include);
         return Collections.disjoint(exclude, value);
+    }
+
+    /**
+     * check dependency is valid
+     *
+     * @param allHapVerifyInfo is all input hap module
+     * @return true if dependency is valid
+     */
+    private static boolean checkDependencyIsValid(List<HapVerifyInfo> allHapVerifyInfo) throws BundleException {
+        if (allHapVerifyInfo.isEmpty()) {
+            LOG.error("HapVerify::checkDependencyIsValid failed, input none hap!");
+            throw new BundleException("HapVerify::checkDependencyIsValid failed, input none hap!");
+        }
+        boolean installationFree = allHapVerifyInfo.get(0).installationFree;
+        for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
+            if (installationFree != hapVerifyInfo.installationFree) {
+                LOG.error("HapVerify::checkDependencyIsValid installationFree is different in input hap!");
+                return false;
+            }
+        }
+        int depth = installationFree ? SERVICE_DEPTH : APPLICATION_DEPTH;
+        for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
+            List<HapVerifyInfo> dependencyList = new ArrayList<>();
+            dependencyList.add(hapVerifyInfo);
+            if (!DFSTraverseDependency(hapVerifyInfo, allHapVerifyInfo, dependencyList, depth)) {
+                return false;
+            }
+            dependencyList.remove(dependencyList.size() - 1);
+        }
+        return true;
+    }
+
+    /**
+     * DFS traverse dependency, and check dependency list ia valid
+     *
+     * @param hapVerifyInfo the first node of dependency list
+     * @param allHapVerifyInfo is all input hap module
+     * @param dependencyList is the current dependency list
+     * @param depth is th limit of depth
+     * @return true if dependency list is valid
+     */
+    private static boolean DFSTraverseDependency(HapVerifyInfo hapVerifyInfo, List<HapVerifyInfo> allHapVerifyInfo,
+                                                 List<HapVerifyInfo> dependencyList, int depth) throws BundleException {
+        // check dependencyList is valid
+        if (checkDependencyListCirculate(dependencyList)) {
+            return false;
+        }
+        if (dependencyList.size() > depth + 1) {
+            LOG.error("HapVerify::DFSTraverseDependency " + dependencyList.get(0).moduleName + " depth exceed!");
+            return false;
+        }
+        for (String dependency : hapVerifyInfo.dependencies) {
+            List<HapVerifyInfo> layerDependencyList = getLayerDependency(dependency, hapVerifyInfo, allHapVerifyInfo);
+            for(HapVerifyInfo item : layerDependencyList) {
+                dependencyList.add(item);
+                if (!DFSTraverseDependency(item, allHapVerifyInfo, dependencyList, depth)) {
+                    return false;
+                }
+                dependencyList.remove(dependencyList.size() - 1);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * get one layer dependency module by moduleName
+     *
+     * @param moduleName is the dependency moduleName of module
+     * @param hapVerifyInfo the first node of dependency list
+     * @param allHapVerifyInfo is all input hap module
+     * @return a layer dependency list
+     */
+    private static List<HapVerifyInfo> getLayerDependency(String moduleName, HapVerifyInfo hapVerifyInfo,
+                                                     List<HapVerifyInfo> allHapVerifyInfo) throws BundleException {
+        List<HapVerifyInfo> layerHapVerifyInfoList = new ArrayList<>();
+        for (HapVerifyInfo item : allHapVerifyInfo) {
+            if (item.moduleName.equals(moduleName) && checkModuleJoint(hapVerifyInfo, item)) {
+                layerHapVerifyInfoList.add(item);
+            }
+        }
+        return layerHapVerifyInfoList;
+    }
+
+    /**
+     * check two module is joint
+     *
+     * @param infoLeft is one hapVerifyInfo
+     * @param infoRight is another hapVerifyInfo
+     * @return true if dependency list is valid
+     */
+    private static boolean checkModuleJoint(HapVerifyInfo infoLeft, HapVerifyInfo infoRight) throws BundleException {
+        return !checkDuplicatedIsValid(infoLeft, infoRight);
+    }
+
+    /**
+     * check dependency list is circulate
+     *
+     * @param dependencyList is current dependency list
+     * @return true if dependency list is circulate
+     */
+    private static boolean checkDependencyListCirculate(List<HapVerifyInfo> dependencyList) throws BundleException {
+        for (int i = 0; i < dependencyList.size() - 1; ++i) {
+            for (int j = i + 1; j < dependencyList.size(); ++j) {
+                if (isSameHapVerifyInfo(dependencyList.get(i), dependencyList.get(j))) {
+                    LOG.error("HapVerify::checkDependencyListIsValid circular dependency, module is " +
+                            dependencyList.get(0).moduleName);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * check two hapVerifyInfo is same.If two module has same moduleName and joint, they are the same hapVerifyInfo
+     *
+     * @param infoLeft is one hapVerifyInfo
+     * @param infoRight is another hapVerifyInfo
+     * @return true two hapVerifyInfo is same
+     */
+    private static boolean isSameHapVerifyInfo(HapVerifyInfo infoLeft, HapVerifyInfo infoRight) throws BundleException {
+        if (!infoLeft.moduleName.equals(infoRight.moduleName)) {
+            return false;
+        }
+        return checkModuleJoint(infoLeft, infoRight);
     }
 }
