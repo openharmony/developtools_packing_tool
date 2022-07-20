@@ -53,12 +53,17 @@
               "propertyNames": {
                 "enum": [
                   "bundleName",
+                  "moduleName",
                   "abilityName"
                 ]
               },
               "properties": {
                 "bundleName": {
                   "description": "Indicates the application bundle name for the target ability of the shortcut.",
+                  "type": "string"
+                },
+                "moduleName": {
+                  "description": "Indicates the module name for the target ability of the shortcut.",
                   "type": "string"
                 },
                 "abilityName": {
