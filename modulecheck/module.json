@@ -634,7 +634,9 @@
                   "wallpaper",
                   "backup",
                   "window",
-                  "enterpriseAdmin"
+                  "enterpriseAdmin",
+                  "thumbnail",
+                  "preview"
                 ]
               },
               "permissions": {
