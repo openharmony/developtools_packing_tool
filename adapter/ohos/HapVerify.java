@@ -87,9 +87,9 @@ class HapVerify {
         verifyCollection.versionCode = hapVerifyInfos.get(0).version.versionCode;
         verifyCollection.versionName = hapVerifyInfos.get(0).version.versionName;
         verifyCollection.minCompatibleVersionCode = hapVerifyInfos.get(0).version.minCompatibleVersionCode;
-        verifyCollection.compatibleApiVersion = hapVerifyInfos.get(0).apiVersion.compatibleApiVersion;
-        verifyCollection.targetApiVersion = hapVerifyInfos.get(0).apiVersion.targetApiVersion;
-        verifyCollection.releaseType = hapVerifyInfos.get(0).apiVersion.releaseType;
+        verifyCollection.compatibleApiVersion = hapVerifyInfos.get(0).apiVersion.getCompatibleApiVersion();
+        verifyCollection.targetApiVersion = hapVerifyInfos.get(0).apiVersion.getTargetApiVersion();
+        verifyCollection.releaseType = hapVerifyInfos.get(0).apiVersion.getReleaseType();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             // check bundleName
             if (hapVerifyInfo.bundleName.isEmpty()) {
@@ -123,15 +123,15 @@ class HapVerify {
                 return false;
             }
             // check apiVersion
-            if (verifyCollection.compatibleApiVersion != hapVerifyInfo.apiVersion.compatibleApiVersion) {
+            if (verifyCollection.compatibleApiVersion != hapVerifyInfo.apiVersion.getCompatibleApiVersion()) {
                 LOG.error("HapVerify::checkAppVariableIsSame failed, minApiVersion is different!");
                 return false;
             }
-            if (verifyCollection.targetApiVersion != hapVerifyInfo.apiVersion.targetApiVersion) {
+            if (verifyCollection.targetApiVersion != hapVerifyInfo.apiVersion.getTargetApiVersion()) {
                 LOG.error("HapVerify::checkAppVariableIsSame failed, targetApiVersion is different!");
                 return false;
             }
-            if (!verifyCollection.releaseType.equals(hapVerifyInfo.apiVersion.releaseType)) {
+            if (!verifyCollection.releaseType.equals(hapVerifyInfo.apiVersion.getReleaseType())) {
                 LOG.error("HapVerify::checkAppVariableIsSame failed, releaseType is different!");
                 return false;
             }
