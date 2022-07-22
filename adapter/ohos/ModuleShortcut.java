@@ -26,20 +26,52 @@ class ModuleShortcut {
     /**
      * Indicates the shortcutId of module Shortcut.
      */
-    public String shortcutId = "";
+    private String shortcutId = "";
 
     /**
      * Indicates the label of module Shortcut.
      */
-    public String label = "";
+    private String label = "";
 
     /**
      * Indicates the icon of module Shortcut.
      */
-    public String icon = "";
+    private String icon = "";
 
     /**
      * Indicates the intents of module Shortcut.
      */
-    public List<Want> wants = new ArrayList<Want>();
+    private List<Want> wants = new ArrayList<Want>();
+
+    public String getShortcutId() {
+        return shortcutId;
+    }
+
+    public void setShortcutId(String shortcutId) {
+        this.shortcutId = shortcutId;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public List<Want> getWants() {
+        return wants;
+    }
+
+    public void setWants(List<Want> wants) {
+        this.wants = wants;
+    }
 }

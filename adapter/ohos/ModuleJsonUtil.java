@@ -155,13 +155,13 @@ class ModuleJsonUtil {
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
         }
         if (appObj.containsKey(MIN_API_VERSION)) {
-            moduleApiVersion.compatibleApiVersion = appObj.getIntValue(MIN_API_VERSION);
+            moduleApiVersion.setCompatibleApiVersion(appObj.getIntValue(MIN_API_VERSION));
         }
         if (appObj.containsKey(TARGET_API_VERSION)) {
-            moduleApiVersion.targetApiVersion = appObj.getIntValue(TARGET_API_VERSION);
+            moduleApiVersion.setTargetApiVersion(appObj.getIntValue(TARGET_API_VERSION));
         }
         if (appObj.containsKey(API_RELEASE_TYPE)) {
-            moduleApiVersion.releaseType = appObj.getString(API_RELEASE_TYPE);
+            moduleApiVersion.setReleaseType(appObj.getString(API_RELEASE_TYPE));
         }
         return moduleApiVersion;
     }
@@ -185,13 +185,13 @@ class ModuleJsonUtil {
         }
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
         if (apiVersionObj.containsKey(COMPATIBLE)) {
-            moduleApiVersion.compatibleApiVersion = apiVersionObj.getIntValue(COMPATIBLE);
+            moduleApiVersion.setCompatibleApiVersion(apiVersionObj.getIntValue(COMPATIBLE));
         }
         if (apiVersionObj.containsKey(RELEASE_TYPE)) {
-            moduleApiVersion.releaseType = apiVersionObj.getString(RELEASE_TYPE);
+            moduleApiVersion.setReleaseType(apiVersionObj.getString(RELEASE_TYPE));
         }
         if (apiVersionObj.containsKey(TARGET)) {
-            moduleApiVersion.targetApiVersion = apiVersionObj.getIntValue(TARGET);
+            moduleApiVersion.setTargetApiVersion(apiVersionObj.getIntValue(TARGET));
         }
         return moduleApiVersion;
     }
