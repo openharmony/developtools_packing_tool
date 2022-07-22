@@ -167,12 +167,12 @@ class ModuleAdaption {
         List<Shortcut> shortcuts = new ArrayList<>();
         for (ModuleShortcut value : moduleShortcuts) {
             Shortcut shortcut = new Shortcut();
-            shortcut.shortcutId = value.shortcutId;
-            shortcut.label = value.label;
-            shortcut.icon = value.icon;
+            shortcut.shortcutId = value.getShortcutId();
+            shortcut.label = value.getLabel();
+            shortcut.icon = value.getIcon();
             shortcut.intents = new ArrayList<>();
-            for (int j = 0; j < value.wants.size(); ++j) {
-                Want want = value.wants.get(j);
+            for (int j = 0; j < value.getWants().size(); ++j) {
+                Want want = value.getWants().get(j);
                 IntentInfo intentInfo = new IntentInfo();
                 intentInfo.targetBundle = want.bundleName;
                 intentInfo.targetClass = want.abilityName;
