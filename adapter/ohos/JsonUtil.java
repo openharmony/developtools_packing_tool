@@ -105,15 +105,13 @@ public class JsonUtil {
     }
 
     static List<PackInfo> parsePackInfos(String jsonString) throws BundleException {
-        List<PackInfo> packInfos = new ArrayList<PackInfo>();
         JSONObject jsonObject = JSONObject.parseObject(jsonString);
         if (jsonObject == null || !jsonObject.containsKey("packages")) {
             LOG.error("JsonUtil::parsePackInfos exception: packages is null");
             throw new BundleException("Parse hap list failed, packages is null");
         }
         String packages = getJsonString(jsonObject, PACKAGES);
-        packInfos = JSONArray.parseArray(packages, PackInfo.class);
-        return packInfos;
+        return JSONArray.parseArray(packages, PackInfo.class);
     }
 
     private static boolean parseShellVersionInfoToAppInfo(String packInfoJsonStr, AppInfo appInfo) {
@@ -1396,17 +1394,17 @@ public class JsonUtil {
         }
         ModuleShortcut moduleShortcut = new ModuleShortcut();
         if (shortcutObj.containsKey("shortcutId")) {
-            moduleShortcut.shortcutId = shortcutObj.getString("shortcutId");
+            moduleShortcut.setShortcutId(shortcutObj.getString("shortcutId"));
         }
         if (shortcutObj.containsKey("label")) {
-            moduleShortcut.label = parseResourceByStringID(data, getJsonString(shortcutObj, "label"));
+            moduleShortcut.setLabel(parseResourceByStringID(data, getJsonString(shortcutObj, "label")));
         }
         if (shortcutObj.containsKey("icon")) {
             String iconPath = parseResourceByStringID(data, getJsonString(shortcutObj, "icon"));
-            moduleShortcut.icon = iconPath.substring(iconPath.indexOf("resources"));
+            moduleShortcut.setIcon(iconPath.substring(iconPath.indexOf("resources")));
         }
         if (shortcutObj.containsKey("wants")) {
-            moduleShortcut.wants = JSON.parseArray(getJsonString(shortcutObj, "wants"), Want.class);
+            moduleShortcut.setWants(JSON.parseArray(getJsonString(shortcutObj, "wants"), Want.class));
         }
         return moduleShortcut;
     }
