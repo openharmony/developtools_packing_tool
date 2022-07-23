@@ -55,6 +55,9 @@ public class JsonUtil {
     private static final String SERVICE = "service";
     private static final String FORM = "form";
     private static final String PACKAGES = "packages";
+    private static final String ABILITIES = "abilities";
+    private static final String WHEN = "when";
+    private static final String STRING_RESOURCE = "$string:";
 
 
     /**
@@ -1477,7 +1480,7 @@ public class JsonUtil {
             JSONObject jsonObj = JSONObject.parseObject(jsonStr);
             if (jsonObj!= null && jsonObj.containsKey("forms")) {
                 JSONArray jsonForms = JSONObject.parseArray(getJsonString(jsonObj, "forms"));
-                int size = jsonObj.size();
+                int size = jsonForms.size();
                 for (int j = 0; j < size; ++j) {
                     JSONObject tmpObj = jsonForms.getJSONObject(j);
                     abilityFormInfos.add(parseModuleForm(tmpObj, data));
@@ -1504,7 +1507,12 @@ public class JsonUtil {
             moduleFormInfo.name = getJsonString(formObj, "name");
         }
         if (formObj.containsKey("description")) {
-            moduleFormInfo.description = parseResourceByStringID(data, getJsonString(formObj, "description"));
+            String descriptionStr = getJsonString(formObj, "description");
+            if (descriptionStr.contains(STRING_RESOURCE)) {
+                moduleFormInfo.description = parseResourceByStringID(data, descriptionStr);
+            } else {
+                moduleFormInfo.description = descriptionStr;
+            }
         }
         if (formObj.containsKey("src")) {
             moduleFormInfo.src = getJsonString(formObj, "src");
@@ -1722,12 +1730,22 @@ public class JsonUtil {
                 reqPermission.reason = parseResourceByKey(requestPermission, data, "reason", "reasonId");
             }
             if (requestPermission.containsKey("usedScene"))  {
-                reqPermission.usedScene =
-                        JSON.parseObject(getJsonString(requestPermission, "usedScene"), UsedScene.class);
+                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject("usedScene"));
             }
             reqPermissions.add(reqPermission);
         }
         return reqPermissions;
+    }
+
+    static private UsedScene parseModuleUsedScene(JSONObject usedSceneObj) {
+        UsedScene usedScene = new UsedScene();
+        if (usedSceneObj.containsKey(ABILITIES)) {
+            usedScene.ability = JSON.parseArray(getJsonString(usedSceneObj, ABILITIES), String.class);
+        }
+        if (usedSceneObj.containsKey(WHEN)) {
+            usedScene.when = getJsonString(usedSceneObj, WHEN);
+        }
+        return usedScene;
     }
 
     /**
