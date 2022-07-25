@@ -2103,25 +2103,25 @@ public class Compressor {
                                                  ModuleApiVersion moduleApiVersion) {
         // check compatibleApiVersion
         if (verifyCollection.compatibleApiVersion == -1) {
-            verifyCollection.compatibleApiVersion = moduleApiVersion.compatibleApiVersion;
+            verifyCollection.compatibleApiVersion = moduleApiVersion.getCompatibleApiVersion();
         }
-        if (verifyCollection.compatibleApiVersion != moduleApiVersion.compatibleApiVersion) {
+        if (verifyCollection.compatibleApiVersion != moduleApiVersion.getCompatibleApiVersion()) {
             LOG.error("Compress::checkApiVersion compatibleApiVersion is different!");
             return false;
         }
         // check targetApiVersion
         if (verifyCollection.targetApiVersion == -1) {
-            verifyCollection.targetApiVersion = moduleApiVersion.targetApiVersion;
+            verifyCollection.targetApiVersion = moduleApiVersion.getTargetApiVersion();
         }
-        if (verifyCollection.targetApiVersion != moduleApiVersion.targetApiVersion) {
+        if (verifyCollection.targetApiVersion != moduleApiVersion.getTargetApiVersion()) {
             LOG.error("Compress::checkApiVersion targetApiVersion is different!");
             return false;
         }
         // check releaseType
         if (verifyCollection.releaseType.equals("")) {
-            verifyCollection.releaseType = moduleApiVersion.releaseType;
+            verifyCollection.releaseType = moduleApiVersion.getReleaseType();
         }
-        if (!verifyCollection.releaseType.equals(moduleApiVersion.releaseType)) {
+        if (!verifyCollection.releaseType.equals(moduleApiVersion.getReleaseType())) {
             LOG.error("Compress::checkApiVersion releaseType is different!");
             return false;
         }
