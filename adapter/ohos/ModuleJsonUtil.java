@@ -68,6 +68,7 @@ class ModuleJsonUtil {
     private static final String DISTROFILTER = "distroFilter";
     private static final String DEPENDENCIES = "dependencies";
     private static final String EXTENSIONABILITIES = "extensionAbilities";
+    private static final String INSTALLATIONFREE = "installationFree";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -786,6 +787,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.abilityNames.addAll(extensionAbilityNames);
         hapVerifyInfo.isEntry = parseStageIsEntry(hapVerifyInfo.profileStr);
         hapVerifyInfo.dependencies = parseDependencies(hapVerifyInfo.profileStr);
+        hapVerifyInfo.installationFree = parseStageInstallation(hapVerifyInfo.profileStr);
     }
 
     /**
@@ -810,6 +812,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.isEntry = parseFAIsEntry(hapVerifyInfo.profileStr);
         hapVerifyInfo.packageName = parseFaPackageStr(hapVerifyInfo.profileStr);
         hapVerifyInfo.dependencies = parseDependencies(hapVerifyInfo.profileStr);
+        hapVerifyInfo.installationFree = parseFAInstallationFree(hapVerifyInfo.profileStr);
     }
 
     /**
@@ -1024,14 +1027,49 @@ class ModuleJsonUtil {
      * @param jsonString is the json String of module.json or config.json
      * @return dependencies
      */
-    static List<String> parseDependencies(String jsonString) {
+    static List<String> parseDependencies(String jsonString) throws BundleException {
         List<String> dependencies = new ArrayList<>();
         JSONObject jsonObj = JSON.parseObject(jsonString);
-        if (jsonObj.containsKey(MODULE)) {
-            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+        }
+        if (moduleObj.containsKey(DEPENDENCIES)) {
             dependencies = JSONObject.parseArray(getJsonString(moduleObj, DEPENDENCIES), String.class);
         }
         return dependencies;
+    }
+
+    static boolean parseStageInstallation(String jsonString) throws BundleException {
+        JSONObject jsonObj = JSON.parseObject(jsonString);
+        JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        if (moduleObj == null) {
+             LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+             throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+        }
+        if (moduleObj.containsKey(INSTALLATIONFREE)) {
+            return moduleObj.getBoolean(INSTALLATIONFREE);
+        }
+        return false;
+    }
+
+    static boolean parseFAInstallationFree(String jsonString) throws BundleException {
+        JSONObject jsonObject = JSON.parseObject(jsonString);
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+        }
+        JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
+        if (distroObj == null) {
+            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain distro!");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain distro!");
+        }
+        if (distroObj.containsKey(INSTALLATIONFREE)) {
+            return distroObj.getBoolean(INSTALLATIONFREE);
+        }
+        return false;
     }
 
     /**

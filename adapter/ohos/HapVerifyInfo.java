@@ -65,6 +65,10 @@ class HapVerifyInfo {
      */
     public boolean isEntry = false;
     /**
+     * Indicates is installationFree of module.
+     */
+    public boolean installationFree = false;
+    /**
      * Indicates dependency of module.
      */
     public List<String> dependencies = new ArrayList<>();
