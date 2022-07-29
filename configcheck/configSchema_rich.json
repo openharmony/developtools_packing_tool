@@ -3241,13 +3241,14 @@
           }
         },
         "uiSyntax": {
-          "description": "Indicates the syntax type of JS Component.Default is hml",
+          "description": "Indicates the syntax type of JS Component.Default is js",
           "type": "string",
           "enum": [
+            "js",
             "ets",
             "hml"
           ],
-        "default": "hml"
+        "default": "js"
         },
         "testRunner": {
           "description": "This tag is used for configure the test properties.",
