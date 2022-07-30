@@ -58,11 +58,6 @@ class HapVerify {
             LOG.error("HapVerify::checkHapIsValid failed, packageName duplicated!");
             return false;
         }
-        // check abilityName is valid
-        if (!checkAbilityNameIsValid(hapVerifyInfos)) {
-            LOG.error("HapVerify::checkHapIsValid failed, ability duplicated!");
-            return false;
-        }
         // check entry is valid
         if (!checkEntryIsValid(hapVerifyInfos)) {
             LOG.error("HapVerify::checkHapIsValid failed, entry is not valid!");
@@ -247,10 +242,7 @@ class HapVerify {
                 featureHapVerifyInfos.add(hapVerifyInfo);
             }
         }
-        if (entryHapVerifyInfos.isEmpty()) {
-            LOG.error("HapVerify::checkEntryIsValid failed, has no entry module");
-            return false;
-        }
+        
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
                 if (!checkDuplicatedIsValid(entryHapVerifyInfos.get(i), entryHapVerifyInfos.get(j))) {
@@ -260,13 +252,7 @@ class HapVerify {
                 }
             }
         }
-        Map<String, List<HapVerifyInfo>> deviceHap = classifyEntry(entryHapVerifyInfos);
-        for (HapVerifyInfo hapVerifyInfo : featureHapVerifyInfos) {
-            if (!checkFeature(hapVerifyInfo, deviceHap)) {
-                LOG.error("HapVerify::checkEntryIsValid failed, feature is not covered!");
-                return false;
-            }
-        }
+
         return true;
     }
 
