@@ -266,7 +266,7 @@
                   "singleton",
                   "specified"
                 ],
-                "default": "standard"
+                "default": "singleton"
               },
               "description": {
                 "description": "Describes the ability.",
