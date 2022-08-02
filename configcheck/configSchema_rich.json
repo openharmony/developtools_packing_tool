@@ -1184,7 +1184,7 @@
           "maxLength": 255
         },
         "deviceType": {
-          "description": "Indicates the type of devices on which the abilities can run. The value can be default, tv (smart TVs), wearable (smart watches), liteWearable (basic watches), smartVision, car, tablet, router or any combination of these values.This label cannot be left blank.",
+          "description": "Indicates the type of devices on which the abilities can run. The value can be default, tv (smart TVs), wearable (smart watches), liteWearable (basic watches), smartVision, car, tablet or any combination of these values.This label cannot be left blank.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -1194,8 +1194,7 @@
               "default",
               "tablet",
               "tv",
-              "wearable",
-              "router"
+              "wearable"
             ]
           }
         },
