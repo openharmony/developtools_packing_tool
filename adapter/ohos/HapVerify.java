@@ -779,7 +779,11 @@ class HapVerify {
             return false;
         }
         if (dependencyList.size() > depth + 1) {
-            LOG.error("HapVerify::DFSTraverseDependency " + dependencyList.get(0).moduleName + " depth exceed!");
+            List<String> dependencyNames = new ArrayList<>();
+            for (HapVerifyInfo item : dependencyList) {
+                dependencyNames.add(item.moduleName);
+            }
+            LOG.error("HapVerify::DFSTraverseDependency depth exceed, dependencyList is " + dependencyNames);
             return false;
         }
         for (String dependency : hapVerifyInfo.dependencies) {
@@ -835,8 +839,12 @@ class HapVerify {
         for (int i = 0; i < dependencyList.size() - 1; ++i) {
             for (int j = i + 1; j < dependencyList.size(); ++j) {
                 if (isSameHapVerifyInfo(dependencyList.get(i), dependencyList.get(j))) {
-                    LOG.error("HapVerify::checkDependencyListIsValid circular dependency, module is " +
-                            dependencyList.get(0).moduleName);
+                    List<String> dependencyNames = new ArrayList<>();
+                    for (HapVerifyInfo item : dependencyList) {
+                        dependencyNames.add(item.moduleName);
+                    }
+                    LOG.error("HapVerify::checkDependencyListIsValid circular dependency, dependencyList is "
+                            + dependencyNames);
                     return true;
                 }
             }
