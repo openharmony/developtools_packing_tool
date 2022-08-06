@@ -661,30 +661,6 @@ public class Uncompress {
         return null;
     }
 
-    private static String readStringFromFile(String fileName, ZipFile zipFile)
-        throws IOException {
-        ZipEntry entry = zipFile.getEntry(fileName);
-        if (entry == null) {
-            LOG.debug("Uncompress::readStringFromFile " + fileName + " not found exception");
-            return "";
-        }
-        InputStream fileInputStream = null;
-        BufferedReader bufferedReader = null;
-        try {
-            fileInputStream = zipFile.getInputStream(entry);
-            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
-            String line;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            return sb.toString();
-        } finally {
-            Utility.closeStream(bufferedReader);
-            Utility.closeStream(fileInputStream);
-        }
-    }
-
     private static HapZipInfo unZipHapFileFromHapFile(String srcPath)
         throws BundleException, IOException {
         HapZipInfo hapZipInfo = new HapZipInfo();
@@ -692,9 +668,9 @@ public class Uncompress {
         try {
             File srcFile = new File(srcPath);
             zipFile = new ZipFile(srcFile);
-            hapZipInfo.setHarmonyProfileJsonStr(readStringFromFile(HARMONY_PROFILE, zipFile));
+            hapZipInfo.setHarmonyProfileJsonStr(FileUtils.getFileStringFromZip(HARMONY_PROFILE, zipFile));
             hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
-            hapZipInfo.setPackInfoJsonStr(readStringFromFile(PACK_INFO, zipFile));
+            hapZipInfo.setPackInfoJsonStr(FileUtils.getFileStringFromZip(PACK_INFO, zipFile));
             hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
         }  finally {
             Utility.closeStream(zipFile);
@@ -1382,8 +1358,8 @@ public class Uncompress {
             File srcFile = new File(srcPath);
             zipFile = new ZipFile(srcFile);
             getProfileJson(zipFile, hapZipInfo.resourcemMap);
-            hapZipInfo.setHarmonyProfileJsonStr(readStringFromFile(MODULE_JSON, zipFile));
-            hapZipInfo.setPackInfoJsonStr(readStringFromFile(PACK_INFO, zipFile));
+            hapZipInfo.setHarmonyProfileJsonStr(FileUtils.getFileStringFromZip(MODULE_JSON, zipFile));
+            hapZipInfo.setPackInfoJsonStr(FileUtils.getFileStringFromZip(PACK_INFO, zipFile));
             hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
             hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
         } finally {
@@ -1479,7 +1455,7 @@ public class Uncompress {
                 if (entry.getName().contains(RESOURCE_PATH)) {
                     String filePath = entry.getName();
                     String fileName = filePath.replaceAll(RESOURCE_PATH, "");
-                    String fileContent = readStringFromFile(filePath, zipFile);
+                    String fileContent = FileUtils.getFileStringFromZip(filePath, zipFile);
                     resourceMap.put(fileName, fileContent);
                 }
             }
