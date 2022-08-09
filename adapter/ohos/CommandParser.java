@@ -69,6 +69,7 @@ public class CommandParser {
     private static final String CMD_HAP_LIST = "--hap-list";
     private static final String CMD_APP_LIST = "--app-list";
     private static final String CMD_DIR_LIST = "--dir-list";
+    private static final String CMD_HQF_LIST = "--hqf-list";
     private static final Log LOG = new Log(CommandParser.class.toString());
 
     /**
@@ -161,15 +162,23 @@ public class CommandParser {
                     i++;
                     break;
                 }
-
                 case CMD_ENTRYCARD_PATH: {
                     utility.setEntryCardPath(args[i + 1]);
                     i++;
                     break;
                 }
-
                 case CMD_PACK_RES_PATH: {
                     utility.setPackResPath(args[i + 1]);
+                    i++;
+                    break;
+                }
+                case CMD_ABC_PATH: {
+                    utility.setAbcPath(args[i + 1]);
+                    i++;
+                    break;
+                }
+                case CMD_HQF_LIST: {
+                    utility.setHqfList(args[i + 1]);
                     i++;
                     break;
                 }

@@ -113,6 +113,7 @@ public class Compressor {
     private static final String ETS_PATH = "ets/";
     private static final String TEMP_HAP_DIR = "tempHapDir";
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
+    private static final String ABILITIES_DIR_NAME = "abilities";
 
 
     // set timestamp to get fixed MD5
@@ -175,20 +176,31 @@ public class Compressor {
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipOutputStream(checkedOut);
-            if (Utility.MODE_HAP.equals(utility.getMode())) {
-                if (isModuleJSON(utility.getJsonPath())) {
-                    compressHapModeForModule(utility);
-                } else {
-                    compressHapMode(utility);
-                }
-            } else if (Utility.MODE_HAR.equals(utility.getMode())) {
-                compressHarMode(utility);
-            } else if (Utility.MODE_APP.equals(utility.getMode())) {
-                compressAppMode(utility);
-            } else if (Utility.MODE_MULTI_APP.equals(utility.getMode())) {
-                compressAppModeForMultiProject(utility);
-            } else {
-                compressPackResMode(utility);
+            switch (utility.getMode()) {
+                case Utility.MODE_HAP:
+                    if (isModuleJSON(utility.getJsonPath())) {
+                        compressHapModeForModule(utility);
+                    } else {
+                        compressHapMode(utility);
+                    }
+                    break;
+                case Utility.MODE_HAR:
+                    compressHarMode(utility);
+                    break;
+                case Utility.MODE_APP:
+                    compressAppMode(utility);
+                    break;
+                case Utility.MODE_MULTI_APP:
+                    compressAppModeForMultiProject(utility);
+                    break;
+                case Utility.MODE_HQF:
+                    compressHQFMode(utility);
+                    break;
+                case Utility.MODE_APPQF:
+                    compressAPPQFMode(utility);
+                    break;
+                default:
+                    compressPackResMode(utility);
             }
         } catch (FileNotFoundException exception) {
             compressResult = false;
@@ -1995,5 +2007,56 @@ public class Compressor {
         hapVerifyInfo.setStageModule(false);
         ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
+    }
+
+    /**
+     * compress in hqf mode.
+     *
+     * @param utility common data
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private void compressHQFMode(Utility utility) throws BundleException {
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+        if (!utility.getAbcPath().isEmpty()) {
+            pathToFile(utility, utility.getAbcPath(), NULL_DIR_NAME, false);
+        }
+        if (!utility.getLibPath().isEmpty()) {
+            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, false);
+        }
+    }
+
+    /**
+     * compress in appqf mode.
+     *
+     * @param utility common data
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private void compressAPPQFMode(Utility utility) throws BundleException {
+        List<String> fileList = utility.getFormatedHQFList();
+        if (!checkHQFIsValid(fileList)) {
+            LOG.error("Error: checkHQFIsValid failed when pack appqf file.");
+            throw new BundleException("Error: checkHQFIsValid failed when pack appqf file.");
+        }
+        for (String hapPath : fileList) {
+            pathToFile(utility, hapPath, NULL_DIR_NAME, false);
+        }
+    }
+
+    /**
+     * check input hqf is valid.
+     *
+     * @param fileList is input path of hqf files
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private boolean checkHQFIsValid(List<String> fileList) throws BundleException {
+        List<HQFVerifyInfo> hqfVerifyInfos = new ArrayList<>();
+        for (String file : fileList) {
+            hqfVerifyInfos.add(ModuleJsonUtil.parseHQFInfo(file));
+        }
+        if (!HQFVerify.checkHQFIsValid(hqfVerifyInfos)) {
+            LOG.error("Error: input hqf is invalid!");
+            return false;
+        }
+        return true;
     }
 }
