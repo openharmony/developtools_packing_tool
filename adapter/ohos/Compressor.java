@@ -33,14 +33,12 @@ import java.nio.file.attribute.FileTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipInputStream;
@@ -1981,7 +1979,7 @@ public class Compressor {
      */
     public static HapVerifyInfo parseStageHapVerifyInfo(String filePath) throws BundleException {
         HapVerifyInfo hapVerifyInfo = FileUtils.readStageHapVerifyInfo(filePath);
-        hapVerifyInfo.isStageModule = true;
+        hapVerifyInfo.setStageModule(true);
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
     }
@@ -1994,7 +1992,7 @@ public class Compressor {
      */
     public static HapVerifyInfo parseFAHapVerifyInfo(String filePath) throws BundleException {
         HapVerifyInfo hapVerifyInfo = FileUtils.readFAHapVerifyInfo(filePath);
-        hapVerifyInfo.isStageModule = false;
+        hapVerifyInfo.setStageModule(false);
         ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
     }

@@ -58,6 +58,7 @@ public class JsonUtil {
     private static final String ABILITIES = "abilities";
     private static final String WHEN = "when";
     private static final String STRING_RESOURCE = "$string:";
+    private static final String EMPTY = "";
 
 
     /**
@@ -1506,14 +1507,7 @@ public class JsonUtil {
         if (formObj.containsKey("name")) {
             moduleFormInfo.name = getJsonString(formObj, "name");
         }
-        if (formObj.containsKey("description")) {
-            String descriptionStr = getJsonString(formObj, "description");
-            if (descriptionStr.contains(STRING_RESOURCE)) {
-                moduleFormInfo.description = parseResourceByStringID(data, descriptionStr);
-            } else {
-                moduleFormInfo.description = descriptionStr;
-            }
-        }
+        moduleFormInfo.description = parseFormDescription(formObj, data);
         if (formObj.containsKey("src")) {
             moduleFormInfo.src = getJsonString(formObj, "src");
         }
@@ -1550,6 +1544,18 @@ public class JsonUtil {
             moduleFormInfo.formVisibleNotify = formObj.getBoolean("formVisibleNotify");
         }
         return moduleFormInfo;
+    }
+
+    private static String parseFormDescription(JSONObject formObj, byte[] data) throws BundleException {
+        if (formObj.containsKey("description")) {
+            String descriptionStr = getJsonString(formObj, "description");
+            if (descriptionStr.contains(STRING_RESOURCE)) {
+                return parseResourceByStringID(data, descriptionStr);
+            } else {
+                return descriptionStr;
+            }
+        }
+        return EMPTY;
     }
 
     /**
@@ -1737,7 +1743,7 @@ public class JsonUtil {
         return reqPermissions;
     }
 
-    static private UsedScene parseModuleUsedScene(JSONObject usedSceneObj) {
+    private static UsedScene parseModuleUsedScene(JSONObject usedSceneObj) {
         UsedScene usedScene = new UsedScene();
         if (usedSceneObj.containsKey(ABILITIES)) {
             usedScene.ability = JSON.parseArray(getJsonString(usedSceneObj, ABILITIES), String.class);

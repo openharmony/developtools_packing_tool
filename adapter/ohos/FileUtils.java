@@ -30,7 +30,7 @@ import java.util.zip.ZipInputStream;
  * file tools
  *
  */
-public class FileUtils {
+class FileUtils {
     private static final int BUFFER_SIZE = 1024;
     private static final Log LOG = new Log(FileUtils.class.toString());
     private static final String RESOURCE_PATH = "resources/base/profile/";
@@ -457,8 +457,8 @@ public class FileUtils {
         try {
             File srcFile = new File(srcPath);
             zipFile = new ZipFile(srcFile);
-            getProfileJson(zipFile, hapVerifyInfo.resourceMap);
-            hapVerifyInfo.profileStr = getFileStringFromZip(MODULE_JSON, zipFile);
+            hapVerifyInfo.setResourceMap(getProfileJson(zipFile));
+            hapVerifyInfo.setProfileStr(getFileStringFromZip(MODULE_JSON, zipFile));
         } catch (IOException e) {
             LOG.error("FileUtil::parseStageHapVerifyInfo file not available!");
             throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available!");
@@ -481,7 +481,7 @@ public class FileUtils {
         try {
             File srcFile = new File(srcPath);
             zipFile = new ZipFile(srcFile);
-            hapVerifyInfo.profileStr = getFileStringFromZip(CONFIG_JSON, zipFile);
+            hapVerifyInfo.setProfileStr(getFileStringFromZip(CONFIG_JSON, zipFile));
         } catch (IOException e) {
             LOG.error("FileUtil::parseStageHapVerifyInfo file not available.");
             throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available.");
@@ -495,9 +495,10 @@ public class FileUtils {
      * get all resource file in profile.
      *
      * @param zipFile is the hap file
-     * @param resourceMap store file name and file content
+     * @throws BundleException when get profile json file failed
      */
-    static void getProfileJson(ZipFile zipFile, HashMap<String, String> resourceMap) throws BundleException {
+    static HashMap<String, String> getProfileJson(ZipFile zipFile) throws BundleException {
+        HashMap<String, String> resourceMap = new HashMap<>();
         try {
             final Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
@@ -513,6 +514,7 @@ public class FileUtils {
             LOG.error("FileUtil::getProfileJson IOException");
             throw new BundleException("FileUtil::getProfileJson failed");
         }
+        return resourceMap;
     }
 
     /**
@@ -521,7 +523,7 @@ public class FileUtils {
      * @param fileName is the file name we want to read
      * @param zipFile is the zip file
      */
-    private static String getFileStringFromZip(String fileName, ZipFile zipFile)
+    public static String getFileStringFromZip(String fileName, ZipFile zipFile)
             throws IOException {
         ZipEntry entry = zipFile.getEntry(fileName);
         if (entry == null) {
@@ -532,7 +534,7 @@ public class FileUtils {
         BufferedReader bufferedReader = null;
         try {
             fileInputStream = zipFile.getInputStream(entry);
-            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+            bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, "UTF-8"));
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = bufferedReader.readLine()) != null) {
