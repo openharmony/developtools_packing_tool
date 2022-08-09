@@ -31,6 +31,8 @@ public class Utility {
     static final String MODE_HAR = "har";
     static final String MODE_APP = "app";
     static final String MODE_MULTI_APP = "multiApp";
+    static final String MODE_HQF = "hqf";
+    static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
     static final String FALSE_STRING = "false";
 
@@ -98,9 +100,12 @@ public class Utility {
     private List<String> formattedHapList = new ArrayList<>();
     private List<String> formatedDirList = new ArrayList<>();
 
+    private List<String> formatedHQFList = new ArrayList<>();
+
     private String appList = "";
     private String hapList = "";
     private String dirList = "";
+    private String hqfList = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -647,5 +652,21 @@ public class Utility {
      */
     public List<String> getFormNameList() {
         return formNameList;
+    }
+
+    public String getHqfList() {
+        return hqfList;
+    }
+
+    public void setHqfList(String hqfList) {
+        this.hqfList = hqfList;
+    }
+
+    public List<String> getFormatedHQFList() {
+        return formatedHQFList;
+    }
+
+    public void setFormatedHQFList(List<String> formatedHQFList) {
+        this.formatedHQFList = formatedHQFList;
     }
 }
