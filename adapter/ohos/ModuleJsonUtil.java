@@ -770,24 +770,24 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static void parseStageHapVerifyInfo(HapVerifyInfo hapVerifyInfo) throws BundleException {
-        if (hapVerifyInfo.profileStr.isEmpty()) {
+        if (hapVerifyInfo.getProfileStr().isEmpty()) {
             throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, module.json is empty!");
         }
-        hapVerifyInfo.bundleName = parseBundleName(hapVerifyInfo.profileStr);
-        hapVerifyInfo.vendor = parseVendor(hapVerifyInfo.profileStr);
-        hapVerifyInfo.version = parseStageVersion(hapVerifyInfo.profileStr);
-        hapVerifyInfo.apiVersion = parseStageModuleApiVersion(hapVerifyInfo.profileStr);
-        hapVerifyInfo.moduleName = parseStageModuleName(hapVerifyInfo.profileStr);
+        hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setVersion(parseStageVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setApiVersion(parseStageModuleApiVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setModuleName(parseStageModuleName(hapVerifyInfo.getProfileStr()));
         List<ModuleMetadataInfo> moduleMetadataInfos =
-                parseModuleAllMetadata(hapVerifyInfo.profileStr, hapVerifyInfo.resourceMap);
-        hapVerifyInfo.distroFilter = parseStageDistroFilter(moduleMetadataInfos);
-        hapVerifyInfo.deviceType = parseDeviceType(hapVerifyInfo.profileStr);
-        hapVerifyInfo.abilityNames = parseAbilityNames(hapVerifyInfo.profileStr);
-        List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.profileStr);
-        hapVerifyInfo.abilityNames.addAll(extensionAbilityNames);
-        hapVerifyInfo.isEntry = parseStageIsEntry(hapVerifyInfo.profileStr);
-        hapVerifyInfo.dependencies = parseDependencies(hapVerifyInfo.profileStr);
-        hapVerifyInfo.installationFree = parseStageInstallation(hapVerifyInfo.profileStr);
+                parseModuleAllMetadata(hapVerifyInfo.getProfileStr(), hapVerifyInfo.getResourceMap());
+        hapVerifyInfo.setDistroFilter(parseStageDistroFilter(moduleMetadataInfos));
+        hapVerifyInfo.setDeviceType(parseDeviceType(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
+        List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.getProfileStr());
+        hapVerifyInfo.addAbilityNames(extensionAbilityNames);
+        hapVerifyInfo.setEntry(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDependencies(parseDependencies(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -797,22 +797,22 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static void parseFAHapVerifyInfo(HapVerifyInfo hapVerifyInfo) throws BundleException {
-        if (hapVerifyInfo.profileStr.isEmpty()) {
+        if (hapVerifyInfo.getProfileStr().isEmpty()) {
             LOG.error("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
             throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
         }
-        hapVerifyInfo.bundleName = parseBundleName(hapVerifyInfo.profileStr);
-        hapVerifyInfo.vendor = parseVendor(hapVerifyInfo.profileStr);
-        hapVerifyInfo.version = parseFaVersion(hapVerifyInfo.profileStr);
-        hapVerifyInfo.apiVersion = parseFAModuleApiVersion(hapVerifyInfo.profileStr);
-        hapVerifyInfo.moduleName = parseFaModuleName(hapVerifyInfo.profileStr);
-        hapVerifyInfo.distroFilter = parseFADistroFilter(hapVerifyInfo.profileStr);
-        hapVerifyInfo.deviceType = parseDeviceType(hapVerifyInfo.profileStr);
-        hapVerifyInfo.abilityNames = parseAbilityNames(hapVerifyInfo.profileStr);
-        hapVerifyInfo.isEntry = parseFAIsEntry(hapVerifyInfo.profileStr);
-        hapVerifyInfo.packageName = parseFaPackageStr(hapVerifyInfo.profileStr);
-        hapVerifyInfo.dependencies = parseDependencies(hapVerifyInfo.profileStr);
-        hapVerifyInfo.installationFree = parseFAInstallationFree(hapVerifyInfo.profileStr);
+        hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setVersion(parseFaVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setApiVersion(parseFAModuleApiVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setModuleName(parseFaModuleName(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDistroFilter(parseFADistroFilter(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDeviceType(parseDeviceType(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setEntry(parseFAIsEntry(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDependencies(parseDependencies(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -822,19 +822,17 @@ class ModuleJsonUtil {
      * @return DistroFilter is the result of parsed distroFilter
      */
     public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
-        DistroFilter distroFilter = new DistroFilter();
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             if (moduleMetadataInfo.resource.isEmpty()) {
                 continue;
             }
             JSONObject distroFilterObj = JSON.parseObject(moduleMetadataInfo.resource);
             if (distroFilterObj.containsKey(DISTROFILTER)) {
-                distroFilter = JSONObject.parseObject(getJsonString(distroFilterObj,
+                return JSONObject.parseObject(getJsonString(distroFilterObj,
                         DISTROFILTER), DistroFilter.class);
-                return distroFilter;
             }
         }
-        return distroFilter;
+        return null;
     }
 
     /**
@@ -901,16 +899,15 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static DistroFilter parseFADistroFilter(String jsonString) {
-        DistroFilter distroFilter = new DistroFilter();
         JSONObject jsonObj = JSON.parseObject(jsonString);
         if (jsonObj.containsKey(MODULE)) {
             JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
             if (moduleObj.containsKey(DISTROFILTER)) {
-                distroFilter = JSONObject.parseObject(getJsonString(moduleObj,
+                return JSONObject.parseObject(getJsonString(moduleObj,
                         DISTROFILTER), DistroFilter.class);
             }
         }
-        return distroFilter;
+        return null;
     }
 
     /**
@@ -924,9 +921,11 @@ class ModuleJsonUtil {
         if (jsonObj.containsKey(MODULE)) {
             JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
             if (moduleObj.containsKey(DEVICE_TYPE)) {
-                deviceType = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPE), String.class);
+                return JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPE), String.class);
             } else if (moduleObj.containsKey(DEVICE_TYPES)) {
-                deviceType = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
+                return JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
+            } else {
+                return deviceType;
             }
         }
         return deviceType;
@@ -941,18 +940,17 @@ class ModuleJsonUtil {
     public static List<String> parseAbilityNames(String jsonString) {
         JSONObject jsonObj = JSON.parseObject(jsonString);
         List<String> abilityNames = new ArrayList<>();
-        if (jsonObj.containsKey(MODULE)) {
-            JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
-            if (moduleObj.containsKey(ABILITIES)) {
-                JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
-                for (int i = 0; i < abilityObjs.size(); ++i) {
-                    JSONObject abilityObj = abilityObjs.getJSONObject(i);
-                    if (abilityObj.containsKey(NAME)) {
-                        abilityNames.add(getJsonString(abilityObj, NAME));
-                    }
+        JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        if (moduleObj != null && moduleObj.containsKey(ABILITIES)) {
+            JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
+            for (int i = 0; i < abilityObjs.size(); ++i) {
+                JSONObject abilityObj = abilityObjs.getJSONObject(i);
+                if (abilityObj.containsKey(NAME)) {
+                    abilityNames.add(getJsonString(abilityObj, NAME));
                 }
             }
         }
+
         return abilityNames;
     }
 
@@ -1045,8 +1043,8 @@ class ModuleJsonUtil {
         JSONObject jsonObj = JSON.parseObject(jsonString);
         JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
         if (moduleObj == null) {
-             LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
-             throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
         }
         if (moduleObj.containsKey(INSTALLATIONFREE)) {
             return moduleObj.getBoolean(INSTALLATIONFREE);
