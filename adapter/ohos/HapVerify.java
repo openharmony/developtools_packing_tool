@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 class HapVerify {
     private static final String INCLUDE = "include";
     private static final String EXCLUDE = "exclude";
-    private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
+    private static final Log LOG = new Log(HapVerify.class.toString());
     private static final int SERVICE_DEPTH = 2;
     private static final int APPLICATION_DEPTH = 5;
 

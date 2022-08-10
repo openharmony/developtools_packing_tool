@@ -28,6 +28,7 @@ public class CompressVerify {
     private static final String COMMA_SPLIT = ",";
     private static final String JSON_PROFILE = "config.json";
     private static final String MODULE_PROFILE = "module.json";
+    private static final String PATCH_PROFILE = "patch.json";
     private static final String PROFILE_NAME = "CAPABILITY.profile";
     private static final String INDEX_PROFILE = "resources.index";
     private static final String RPCID_PROFILE = "rpcid.sc";
@@ -44,6 +45,9 @@ public class CompressVerify {
     private static final String TXT_SUFFIX = ".txt";
     private static final String PNG_SUFFIX = ".png";
     private static final String RES_SUFFIX = ".res";
+    private static final String HQF_SUFFIX = ".hqf";
+    private static final String APPQF_SUFFIX = ".appqf";
+    private static final String FALSE = "false";
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
@@ -153,6 +157,10 @@ public class CompressVerify {
             return isVerifyValidInResMode(utility);
         } else if (Utility.MODE_MULTI_APP.equals(utility.getMode())) {
             return isVerifyValidInMultiAppMode(utility);
+        } else if (Utility.MODE_HQF.equals(utility.getMode())) {
+            return isVerifyValidInHQFMode(utility);
+        } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
+            return isVerifyValidInAPPQFMode(utility);
         } else {
             LOG.error("CompressVerify::commandVerify mode is invalid!");
             return false;
@@ -412,6 +420,60 @@ public class CompressVerify {
         return isOutPathValid(utility, RES_SUFFIX);
     }
 
+    private static boolean isVerifyValidInHQFMode(Utility utility) {
+        if (utility.getJsonPath().isEmpty()) {
+            LOG.error("Error: must input patch.json file when pack hqf file.");
+            return false;
+        }
+        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, PATCH_PROFILE)) {
+            LOG.error("Error: input patch.json is invalid when pack hqf file");
+            return false;
+        }
+        if (!utility.getLibPath().isEmpty()) {
+            if (!isPathValid(utility.getLibPath(), TYPE_DIR, null)) {
+                LOG.error("Error: input lib path is invalid when pack hqf file");
+                return false;
+            }
+        }
+       if (!utility.getAbcPath().isEmpty()) {
+           File file = new File(utility.getAbcPath());
+           if (!file.isFile() || !file.getName().toLowerCase().endsWith(ABC_SUFFIX)) {
+               LOG.error("Error: input abc file is invalid when pack hqf file");
+               return false;
+           }
+       }
+        File outFile = new File(utility.getOutPath());
+        if ((FALSE.equals(utility.getForceRewrite())) && (outFile.exists())) {
+            LOG.error("Error: " + outFile.getName() + " already exist!");
+            return false;
+        }
+        if (!utility.getOutPath().endsWith(HQF_SUFFIX)) {
+            LOG.error("Error: input out file must end with .hqf");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isVerifyValidInAPPQFMode(Utility utility) {
+        if (utility.getHqfList().isEmpty()) {
+            LOG.error("Error: input hqf list is empty!");
+            return false;
+        }
+        if (!compatibleProcess(utility, utility.getHqfList(), utility.getFormatedHQFList(), HQF_SUFFIX)) {
+            LOG.error("Error: input hqf list is invalid!");
+            return false;
+        }
+        File outFile = new File(utility.getOutPath());
+        if ((FALSE.equals(utility.getForceRewrite())) && outFile.exists()) {
+            LOG.error("Error out file already existed!");
+            return false;
+        }
+        if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(APPQF_SUFFIX)) {
+            LOG.error("Error out-path must end with .app!");
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Compatible file input and directory input
