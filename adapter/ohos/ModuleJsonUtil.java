@@ -69,6 +69,10 @@ class ModuleJsonUtil {
     private static final String DEPENDENCIES = "dependencies";
     private static final String EXTENSIONABILITIES = "extensionAbilities";
     private static final String INSTALLATIONFREE = "installationFree";
+    private static final String PATCH_JSOPN = "patch.json";
+    private static final String PATCH_VERSION_CODE = "patchVersionCode";
+    private static final String PATCH_VERSION_NAME = "patchVersionName";
+    private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -1069,6 +1073,69 @@ class ModuleJsonUtil {
         }
         return false;
     }
+
+    /**
+     * get hqfVerifyINfo from hqf file
+     *
+     * @param hqfPath is the file path of hqf file
+     * @return HQFVerifyInfo
+     */
+    static HQFVerifyInfo parseHQFInfo(String hqfPath) throws BundleException {
+        File hqfFile = new File(hqfPath);
+        String patchJson = FileUtils.getJsonInZips(hqfFile, PATCH_JSOPN);
+        return parsePatch(patchJson);
+    }
+
+    /**
+     * parse patch.json form json string.
+     *
+     * @param jsonString is the file path of hqf file
+     * @return HQFVerifyInfo
+     */
+    static HQFVerifyInfo parsePatch(String jsonString) throws BundleException {
+        HQFVerifyInfo hqfVerifyInfo = new HQFVerifyInfo();
+        JSONObject jsonObject = JSON.parseObject(jsonString);
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parsePatch failed, input patch.json is invalid, patch.json has no app!");
+            throw new BundleException("Error: parsePatch failed, input patch.json is invalid!");
+        }
+        if (appObj.containsKey(BUNDLENAME)) {
+            hqfVerifyInfo.setBundleName(appObj.getString(BUNDLENAME));
+        }
+        if (appObj.containsKey(VERSIONCODE)) {
+            hqfVerifyInfo.setVersionCode(appObj.getIntValue(VERSIONCODE));
+        }
+        if (appObj.containsKey(VERSIONNAME)) {
+            hqfVerifyInfo.setVersionName(appObj.getString(VERSIONNAME));
+        }
+        if (appObj.containsKey(PATCH_VERSION_CODE)) {
+            hqfVerifyInfo.setPatchVersionCode(appObj.getIntValue(PATCH_VERSION_CODE));
+        }
+        if (appObj.containsKey(PATCH_VERSION_NAME)) {
+            hqfVerifyInfo.setPatchVersionName(appObj.getString(PATCH_VERSION_NAME));
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("Error: parse failed, input patch.json is invalid, patch.json has no module!");
+            throw new BundleException("Error: parse failed, input patch.json is invalid, patch.json has no module!");
+        }
+        if (moduleObj.containsKey(NAME)) {
+            hqfVerifyInfo.setModuleName(moduleObj.getString(NAME));
+        }
+        if (moduleObj.containsKey(TYPE)) {
+            hqfVerifyInfo.setType(moduleObj.getString(TYPE));
+        }
+        if (moduleObj.containsKey(DEVICE_TYPES)) {
+            hqfVerifyInfo.setDeviceTypes(JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class));
+        }
+        if (moduleObj.containsKey(ORIGINAL_MODULE_HASH)) {
+            hqfVerifyInfo.setOriginalModuleHash(moduleObj.getString(ORIGINAL_MODULE_HASH));
+        }
+        return hqfVerifyInfo;
+    }
+
+
 
     /**
      * get the String from JSONObject by the key.
