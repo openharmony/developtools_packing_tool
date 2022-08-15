@@ -18,6 +18,7 @@ package ohos;
 import ohos.utils.fastjson.JSONObject;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import java.security.MessageDigest;
 
 /**
  * file tools
@@ -36,6 +38,8 @@ class FileUtils {
     private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final String MODULE_JSON = "module.json";
     private static final String CONFIG_JSON = "config.json";
+    private static final String SHA256 = "SHA-256";
+    private static final int SHA256_BUFFER_SIZE = 10240;
 
     /**
      * generate fileData byte stream
@@ -545,5 +549,43 @@ class FileUtils {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(fileInputStream);
         }
+    }
+
+    /**
+     * get sha-256 for file
+     *
+     * @param hapPath is the input path of file
+     */
+    public static String getSha256(String hapPath) {
+        String sha256 = "";
+        BufferedInputStream inputStream = null;
+        try {
+            File file = new File(hapPath);
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            byte[] buffer = new byte[SHA256_BUFFER_SIZE];
+            MessageDigest md5 = MessageDigest.getInstance(SHA256);
+            int size = -1;
+            while((size = inputStream.read(buffer)) != -1) {
+                md5.update(buffer, 0, size);
+            }
+            sha256 = toHex(md5.digest());
+        } catch (FileNotFoundException e) {
+            LOG.error("input hap file is not found!");
+        } catch (NoSuchAlgorithmException e) {
+            LOG.error("can not provide sha-256 algorithm");
+        } catch (IOException e) {
+            LOG.error("input hap IO exception!");
+        } finally {
+            Utility.closeStream(inputStream);
+        }
+        return sha256;
+    }
+
+    private static String toHex(byte[] data) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte item : data) {
+            hexString.append(Integer.toHexString(item & 0xFF));
+        }
+        return hexString.toString();
     }
 }
