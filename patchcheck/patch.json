@@ -13,17 +13,45 @@
       "module"
     ]
   },
+  "if": {
+    "properties":{
+      "module": {
+        "properties": {
+          "type": {
+            "const": "hotreload"
+          }
+        }
+      }
+    }
+  },
+  "then": {
+    "properties":{
+      "app": {
+        "required": [
+          "bundleName",
+          "versionCode",
+          "patchVersionCode"
+        ]
+      }
+    }
+  },
+  "else": {
+    "properties":{
+      "app": {
+        "required": [
+          "bundleName",
+          "versionCode",
+          "versionName",
+          "patchVersionCode",
+          "patchVersionName"
+        ]
+      }
+    }
+  },
   "properties": {
     "app": {
       "description": "Indicates the patch information",
       "type": "object",
-      "required": [
-        "bundleName",
-        "versionCode",
-        "versionName",
-        "patchVersionCode",
-        "patchVersionName"
-      ],
       "propertyNames": {
           "enum": [
             "bundleName",
@@ -70,12 +98,27 @@
     "module": {
       "description": "Indicates the configuration of a patch file",
       "type": "object",
-      "required": [
-        "name",
-        "type",
-        "deviceTypes",
-        "originalModuleHash"
-      ],
+      "if": {
+        "properties": {
+          "type": {
+            "const": "hotreload"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "name",
+          "type"
+        ]
+      },
+      "else": {
+        "required": [
+          "name",
+          "type",
+          "deviceTypes",
+          "originalModuleHash"
+        ]
+      },
       "propertyNames": {
           "enum": [
             "name",
@@ -94,7 +137,8 @@
             "description": "Indicates the type of the patch.",
             "type": "string",
             "enum": [
-              "patch"
+              "patch",
+              "hotreload"
             ]
           },
           "deviceTypes": {
