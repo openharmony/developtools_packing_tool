@@ -21,9 +21,9 @@ import ohos.utils.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Optional;
 
 class ModuleJsonUtil {
     private static final String  VERSION_CODE = "\"versionCode\"";
@@ -826,17 +826,18 @@ class ModuleJsonUtil {
      * @return DistroFilter is the result of parsed distroFilter
      */
     public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
+        DistroFilter distroFilter = new DistroFilter();
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             if (moduleMetadataInfo.resource.isEmpty()) {
                 continue;
             }
             JSONObject distroFilterObj = JSON.parseObject(moduleMetadataInfo.resource);
             if (distroFilterObj.containsKey(DISTROFILTER)) {
-                return JSONObject.parseObject(getJsonString(distroFilterObj,
+                distroFilter = JSONObject.parseObject(getJsonString(distroFilterObj,
                         DISTROFILTER), DistroFilter.class);
             }
         }
-        return null;
+        return distroFilter;
     }
 
     /**
@@ -900,18 +901,18 @@ class ModuleJsonUtil {
      *
      * @param jsonString Json string of config.json
      * @return the ModuleMetadataInfo result
-     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static DistroFilter parseFADistroFilter(String jsonString) {
+        DistroFilter distroFilter = new DistroFilter();
         JSONObject jsonObj = JSON.parseObject(jsonString);
         if (jsonObj.containsKey(MODULE)) {
             JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
             if (moduleObj.containsKey(DISTROFILTER)) {
-                return JSONObject.parseObject(getJsonString(moduleObj,
+                distroFilter = JSONObject.parseObject(getJsonString(moduleObj,
                         DISTROFILTER), DistroFilter.class);
             }
         }
-        return null;
+        return distroFilter;
     }
 
     /**

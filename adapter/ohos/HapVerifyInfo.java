@@ -175,24 +175,24 @@ class HapVerifyInfo {
         return isStageModule;
     }
 
-    public void setStageModule(boolean stageModule) {
-        isStageModule = stageModule;
+    public void setStageModule(boolean isStageModule) {
+        isStageModule = isStageModule;
     }
 
     public boolean isEntry() {
         return isEntry;
     }
 
-    public void setEntry(boolean entry) {
-        isEntry = entry;
+    public void setEntry(boolean isEntry) {
+        isEntry = isEntry;
     }
 
     public boolean isInstallationFree() {
         return isInstallationFree;
     }
 
-    public void setInstallationFree(boolean installationFree) {
-        this.isInstallationFree = installationFree;
+    public void setInstallationFree(boolean isInstallationFree) {
+        this.isInstallationFree = isInstallationFree;
     }
 
     public List<String> getDependencies() {

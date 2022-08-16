@@ -176,32 +176,7 @@ public class Compressor {
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipOutputStream(checkedOut);
-            switch (utility.getMode()) {
-                case Utility.MODE_HAP:
-                    if (isModuleJSON(utility.getJsonPath())) {
-                        compressHapModeForModule(utility);
-                    } else {
-                        compressHapMode(utility);
-                    }
-                    break;
-                case Utility.MODE_HAR:
-                    compressHarMode(utility);
-                    break;
-                case Utility.MODE_APP:
-                    compressAppMode(utility);
-                    break;
-                case Utility.MODE_MULTI_APP:
-                    compressAppModeForMultiProject(utility);
-                    break;
-                case Utility.MODE_HQF:
-                    compressHQFMode(utility);
-                    break;
-                case Utility.MODE_APPQF:
-                    compressAPPQFMode(utility);
-                    break;
-                default:
-                    compressPackResMode(utility);
-            }
+            compressExcute(utility);
         } catch (FileNotFoundException exception) {
             compressResult = false;
             LOG.error("Compressor::compressProcess file not found exception" + exception.getMessage());
@@ -214,7 +189,6 @@ public class Compressor {
             Utility.closeStream(checkedOut);
             Utility.closeStream(fileOut);
         }
-
         // if compress failed, delete out file.
         if (!compressResult) {
             LOG.error("Compressor::compressProcess compress failed!");
@@ -223,6 +197,35 @@ public class Compressor {
             }
         }
         return compressResult;
+    }
+
+    private void compressExcute(Utility utility) throws BundleException {
+        switch (utility.getMode()) {
+            case Utility.MODE_HAP:
+                if (isModuleJSON(utility.getJsonPath())) {
+                    compressHapModeForModule(utility);
+                } else {
+                    compressHapMode(utility);
+                }
+                break;
+            case Utility.MODE_HAR:
+                compressHarMode(utility);
+                break;
+            case Utility.MODE_APP:
+                compressAppMode(utility);
+                break;
+            case Utility.MODE_MULTI_APP:
+                compressAppModeForMultiProject(utility);
+                break;
+            case Utility.MODE_HQF:
+                compressHQFMode(utility);
+                break;
+            case Utility.MODE_APPQF:
+                compressAPPQFMode(utility);
+                break;
+            default:
+                compressPackResMode(utility);
+        }
     }
 
     /**
