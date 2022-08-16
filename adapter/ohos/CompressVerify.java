@@ -435,13 +435,13 @@ public class CompressVerify {
                 return false;
             }
         }
-       if (!utility.getAbcPath().isEmpty()) {
-           File file = new File(utility.getAbcPath());
-           if (!file.isFile() || !file.getName().toLowerCase().endsWith(ABC_SUFFIX)) {
-               LOG.error("Error: input abc file is invalid when pack hqf file");
-               return false;
-           }
-       }
+        if (!utility.getAbcPath().isEmpty()) {
+            File file = new File(utility.getAbcPath());
+            if (!file.isFile() || !file.getName().toLowerCase().endsWith(ABC_SUFFIX)) {
+                LOG.error("Error: input abc file is invalid when pack hqf file");
+                return false;
+            }
+        }
         File outFile = new File(utility.getOutPath());
         if ((FALSE.equals(utility.getForceRewrite())) && (outFile.exists())) {
             LOG.error("Error: " + outFile.getName() + " already exist!");

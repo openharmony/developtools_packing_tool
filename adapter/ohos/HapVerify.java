@@ -698,8 +698,8 @@ class HapVerify {
      * @param exclude is the collection of excluded value
      * @return entry policy value covered all value
      */
-    private static boolean checkPolicyValueCovered(String policy, List<String> value,
-                                                   List<String> include, List<String> exclude) {
+    private static boolean checkPolicyValueCovered(
+        String policy, List<String> value, List<String> include, List<String> exclude) {
         if (value == null || policy == null) {
             LOG.error("checkPolicyValueCovered::failed value is null!");
             return false;
@@ -708,8 +708,9 @@ class HapVerify {
             return checkCoveredExcludePolicyValue(value, include, exclude);
         } else if (policy.equals(INCLUDE)) {
             return checkCoveredIncludePolicyValue(value, include, exclude);
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -720,8 +721,8 @@ class HapVerify {
      * @param exclude is the excluded value of entry
      * @return entry policy value covered feature value
      */
-    private static boolean checkCoveredExcludePolicyValue(List<String> value, List<String> include,
-                                                          List<String> exclude) {
+    private static boolean checkCoveredExcludePolicyValue(
+        List<String> value, List<String> include, List<String> exclude) {
         if (include == null) {
             return exclude == null || value.containsAll(exclude);
         }
@@ -740,8 +741,8 @@ class HapVerify {
      * @param exclude is the excluded value of entry
      * @return entry policy value covered feature value
      */
-    private static boolean checkCoveredIncludePolicyValue(List<String> value, List<String> include,
-                                                          List<String> exclude) {
+    private static boolean checkCoveredIncludePolicyValue(
+        List<String> value, List<String> include, List<String> exclude) {
         if (include == null) {
             return exclude == null || Collections.disjoint(exclude, value);
         }
@@ -764,14 +765,14 @@ class HapVerify {
             LOG.error("HapVerify::checkDependencyIsValid failed, input none hap!");
             throw new BundleException("HapVerify::checkDependencyIsValid failed, input none hap!");
         }
-        boolean installationFree = allHapVerifyInfo.get(0).isInstallationFree();
+        boolean isInstallationFree = allHapVerifyInfo.get(0).isInstallationFree();
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
-            if (installationFree != hapVerifyInfo.isInstallationFree()) {
+            if (isInstallationFree != hapVerifyInfo.isInstallationFree()) {
                 LOG.error("HapVerify::checkDependencyIsValid installationFree is different in input hap!");
                 return false;
             }
         }
-        int depth = installationFree ? SERVICE_DEPTH : APPLICATION_DEPTH;
+        int depth = isInstallationFree ? SERVICE_DEPTH : APPLICATION_DEPTH;
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
             List<HapVerifyInfo> dependencyList = new ArrayList<>();
             dependencyList.add(hapVerifyInfo);
@@ -793,15 +794,16 @@ class HapVerify {
      * @return true if dependency list is valid
      * @throws BundleException when input hapVerifyInfo is invalid
      */
-    private static boolean dfsTraverseDependency(HapVerifyInfo hapVerifyInfo, List<HapVerifyInfo> allHapVerifyInfo,
-                                                 List<HapVerifyInfo> dependencyList, int depth) throws BundleException {
+    private static boolean dfsTraverseDependency(
+        HapVerifyInfo hapVerifyInfo, List<HapVerifyInfo> allHapVerifyInfo,
+        List<HapVerifyInfo> dependencyList, int depth) throws BundleException {
         // check dependencyList is valid
         if (checkDependencyListCirculate(dependencyList)) {
             return false;
         }
         if (dependencyList.size() > depth + 1) {
             LOG.error("HapVerify::DFSTraverseDependency depth exceed, dependencyList is "
-                    +  getHapVerifyInfoListNames(dependencyList));
+                    + getHapVerifyInfoListNames(dependencyList));
             return false;
         }
         for (String dependency : hapVerifyInfo.getDependencies()) {
@@ -825,8 +827,8 @@ class HapVerify {
      * @param allHapVerifyInfo is all input hap module
      * @return a layer dependency list
      */
-    private static List<HapVerifyInfo> getLayerDependency(String moduleName, HapVerifyInfo hapVerifyInfo,
-                                                          List<HapVerifyInfo> allHapVerifyInfo) throws BundleException {
+    private static List<HapVerifyInfo> getLayerDependency(
+        String moduleName, HapVerifyInfo hapVerifyInfo, List<HapVerifyInfo> allHapVerifyInfo) throws BundleException {
         List<HapVerifyInfo> layerHapVerifyInfoList = new ArrayList<>();
         for (HapVerifyInfo item : allHapVerifyInfo) {
             if (item.getModuleName().equals(moduleName) && checkModuleJoint(hapVerifyInfo, item)) {
