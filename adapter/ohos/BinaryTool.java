@@ -87,8 +87,7 @@ public class BinaryTool {
      * @return true: success, false: fail
      */
     private static boolean writePackageInfo(final String filePath, RandomAccessFile appStream) {
-        Optional<String> packageName = FileUtils.getValueFromJsonFileContent(PROFILE_KEY, PACKAGE_KEY,
-            JSON_FILE_NAME, filePath);
+        Optional<String> packageName = FileUtils.getBundleNameFromFileContent(JSON_FILE_NAME, filePath);
         if (!packageName.isPresent()) {
             LOG.error("have no config.json or have no key of package!");
             return false;
