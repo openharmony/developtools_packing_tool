@@ -1993,7 +1993,7 @@ public class Compressor {
      * @return hapVerifyInfo
      */
     public static HapVerifyInfo parseStageHapVerifyInfo(String filePath) throws BundleException {
-        HapVerifyInfo hapVerifyInfo = FileUtils.readStageHapVerifyInfo(filePath);
+        HapVerifyInfo hapVerifyInfo = readStageHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(true);
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
@@ -2006,9 +2006,56 @@ public class Compressor {
      * @return hapVerifyInfo
      */
     public static HapVerifyInfo parseFAHapVerifyInfo(String filePath) throws BundleException {
-        HapVerifyInfo hapVerifyInfo = FileUtils.readFAHapVerifyInfo(filePath);
+        HapVerifyInfo hapVerifyInfo = readFAHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(false);
         ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
+        return hapVerifyInfo;
+    }
+
+    /**
+     * read stage hap verify info from hap file.
+     *
+     * @param srcPath source file to zip
+     * @return HapVerifyInfo of parse result
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static HapVerifyInfo readStageHapVerifyInfo(String srcPath) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            hapVerifyInfo.setResourceMap(FileUtils.getProfileJson(zipFile));
+            hapVerifyInfo.setProfileStr(FileUtils.getFileStringFromZip(MODULE_JSON, zipFile));
+        } catch (IOException e) {
+            LOG.error("FileUtil::parseStageHapVerifyInfo file not available!");
+            throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available!");
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+        return hapVerifyInfo;
+    }
+
+    /**
+     * read fa hap verify info from hap file.
+     *
+     * @param srcPath source file to zip
+     * @return HapVerifyInfo of parse result
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    public static HapVerifyInfo readFAHapVerifyInfo(String srcPath) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            hapVerifyInfo.setProfileStr(FileUtils.getFileStringFromZip(CONFIG_JSON, zipFile));
+        } catch (IOException e) {
+            LOG.error("FileUtil::parseStageHapVerifyInfo file not available.");
+            throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available.");
+        } finally {
+            Utility.closeStream(zipFile);
+        }
         return hapVerifyInfo;
     }
 

@@ -40,6 +40,8 @@ class FileUtils {
     private static final String CONFIG_JSON = "config.json";
     private static final String SHA256 = "SHA-256";
     private static final int SHA256_BUFFER_SIZE = 10240;
+    public static String bundleName = "\"bundleName\":";
+    public static char quotation = '\"';
 
     /**
      * generate fileData byte stream
@@ -154,41 +156,6 @@ class FileUtils {
             closeStream(fileInputStream);
         }
         return Optional.ofNullable(content.toString());
-    }
-
-    /**
-     * get special value from JSON String
-     *
-     * @param key json main key
-     * @param subKey json sub key
-     * @param jsonFileName json file name
-     * @param filePath path which will be searched
-     * @return value
-     */
-    public static Optional<String> getValueFromJsonFileContent(final String key, final String subKey,
-        final String jsonFileName, final String filePath) {
-        Optional<String> jsonFilePath = searchFile(jsonFileName, filePath);
-        if (!jsonFilePath.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<String> jsonStr = getFileContent(jsonFilePath.get());
-        if (!jsonStr.isPresent()) {
-            return Optional.empty();
-        }
-
-        JSONObject jsonObject = JSONObject.parseObject(jsonStr.get());
-        if (jsonObject == null) {
-            return Optional.empty();
-        }
-
-        if (!jsonObject.containsKey(key)) {
-            return Optional.empty();
-        }
-
-        JSONObject subObject = jsonObject.getJSONObject(key);
-        String value = subObject.getString(subKey);
-        return Optional.of(value);
     }
 
     /**
@@ -449,53 +416,6 @@ class FileUtils {
     }
 
     /**
-     * read stage hap verify info from hap file.
-     *
-     * @param srcPath source file to zip
-     * @return HapVerifyInfo of parse result
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    public static HapVerifyInfo readStageHapVerifyInfo(String srcPath) throws BundleException {
-        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
-        ZipFile zipFile = null;
-        try {
-            File srcFile = new File(srcPath);
-            zipFile = new ZipFile(srcFile);
-            hapVerifyInfo.setResourceMap(getProfileJson(zipFile));
-            hapVerifyInfo.setProfileStr(getFileStringFromZip(MODULE_JSON, zipFile));
-        } catch (IOException e) {
-            LOG.error("FileUtil::parseStageHapVerifyInfo file not available!");
-            throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available!");
-        } finally {
-            Utility.closeStream(zipFile);
-        }
-        return hapVerifyInfo;
-    }
-
-    /**
-     * read fa hap verify info from hap file.
-     *
-     * @param srcPath source file to zip
-     * @return HapVerifyInfo of parse result
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    public static HapVerifyInfo readFAHapVerifyInfo(String srcPath) throws BundleException {
-        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
-        ZipFile zipFile = null;
-        try {
-            File srcFile = new File(srcPath);
-            zipFile = new ZipFile(srcFile);
-            hapVerifyInfo.setProfileStr(getFileStringFromZip(CONFIG_JSON, zipFile));
-        } catch (IOException e) {
-            LOG.error("FileUtil::parseStageHapVerifyInfo file not available.");
-            throw new BundleException("FileUtil::parseStageHapVerifyInfo file not available.");
-        } finally {
-            Utility.closeStream(zipFile);
-        }
-        return hapVerifyInfo;
-    }
-
-    /**
      * get all resource file in profile.
      *
      * @param zipFile is the hap file
@@ -587,5 +507,40 @@ class FileUtils {
             hexString.append(Integer.toHexString(item & 0xFF));
         }
         return hexString.toString();
+    }
+
+    public static Optional<String> getBundleNameFromFileContent(final String jsonFileName, final String filePath) {
+        Optional<String> jsonFilePath = searchFile(jsonFileName, filePath);
+        if (!jsonFilePath.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<String> jsonOptional= getFileContent(jsonFilePath.get());
+        if (!jsonOptional.isPresent()) {
+            return Optional.empty();
+        }
+        String jsonStr = jsonOptional.get().replaceAll("\r\n|\r|\n", "");
+        return Optional.of(getBundleName(jsonStr));
+    }
+
+    private static String getBundleName(String jsonStr) {
+        String realStr = jsonStr.replaceAll(" ", "");
+        if (!realStr.contains(bundleName)) {
+            return "";
+        }
+        int index = realStr.indexOf(bundleName);
+        String res = "";
+        index += bundleName.length();
+        int left = index;
+        while (realStr.charAt(left) != quotation) {
+            ++left;
+        }
+        ++left;
+        int right = left;
+        while (realStr.charAt(right) != quotation) {
+            ++right;
+        }
+        res = realStr.substring(left, right);
+        return res;
     }
 }
