@@ -97,26 +97,13 @@ public class CommandParser {
      */
     private static void parser(Utility utility, String[] args) {
         for (int i = 0; i < args.length - 1; i++) {
-            if (parseAppCmd(utility, args[i], args[i + 1]) || parseHapCmd(utility, args[i], args[i + 1])) {
+            if (parseAppCmd(utility, args[i], args[i + 1]) || parseHapCmd(utility, args[i], args[i + 1]) ||
+                parseCommonCmd(utility, args[i], args[i + 1])) {
                 i++;
                 continue;
             }
+
             switch (args[i]) {
-                case CMD_MODE: {
-                    utility.setMode(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_FORCE: {
-                    utility.setForceRewrite(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_OUT_PATH: {
-                    utility.setOutPath(args[i + 1]);
-                    i++;
-                    break;
-                }
                 case CMD_BIN_PATH: {
                     utility.setBinPath(args[i + 1]);
                     i++;
@@ -129,11 +116,6 @@ public class CommandParser {
                 }
                 case CMD_TXT_PATH: {
                     utility.setTxtPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_HAR_PATH: {
-                    utility.setHarPath(args[i + 1]);
                     i++;
                     break;
                 }
@@ -185,6 +167,30 @@ public class CommandParser {
                 default: {
                     break;
                 }
+            }
+        }
+    }
+
+    private static boolean parseCommonCmd(Utility utility, String cmd, String value) {
+        switch (cmd) {
+            case CMD_MODE: {
+                utility.setMode(value);
+                return true;
+            }
+            case CMD_FORCE: {
+                utility.setForceRewrite(value);
+                return true;
+            }
+            case CMD_OUT_PATH: {
+                utility.setOutPath(value);
+                return true;
+            }
+            case CMD_HAR_PATH: {
+                utility.setHarPath(value);
+                return true;
+            }
+            default: {
+                return false;
             }
         }
     }
