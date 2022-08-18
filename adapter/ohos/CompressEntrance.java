@@ -77,6 +77,12 @@ public class CompressEntrance {
         return true;
     }
 
+    /**
+     * get sha-256 from hap path.
+     *
+     * @param hapPath Indicates the hap path.
+     * @return Returns the string of sha-256 for hap.
+     */
     public static String getHapSha256(String hapPath) {
         return FileUtils.getSha256(hapPath);
     }
