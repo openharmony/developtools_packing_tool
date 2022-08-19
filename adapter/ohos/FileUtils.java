@@ -485,7 +485,7 @@ class FileUtils {
             byte[] buffer = new byte[SHA256_BUFFER_SIZE];
             MessageDigest md5 = MessageDigest.getInstance(SHA256);
             int size = -1;
-            while((size = inputStream.read(buffer)) != -1) {
+            while ((size = inputStream.read(buffer)) != -1) {
                 md5.update(buffer, 0, size);
             }
             sha256 = toHex(md5.digest());
