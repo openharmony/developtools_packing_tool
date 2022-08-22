@@ -45,4 +45,35 @@ public class DistroFilter {
      */
     public CountryCode countryCode = null;
 
+    public String dump() {
+        String dumpStr = "";
+        if (apiVersion == null && screenShape == null && screenDensity == null
+            && screenWindow == null && countryCode == null) {
+            return dumpStr;
+        }
+        dumpStr = "distroFilter:";
+        if (apiVersion != null) {
+            String apiVersionStr = "apiVersion: policy is " + apiVersion.policy + ", value is " + apiVersion.value;
+            dumpStr += " " + apiVersionStr;
+        }
+        if (screenShape != null) {
+            String screenShapeStr = "screenShape: policy is " + screenShape.policy + ", value is " + screenShape.value;
+            dumpStr += " " + screenShapeStr;
+        }
+        if (screenDensity != null) {
+            String screenDensityStr = "screenDensity: policy is " + screenDensity.policy + ", value is "
+                + screenDensity.value;
+            dumpStr += " " + screenDensityStr;
+        }
+        if (screenWindow != null) {
+            String screenWindowStr = "screenWindow: policy is " + screenWindow.policy + ", value is "
+                + screenWindow.value;
+            dumpStr += " " + screenWindowStr;
+        }
+        if (countryCode != null) {
+            String countryCodeStr = "countryCode: policy is " + countryCode.policy + ", value is " + countryCode.value;
+            dumpStr += " " + countryCodeStr;
+        }
+        return dumpStr;
+    }
 }

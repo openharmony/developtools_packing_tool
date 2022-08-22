@@ -61,11 +61,16 @@ public class Log {
     public void error(String msg) {
         log.warning(LogType.buildTag(LogType.ERROR) + msg);
     }
+
+    public void warning(String msg) {
+        log.warning(LogType.buildTag(LogType.WARNING) + msg);
+    }
 }
 
 enum LogType {
     DEBUG("Debug"),
     INFO("Info"),
+    WARNING("Warning"),
     ERROR("Error");
 
     private String value;
