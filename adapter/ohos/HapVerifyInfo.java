@@ -95,126 +95,219 @@ class HapVerifyInfo {
      */
     private HashMap<String, String> resourceMap = new HashMap<>();
 
+    /**
+     * get bundle name form HapVerifyInfo.
+     */
     public String getBundleName() {
         return bundleName;
     }
 
+    /**
+     * set bundle name for HapVerifyInfo.
+     */
     public void setBundleName(String bundleName) {
         this.bundleName = bundleName;
     }
 
+    /**
+     * get vendor form HapVerifyInfo.
+     */
     public String getVendor() {
         return vendor;
     }
 
+    /**
+     * set vendor for HapVerifyInfo.
+     */
     public void setVendor(String vendor) {
         this.vendor = vendor;
     }
 
+    /**
+     * get version from HapVerifyInfo.
+     */
     public Version getVersion() {
         return version;
     }
 
+    /**
+     * set version for HapVerifyInfo.
+     */
     public void setVersion(Version version) {
         this.version = version;
     }
 
+    /**
+     * get apiVersion from HapVerifyInfo.
+     */
     public ModuleApiVersion getApiVersion() {
         return apiVersion;
     }
 
+    /**
+     * set apiVersion for HapVerifyInfo.
+     */
     public void setApiVersion(ModuleApiVersion apiVersion) {
         this.apiVersion = apiVersion;
     }
 
+    /**
+     * get module name from HapVerifyInfo.
+     */
     public String getModuleName() {
         return moduleName;
     }
 
+    /**
+     * set module name for HapVerifyInfo.
+     */
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
+    /**
+     * get package name from HapVerifyInfo.
+     */
     public String getPackageName() {
         return packageName;
     }
 
+    /**
+     * set package name for HapVerifyInfo.
+     */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
     }
 
+    /**
+     * get ability names from HapVerifyInfo.
+     */
     public List<String> getAbilityNames() {
         return abilityNames;
     }
 
+    /**
+     * set abilityNames for HapVerifyInfo.
+     */
     public void setAbilityNames(List<String> abilityNames) {
         this.abilityNames = abilityNames;
     }
 
+    /**
+     * add abilityNames for HapVerifyInfo.
+     */
     public void addAbilityNames(List<String> nameList) {
         this.abilityNames.addAll(nameList);
     }
 
+    /**
+     * get distroFilter from HapVerifyInfo.
+     */
     public DistroFilter getDistroFilter() {
         return distroFilter;
     }
 
+    /**
+     * set distroFilter for HapVerifyInfo.
+     */
     public void setDistroFilter(DistroFilter distroFilter) {
         this.distroFilter = distroFilter;
     }
 
+    /**
+     * get deviceType from HapVerifyInfo.
+     */
     public List<String> getDeviceType() {
         return deviceType;
     }
 
+    /**
+     * set deviceType for HapVerifyInfo.
+     */
     public void setDeviceType(List<String> deviceType) {
         this.deviceType = deviceType;
     }
 
+    /**
+     * get isStageModule from HapVerifyInfo.
+     */
     public boolean isStageModule() {
         return isStageModule;
     }
 
+    /**
+     * set isStageModule for HapVerifyInfo.
+     */
     public void setStageModule(boolean isStageModule) {
-        isStageModule = isStageModule;
+        this.isStageModule = isStageModule;
     }
 
+    /**
+     * get is entry from HapVerifyInfo.
+     */
     public boolean isEntry() {
         return isEntry;
     }
 
+    /**
+     * set is entry for HapVerifyInfo.
+     */
     public void setEntry(boolean isEntry) {
-        isEntry = isEntry;
+        this.isEntry = isEntry;
     }
 
+    /**
+     * get isInstallationFree form HapVerifyInfo.
+     */
     public boolean isInstallationFree() {
         return isInstallationFree;
     }
 
+    /**
+     * set isInstallationFree for HapVerifyInfo.
+     */
     public void setInstallationFree(boolean isInstallationFree) {
         this.isInstallationFree = isInstallationFree;
     }
 
+    /**
+     * get dependency form HapVerifyInfo.
+     */
     public List<String> getDependencies() {
         return dependencies;
     }
 
+    /**
+     * set dependency for HapVerifyInfo.
+     */
     public void setDependencies(List<String> dependencies) {
         this.dependencies = dependencies;
     }
 
+    /**
+     * get json file string form HapVerifyInfo.
+     */
     public String getProfileStr() {
         return profileStr;
     }
 
+    /**
+     * set json file string for HapVerifyInfo.
+     */
     public void setProfileStr(String profileStr) {
         this.profileStr = profileStr;
     }
 
+    /**
+     * get resource map form HapVerifyInfo.
+     */
     public HashMap<String, String> getResourceMap() {
         return resourceMap;
     }
 
+    /**
+     * set resource map for HapVerifyInfo.
+     */
     public void setResourceMap(HashMap<String, String> resourceMap) {
         this.resourceMap = resourceMap;
     }
