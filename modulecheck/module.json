@@ -141,7 +141,7 @@
           "type": "boolean"
         },
         "installationFree": {
-          "description": "Indicates whether free installation of the current hap is supported. If moduleType is feature, this item label is mandatory, else this item label is optional.",
+          "description": "Indicates whether free installation of the current hap is supported.If installationFree is true, this module is a service.OtherWise, this module is an application",
           "type": "boolean"
         },
         "virtualMachine": {
