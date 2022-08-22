@@ -73,6 +73,7 @@ class ModuleJsonUtil {
     private static final String PATCH_VERSION_CODE = "patchVersionCode";
     private static final String PATCH_VERSION_NAME = "patchVersionName";
     private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
+    private static final String EMPTY_STRING = "";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -789,7 +790,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
         List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.addAbilityNames(extensionAbilityNames);
-        hapVerifyInfo.setEntry(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setModuleType(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencies(parseDependencies(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
     }
@@ -813,7 +814,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setDistroFilter(parseFADistroFilter(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDeviceType(parseDeviceType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setEntry(parseFAIsEntry(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setModuleType(parseFAIsEntry(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencies(parseDependencies(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
@@ -986,42 +987,40 @@ class ModuleJsonUtil {
     }
 
     /**
-     * parse stage module is entry.
+     * parse stage module type.
      *
      * @param jsonString is the json String of module.json or config.json
      * @return is entry
      */
-    public static boolean parseStageIsEntry(String jsonString) {
+    public static String parseStageIsEntry(String jsonString) {
         JSONObject jsonObj = JSON.parseObject(jsonString);
         if (jsonObj.containsKey(MODULE)) {
             JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
             if (moduleObj.containsKey(TYPE)) {
-                if (getJsonString(moduleObj, TYPE).equals(ENTRY)) {
-                    return true;
-                }
+                return getJsonString(moduleObj, TYPE);
             }
         }
-        return false;
+        return EMPTY_STRING;
     }
 
     /**
-     * parse FA module is entry.
+     * parse FA module type.
      *
      * @param jsonString is the json String of module.json or config.json
      * @return is entry
      */
-    public static boolean parseFAIsEntry(String jsonString) {
+    public static String parseFAIsEntry(String jsonString) {
         JSONObject jsonObj = JSON.parseObject(jsonString);
         if (jsonObj.containsKey(MODULE)) {
             JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
             if (moduleObj.containsKey(DISTRO)) {
                 JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
-                if (distroObj.containsKey(MODULETYPE) && getJsonString(distroObj, MODULETYPE).equals(ENTRY)) {
-                    return true;
+                if (distroObj.containsKey(MODULETYPE)) {
+                    return getJsonString(distroObj, MODULETYPE);
                 }
             }
         }
-        return false;
+        return EMPTY_STRING;
     }
 
     /**
