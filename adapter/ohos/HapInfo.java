@@ -15,8 +15,6 @@
 
 package ohos;
 
-import org.omg.CORBA.DefinitionKind;
-
 import java.util.ArrayList;
 import java.util.List;
 

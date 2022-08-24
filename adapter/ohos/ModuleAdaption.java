@@ -15,9 +15,6 @@
 
 package ohos;
 
-import jdk.internal.util.xml.impl.Pair;
-import ohos.utils.fastjson.JSONObject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;

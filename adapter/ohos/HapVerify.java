@@ -30,6 +30,9 @@ class HapVerify {
     private static final Log LOG = new Log(HapVerify.class.toString());
     private static final int SERVICE_DEPTH = 2;
     private static final int APPLICATION_DEPTH = 5;
+    private static final String EMPTY_STRING = "";
+    private static final String ENTRY = "entry";
+    private static final String FEATURE = "feature";
 
     /**
      * check hap is verify.
@@ -45,27 +48,31 @@ class HapVerify {
         }
         // check app variable is same
         if (!checkAppFieldsIsSame(hapVerifyInfos)) {
-            LOG.error("HapVerify::checkHapIsValid failed, some app variable is different!");
+            LOG.error("Error: some app variable is different!");
             return false;
         }
         // check moduleName is valid
         if (!checkModuleNameIsValid(hapVerifyInfos)) {
-            LOG.error("HapVerify::checkHapIsValid failed, moduleName duplicated!");
+            LOG.error("Error: moduleName duplicated!");
             return false;
         }
         // check package is valid
         if (!checkPackageNameIsValid(hapVerifyInfos)) {
-            LOG.error("HapVerify::checkHapIsValid failed, packageName duplicated!");
+            LOG.error("Error: packageName duplicated!");
             return false;
+        }
+        // check ability is valid
+        if (!checkAbilityNameIsValid(hapVerifyInfos)) {
+            LOG.warning("warning: ability name is duplicated!");
         }
         // check entry is valid
         if (!checkEntryIsValid(hapVerifyInfos)) {
-            LOG.error("HapVerify::checkHapIsValid failed, entry is not valid!");
+            LOG.error("Error: entry is not valid!");
             return false;
         }
         // check dependency is valid
         if (!checkDependencyIsValid(hapVerifyInfos)) {
-            LOG.error("HapVerify::checkHapIsValid failed, dependency is invalid");
+            LOG.error("Error: module dependency is invalid!");
             return false;
         }
         return true;
@@ -94,35 +101,35 @@ class HapVerify {
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, bundleName is invalid!");
+                LOG.error("Error: input module bundleName is different!");
                 return false;
             }
             if (hapVerifyInfo.getVendor().isEmpty() || !verifyCollection.vendor.equals(hapVerifyInfo.getVendor())) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, vendor is invalid!");
+                LOG.error("Error: input module vendor is different!");
                 return false;
             }
             if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, versionCode is different!");
+                LOG.error("Error: input module versionCode is different!");
                 return false;
             }
             if (!verifyCollection.versionName.equals(hapVerifyInfo.getVersion().versionName)) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, versionName is different!");
+                LOG.error("Error: input module versionName is different!");
                 return false;
             }
             if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, minCompatibleVersionCode is different!");
+                LOG.error("Error: input module minCompatibleVersionCode is different!");
                 return false;
             }
             if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, minApiVersion is different!");
+                LOG.error("Error: input module minApiVersion is different!");
                 return false;
             }
             if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, targetApiVersion is different!");
+                LOG.error("Error: input module targetApiVersion is different!");
                 return false;
             }
             if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
-                LOG.error("HapVerify::checkAppVariableIsSame failed, releaseType is different!");
+                LOG.error("Error: input module releaseType is different!");
                 return false;
             }
         }
@@ -144,9 +151,22 @@ class HapVerify {
             }
             for (int j = i + 1; j < hapVerifyInfos.size(); ++j) {
                 if (hapVerifyInfos.get(i).getModuleName().equals(hapVerifyInfos.get(j).getModuleName()) &&
-                        !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
-                    LOG.error("HapVerify::checkModuleNameIsValid " + hapVerifyInfos.get(i).getModuleName() +
-                            " " + hapVerifyInfos.get(j).getModuleName() + " duplicated!");
+                    !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
+                    LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " " +
+                        hapVerifyInfos.get(j).getModuleName() + " module name duplicated, " +
+                            "please check deviceType or distroFilter of the module!");
+                    LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                        + hapVerifyInfos.get(i).getDeviceType());
+                    LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                        + hapVerifyInfos.get(j).getDeviceType());
+                    if (!hapVerifyInfos.get(i).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                        LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has distroFilter " +
+                            hapVerifyInfos.get(i).getDistroFilter().dump());
+                    }
+                    if (!hapVerifyInfos.get(j).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                        LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has distroFilter " +
+                            hapVerifyInfos.get(i).getDistroFilter().dump());
+                    }
                     return false;
                 }
             }
@@ -169,8 +189,20 @@ class HapVerify {
             for (int j = i + 1; j < hapVerifyInfos.size(); ++j) {
                 if (hapVerifyInfos.get(i).getPackageName().equals(hapVerifyInfos.get(j).getPackageName()) &&
                         !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
-                    LOG.error("HapVerify::checkPackageNameIsValid " + hapVerifyInfos.get(i).getPackageName() +
-                            " " + hapVerifyInfos.get(j).getPackageName() + " duplicated!");
+                    LOG.error("Error: " + hapVerifyInfos.get(i).getPackageName() +
+                        " " + hapVerifyInfos.get(j).getPackageName() + " packageName duplicated!");
+                    LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType " +
+                        hapVerifyInfos.get(i).getDeviceType());
+                    LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
+                        hapVerifyInfos.get(j).getDeviceType());
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
+                        LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " "
+                            + hapVerifyInfos.get(i).getDistroFilter().dump());
+                    }
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " "
+                            + hapVerifyInfos.get(i).getDistroFilter().dump());
+                    }
                     return false;
                 }
             }
@@ -189,8 +221,8 @@ class HapVerify {
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             long noDuplicatedCount = hapVerifyInfo.getAbilityNames().stream().distinct().count();
             if (noDuplicatedCount != hapVerifyInfo.getAbilityNames().size()) {
-                LOG.error("HapVerify::checkAbilityNameIsValid " +
-                        hapVerifyInfo.getModuleName() + " ability duplicated!");
+                LOG.warning("Warning: " +
+                        hapVerifyInfo.getModuleName() + " ability duplicated, please rename ability name!");
                 return false;
             }
         }
@@ -202,8 +234,12 @@ class HapVerify {
                 if (!Collections.disjoint(hapVerifyInfos.get(i).getAbilityNames(),
                         hapVerifyInfos.get(j).getAbilityNames()) &&
                         !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
-                    LOG.error("HapVerify::checkAbilityNameIsValid " + hapVerifyInfos.get(i).getModuleName() +
+                    LOG.warning("Warning: " + hapVerifyInfos.get(i).getModuleName() +
                             " " + hapVerifyInfos.get(j).getModuleName() + " ability duplicated!");
+                    LOG.warning("Warning: " + hapVerifyInfos.get(i).getModuleName() + " has ability "
+                        + hapVerifyInfos.get(i).getAbilityNames());
+                    LOG.warning("Warning: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
+                        + hapVerifyInfos.get(j).getAbilityNames());
                     return false;
                 }
             }
@@ -222,20 +258,44 @@ class HapVerify {
         List<HapVerifyInfo> entryHapVerifyInfos = new ArrayList<>();
         List<HapVerifyInfo> featureHapVerifyInfos = new ArrayList<>();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
-            if (hapVerifyInfo.isEntry()) {
+            if (hapVerifyInfo.getModuleType().equals(ENTRY)) {
                 entryHapVerifyInfos.add(hapVerifyInfo);
-            } else {
+            } else if (hapVerifyInfo.getModuleType().equals(FEATURE)) {
                 featureHapVerifyInfos.add(hapVerifyInfo);
+            } else {
+                LOG.warning("Input wrong type module");
             }
+        }
+        if (entryHapVerifyInfos.isEmpty()) {
+            LOG.warning("Warning: has no entry module!");
         }
 
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
                 if (!checkDuplicatedIsValid(entryHapVerifyInfos.get(i), entryHapVerifyInfos.get(j))) {
-                    LOG.error("HapVerify::checkEntryIsValid failed, " + entryHapVerifyInfos.get(i).getModuleName() +
+                    LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() +
                             " " + entryHapVerifyInfos.get(j).getModuleName() + " entry duplicated!");
+                    LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() + " deviceType is "
+                        + entryHapVerifyInfos.get(i).getDeviceType());
+                    LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " deviceType is "
+                        + entryHapVerifyInfos.get(j).getDeviceType());
+                    if (!entryHapVerifyInfos.get(i).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                        LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() + " "
+                            + entryHapVerifyInfos.get(i).getDistroFilter().dump());
+                    }
+                    if (!entryHapVerifyInfos.get(j).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                        LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " "
+                            + entryHapVerifyInfos.get(j).getDistroFilter().dump());
+                    }
                     return false;
                 }
+            }
+        }
+
+        Map<String, List<HapVerifyInfo>> deviceHap = classifyEntry(entryHapVerifyInfos);
+        for (HapVerifyInfo hapVerifyInfo : featureHapVerifyInfos) {
+            if (!checkFeature(hapVerifyInfo, deviceHap)) {
+                LOG.warning("Warning: " + hapVerifyInfo.getModuleName() + " can not be covered by entry!");
             }
         }
 
@@ -381,13 +441,17 @@ class HapVerify {
         // check deviceType and distroFilter
         for (String device : featureHap.getDeviceType()) {
             if (!deviceHap.containsKey(device)) {
-                LOG.error("HapVerify::checkFeature " + device + " has no entry!");
+                LOG.warning("Warning: device " + device + " has feature but has no entry!");
                 return false;
             }
             List<HapVerifyInfo> entryHaps = deviceHap.get(device);
             if (!checkFeatureDistroFilter(featureHap, entryHaps)) {
-                LOG.error("HapVerify::checkFeature failed, " + featureHap.getModuleName() +
-                        " distroFilter has not covered!");
+                LOG.warning("Warning: " + featureHap.getModuleName() +
+                        " distroFilter has not covered by entry!");
+                if (!featureHap.getDistroFilter().dump().equals(EMPTY_STRING)) {
+                    LOG.warning("Warning: " + featureHap.getModuleName() + " distroFilter is " +
+                            featureHap.getDistroFilter().dump());
+                }
                 return false;
             }
         }
@@ -416,23 +480,23 @@ class HapVerify {
             }
         }
         if (!checkApiVersionCovered(featureHap.getDistroFilter().apiVersion, entryHaps)) {
-            LOG.error("HapVerify::checkFeatureDistroFilter failed, apiVersion is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, apiVersion is not covered!");
             return false;
         }
         if (!checkScreenShapeCovered(featureHap.getDistroFilter().screenShape, entryHaps)) {
-            LOG.error("HapVerify::checkFeatureDistroFilter failed, screenShape is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenShape is not covered!");
             return false;
         }
         if (!checkScreenWindowCovered(featureHap.getDistroFilter().screenWindow, entryHaps)) {
-            LOG.error("HapVerify::checkFeatureDistroFilter failed, screenWindow is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenWindow is not covered!");
             return false;
         }
         if (!checkScreenDensityCovered(featureHap.getDistroFilter().screenDensity, entryHaps)) {
-            LOG.error("HapVerify::checkFeatureDistroFilter failed, screenDensity is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenDensity is not covered!");
             return false;
         }
         if (!checkCountryCodeCovered(featureHap.getDistroFilter().countryCode, entryHaps)) {
-            LOG.error("HapVerify::checkFeatureDistroFilter failed, countryCode is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, countryCode is not covered!");
             return false;
         }
         return true;
@@ -768,7 +832,7 @@ class HapVerify {
         boolean isInstallationFree = allHapVerifyInfo.get(0).isInstallationFree();
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
             if (isInstallationFree != hapVerifyInfo.isInstallationFree()) {
-                LOG.error("HapVerify::checkDependencyIsValid installationFree is different in input hap!");
+                LOG.error("Error: installationFree is different in input hap!");
                 return false;
             }
         }
@@ -802,7 +866,7 @@ class HapVerify {
             return false;
         }
         if (dependencyList.size() > depth + 1) {
-            LOG.error("HapVerify::DFSTraverseDependency depth exceed, dependencyList is "
+            LOG.error("Error dependency list depth exceed, dependencyList is "
                     + getHapVerifyInfoListNames(dependencyList));
             return false;
         }
@@ -859,7 +923,7 @@ class HapVerify {
         for (int i = 0; i < dependencyList.size() - 1; ++i) {
             for (int j = i + 1; j < dependencyList.size(); ++j) {
                 if (isSameHapVerifyInfo(dependencyList.get(i), dependencyList.get(j))) {
-                    LOG.error("HapVerify::checkDependencyListIsValid circular dependency, dependencyList is "
+                    LOG.error("Error: circular dependency, dependencyList is "
                             + getHapVerifyInfoListNames(dependencyList));
                     return true;
                 }

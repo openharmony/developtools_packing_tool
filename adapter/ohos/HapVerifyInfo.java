@@ -73,7 +73,7 @@ class HapVerifyInfo {
     /**
      * Indicates is entry of module.
      */
-    private boolean isEntry = false;
+    private String moduleType = "";
 
     /**
      * Indicates is installationFree of module.
@@ -239,21 +239,21 @@ class HapVerifyInfo {
      * set isStageModule for HapVerifyInfo.
      */
     public void setStageModule(boolean isStageModule) {
-        isStageModule = isStageModule;
+        this.isStageModule = isStageModule;
     }
 
     /**
-     * get is entry from HapVerifyInfo.
+     * get moduleType from HapVerifyInfo.
      */
-    public boolean isEntry() {
-        return isEntry;
+    public String getModuleType() {
+        return moduleType;
     }
 
     /**
-     * set is entry for HapVerifyInfo.
+     * set is module for HapVerifyInfo.
      */
-    public void setEntry(boolean isEntry) {
-        isEntry = isEntry;
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
     }
 
     /**
