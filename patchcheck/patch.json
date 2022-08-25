@@ -1,0 +1,168 @@
+{
+  "title": "JSON schema for patch.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "app",
+    "module"
+  ],
+  "propertyNames": {
+    "enum": [
+      "app",
+      "module"
+    ]
+  },
+  "if": {
+    "properties":{
+      "module": {
+        "properties": {
+          "type": {
+            "const": "hotreload"
+          }
+        }
+      }
+    }
+  },
+  "then": {
+    "properties":{
+      "app": {
+        "required": [
+          "bundleName",
+          "versionCode",
+          "patchVersionCode"
+        ]
+      }
+    }
+  },
+  "else": {
+    "properties":{
+      "app": {
+        "required": [
+          "bundleName",
+          "versionCode",
+          "versionName",
+          "patchVersionCode",
+          "patchVersionName"
+        ]
+      }
+    }
+  },
+  "properties": {
+    "app": {
+      "description": "Indicates the patch information",
+      "type": "object",
+      "propertyNames": {
+          "enum": [
+            "bundleName",
+            "versionCode",
+            "versionName",
+            "patchVersionCode",
+            "patchVersionName"
+        ]
+      },
+      "properties": {
+          "bundleName": {
+            "description": "Indicates the bundle name of the application. It uniquely identifies the application. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
+            "type": "string",
+            "maxLength": 127,
+            "minLength": 7,
+            "pattern": "^(([a-zA-Z]|[a-zA-Z][0-9a-zA-Z_]+)[.]([0-9a-zA-Z_.]+))|([{]([a-zA-Z]|[a-zA-Z][0-9a-zA-Z_]+)[}](.huawei.com))|[{](bundleName)[}]$"
+          },
+          "versionCode": {
+            "description": "Indicates the versionCode number of the application. The value is an integer greater than 0. A larger value generally represents a later version.The system determines the application version based on the tag value.This label cannot be left blank.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2147483647
+          },
+          "versionName": {
+              "description": "Indicates the text description of the application version.Used for displaying to users. A string can contain a maximum of 127 bytes.This label cannot be left blank.",
+              "type": "string",
+              "maxLength": 127,
+              "pattern": "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
+            },
+          "patchVersionCode": {
+              "description": "Indicates the versionCode number of the patch. The value is an integer greater than 0. A larger value generally represents a later version.The system determines the application version based on the tag value.This label cannot be left blank.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2147483647
+          },
+          "patchVersionName": {
+              "description": "Indicates the text description of the patch version.Used for displaying to users. A string can contain a maximum of 127 bytes.This label cannot be left blank.",
+              "type": "string",
+              "maxLength": 127,
+              "pattern": "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
+          }
+      }
+    },
+    "module": {
+      "description": "Indicates the configuration of a patch file",
+      "type": "object",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "hotreload"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "name",
+          "type"
+        ]
+      },
+      "else": {
+        "required": [
+          "name",
+          "type",
+          "deviceTypes",
+          "originalModuleHash"
+        ]
+      },
+      "propertyNames": {
+          "enum": [
+            "name",
+            "type",
+            "deviceTypes",
+            "originalModuleHash"
+          ]
+      },
+      "properties": {
+          "name": {
+            "description": "Indicates the module name.",
+            "type": "string",
+            "maxLength": 31
+          },
+          "type": {
+            "description": "Indicates the type of the patch.",
+            "type": "string",
+            "enum": [
+              "patch",
+              "hotreload"
+            ]
+          },
+          "deviceTypes": {
+            "description": "Indicates the type of devices on which the patch can run.This label cannot be left blank.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "default",
+                "tablet",
+                "tv",
+                "wearable",
+                "car"
+              ]
+            }
+          },
+          "originalModuleHash": {
+            "description": "Indicates the sha256 of the module hash value. The value is a string with 64 bytes.",
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64
+        }
+      }
+    }
+  }
+}
