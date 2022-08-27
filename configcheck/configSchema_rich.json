@@ -53,7 +53,7 @@
           "maxLength": 255
         },
         "removable": {
-          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used",
+          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean"
         },
         "version": {
@@ -160,7 +160,7 @@
           }
         },
         "singleton": {
-          "description": "Specifies whether the application is multi-instance according to the memory situation. If this attribute is set to true, the application is system application.",
+          "description": "Specifies whether the application is multi-instance according to the memory situation. If this attribute is set to true, the application is system application.@deprecated",
           "type": "boolean"
         },
         "userDataClearable": {
@@ -201,7 +201,7 @@
           },
           "properties": {
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive.If this attribute is set to true, the application will start during the OS startup. If the application process exits, the OS will restart it. This attribute applies only to system applications.This attribute is not supported by basic watches.This label can be left blank by default.",
+              "description": "Specifies whether the application will keep alive.If this attribute is set to true, the application will start during the OS startup. If the application process exits, the OS will restart it. This attribute applies only to system applications.This attribute is not supported by basic watches.This label can be left blank by default.@deprecated",
               "type": "boolean"
             },
             "jointUserId": {
