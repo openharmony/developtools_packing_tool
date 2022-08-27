@@ -146,17 +146,17 @@
           "default": "unspecified"
         },
         "keepAlive": {
-          "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+          "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
           "default": false
         },
         "removable": {
-          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
           "default": true
         },
         "singleton": {
-          "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+          "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
           "default": false
         },
@@ -205,17 +205,17 @@
               "default": false
             },
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
             "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
             "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
@@ -258,17 +258,17 @@
               "default": false
             },
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
             "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
             "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
@@ -311,17 +311,17 @@
               "default": false
             },
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
             "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
             "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
@@ -364,17 +364,17 @@
               "default": false
             },
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
             "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
             "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
@@ -417,17 +417,17 @@
               "default": false
             },
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
             "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
             "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
@@ -470,17 +470,17 @@
               "default": false
             },
             "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
             "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
             "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": false
             },
