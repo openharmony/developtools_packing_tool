@@ -61,10 +61,6 @@ class HapVerify {
             LOG.error("Error: packageName duplicated!");
             return false;
         }
-        // check ability is valid
-        if (!checkAbilityNameIsValid(hapVerifyInfos)) {
-            LOG.warning("warning: ability name is duplicated!");
-        }
         // check entry is valid
         if (!checkEntryIsValid(hapVerifyInfos)) {
             LOG.error("Error: entry is not valid!");
@@ -74,6 +70,10 @@ class HapVerify {
         if (!checkDependencyIsValid(hapVerifyInfos)) {
             LOG.error("Error: module dependency is invalid!");
             return false;
+        }
+        // check ability is valid
+        if (!checkAbilityNameIsValid(hapVerifyInfos)) {
+            LOG.warning("warning: ability name is duplicated!");
         }
         return true;
     }
@@ -160,11 +160,11 @@ class HapVerify {
                     LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
                         + hapVerifyInfos.get(j).getDeviceType());
                     if (!hapVerifyInfos.get(i).getDistroFilter().dump().equals(EMPTY_STRING)) {
-                        LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has distroFilter " +
+                        LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has " +
                             hapVerifyInfos.get(i).getDistroFilter().dump());
                     }
                     if (!hapVerifyInfos.get(j).getDistroFilter().dump().equals(EMPTY_STRING)) {
-                        LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has distroFilter " +
+                        LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has " +
                             hapVerifyInfos.get(i).getDistroFilter().dump());
                     }
                     return false;
@@ -449,7 +449,7 @@ class HapVerify {
                 LOG.warning("Warning: " + featureHap.getModuleName() +
                         " distroFilter has not covered by entry!");
                 if (!featureHap.getDistroFilter().dump().equals(EMPTY_STRING)) {
-                    LOG.warning("Warning: " + featureHap.getModuleName() + " distroFilter is " +
+                    LOG.warning("Warning: " + featureHap.getModuleName() + " has " +
                             featureHap.getDistroFilter().dump());
                 }
                 return false;
