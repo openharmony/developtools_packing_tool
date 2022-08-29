@@ -429,6 +429,10 @@ public class CompressVerify {
             LOG.error("Error: input patch.json is invalid when pack hqf file");
             return false;
         }
+        if (utility.getLibPath().isEmpty() && utility.getAbcPath().isEmpty()) {
+            LOG.error("Error: lib path and abc path are empty!");
+            return false;
+        }
         if (!utility.getLibPath().isEmpty()) {
             if (!isPathValid(utility.getLibPath(), TYPE_DIR, null)) {
                 LOG.error("Error: input lib path is invalid when pack hqf file");
