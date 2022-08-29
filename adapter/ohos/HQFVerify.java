@@ -15,6 +15,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class HQFVerify {
@@ -87,14 +88,31 @@ class HQFVerify {
      * @return the result
      */
     private static boolean checkModuleIsValid(List<HQFVerifyInfo> hqfVerifyInfos) {
-        List<String> moduleNames = new ArrayList<>();
-        for (HQFVerifyInfo hqfVerifyInfo : hqfVerifyInfos) {
-            if (moduleNames.contains(hqfVerifyInfo.getModuleName())) {
-                LOG.error("Error: input hqf file moduleName duplicated!");
-                return false;
-            } else {
-                moduleNames.add(hqfVerifyInfo.getModuleName());
+        for (int i = 0; i < hqfVerifyInfos.size(); ++i) {
+            for (int j = i + 1; j < hqfVerifyInfos.size(); ++j) {
+                if (checkModuleIsDuplicated(hqfVerifyInfos.get(i), hqfVerifyInfos.get(j))) {
+                    LOG.error("Error: input hqf file moduleName duplicated!");
+                    return false;
+                }
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * check module name duplicated.
+     *
+     * @param hqfVerifyInfoLeft is one HQFVerifyInfo
+     * @param hqfVerifyInfoRight is another HQFVerifyInfo
+     * @return the result
+     */
+    private static boolean checkModuleIsDuplicated(HQFVerifyInfo hqfVerifyInfoLeft, HQFVerifyInfo hqfVerifyInfoRight) {
+        if (!hqfVerifyInfoLeft.getModuleName().equals(hqfVerifyInfoRight.getModuleName())) {
+            return false;
+        }
+        if (Collections.disjoint(hqfVerifyInfoLeft.getDeviceTypes(), hqfVerifyInfoRight.getDeviceTypes())) {
+            return false;
         }
         return true;
     }
