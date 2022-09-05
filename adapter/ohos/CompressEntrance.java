@@ -31,6 +31,8 @@ public class CompressEntrance {
     private static final int EXIT_STATUS_NORMAL = 0;
     private static final int EXIT_STATUS_EXCEPTION = 1;
     private static final Log LOG = new Log(CompressEntrance.class.toString());
+    private static final String HAP_SUFFIX = ".hap";
+    private static final String EMPTY_STRING = "";
 
     /**
      * Pack the app.
@@ -84,6 +86,10 @@ public class CompressEntrance {
      * @return Returns the string of sha-256 for hap.
      */
     public static String getHapSha256(String hapPath) {
+        if (!hapPath.endsWith(HAP_SUFFIX)) {
+            LOG.error("ERROR: input file is not a hap");
+            return EMPTY_STRING;
+        }
         return FileUtils.getSha256(hapPath);
     }
 
