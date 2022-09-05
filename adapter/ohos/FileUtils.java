@@ -15,8 +15,6 @@
 
 package ohos;
 
-import ohos.utils.fastjson.JSONObject;
-
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
