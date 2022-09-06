@@ -440,9 +440,8 @@ public class CompressVerify {
             }
         }
         if (!utility.getAbcPath().isEmpty()) {
-            File file = new File(utility.getAbcPath());
-            if (!file.isFile() || !file.getName().toLowerCase().endsWith(ABC_SUFFIX)) {
-                LOG.error("Error: input abc file is invalid when pack hqf file");
+            if (!compatibleProcess(utility, utility.getAbcPath(), utility.getABCList(), ABC_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode abc list is invalid!");
                 return false;
             }
         }
