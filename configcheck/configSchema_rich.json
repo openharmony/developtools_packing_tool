@@ -164,7 +164,7 @@
           "type": "boolean"
         },
         "userDataClearable": {
-          "description": "Specifies whether to allow clear data. only for system application",
+          "description": "Specifies whether to allow clear data. only for system application.@deprecated",
           "type": "boolean"
         }
       }
