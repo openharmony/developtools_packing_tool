@@ -43,8 +43,7 @@
                 "requestPermissions",
                 "definePermissions",
                 "testRunner",
-                "dependencies",
-                "libIsolation"
+                "dependencies"
               ]
             },
             "required": [
@@ -74,8 +73,7 @@
                 "requestPermissions",
                 "definePermissions",
                 "testRunner",
-                "dependencies",
-                "libIsolation"
+                "dependencies"
               ]
             },
             "required": [
@@ -962,10 +960,6 @@
             "type": "string",
             "maxLength": 127
           }
-        },
-        "libIsolation": {
-          "description": "Indicates whether to isolate the shared libraries in this module.",
-          "type": "boolean"
         }
       }
     }
