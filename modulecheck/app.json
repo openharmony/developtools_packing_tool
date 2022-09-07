@@ -161,7 +161,7 @@
           "default": false
         },
         "userDataClearable": {
-          "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+          "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
           "default": true
         },
@@ -220,7 +220,7 @@
               "default": false
             },
             "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
@@ -273,7 +273,7 @@
               "default": false
             },
             "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
@@ -326,7 +326,7 @@
               "default": false
             },
             "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
@@ -379,7 +379,7 @@
               "default": false
             },
             "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
@@ -432,7 +432,7 @@
               "default": false
             },
             "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
@@ -485,7 +485,7 @@
               "default": false
             },
             "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.",
+              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
               "type": "boolean",
               "default": true
             },
