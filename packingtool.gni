@@ -27,8 +27,12 @@ template("packing_tool") {
       rebase_path(sources[0], root_build_dir),
       "--haptobinOutput",
       rebase_path(outputs[0], root_build_dir),
-      "--outpath",
+      "--unpackOutput",
       rebase_path(outputs[1], root_build_dir),
+      "--packOutput",
+      rebase_path(outputs[2], root_build_dir),
+      "--outpath",
+      rebase_path(outputs[3], root_build_dir),
     ]
   }
 }

@@ -15,31 +15,41 @@ import("//build/ohos.gni")
 import("//developtools/packing_tool/packingtool.gni")
 
 packing_tool("packing_tool") {
-  sources = [ "//developtools/packing_tool/haptobin.sh" ]
+  sources = [
+    "//developtools/packing_tool/haptobin.sh",
+    "//developtools/packing_tool/packingTool.sh",
+    "//developtools/packing_tool/unpackingTool.sh",
+  ]
   outputs = [
     "${target_out_dir}/jar/haptobin_tool.jar",
+    "${target_out_dir}/jar/app_unpacking_tool.jar",
+    "${target_out_dir}/jar/app_packing_tool.jar",
     "${target_out_dir}/jar",
   ]
-}
-
-ohos_prebuilt_etc("app_packing_tool") {
-  source = "jar/app_packing_tool.jar"
-  install_enable = false
-}
-
-ohos_prebuilt_etc("app_unpacking_tool") {
-  source = "jar/app_unpacking_tool.jar"
-  install_enable = false
-}
-
-ohos_prebuilt_etc("fastjson_utils_java") {
-  source = "jar/fastjson_utils_java.jar"
-  install_enable = false
 }
 
 ohos_prebuilt_etc("haptobin_tool") {
   list = get_target_outputs(":packing_tool")
   source = list[0]
   deps = [ ":packing_tool" ]
+  install_enable = false
+}
+
+ohos_prebuilt_etc("app_unpacking_tool") {
+  list = get_target_outputs(":packing_tool")
+  source = list[1]
+  deps = [ ":packing_tool" ]
+  install_enable = false
+}
+
+ohos_prebuilt_etc("app_packing_tool") {
+  list = get_target_outputs(":packing_tool")
+  source = list[2]
+  deps = [ ":packing_tool" ]
+  install_enable = false
+}
+
+ohos_prebuilt_etc("fastjson_utils_java") {
+  source = "jar/fastjson_utils_java.jar"
   install_enable = false
 }
