@@ -1,0 +1,27 @@
+{
+    "name": "packing_tool",
+    "version": "3.2",
+    "license": "Apache License 2.0",
+    "publishAs": "code-segment",
+    "description": "packing_tool for openharmony",
+    "segment": {
+      "destPath": "developtools/packing_tool"
+    },
+    "keywords": [
+      "packing",
+      "unpacking"
+    ],
+    "component": {
+      "name": "packing_tool",
+      "subsystem": "developtools",
+      "adapted_system_type": [ "mini", "small", "standard" ],
+      "deps": {
+        "components": []
+      },
+      "build": {
+        "sub_component": [
+          "//developtools/packing_tool:packing_tool"
+        ]
+      }
+    }
+}
