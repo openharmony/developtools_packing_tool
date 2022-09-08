@@ -26,7 +26,6 @@ jar_dir="jar"
 haptobin_jar_file="haptobin_tool.jar"
 haptobin_jar_path="$final_path/$out_build_path"
 haptobin_jar_file_path="$final_path/$haptobin_build_jar_path"
-echo $haptobin_jar_path
 # make out dir
 if [ -d "$haptobin_jar_path" ]
     then
@@ -39,6 +38,12 @@ manifest_path=$root_path/META-INF/packingbin_tool/MANIFEST.MF
 echo ${manifest_path}
 # compile java class
 out_dir="$root_path/out/production/haptobin"
+if [ -d "$out_dir/ohos" ]
+    then
+        echo "$root_path/out/production/haptobin/ohos exist"
+    else
+        mkdir -p "$root_path/out/production/haptobin/ohos"
+fi
 java_suffix=".java"
 class_suffix=".class"
 out_class="$temp_path/$out_dir"
