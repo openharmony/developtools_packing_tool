@@ -15,6 +15,7 @@ set -e
 root_path=$1
 unpack_build_out_jar_path=$2
 unpack_build_out_path=$3
+big_version=$4
 final_path=$(pwd)
 echo $root_path
 echo $unpack_build_out_jar_path
@@ -102,8 +103,14 @@ do
   java_collection="${java_collection} ${root_path}/adapter/ohos/${unpack_class[$i]}"
 done
 
-compile_command="javac --release 8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
-eval ${compile_command}
+if [ "$big_version" == "true" ]
+    then
+        compile_command="javac --release 8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
+        eval ${compile_command}
+    else
+        compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
+        eval ${compile_command}
+fi
 
 cd $out_dir
 product_unpack_jar_command="jar -cvfm $unpack_jar_path $manifest_path ./ohos"
