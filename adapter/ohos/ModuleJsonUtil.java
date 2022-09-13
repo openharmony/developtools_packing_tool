@@ -23,8 +23,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.Optional;
 
+/**
+ * json util for packing tool
+ */
 class ModuleJsonUtil {
     private static final String  VERSION_CODE = "\"versionCode\"";
     private static final String VERSION_NAME = "\"versionName\"";
@@ -708,7 +710,7 @@ class ModuleJsonUtil {
             throw new BundleException(errMSg);
         }
         String moduleType = distroObj.getString(MODULETYPE);
-        if (moduleType != null && moduleType.equals(ENTRY)) {
+        if (ENTRY.equals(moduleType)) {
             deviceTypes = getDeviceTypeFromFAModule(moduleObj);
         }
         return deviceTypes;

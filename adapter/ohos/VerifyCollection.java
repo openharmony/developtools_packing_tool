@@ -18,6 +18,10 @@ package ohos;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * collection of members in app fields,
+ * those members will be verified when pack app.
+ */
 class VerifyCollection {
     /**
      * Indicates the bundleName of app.
