@@ -61,6 +61,7 @@ public class Uncompress {
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
     private static final String RESOURCE_PATH = "resources/base/profile/";
+    private static final String TRUE = "true";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -86,7 +87,7 @@ public class Uncompress {
         }
 
         try {
-            if (!utility.getMode().equals(Utility.MODE_HAP) || !utility.getRpcid().equals("true")) {
+            if (!Utility.MODE_HAP.equals(utility.getMode()) || !TRUE.equals(utility.getRpcid())) {
                 if (!utility.getForceRewrite().isEmpty() && "true".equals(utility.getForceRewrite())) {
                     File outPath = new File(utility.getOutPath());
                     deleteFile(outPath);
@@ -124,11 +125,11 @@ public class Uncompress {
             throw new BundleException("Uncompress::unpackageHapMode input wrong unpack mode");
         }
         try {
-            if (utility.getRpcid().equals("true")) {
+            if (TRUE.equals(utility.getRpcid())) {
                 getRpcidFromHap(utility.getHapPath(), utility.getOutPath());
                 return;
             }
-            if ("true".equals(utility.getUnpackApk())) {
+            if (TRUE.equals(utility.getUnpackApk())) {
                 unzip(utility, utility.getHapPath(), utility.getOutPath(), APK_SUFFIX);
                 String[] temp = utility.getHapPath().replace("\\", "/").split("/");
                 String hapName = temp[temp.length - 1];
@@ -1515,7 +1516,7 @@ public class Uncompress {
                     hapZipInfo.setPackInfoJsonStr(readStringFromInputStream(zipIn, bufferedReader));
                     continue;
                 }
-                if (entry.getName().equals(MODULE_JSON)) {
+                if (MODULE_JSON.equals(entry.getName())) {
                     bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
                     hapZipInfo.setHarmonyProfileJsonStr(readStringFromInputStream(zipIn, bufferedReader));
                 }
@@ -1548,7 +1549,7 @@ public class Uncompress {
             final Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 final ZipEntry entry = entries.nextElement();
-                if (entry.getName().equals(MODULE_JSON)) {
+                if (MODULE_JSON.equals(entry.getName())) {
                     return true;
                 }
             }
@@ -1640,7 +1641,7 @@ public class Uncompress {
             final Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 final ZipEntry entry = entries.nextElement();
-                if (entry.getName().equals(RPCID_SC)) {
+                if (RPCID_SC.equals(entry.getName())) {
                     filePath = entry.getName();
                     break;
                 }

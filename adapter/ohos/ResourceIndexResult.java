@@ -15,9 +15,9 @@
 
 package ohos;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * collection of ResourceIndexResult member.
+ */
 public class ResourceIndexResult {
     /**
      * Indicates the id of resource.
