@@ -113,6 +113,13 @@ eval ${product_pack_jar_command}
 
 # merge app_packing_tool.jar and fastjson
 temp_dir="$root_path/jar/temp"
+temp_two="2"
+if [ -d "$temp_dir" ]
+    then
+        temp_dir="$temp_dir$temp_two"
+    else
+        echo "$temp_dir not exit"
+fi
 mkdir $temp_dir
 cp $pack_jar_path "$temp_dir/$pack_jar_file"
 cp $fastjson_jar_path "$temp_dir/$fastjson_jar_file"
@@ -129,7 +136,7 @@ merge_pack_fast_jar_command="jar -cvfm $pack_jar_file $manifest_path -C $temp_di
 eval $merge_pack_fast_jar_command
 if [ -d "$temp_dir" ]
     then
-        rm -r $temp_dir
+        rm -rf $temp_dir
     else
         echo "$temp_dir not exit"
 fi
