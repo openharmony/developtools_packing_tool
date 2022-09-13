@@ -14,10 +14,13 @@
  */
 package ohos;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Collections of method for HQF verify.
+ *
+ */
 class HQFVerify {
     private static final Log LOG = new Log(HQFVerify.class.toString());
 
