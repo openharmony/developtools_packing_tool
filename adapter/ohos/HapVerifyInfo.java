@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * collection of HapVerifyInfo members,
+ * those members will be verified in hapVerify.
+ */
 class HapVerifyInfo {
     /**
      * Indicates the bundleName of module.

@@ -142,7 +142,7 @@ public class Compressor {
     private static boolean isModuleJSON(String path)
     {
         File file = new File(path);
-        if ((file.isFile()) && file.getName().equals(MODULE_JSON)) {
+        if ((file.isFile()) && MODULE_JSON.equals(file.getName())) {
             return true;
         }
         return false;
@@ -1202,7 +1202,7 @@ public class Compressor {
      * @return false and true
      */
     private boolean isLanguageCountry(String name) {
-        if (!name.equals(ENTRYCARD_BASE_NAME)) {
+        if (!ENTRYCARD_BASE_NAME.equals(name)) {
             boolean isLanguage = false;
             String[] str = name.split("-");
             if (str.length > 1) {
@@ -1212,13 +1212,13 @@ public class Compressor {
                         isLanguage = true;
                     }
                 }
-                if (str[1].equals( VERTICAL ) || str[1].equals( HORIZONTAL )) {
+                if (VERTICAL.equals(str[1]) || HORIZONTAL.equals(str[1])) {
                     isLanguage = true;
                 }
-                if (str[2].equals( CAR ) || str[2].equals( TV ) || str[2].equals( WEARABLE )) {
+                if (CAR.equals(str[2]) || TV.equals(str[2]) || WEARABLE.equals(str[2])) {
                     isLanguage = true;
                 }
-                if (str[3].equals( SDIP ) || str[3].equals( MDIP )) {
+                if (SDIP.equals(str[3]) || MDIP.equals(str[3])) {
                     isLanguage = true;
                 }
                 return isLanguage;
@@ -1576,7 +1576,7 @@ public class Compressor {
             zipInput = new FileInputStream(hapPath);
             zin = new ZipInputStream(zipInput);
             while ((entry = zin.getNextEntry()) != null) {
-                if (entry.getName().toLowerCase().equals(MODULE_JSON)) {
+                if (MODULE_JSON.equals(entry.getName().toLowerCase())) {
                     return true;
                 }
             }
