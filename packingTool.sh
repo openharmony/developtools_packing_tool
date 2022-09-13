@@ -23,7 +23,7 @@ echo ${final_path}
 
 jar_dir="jar"
 pack_jar_file="app_packing_tool.jar"
-fastjson_jar_file="fastjson_utils_java.jar"
+fastjson_jar_file="fastjson-1.2.83.jar"
 jar_directory="$root_path/jar"
 pack_jar_path="$root_path/$jar_dir/$pack_jar_file"
 manifest_path="$root_path/META-INF/packing_tool/MANIFEST.MF"
@@ -37,7 +37,7 @@ if [ -d "$out_dir/ohos" ]
 fi
 
 jar_path="$root_path/jar"
-fastjson_jar_path="$root_path/jar/fastjson_utils_java.jar"
+fastjson_jar_path="$root_path/jar/fastjson-1.2.83.jar"
 java_suffix=".java"
 java_collection=""
 declare -a compile_class=(

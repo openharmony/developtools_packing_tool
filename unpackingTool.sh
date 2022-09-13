@@ -24,10 +24,10 @@ echo $final_path
 
 jar_dir="jar"
 unpack_jar_file="app_unpacking_tool.jar"
-fastjson_jar_file="fastjson_utils_java.jar"
+fastjson_jar_file="fastjson-1.2.83.jar"
 jar_directory="$root_path/$jar_dir"
 unpack_jar_path="$root_path/$jar_dir/$unpack_jar_file"
-fastjson_jar_path="$root_path/jar/fastjson_utils_java.jar"
+fastjson_jar_path="$root_path/jar/fastjson-1.2.83.jar"
 manifest_path="$root_path/META-INF/unpacking_tool/MANIFEST.MF"
 out_dir="$root_path/out/production/unpacking_tool"
 if [ -d "$out_dir/ohos" ]

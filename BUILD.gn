@@ -49,7 +49,7 @@ ohos_prebuilt_etc("app_packing_tool") {
   install_enable = false
 }
 
-ohos_prebuilt_etc("fastjson_utils_java") {
-  source = "jar/fastjson_utils_java.jar"
+ohos_prebuilt_etc("fastjson-1.2.83") {
+  source = "jar/fastjson-1.2.83.jar"
   install_enable = false
 }
