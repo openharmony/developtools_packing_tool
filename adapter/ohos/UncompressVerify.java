@@ -27,6 +27,7 @@ public class UncompressVerify {
     private static final String HAP_SUFFIX = ".hap";
     private static final String HAR_SUFFIX = ".har";
     private static final String APP_SUFFIX = ".app";
+    private static final String APPQF_SUFFIX = ".appqf";
     private static final String FALSE = "false";
     private static final String RPCID_SC = "rpcid.sc";
     private static final String TRUE = "true";
@@ -58,6 +59,8 @@ public class UncompressVerify {
             return harCommandVerify(utility);
         } else if (Utility.MODE_APP.equals(utility.getMode())) {
             return appCommandVerify(utility);
+        } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
+            return appqfVerify(utility);
         } else {
             LOG.error("UncompressVerify::commandVerify mode is invalid!");
             return false;
@@ -180,7 +183,7 @@ public class UncompressVerify {
      * parse and check args if valid in app mode.
      *
      * @param utility common data
-     * @return isVerifyValidInHapMode if verify valid in hap mode.
+     * @return true if input app file is valid.
      */
     private static boolean appCommandVerify(Utility utility) {
         if (UncompressEntrance.PARSE_MODE_HAPINFO.equals(utility.getParseMode())
@@ -192,13 +195,29 @@ public class UncompressVerify {
         utility.setAppPath(utility.getFormattedPath(utility.getAppPath()));
         File file = new File(utility.getAppPath());
         if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
-            LOG.error("UncompressVerify::isArgsValidInAppMode app-path must end with.app!");
+            LOG.error("UncompressVerify::appCommandVerify app-path must end with.app!");
             return false;
         }
 
         return verifyOutPath(utility, file);
     }
 
+    /**
+     * parse and check args if valid in appqf mode.
+     *
+     * @param utility common data
+     * @return true if input appqf path is valid.
+     */
+    private static boolean appqfVerify(Utility utility) {
+        utility.setAPPQFPath(utility.getFormattedPath(utility.getAPPQFPath()));
+        File file = new File(utility.getAPPQFPath());
+        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APPQF_SUFFIX)) {
+            LOG.error("UncompressVerify::appqfVerify appqf-path must end with.appqf!");
+            return false;
+        }
+
+        return verifyOutPath(utility, file);
+    }
 
     /**
      * parse and check the outpath args.

@@ -75,7 +75,6 @@ public class Uncompress {
             LOG.error("Uncompress::unpackageProcess utility is null!");
             return false;
         }
-
         boolean unpackageResult = true;
         File destFile = new File(utility.getOutPath());
 
@@ -85,7 +84,6 @@ public class Uncompress {
                 return false;
             }
         }
-
         try {
             if (!Utility.MODE_HAP.equals(utility.getMode()) || !TRUE.equals(utility.getRpcid())) {
                 if (!utility.getForceRewrite().isEmpty() && "true".equals(utility.getForceRewrite())) {
@@ -94,24 +92,26 @@ public class Uncompress {
                     outPath.mkdirs();
                 }
             }
-
             if (Utility.MODE_HAP.equals(utility.getMode())) {
                 unpackageHapMode(utility);
             } else if (Utility.MODE_HAR.equals(utility.getMode())) {
                 dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
-            } else {
+            } else if (Utility.MODE_APP.equals(utility.getMode())) {
                 dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
+            } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
+                uncompressAPPQFFile(utility);
+            } else {
+                LOG.error("Uncompress::unpackageProcess input wrong type!");
+                throw new BundleException("Uncompress::unpackageProcess input wrong type!");
             }
         } catch (BundleException ignored) {
             unpackageResult = false;
             LOG.error("Uncompress::unpackageProcess Bundle exception");
         }
-
         // return uncompress information.
         if (!unpackageResult) {
             LOG.error("Uncompress::unpackageProcess unpackage failed!");
         }
-
         return unpackageResult;
     }
 
@@ -1685,6 +1685,41 @@ public class Uncompress {
             zipFile = new ZipFile(srcFile);
             byte[] data = getResourceDataFromHap(zipFile);
             return ResourcesParser.getAllDataItem(data);
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+    }
+
+    /**
+     * uncompress appqf file.
+     *
+     * @param utility is the common args for input.
+     * @throws BundleException if uncompress failed.
+     */
+    private static void uncompressAPPQFFile(Utility utility) throws BundleException {
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(new File(utility.getAPPQFPath()));
+            int entriesNum = 0;
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+                entriesNum++;
+                ZipEntry entry = entries.nextElement();
+                if (entry == null) {
+                    continue;
+                }
+                String filePath = utility.getOutPath() + File.separator + entry.getName();
+                File destFile = new File(filePath);
+                if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
+                    destFile.getParentFile().mkdirs();
+                }
+                dataTransfer(zipFile, entry, destFile);
+            }
+        } catch (FileNotFoundException ignored) {
+            LOG.error("Uncompress::uncompressAPPQFFile file not found exception");
+            throw new BundleException("Uncompress::uncompressAPPQFFile file not found");
+        } catch (IOException exception) {
+            LOG.error("Uncompress::uncompressAPPQFFile io exception");
+            throw new BundleException("Uncompress::uncompressAPPQFFile io exception");
         } finally {
             Utility.closeStream(zipFile);
         }

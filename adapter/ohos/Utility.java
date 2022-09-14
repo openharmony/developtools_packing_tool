@@ -85,6 +85,7 @@ public class Utility {
     private String rpcid = FALSE_STRING;
     private String packPath = "";
     private boolean isParse = false;
+    private String appqfPath = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -673,5 +674,13 @@ public class Utility {
 
     public void setFormatedHQFList(List<String> formatedHQFList) {
         this.formatedHQFList = formatedHQFList;
+    }
+
+    public void setAPPQFPath(String appqfPath) {
+        this.appqfPath = appqfPath;
+    }
+
+    public String getAPPQFPath() {
+        return this.appqfPath;
     }
 }
