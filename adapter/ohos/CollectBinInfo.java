@@ -165,10 +165,10 @@ public class CollectBinInfo {
         int count = 0;
         boolean versionFlag = false;
         for (String para : args) {
-            if (para.equals(BIN_PATH) && count < args.length - 1) {
+            if (BIN_PATH.equals(para) && count < args.length - 1) {
                 binPath = args[count + 1];
             }
-            if (para.equals(VERSION_CODE) && count < args.length) {
+            if (VERSION_CODE.equals(para) && count < args.length) {
                 versionFlag = true;
             }
             count++;

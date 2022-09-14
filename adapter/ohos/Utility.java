@@ -101,6 +101,7 @@ public class Utility {
     private List<String> formatedDirList = new ArrayList<>();
 
     private List<String> formatedHQFList = new ArrayList<>();
+    private List<String> formatedABCList = new ArrayList<>();
 
     private String appList = "";
     private String hapList = "";
@@ -193,6 +194,10 @@ public class Utility {
         if (!abcPath.startsWith(CMD_PREFIX)) {
             this.abcPath = abcPath;
         }
+    }
+
+    public List<String> getABCList() {
+        return formatedABCList;
     }
 
     public String getFilePath() {

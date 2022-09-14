@@ -17,6 +17,9 @@ package ohos;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * collection of HQF verify info.
+ */
 class HQFVerifyInfo {
     private String bundleName = "";
 

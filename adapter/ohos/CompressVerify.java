@@ -99,7 +99,7 @@ public class CompressVerify {
                     LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path is not a file!");
                     return false;
                 }
-                if (!file.getName().equals(RPCID_PROFILE)) {
+                if (!RPCID_PROFILE.equals(file.getName())) {
                     LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path must be rpcid.sc file!");
                     return false;
                 }
@@ -112,7 +112,7 @@ public class CompressVerify {
                     LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path is not a file!");
                     return false;
                 }
-                if (!file.getName().equals(PACK_INFO)) {
+                if (!PACK_INFO.equals(file.getName())) {
                     LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path must be pack.info file!");
                     return false;
                 }
@@ -126,7 +126,7 @@ public class CompressVerify {
 
             if (!utility.getProfilePath().isEmpty()) {
                 File file = new File(utility.getProfilePath());
-                if (!file.isFile() || !file.getName().equals(PROFILE_NAME)) {
+                if (!file.isFile() || !PROFILE_NAME.equals(file.getName())) {
                     LOG.error("CompressVerify::isArgsValidInHapMode profile-path must be CAPABILITY.profile file!");
                     return false;
                 }
@@ -175,7 +175,7 @@ public class CompressVerify {
      */
     private static boolean isVerifyValidInHapMode(Utility utility) {
         File file = new File(utility.getIndexPath());
-        if (!utility.getIndexPath().isEmpty() && !file.isFile() && file.getName().equals(INDEX_PROFILE)) {
+        if (!utility.getIndexPath().isEmpty() && !file.isFile() && INDEX_PROFILE.equals(file.getName())) {
             LOG.error("CompressVerify::isArgsValidInHapMode index-path must be resources.index file!");
             return false;
         }
@@ -329,7 +329,7 @@ public class CompressVerify {
         }
 
         File file = new File(utility.getPackInfoPath());
-        if (!file.isFile() || !file.getName().equals(PACK_INFO)) {
+        if (!file.isFile() || !PACK_INFO.equals(file.getName())) {
             LOG.error("CompressVerify::isArgsValidInAppMode pack-info-path is invalid!");
             return false;
         }
@@ -440,9 +440,8 @@ public class CompressVerify {
             }
         }
         if (!utility.getAbcPath().isEmpty()) {
-            File file = new File(utility.getAbcPath());
-            if (!file.isFile() || !file.getName().toLowerCase().endsWith(ABC_SUFFIX)) {
-                LOG.error("Error: input abc file is invalid when pack hqf file");
+            if (!compatibleProcess(utility, utility.getAbcPath(), utility.getABCList(), ABC_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode abc list is invalid!");
                 return false;
             }
         }

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: fastjson_utils_java.jar
+Created-By: javac.py
+Main-Class: ohos.CompressEntrance
