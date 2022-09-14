@@ -15,6 +15,9 @@
 
 package ohos;
 
+/**
+ * collection of uriInfo members
+ */
 public class UriInfo {
     /**
      * Indicates the schema of ModuleUriInfo.
