@@ -64,7 +64,7 @@ declare -a compile_class=(
             "HapVerify"
             "HapVerifyInfo"
             "HQFVerify"
-            "HQFVerifyInfo"
+            "HQFInfo"
             )
 compile_class_length=${#compile_class[@]}
 for ((i=0; i<${compile_class_length};++i))
@@ -100,7 +100,7 @@ declare -a pack_class=(
             "HapVerify.class"
             "HapVerifyInfo.class"
             "HQFVerify.class"
-            "HQFVerifyInfo.class"
+            "HQFInfo.class"
 )
 pack_class_length=${#pack_class[@]}
 for ((i=0; i<${pack_class_length};++i))

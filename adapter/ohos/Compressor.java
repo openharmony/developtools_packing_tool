@@ -2100,7 +2100,7 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private boolean checkHQFIsValid(List<String> fileList) throws BundleException {
-        List<HQFVerifyInfo> hqfVerifyInfos = new ArrayList<>();
+        List<HQFInfo> hqfVerifyInfos = new ArrayList<>();
         for (String file : fileList) {
             hqfVerifyInfos.add(ModuleJsonUtil.parseHQFInfo(file));
         }

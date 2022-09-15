@@ -96,6 +96,8 @@ declare -a unpack_class=(
             "DefinePermission.java"
             "ResourceIndexResult.java"
             "FileUtils.java"
+            "HQFInfo.java"
+            "APPQFResult.java"
             )
 unpack_class_length=${#unpack_class[@]}
 for ((i=0; i<${unpack_class_length};++i))
