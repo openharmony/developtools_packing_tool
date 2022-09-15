@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * collection of HQF verify info.
  */
-class HQFVerifyInfo {
+public class HQFInfo {
     private String bundleName = "";
 
     private int versionCode = -1;

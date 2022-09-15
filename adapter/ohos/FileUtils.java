@@ -560,4 +560,56 @@ class FileUtils {
         res = realStr.substring(left, right);
         return res;
     }
+
+    /**
+     * unzip file
+     *
+     * @param zipFilePath is the zipFilePath
+     * @param destDirPath is the output dest path
+     */
+    public static boolean unzipFile(String zipFilePath, String destDirPath) {
+        boolean success = false;
+        File destDir = new File(destDirPath);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        ZipInputStream zipInputStream = null;
+        try {
+            zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath));
+            ZipEntry entry = zipInputStream.getNextEntry();
+            while (entry != null) {
+                String filePath = destDirPath + File.separator + entry.getName();
+                if (!entry.isDirectory()) {
+                    extractFile(zipInputStream, filePath);
+                } else {
+                    File dir = new File(filePath);
+                    dir.mkdirs();
+                }
+                zipInputStream.closeEntry();
+                entry = zipInputStream.getNextEntry();
+            }
+            success = true;
+        } catch (IOException e) {
+            LOG.error("FileUtil::unzipFile failed, IOException is " + e.getMessage());
+        } finally {
+            Utility.closeStream(zipInputStream);
+        }
+        return success;
+    }
+
+    private static void extractFile(ZipInputStream zipInputStream, String filePath) {
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath));
+            byte[] bytes = new byte[BUFFER_SIZE];
+            int readLength = 0;
+            while ((readLength = zipInputStream.read(bytes)) != -1) {
+                bufferedOutputStream.write(bytes, 0, readLength);
+            }
+        } catch(IOException e) {
+            LOG.error("FileUtil::extractFile failed, IOException is " + e.getMessage());
+        } finally {
+            Utility.closeStream(bufferedOutputStream);
+        }
+    }
 }
