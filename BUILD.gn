@@ -16,6 +16,7 @@ import("//developtools/packing_tool/packingtool.gni")
 
 packing_tool("packing_tool") {
   sources = [
+    "//developtools/packing_tool/adapter/ohos",
     "//developtools/packing_tool/haptobin.sh",
     "//developtools/packing_tool/packingTool.sh",
     "//developtools/packing_tool/unpackingTool.sh",

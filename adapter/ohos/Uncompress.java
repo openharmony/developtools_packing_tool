@@ -26,8 +26,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import java.nio.charset.Charset;
 import java.nio.file.attribute.FileTime;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
@@ -50,6 +57,7 @@ public class Uncompress {
     private static final String RPCID_SC = "rpcid.sc";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
+    private static final String TEMP_PATH_APPQF = "temp_appqf_random";
     private static final String HAP_SUFFIXI = ".hap";
     private static final String ENTRY_TYPE = "entry";
     private static final String SYSTEM_ACTION = "action.system.home";
@@ -62,6 +70,8 @@ public class Uncompress {
     private static final String SO_SUFFIX = ".so";
     private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final String TRUE = "true";
+    private static final String HQF_SUFFIX = ".hqf";
+    private static final String PATCH_JSON = "patch.json";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -725,8 +735,6 @@ public class Uncompress {
         uncomperssResult.addProfileInfoStr(hapZipInfo.getHarmonyProfileJsonStr());
         uncomperssResult.addProfileInfo(profileInfo);
     }
-
-
 
     private static HapZipInfo unZipHapFileFromInputStream(InputStream input) throws BundleException, IOException {
         BufferedInputStream bufIn = null;
@@ -1723,5 +1731,61 @@ public class Uncompress {
         } finally {
             Utility.closeStream(zipFile);
         }
+    }
+
+    /**
+     * parrse appqf file.
+     *
+     * @param appqfPath is the path of appqf file.
+     * @throws BundleException if uncompress failed.
+     * @throws IOException if IOException happened.
+     */
+    public static List<HQFInfo> parseAPPQFFile(String appqfPath) throws BundleException, IOException {
+        File appqfFile = new File(appqfPath);
+        String tmpPath = appqfFile.getParent() + File.separator + TEMP_PATH_APPQF;
+        File tempDir = new File(tmpPath);
+        boolean deletePath = false;
+        if (!tempDir.exists()) {
+            tempDir.mkdir();
+            deletePath = true;
+        }
+        // unzip appqf file
+        if (!FileUtils.unzipFile(appqfPath, tmpPath)) {
+            LOG.error("Uncompress::parseAPPQFFile unzip file failed!");
+            throw new BundleException("Uncompress::parseAPPQFFile unzip file failed!");
+        }
+        ZipFile zipFile = null;
+        ZipInputStream zipInputStream = null;
+        ZipEntry zipEntry = null;
+        List<String> HQFlist = new ArrayList<>();
+        try {
+            zipFile = new ZipFile(appqfFile);
+            zipInputStream = new ZipInputStream(new FileInputStream(appqfFile), Charset.forName("utf-8"));
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                if (zipEntry.getName().endsWith(HQF_SUFFIX)) {
+                    HQFlist.add(zipEntry.getName());
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("uncompress::uncompressAPPQFFile failed, " + e.getMessage());
+            throw new BundleException("uncompress::uncompressAPPQFFile failed!");
+        } finally {
+            Utility.closeStream(zipInputStream);
+        }
+        // read patch.json in haf file
+        List<String> jsonStringList = new ArrayList<>();
+        for (String name : HQFlist) {
+            ZipFile hqfFile = new ZipFile(new File(tmpPath + File.separator + name));
+            jsonStringList.add(FileUtils.getFileStringFromZip(PATCH_JSON, hqfFile));
+        }
+        if (deletePath) {
+            FileUtils.deleteDirectory(tmpPath);
+        }
+        // parse patch.json
+        List<HQFInfo> hqfVerifyInfoList = new ArrayList<>();
+        for (String patchString : jsonStringList) {
+            hqfVerifyInfoList.add(JsonUtil.parsePatch(patchString));
+        }
+        return hqfVerifyInfoList;
     }
 }

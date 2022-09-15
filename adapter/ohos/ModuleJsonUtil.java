@@ -1082,7 +1082,7 @@ class ModuleJsonUtil {
      * @param hqfPath is the file path of hqf file
      * @return HQFVerifyInfo
      */
-    static HQFVerifyInfo parseHQFInfo(String hqfPath) throws BundleException {
+    static HQFInfo parseHQFInfo(String hqfPath) throws BundleException {
         File hqfFile = new File(hqfPath);
         String patchJson = FileUtils.getJsonInZips(hqfFile, PATCH_JSOPN);
         return parsePatch(patchJson);
@@ -1094,8 +1094,8 @@ class ModuleJsonUtil {
      * @param jsonString is the file path of hqf file
      * @return HQFVerifyInfo
      */
-    static HQFVerifyInfo parsePatch(String jsonString) throws BundleException {
-        HQFVerifyInfo hqfVerifyInfo = new HQFVerifyInfo();
+    static HQFInfo parsePatch(String jsonString) throws BundleException {
+        HQFInfo hqfVerifyInfo = new HQFInfo();
         JSONObject jsonObject = JSON.parseObject(jsonString);
         JSONObject appObj = jsonObject.getJSONObject(APP);
         if (appObj == null) {
