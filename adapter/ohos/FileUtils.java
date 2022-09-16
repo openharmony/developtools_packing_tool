@@ -37,9 +37,9 @@ class FileUtils {
     private static final String MODULE_JSON = "module.json";
     private static final String CONFIG_JSON = "config.json";
     private static final String SHA256 = "SHA-256";
-    private static final int SHA256_BUFFER_SIZE = 10240;
-    public static String bundleName = "\"bundleName\":";
-    public static char quotation = '\"';
+    private static final String BUNDLE_NAME = "\"bundleName\":";
+    private static final char QUATATION = '\"';
+    private static final String LINE_BREAK = "\r\n|\r|\n";
 
     /**
      * generate fileData byte stream
