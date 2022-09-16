@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * collection of HQF verify info.
+ * collection of HapVerifyInfo members,
+ * those members will be verified in hapVerify.
  */
 class HapVerifyInfo {
     /**
