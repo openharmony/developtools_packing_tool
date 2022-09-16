@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * collection of method for ModuleAdaption.
+ *
+ */
 class ModuleAdaption {
 
     private static final Log LOG = new Log(ModuleAdaption.class.toString());
