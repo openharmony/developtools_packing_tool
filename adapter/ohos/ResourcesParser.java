@@ -46,6 +46,7 @@ public class ResourcesParser {
     private static final String MCC_CONJUNCTION = "_";
     private static final String BASE = "base";
     private static final int CHAR_LENGTH = 1;
+    private static final String EMPTY_STRING = "";
     private enum ResType {
         Values(0, "Values"),
         Animator(1, "Animator"),
@@ -216,7 +217,7 @@ public class ResourcesParser {
         }
 
         List<String> result = getResource(resourceId, data);
-        if (result != null && result.size() > 0 && result.get(0) != null && !"".equals(result.get(0))) {
+        if (result != null && result.size() > 0 && result.get(0) != null && !EMPTY_STRING.equals(result.get(0))) {
             resourceIdValue = result.get(0).substring(0, result.get(0).length() - 1);
         }
         return resourceIdValue;
@@ -237,7 +238,7 @@ public class ResourcesParser {
             return resourceIdValue;
         }
         resourceIdValue = getBaseResource(resourceId, data);
-        if (resourceIdValue != null && !"".equals(resourceIdValue)) {
+        if (resourceIdValue != null && !EMPTY_STRING.equals(resourceIdValue)) {
             resourceIdValue = resourceIdValue.substring(0, resourceIdValue.length() - 1);
         }
         return resourceIdValue;
@@ -534,7 +535,7 @@ public class ResourcesParser {
             KeyParam param = configIndex.params[i];
             if (param.keyType == ConfigType.Language.ordinal() || param.keyType == ConfigType.Region.ordinal()
                     || param.keyType == ConfigType.Script.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(parseAscii(param.value));
                 } else {
                     if (lastKeyType == ConfigType.Language.ordinal() ||
@@ -546,13 +547,13 @@ public class ResourcesParser {
                 }
                 lastKeyType = param.keyType;
             } else if (param.keyType == ConfigType.Resolution.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(Resolution.getType(param.value));
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(Resolution.getType(param.value));
                 }
             } else if (param.keyType == ConfigType.Direction.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(param.value == 0 ? VERTICAL : HORIZONTAL);
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? VERTICAL : HORIZONTAL);
@@ -570,20 +571,20 @@ public class ResourcesParser {
                     configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? DARK : LIGHT);
                 }
             } else if (param.keyType == ConfigType.MCC.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(MCC).append(String.valueOf(param.value));
                 } else {
                     configClass.append(MCC_CONJUNCTION).append(MCC).append(String.valueOf(param.value));
                 }
             } else if (param.keyType == ConfigType.MNC.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(MNC).append(fillUpZero(String.valueOf(param.value), 3));
                 } else {
                     configClass.append(MCC_CONJUNCTION).append(MNC).append(fillUpZero(String.valueOf(param.value), 3));
                 }
             }
         }
-        if (configClass.toString().equals("")) {
+        if (EMPTY_STRING.equals(configClass.toString())) {
             configClass = new StringBuilder(BASE);
         }
         return configClass.toString();
