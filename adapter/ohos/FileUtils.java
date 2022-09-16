@@ -517,7 +517,7 @@ class FileUtils {
         if (!jsonOptional.isPresent()) {
             return Optional.empty();
         }
-        String jsonStr = jsonOptional.get().replaceAll("\r\n|\r|\n", "");
+        String jsonStr = jsonOptional.get().replaceAll(LINE_BREAK, "");
         return Optional.of(getBundleName(jsonStr));
     }
 
