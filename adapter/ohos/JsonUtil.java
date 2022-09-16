@@ -85,7 +85,7 @@ public class JsonUtil {
         for (int i = 0; i < jsonListSize; i++) {
             JSONObject tmpObj = jsonList.getJSONObject(i);
             String deviceTypes = getJsonString(tmpObj, DEVICE_TYPE);
-            if (deviceTypes == null || "".equals(deviceTypes)) {
+            if (deviceTypes == null || EMPTY.equals(deviceTypes)) {
                 deviceTypes = getJsonString(tmpObj, DEVICE_TYPE_NEW);
             }
             if (deviceTypes != null && deviceTypes.toLowerCase(Locale.ENGLISH).contains(
@@ -93,12 +93,12 @@ public class JsonUtil {
                 PackInfo packInfo = new PackInfo();
                 packInfo.name = getJsonString(tmpObj, NAME);
                 packInfo.moduleType = getJsonString(tmpObj, MODULE_TYPE);
-                if (packInfo.moduleType == null || "".equals(packInfo.moduleType)) {
+                if (packInfo.moduleType == null || EMPTY.equals(packInfo.moduleType)) {
                     packInfo.moduleType = getJsonString(tmpObj, MODULE_TYPE_NEW);
                 }
                 packInfo.deviceType = JSONArray.parseArray(deviceTypes, String.class);
                 String deliveryWithInstall = getJsonString(tmpObj, INSTALL_FLAG);
-                if (deliveryWithInstall == null || "".equals(deliveryWithInstall)) {
+                if (deliveryWithInstall == null || EMPTY.equals(deliveryWithInstall)) {
                     deliveryWithInstall = getJsonString(tmpObj, INSTALL_FLAG_NEW);
                 }
                 packInfo.deliveryWithInstall = Boolean.parseBoolean(deliveryWithInstall);
