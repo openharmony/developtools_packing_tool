@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * collection of HQF verify info.
+ */
 class HapVerifyInfo {
     /**
      * Indicates the bundleName of module.
