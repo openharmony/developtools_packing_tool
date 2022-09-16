@@ -44,7 +44,7 @@ public class DistroFilter {
      * Indicates the DistroFilter info CountryCode
      */
     public CountryCode countryCode = null;
-    
+
     /**
      * dump distroFilter message.
      *
