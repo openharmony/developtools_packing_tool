@@ -425,23 +425,17 @@ public class CompressVerify {
             LOG.error("Error: must input patch.json file when pack hqf file.");
             return false;
         }
-        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, PATCH_PROFILE)) {
-            LOG.error("Error: input patch.json is invalid when pack hqf file");
+        if (utility.getEtsPath().isEmpty() || !isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
+            LOG.error("Error: must input valid ets path when pack hqf file.");
             return false;
         }
-        if (utility.getLibPath().isEmpty() && utility.getAbcPath().isEmpty()) {
-            LOG.error("Error: lib path and abc path are empty!");
+        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, PATCH_PROFILE)) {
+            LOG.error("Error: input patch.json is invalid when pack hqf file");
             return false;
         }
         if (!utility.getLibPath().isEmpty()) {
             if (!isPathValid(utility.getLibPath(), TYPE_DIR, null)) {
                 LOG.error("Error: input lib path is invalid when pack hqf file");
-                return false;
-            }
-        }
-        if (!utility.getAbcPath().isEmpty()) {
-            if (!compatibleProcess(utility, utility.getAbcPath(), utility.getABCList(), ABC_SUFFIX)) {
-                LOG.error("CompressVerify::isVerifyValidInMultiAppMode abc list is invalid!");
                 return false;
             }
         }
