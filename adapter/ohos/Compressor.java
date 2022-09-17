@@ -2067,9 +2067,9 @@ public class Compressor {
      */
     private void compressHQFMode(Utility utility) throws BundleException {
         pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
-        List<String> abcList = utility.getABCList();
-        for (String adbFile : abcList) {
-            pathToFile(utility, adbFile, NULL_DIR_NAME, false);
+
+        if (!utility.getEtsPath().isEmpty()) {
+            pathToFile(utility, utility.getEtsPath(), ETS_PATH, false);
         }
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, false);
