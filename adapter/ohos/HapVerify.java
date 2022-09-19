@@ -448,10 +448,10 @@ class HapVerify {
                 return false;
             }
             List<HapVerifyInfo> entryHaps = deviceHap.get(device);
-            if (!EMPTY_STRING.equals(featureHap.getDistroFilter().dump())) {
+            if (!checkFeatureDistroFilter(featureHap, entryHaps)) {
                 LOG.warning("Warning: " + featureHap.getModuleName() +
                         " distroFilter has not covered by entry!");
-                if (!featureHap.getDistroFilter().dump().equals(EMPTY_STRING)) {
+                if (!EMPTY_STRING.equals(featureHap.getDistroFilter().dump())) {
                     LOG.warning("Warning: " + featureHap.getModuleName() + " has " +
                             featureHap.getDistroFilter().dump());
                 }
