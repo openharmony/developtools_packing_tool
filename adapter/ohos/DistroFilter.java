@@ -45,6 +45,11 @@ public class DistroFilter {
      */
     public CountryCode countryCode = null;
 
+    /**
+     * dump distroFilter message.
+     *
+     * @return distroFilter dump string
+     */
     public String dump() {
         String dumpStr = "";
         if (apiVersion == null && screenShape == null && screenDensity == null
