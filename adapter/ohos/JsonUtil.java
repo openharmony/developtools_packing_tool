@@ -1277,7 +1277,7 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
-            if (extensionAbilityInfo.type.equals(FORM)) {
+            if (FORM.equals(extensionAbilityInfo.type)) {
                 for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
                 }
@@ -1793,10 +1793,10 @@ public class JsonUtil {
         String serviceProviderAbility = parseFAServiceProviderAbility(moduleJson, abilityInfos);
         for (AbilityInfo abilityInfo : abilityInfos) {
             if (!abilityInfo.formInfos.isEmpty()) {
-                if (abilityInfo.type.equals(SERVICE)) {
+                if (SERVICE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, serviceProviderAbility);
                 }
-                if (abilityInfo.type.equals(PAGE)) {
+                if (PAGE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, abilityInfo.name);
                 }
                 hapInfo.formInfos.addAll(abilityInfo.formInfos);
@@ -1841,7 +1841,7 @@ public class JsonUtil {
             }
         }
         for (AbilityInfo abilityInfo : abilityInfos) {
-            if (abilityInfo.type.equals(PAGE)) {
+            if (PAGE.equals(abilityInfo.type)) {
                 return abilityInfo.name;
             }
         }
