@@ -731,7 +731,7 @@ class ModuleJsonUtil {
         }
         List<String> deviceTypes = new ArrayList<>();
         String type = moduleObj.getString(TYPE);
-        if (type != null && type.equals(ENTRY)) {
+        if (type != null && ENTRY.equals(type)) {
             deviceTypes = getDeviceTypesFromStageModule(moduleObj);
         }
         
