@@ -121,7 +121,7 @@ public class Uncompress {
      * @param utility common data
      */
     static void unpackageHapMode(Utility utility) throws BundleException {
-        if (!utility.getMode().equals(Utility.MODE_HAP)) {
+        if (!Utility.MODE_HAP.equals(utility.getMode())) {
             throw new BundleException("Uncompress::unpackageHapMode input wrong unpack mode");
         }
         try {
