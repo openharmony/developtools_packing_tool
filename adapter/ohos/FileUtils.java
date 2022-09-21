@@ -51,7 +51,6 @@ class FileUtils {
     private static final String SHA256 = "SHA-256";
     private static final String BUNDLE_NAME = "\"bundleName\":";
     private static final char QUATATION = '\"';
-    private static final String LINE_BREAK = "\r\n|\r|\n";
 
     /**
      * generate fileData byte stream
@@ -535,7 +534,7 @@ class FileUtils {
         if (!jsonOptional.isPresent()) {
             return Optional.empty();
         }
-        String jsonStr = jsonOptional.get().replaceAll(LINE_BREAK, "");
+        String jsonStr = jsonOptional.get().replaceAll(System.getProperty("line.separator"), "");
         return Optional.of(getBundleName(jsonStr));
     }
 
