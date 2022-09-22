@@ -47,6 +47,7 @@ public class ResourcesParser {
     private static final String BASE = "base";
     private static final int CHAR_LENGTH = 1;
     private static final String EMPTY_STRING = "";
+
     private enum ResType {
         Values(0, "Values"),
         Animator(1, "Animator"),
@@ -559,13 +560,13 @@ public class ResourcesParser {
                     configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? VERTICAL : HORIZONTAL);
                 }
             } else if (param.keyType == ConfigType.DeviceType.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(DeviceType.getType(param.value));
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(DeviceType.getType(param.value));
                 }
             } else if (param.keyType == ConfigType.LightMode.ordinal()) {
-                if (configClass.toString().equals("")) {
+                if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(param.value == 0 ? DARK : LIGHT);
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? DARK : LIGHT);

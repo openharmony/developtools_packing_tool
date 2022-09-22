@@ -60,7 +60,6 @@ public class JsonUtil {
     private static final String STRING_RESOURCE = "$string:";
     private static final String EMPTY = "";
 
-
     /**
      * parse hap list by device type
      *
