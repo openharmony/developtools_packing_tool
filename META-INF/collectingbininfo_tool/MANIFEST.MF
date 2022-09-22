@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: javac.py
-Class-Path: fastjson_utils_java.jar
+Class-Path: fastjson-1.2.83.jar
 Main-Class: ohos.CollectBinInfo
