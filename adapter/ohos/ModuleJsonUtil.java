@@ -15,9 +15,9 @@
 
 package ohos;
 
-import ohos.utils.fastjson.JSON;
-import ohos.utils.fastjson.JSONArray;
-import ohos.utils.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;

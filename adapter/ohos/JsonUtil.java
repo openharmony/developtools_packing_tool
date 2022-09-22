@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
 
-import ohos.utils.fastjson.JSON;
-import ohos.utils.fastjson.JSONObject;
-import ohos.utils.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * Json Util.
