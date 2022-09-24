@@ -21,9 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
 
-import ohos.utils.fastjson.JSON;
-import ohos.utils.fastjson.JSONObject;
-import ohos.utils.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 
 /**
  * Json Util.
@@ -85,7 +86,7 @@ public class JsonUtil {
         for (int i = 0; i < jsonListSize; i++) {
             JSONObject tmpObj = jsonList.getJSONObject(i);
             String deviceTypes = getJsonString(tmpObj, DEVICE_TYPE);
-            if (deviceTypes == null || "".equals(deviceTypes)) {
+            if (deviceTypes == null || EMPTY.equals(deviceTypes)) {
                 deviceTypes = getJsonString(tmpObj, DEVICE_TYPE_NEW);
             }
             if (deviceTypes != null && deviceTypes.toLowerCase(Locale.ENGLISH).contains(
@@ -93,12 +94,12 @@ public class JsonUtil {
                 PackInfo packInfo = new PackInfo();
                 packInfo.name = getJsonString(tmpObj, NAME);
                 packInfo.moduleType = getJsonString(tmpObj, MODULE_TYPE);
-                if (packInfo.moduleType == null || "".equals(packInfo.moduleType)) {
+                if (packInfo.moduleType == null || EMPTY.equals(packInfo.moduleType)) {
                     packInfo.moduleType = getJsonString(tmpObj, MODULE_TYPE_NEW);
                 }
                 packInfo.deviceType = JSONArray.parseArray(deviceTypes, String.class);
                 String deliveryWithInstall = getJsonString(tmpObj, INSTALL_FLAG);
-                if (deliveryWithInstall == null || "".equals(deliveryWithInstall)) {
+                if (deliveryWithInstall == null || EMPTY.equals(deliveryWithInstall)) {
                     deliveryWithInstall = getJsonString(tmpObj, INSTALL_FLAG_NEW);
                 }
                 packInfo.deliveryWithInstall = Boolean.parseBoolean(deliveryWithInstall);
@@ -124,39 +125,44 @@ public class JsonUtil {
             LOG.info("Uncompress::parseShellVersionInfoToAppInfo: is not a multi framewok bundle.");
             return false;
         }
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
+            if (jsonObject == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+                return false;
+            }
 
-        JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
-        if (jsonObject == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
-            return false;
-        }
+            JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
+            if (summaryJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+                return false;
+            }
+            JSONObject appJson = summaryJson.getJSONObject(APP);
+            if (appJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
+                return false;
+            }
+            JSONObject versionJson = appJson.getJSONObject(VERSION);
+            if (versionJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
+                return false;
+            }
 
-        JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
-        if (summaryJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
-            return false;
+            if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
+                return false;
+            }
+            appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
+            appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
+            return true;
+        } catch (JSONException msg) {
+            LOG.error("parseShellVersionInfoToAppInfo exception");
+            throw new BundleException("parseShellVersionInfoToAppInfo exception");
         }
-        JSONObject appJson = summaryJson.getJSONObject(APP);
-        if (appJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
-            return false;
-        }
-        JSONObject versionJson = appJson.getJSONObject(VERSION);
-        if (versionJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
-            return false;
-        }
-
-        if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
-            return false;
-        }
-        appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
-        appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
-        return true;
     }
 
-    private static void parseDeviceTypeToHapInfo(String packInfoJsonStr, HapInfo hapInfo, String hapName) {
+    private static void parseDeviceTypeToHapInfo(
+            String packInfoJsonStr, HapInfo hapInfo, String hapName) throws BundleException {
         LOG.info("Uncompress::parseDeviceTypeToHapInfo: begin");
         JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
         if (jsonObject == null || !jsonObject.containsKey("packages")) {
@@ -1018,7 +1024,8 @@ public class JsonUtil {
      * @param profileJsons is the profile map
      * @return the pages result
      */
-    static List<String> parseModulePages(JSONObject moduleJson, HashMap<String, String> profileJsons)  {
+    static List<String> parseModulePages(
+            JSONObject moduleJson, HashMap<String, String> profileJsons) throws BundleException {
         List<String> pages = new ArrayList<>();
         String pageFile = getJsonString(moduleJson, "pages");
         pageFile = pageFile.replace(PROFILE, "");
@@ -1277,8 +1284,8 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
-            if (extensionAbilityInfo.type.equals(FORM)) {
-                for (AbilityFormInfo formInfo : formInfos) {
+                if (FORM.equals(extensionAbilityInfo.type)) {
+                        for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
                 }
             }
@@ -1793,10 +1800,10 @@ public class JsonUtil {
         String serviceProviderAbility = parseFAServiceProviderAbility(moduleJson, abilityInfos);
         for (AbilityInfo abilityInfo : abilityInfos) {
             if (!abilityInfo.formInfos.isEmpty()) {
-                if (abilityInfo.type.equals(SERVICE)) {
+                if (SERVICE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, serviceProviderAbility);
                 }
-                if (abilityInfo.type.equals(PAGE)) {
+                if (PAGE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, abilityInfo.name);
                 }
                 hapInfo.formInfos.addAll(abilityInfo.formInfos);
@@ -1841,7 +1848,7 @@ public class JsonUtil {
             }
         }
         for (AbilityInfo abilityInfo : abilityInfos) {
-            if (abilityInfo.type.equals(PAGE)) {
+            if (PAGE.equals(abilityInfo.type)) {
                 return abilityInfo.name;
             }
         }
