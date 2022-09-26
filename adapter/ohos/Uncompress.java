@@ -634,7 +634,7 @@ public class Uncompress {
                     unzip(utility, filePath, destDirPath, APK_SUFFIX);
                     String[] temp = filePath.replace("\\", "/").split("/");
                     String hapName = "";
-                    if (temp.length() > 0) {
+                    if (temp.length > 0) {
                         hapName = temp[temp.length - 1];
                     }
                     repackHap(filePath, destDirPath, hapName, utility.getUnpackApk());
