@@ -82,7 +82,7 @@ public class BinaryTool {
     /**
      * write package Info in binary file
      *
-     * @param filePath the file path which need to be writen
+     * @param filePath the file path which need to be written
      * @param appStream file stream
      * @return true: success, false: fail
      */
