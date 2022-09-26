@@ -102,15 +102,15 @@ public class ConvertHapToBin {
         String projectPath = "";
         int count = 0;
         for (String para : args) {
-            if (para.equals(HAP_PATH) && count < args.length - 1) {
+            if (HAP_PATH.equals(para) && count < args.length - 1) {
                 hapPath = args[count + 1];
             }
 
-            if (para.equals(PROJECT_PATH) && count < args.length - 1) {
+            if (PROJECT_PATH.equals(para) && count < args.length - 1) {
                 projectPath = args[count + 1];
             }
 
-            if (para.equals(BIN_PATH) && count < args.length - 1) {
+            if (BIN_PATH.equals(para) && count < args.length - 1) {
                 binPath = args[count + 1];
             }
             count++;

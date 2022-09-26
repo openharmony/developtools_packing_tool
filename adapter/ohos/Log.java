@@ -62,6 +62,11 @@ public class Log {
         log.warning(LogType.buildTag(LogType.ERROR) + msg);
     }
 
+    /**
+     * print log in WARNING level.
+     *
+     * @param msg log's content
+     */
     public void warning(String msg) {
         log.warning(LogType.buildTag(LogType.WARNING) + msg);
     }

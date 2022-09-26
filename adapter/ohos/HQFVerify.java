@@ -14,10 +14,13 @@
  */
 package ohos;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Collections of method for HQF verify.
+ *
+ */
 class HQFVerify {
     private static final Log LOG = new Log(HQFVerify.class.toString());
 
@@ -27,7 +30,7 @@ class HQFVerify {
      * @param hqfVerifyInfos is the collection of hqf infos
      * @return the result
      */
-    public static boolean checkHQFIsValid(List<HQFVerifyInfo> hqfVerifyInfos) {
+    public static boolean checkHQFIsValid(List<HQFInfo> hqfVerifyInfos) {
         // check app fields
         if (hqfVerifyInfos.isEmpty()) {
             LOG.error("Error: input hqf file is empty!");
@@ -50,13 +53,13 @@ class HQFVerify {
      * @param hqfVerifyInfos is the collection of hqf infos
      * @return the result
      */
-    private static boolean checkAppFields(List<HQFVerifyInfo> hqfVerifyInfos) {
+    private static boolean checkAppFields(List<HQFInfo> hqfVerifyInfos) {
         String bundleName = hqfVerifyInfos.get(0).getBundleName();
         int versionCode = hqfVerifyInfos.get(0).getVersionCode();
         String versionName = hqfVerifyInfos.get(0).getVersionName();
         int patchVersionCode = hqfVerifyInfos.get(0).getPatchVersionCode();
         String patchVersionName = hqfVerifyInfos.get(0).getPatchVersionName();
-        for (HQFVerifyInfo hqfVerifyInfo : hqfVerifyInfos) {
+        for (HQFInfo hqfVerifyInfo : hqfVerifyInfos) {
             if (bundleName == null || !bundleName.equals(hqfVerifyInfo.getBundleName())) {
                 LOG.error("Error: input hqf file has different bundleName!");
                 return false;
@@ -87,7 +90,7 @@ class HQFVerify {
      * @param hqfVerifyInfos is the collection of hqf infos
      * @return the result
      */
-    private static boolean checkModuleIsValid(List<HQFVerifyInfo> hqfVerifyInfos) {
+    private static boolean checkModuleIsValid(List<HQFInfo> hqfVerifyInfos) {
         for (int i = 0; i < hqfVerifyInfos.size(); ++i) {
             for (int j = i + 1; j < hqfVerifyInfos.size(); ++j) {
                 if (checkModuleIsDuplicated(hqfVerifyInfos.get(i), hqfVerifyInfos.get(j))) {
@@ -107,7 +110,7 @@ class HQFVerify {
      * @param hqfVerifyInfoRight is another HQFVerifyInfo
      * @return the result
      */
-    private static boolean checkModuleIsDuplicated(HQFVerifyInfo hqfVerifyInfoLeft, HQFVerifyInfo hqfVerifyInfoRight) {
+    private static boolean checkModuleIsDuplicated(HQFInfo hqfVerifyInfoLeft, HQFInfo hqfVerifyInfoRight) {
         if (!hqfVerifyInfoLeft.getModuleName().equals(hqfVerifyInfoRight.getModuleName())) {
             return false;
         }

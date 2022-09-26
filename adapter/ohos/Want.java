@@ -15,6 +15,9 @@
 
 package ohos;
 
+/**
+ * collection of members of want.
+ */
 public class Want {
     /**
      * Indicates the bundle name of module Shortcut.

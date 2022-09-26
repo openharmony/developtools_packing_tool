@@ -15,7 +15,19 @@
 
 package ohos;
 
-import java.io.*;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -32,14 +44,15 @@ import java.security.MessageDigest;
  */
 class FileUtils {
     private static final int BUFFER_SIZE = 1024;
+    private static final int SHA256_BUFFER_SIZE = 10240;
     private static final Log LOG = new Log(FileUtils.class.toString());
     private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final String MODULE_JSON = "module.json";
     private static final String CONFIG_JSON = "config.json";
     private static final String SHA256 = "SHA-256";
-    private static final int SHA256_BUFFER_SIZE = 10240;
-    public static String bundleName = "\"bundleName\":";
-    public static char quotation = '\"';
+    private static final String BUNDLE_NAME = "\"bundleName\":";
+    private static final char QUATATION = '\"';
+    private static final String LINE_BREAK = "\r\n|\r|\n";
 
     /**
      * generate fileData byte stream
@@ -507,38 +520,96 @@ class FileUtils {
         return hexString.toString();
     }
 
+    /**
+     * get bundle name for file content
+     *
+     * @param jsonFileName is file name in input directory
+     * @param filePath is the input directory
+     */
     public static Optional<String> getBundleNameFromFileContent(final String jsonFileName, final String filePath) {
         Optional<String> jsonFilePath = searchFile(jsonFileName, filePath);
         if (!jsonFilePath.isPresent()) {
             return Optional.empty();
         }
 
-        Optional<String> jsonOptional= getFileContent(jsonFilePath.get());
+        Optional<String> jsonOptional = getFileContent(jsonFilePath.get());
         if (!jsonOptional.isPresent()) {
             return Optional.empty();
         }
-        String jsonStr = jsonOptional.get().replaceAll("\r\n|\r|\n", "");
+        String jsonStr = jsonOptional.get().replaceAll(LINE_BREAK, "");
         return Optional.of(getBundleName(jsonStr));
     }
 
     private static String getBundleName(String jsonStr) {
         String realStr = jsonStr.replaceAll(" ", "");
-        if (!realStr.contains(bundleName)) {
+        if (!realStr.contains(BUNDLE_NAME)) {
             return "";
         }
-        int index = realStr.indexOf(bundleName);
+        int index = realStr.indexOf(BUNDLE_NAME);
         String res = "";
-        index += bundleName.length();
+        index += BUNDLE_NAME.length();
         int left = index;
-        while (realStr.charAt(left) != quotation) {
+        while (realStr.charAt(left) != QUATATION) {
             ++left;
         }
         ++left;
         int right = left;
-        while (realStr.charAt(right) != quotation) {
+        while (realStr.charAt(right) != QUATATION) {
             ++right;
         }
         res = realStr.substring(left, right);
         return res;
+    }
+
+    /**
+     * unzip file
+     *
+     * @param zipFilePath is the zipFilePath
+     * @param destDirPath is the output dest path
+     */
+    public static boolean unzipFile(String zipFilePath, String destDirPath) {
+        boolean success = false;
+        File destDir = new File(destDirPath);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        ZipInputStream zipInputStream = null;
+        try {
+            zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath));
+            ZipEntry entry = zipInputStream.getNextEntry();
+            while (entry != null) {
+                String filePath = destDirPath + File.separator + entry.getName();
+                if (!entry.isDirectory()) {
+                    extractFile(zipInputStream, filePath);
+                } else {
+                    File dir = new File(filePath);
+                    dir.mkdirs();
+                }
+                zipInputStream.closeEntry();
+                entry = zipInputStream.getNextEntry();
+            }
+            success = true;
+        } catch (IOException e) {
+            LOG.error("FileUtil::unzipFile failed, IOException is " + e.getMessage());
+        } finally {
+            Utility.closeStream(zipInputStream);
+        }
+        return success;
+    }
+
+    private static void extractFile(ZipInputStream zipInputStream, String filePath) {
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath));
+            byte[] bytes = new byte[BUFFER_SIZE];
+            int readLength = 0;
+            while ((readLength = zipInputStream.read(bytes)) != -1) {
+                bufferedOutputStream.write(bytes, 0, readLength);
+            }
+        } catch(IOException e) {
+            LOG.error("FileUtil::extractFile failed, IOException is " + e.getMessage());
+        } finally {
+            Utility.closeStream(bufferedOutputStream);
+        }
     }
 }

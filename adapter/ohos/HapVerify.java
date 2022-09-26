@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * check hap is verify.
+ */
 class HapVerify {
     private static final String INCLUDE = "include";
     private static final String EXCLUDE = "exclude";
@@ -159,11 +162,11 @@ class HapVerify {
                         + hapVerifyInfos.get(i).getDeviceType());
                     LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
                         + hapVerifyInfos.get(j).getDeviceType());
-                    if (!hapVerifyInfos.get(i).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
                         LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has " +
                             hapVerifyInfos.get(i).getDistroFilter().dump());
                     }
-                    if (!hapVerifyInfos.get(j).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
                         LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has " +
                             hapVerifyInfos.get(i).getDistroFilter().dump());
                     }
@@ -258,9 +261,9 @@ class HapVerify {
         List<HapVerifyInfo> entryHapVerifyInfos = new ArrayList<>();
         List<HapVerifyInfo> featureHapVerifyInfos = new ArrayList<>();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
-            if (hapVerifyInfo.getModuleType().equals(ENTRY)) {
+            if (ENTRY.equals(hapVerifyInfo.getModuleType())) {
                 entryHapVerifyInfos.add(hapVerifyInfo);
-            } else if (hapVerifyInfo.getModuleType().equals(FEATURE)) {
+            } else if (FEATURE.equals(hapVerifyInfo.getModuleType())) {
                 featureHapVerifyInfos.add(hapVerifyInfo);
             } else {
                 LOG.warning("Input wrong type module");
@@ -279,11 +282,11 @@ class HapVerify {
                         + entryHapVerifyInfos.get(i).getDeviceType());
                     LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " deviceType is "
                         + entryHapVerifyInfos.get(j).getDeviceType());
-                    if (!entryHapVerifyInfos.get(i).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(i).getDistroFilter().dump())) {
                         LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() + " "
                             + entryHapVerifyInfos.get(i).getDistroFilter().dump());
                     }
-                    if (!entryHapVerifyInfos.get(j).getDistroFilter().dump().equals(EMPTY_STRING)) {
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
                         LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " "
                             + entryHapVerifyInfos.get(j).getDistroFilter().dump());
                     }
@@ -386,19 +389,19 @@ class HapVerify {
             LOG.error("HapVerify::checkPolicyValueDisjoint value should not empty!");
             throw new BundleException("HapVerify::checkPolicyValueDisjoint value should not empty!");
         }
-        if (policyLeft.equals(EXCLUDE) && policyRight.equals(INCLUDE)) {
+        if (EXCLUDE.equals(policyLeft) && INCLUDE.equals(policyRight)) {
             if (valueRight.isEmpty() || valueLeft.containsAll(valueRight)) {
                 return true;
             }
-        } else if (policyLeft.equals(INCLUDE) && policyRight.equals(INCLUDE)) {
+        } else if (INCLUDE.equals(policyLeft) && INCLUDE.equals(policyRight)) {
             if (Collections.disjoint(valueLeft, valueRight)) {
                 return true;
             }
-        } else if (policyLeft.equals(INCLUDE) && policyRight.equals(EXCLUDE)) {
+        } else if (INCLUDE.equals(policyLeft) && EXCLUDE.equals(policyRight)) {
             if (valueLeft.isEmpty() || valueRight.containsAll(valueLeft)) {
                 return true;
             }
-        } else if (policyLeft.equals(EXCLUDE) && policyRight.equals(EXCLUDE)) {
+        } else if (EXCLUDE.equals(policyLeft) && EXCLUDE.equals(policyRight)) {
             return false;
         } else {
             LOG.error("HapVerify::checkPolicyValueDisjoint input policy is invalid!");
@@ -448,7 +451,7 @@ class HapVerify {
             if (!checkFeatureDistroFilter(featureHap, entryHaps)) {
                 LOG.warning("Warning: " + featureHap.getModuleName() +
                         " distroFilter has not covered by entry!");
-                if (!featureHap.getDistroFilter().dump().equals(EMPTY_STRING)) {
+                if (!EMPTY_STRING.equals(featureHap.getDistroFilter().dump())) {
                     LOG.warning("Warning: " + featureHap.getModuleName() + " has " +
                             featureHap.getDistroFilter().dump());
                 }
@@ -522,13 +525,13 @@ class HapVerify {
                 LOG.error("HapVerify::checkApiVersionCovered input none policy!");
                 return false;
             }
-            if (hapVerifyInfo.getDistroFilter().apiVersion.policy.equals(INCLUDE)) {
+            if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().apiVersion.policy)) {
                 if (include == null) {
                     include = new ArrayList<>();
                 }
                 // take collection of two include value
                 include.addAll(hapVerifyInfo.getDistroFilter().apiVersion.value);
-            } else if (hapVerifyInfo.getDistroFilter().apiVersion.policy.equals(EXCLUDE)) {
+            } else if (EXCLUDE.equals(hapVerifyInfo.getDistroFilter().apiVersion.policy)) {
                 if (exclude == null) {
                     exclude = new ArrayList<>();
                 }
@@ -572,12 +575,12 @@ class HapVerify {
                 LOG.error("HapVerify::checkScreenShapeCovered input none policy!");
                 return false;
             }
-            if (hapVerifyInfo.getDistroFilter().screenShape.policy.equals(INCLUDE)) {
+            if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().screenShape.policy)) {
                 if (include == null) {
                     include = new ArrayList<>();
                 }
                 include.addAll(hapVerifyInfo.getDistroFilter().screenShape.value);
-            } else if (hapVerifyInfo.getDistroFilter().screenShape.policy.equals(EXCLUDE)) {
+            } else if (EXCLUDE.equals(hapVerifyInfo.getDistroFilter().screenShape.policy)) {
                 if (exclude == null) {
                     exclude = new ArrayList<>();
                 }
@@ -619,12 +622,12 @@ class HapVerify {
                 LOG.error("HapVerify::checkScreenWindowCovered input none policy!");
                 return false;
             }
-            if (hapVerifyInfo.getDistroFilter().screenWindow.policy.equals(INCLUDE)) {
+            if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().screenWindow.policy)) {
                 if (include == null) {
                     include = new ArrayList<>();
                 }
                 include.addAll(hapVerifyInfo.getDistroFilter().screenWindow.value);
-            } else if (hapVerifyInfo.getDistroFilter().screenWindow.policy.equals(EXCLUDE)) {
+            } else if (EXCLUDE.equals(hapVerifyInfo.getDistroFilter().screenWindow.policy)) {
                 if (exclude == null) {
                     exclude = new ArrayList<>();
                 }
@@ -666,12 +669,12 @@ class HapVerify {
                 LOG.error("HapVerify::checkScreenDensityCovered input none policy!");
                 return false;
             }
-            if (hapVerifyInfo.getDistroFilter().screenDensity.policy.equals(INCLUDE)) {
+            if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().screenDensity.policy)) {
                 if (include == null) {
                     include = new ArrayList<>();
                 }
                 include.addAll(hapVerifyInfo.getDistroFilter().screenDensity.value);
-            } else if (hapVerifyInfo.getDistroFilter().screenDensity.policy.equals(EXCLUDE)) {
+            } else if (EXCLUDE.equals(hapVerifyInfo.getDistroFilter().screenDensity.policy)) {
                 if (exclude == null) {
                     exclude = new ArrayList<>();
                 }
@@ -713,12 +716,12 @@ class HapVerify {
                 LOG.error("HapVerify::checkCountryCodeCovered input none policy!");
                 return false;
             }
-            if (hapVerifyInfo.getDistroFilter().countryCode.policy.equals(INCLUDE)) {
+            if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().countryCode.policy)) {
                 if (include == null) {
                     include = new ArrayList<>();
                 }
                 include.addAll(hapVerifyInfo.getDistroFilter().countryCode.value);
-            } else if (hapVerifyInfo.getDistroFilter().countryCode.policy.equals(EXCLUDE)) {
+            } else if (EXCLUDE.equals(hapVerifyInfo.getDistroFilter().countryCode.policy)) {
                 if (exclude == null) {
                     exclude = new ArrayList<>();
                 }
@@ -768,9 +771,9 @@ class HapVerify {
             LOG.error("checkPolicyValueCovered::failed value is null!");
             return false;
         }
-        if (policy.equals(EXCLUDE)) {
+        if (EXCLUDE.equals(policy)) {
             return checkCoveredExcludePolicyValue(value, include, exclude);
-        } else if (policy.equals(INCLUDE)) {
+        } else if (INCLUDE.equals(policy)) {
             return checkCoveredIncludePolicyValue(value, include, exclude);
         } else {
             return false;
