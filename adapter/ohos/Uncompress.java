@@ -633,7 +633,10 @@ public class Uncompress {
                     dataTransfer(zipFile, entry, destFile);
                     unzip(utility, filePath, destDirPath, APK_SUFFIX);
                     String[] temp = filePath.replace("\\", "/").split("/");
-                    String hapName = temp[temp.length - 1];
+                    String hapName;
+                    if (temp.length > 0) {
+                        hapName = temp[temp.length - 1];
+                    }
                     repackHap(filePath, destDirPath, hapName, utility.getUnpackApk());
                 } else {
                     dataTransfer(zipFile, entry, destFile);
