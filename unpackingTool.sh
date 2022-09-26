@@ -15,6 +15,7 @@ set -e
 root_path=$1
 unpack_build_out_jar_path=$2
 unpack_build_out_path=$3
+big_version=$4
 final_path=$(pwd)
 echo $root_path
 echo $unpack_build_out_jar_path
@@ -23,10 +24,10 @@ echo $final_path
 
 jar_dir="jar"
 unpack_jar_file="app_unpacking_tool.jar"
-fastjson_jar_file="fastjson_utils_java.jar"
+fastjson_jar_file="fastjson-1.2.83.jar"
 jar_directory="$root_path/$jar_dir"
 unpack_jar_path="$root_path/$jar_dir/$unpack_jar_file"
-fastjson_jar_path="$root_path/jar/fastjson_utils_java.jar"
+fastjson_jar_path="$root_path/jar/fastjson-1.2.83.jar"
 manifest_path="$root_path/META-INF/unpacking_tool/MANIFEST.MF"
 out_dir="$root_path/out/production/unpacking_tool"
 if [ -d "$out_dir/ohos" ]
@@ -95,6 +96,8 @@ declare -a unpack_class=(
             "DefinePermission.java"
             "ResourceIndexResult.java"
             "FileUtils.java"
+            "HQFInfo.java"
+            "APPQFResult.java"
             )
 unpack_class_length=${#unpack_class[@]}
 for ((i=0; i<${unpack_class_length};++i))
@@ -102,8 +105,14 @@ do
   java_collection="${java_collection} ${root_path}/adapter/ohos/${unpack_class[$i]}"
 done
 
-compile_command="javac --release 8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
-eval ${compile_command}
+if [ "$big_version" == "true" ]
+    then
+        compile_command="javac --release 8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
+        eval ${compile_command}
+    else
+        compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
+        eval ${compile_command}
+fi
 
 cd $out_dir
 product_unpack_jar_command="jar -cvfm $unpack_jar_path $manifest_path ./ohos"

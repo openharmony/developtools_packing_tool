@@ -23,7 +23,7 @@ echo ${final_path}
 
 jar_dir="jar"
 pack_jar_file="app_packing_tool.jar"
-fastjson_jar_file="fastjson_utils_java.jar"
+fastjson_jar_file="fastjson-1.2.83.jar"
 jar_directory="$root_path/jar"
 pack_jar_path="$root_path/$jar_dir/$pack_jar_file"
 manifest_path="$root_path/META-INF/packing_tool/MANIFEST.MF"
@@ -37,7 +37,7 @@ if [ -d "$out_dir/ohos" ]
 fi
 
 jar_path="$root_path/jar"
-fastjson_jar_path="$root_path/jar/fastjson_utils_java.jar"
+fastjson_jar_path="$root_path/jar/fastjson-1.2.83.jar"
 java_suffix=".java"
 java_collection=""
 declare -a compile_class=(
@@ -64,7 +64,7 @@ declare -a compile_class=(
             "HapVerify"
             "HapVerifyInfo"
             "HQFVerify"
-            "HQFVerifyInfo"
+            "HQFInfo"
             )
 compile_class_length=${#compile_class[@]}
 for ((i=0; i<${compile_class_length};++i))
@@ -100,7 +100,7 @@ declare -a pack_class=(
             "HapVerify.class"
             "HapVerifyInfo.class"
             "HQFVerify.class"
-            "HQFVerifyInfo.class"
+            "HQFInfo.class"
 )
 pack_class_length=${#pack_class[@]}
 for ((i=0; i<${pack_class_length};++i))
@@ -113,6 +113,13 @@ eval ${product_pack_jar_command}
 
 # merge app_packing_tool.jar and fastjson
 temp_dir="$root_path/jar/temp"
+temp_two="2"
+if [ -d "$temp_dir" ]
+    then
+        temp_dir="$temp_dir$temp_two"
+    else
+        echo "$temp_dir not exit"
+fi
 mkdir $temp_dir
 cp $pack_jar_path "$temp_dir/$pack_jar_file"
 cp $fastjson_jar_path "$temp_dir/$fastjson_jar_file"
@@ -129,7 +136,7 @@ merge_pack_fast_jar_command="jar -cvfm $pack_jar_file $manifest_path -C $temp_di
 eval $merge_pack_fast_jar_command
 if [ -d "$temp_dir" ]
     then
-        rm -r $temp_dir
+        rm -rf $temp_dir
     else
         echo "$temp_dir not exit"
 fi

@@ -21,6 +21,7 @@ import java.util.List;
 
 import static ohos.Uncompress.getResourceFromHap;
 
+
 /**
  * bundle uncompress.
  * step1: parse arguments
@@ -83,6 +84,8 @@ public class UncompressEntrance {
      * Device type of fitnessBand.
      */
     public static final String DEVICE_TYPE_FITNESSBAND = "fitnessBand";
+
+    private static final String APPQF_SUFFIX = ".appqf";
 
     private static final int EXIT_STATUS_NORMAL = 0;
     private static final int EXIT_STATUS_EXCEPTION = 1;
@@ -348,13 +351,38 @@ public class UncompressEntrance {
     }
 
     /**
-     * Parse the hap.
+     * Parse the hap resource.
      *
      * @param hapPath Indicates the hap path.
      * @return Return the List<ResourceIndexResult> result of parseHap
      */
     public static List<ResourceIndexResult> parseResource(String hapPath) throws BundleException, IOException {
         return getResourceFromHap(hapPath);
+    }
+
+    /**
+     * Parse the appqf file.
+     *
+     * @param appqfPath Indicates the hap path.
+     * @return Return the List<ResourceIndexResult> result of parseHap
+     */
+    public static APPQFResult parseAPPQF(String appqfPath) {
+        APPQFResult result = new APPQFResult();
+        if (!appqfPath.endsWith(APPQF_SUFFIX)) {
+            LOG.error("UncompressEntrance::parseAPPQF Error, input wrong type APPQF file!");
+            result.setSuccess(false);
+        }
+        try {
+            result.setHqfInfoList(Uncompress.parseAPPQFFile(appqfPath));
+            result.setSuccess(true);
+        } catch (BundleException e) {
+            LOG.error("UncompressEntrance::parseAPPQF failed, read patch.json in APPQF file failed!");
+            result.setSuccess(false);
+        } catch (IOException e) {
+            LOG.error("UncompressEntrance::parseAPPQF failed, input APPQF file is invalid!");
+            result.setSuccess(false);
+        }
+        return result;
     }
 
     /**

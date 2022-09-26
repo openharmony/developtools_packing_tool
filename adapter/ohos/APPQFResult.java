@@ -15,28 +15,31 @@
 
 package ohos;
 
+import java.util.List;
+
 /**
- * collection of ResourceIndexResult member.
+ * parse result of appqf.
  */
-public class ResourceIndexResult {
+public class APPQFResult {
     /**
-     * Indicates the id of resource.
+     * indicates whether parse is success.
      */
-    public int id;
-    /**
-     * Indicates the type of resource.
-     */
-    public String type = "";
-    /**
-     * Indicates the name of resource.
-     */
-    public String name = "";
-    /**
-     * Indicates the value of resource.
-     */
-    public String value = "";
-    /**
-     * Indicates the resClass of resource.
-     */
-    public String configClass = "";
+    private boolean success = false;
+    private List<HQFInfo> hqfInfoList = null;
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public List<HQFInfo> getHqfInfoList() {
+        return hqfInfoList;
+    }
+
+    public void setHqfInfoList(List<HQFInfo> hqfInfoList) {
+        this.hqfInfoList = hqfInfoList;
+    }
 }

@@ -168,7 +168,6 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static ModuleApiVersion parseStageModuleApiVersion(String jsonString) throws BundleException {
-        ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         JSONObject jsonObject;
         try {
             jsonObject = JSON.parseObject(jsonString);
@@ -182,6 +181,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
         }
+        ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         if (appObj.containsKey(MIN_API_VERSION)) {
             moduleApiVersion.setCompatibleApiVersion(appObj.getIntValue(MIN_API_VERSION));
         }
@@ -202,7 +202,6 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
-        ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         JSONObject jsonObject;
         try {
             jsonObject = JSON.parseObject(jsonString);
@@ -219,6 +218,7 @@ class ModuleJsonUtil {
             throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
         }
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
+        ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         if (apiVersionObj.containsKey(COMPATIBLE)) {
             moduleApiVersion.setCompatibleApiVersion(apiVersionObj.getIntValue(COMPATIBLE));
         }
@@ -333,7 +333,6 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static String parseBundleName(String jsonString) throws BundleException {
-        String bundleName = "";
         JSONObject jsonObject;
         try {
             jsonObject = JSON.parseObject(jsonString);
@@ -347,6 +346,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
         }
+        String bundleName = "";
         if (appObject.containsKey(BUNDLENAME)) {
             bundleName = appObject.getString(BUNDLENAME);
         } else {
@@ -364,7 +364,6 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static String parseVendor(String jsonString) throws BundleException {
-        String vendor = "";
         JSONObject jsonObject;
         try {
             jsonObject = JSON.parseObject(jsonString);
@@ -378,6 +377,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
         }
+        String vendor = "";
         if (appObject.containsKey(VENDOR)) {
             vendor = appObject.getString(VENDOR);
         } else {
@@ -800,9 +800,10 @@ class ModuleJsonUtil {
         }
         List<String> deviceTypes = new ArrayList<>();
         String type = moduleObj.getString(TYPE);
-        if (type != null && ENTRY.equals(type)) {
+        if (type != null && type.equals(ENTRY)) {
             deviceTypes = getDeviceTypesFromStageModule(moduleObj);
         }
+
         return deviceTypes;
     }
 
@@ -927,13 +928,13 @@ class ModuleJsonUtil {
             String jsonString, HashMap<String, String> profileJson) throws BundleException {
         JSONObject jsonObject;
         try {
-            JSONObject jsonObject = JSON.parseObject(jsonString);
+            jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
-        JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
         if (moduleObj == null) {
             LOG.error("ModuleJsonUtil::parseModuleAllMetadata failed, module is null!");
             throw new BundleException("ModuleJsonUtil::parseModuleAllMetadata failed, module is null!");
@@ -987,9 +988,9 @@ class ModuleJsonUtil {
      */
     public static DistroFilter parseFADistroFilter(String jsonString) throws BundleException {
         DistroFilter distroFilter = new DistroFilter();
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
             if (jsonObj.containsKey(MODULE)) {
                 JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
                 if (moduleObj.containsKey(DISTROFILTER)) {
@@ -1011,9 +1012,9 @@ class ModuleJsonUtil {
      * @param jsonString is the json String of module.json or config.json
      */
     public static List<String> parseDeviceType(String jsonString) throws BundleException {
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1040,9 +1041,9 @@ class ModuleJsonUtil {
      * @return ability names
      */
     public static List<String> parseAbilityNames(String jsonString) throws BundleException {
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-           jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1070,9 +1071,9 @@ class ModuleJsonUtil {
      * @return extensionAbilityNames
      */
     public static List<String> parseExtensionAbilityName(String jsonString) throws BundleException {
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1103,9 +1104,9 @@ class ModuleJsonUtil {
      * @return is entry
      */
     public static String parseStageIsEntry(String jsonString) throws BundleException {
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1127,9 +1128,9 @@ class ModuleJsonUtil {
      * @return is entry
      */
     public static String parseFAIsEntry(String jsonString) throws BundleException {
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1154,10 +1155,9 @@ class ModuleJsonUtil {
      * @return dependencies
      */
     static List<String> parseDependencies(String jsonString) throws BundleException {
-        List<String> dependencies = new ArrayList<>();
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1168,6 +1168,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
             throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
         }
+        List<String> dependencies = new ArrayList<>();
         if (moduleObj.containsKey(DEPENDENCIES)) {
             dependencies = JSONObject.parseArray(getJsonString(moduleObj, DEPENDENCIES), String.class);
         }
@@ -1175,9 +1176,9 @@ class ModuleJsonUtil {
     }
 
     static boolean parseStageInstallation(String jsonString) throws BundleException {
-        JSONObject jsonObject;
+        JSONObject jsonObj;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed";
             LOG.error(errMsg);
@@ -1225,7 +1226,7 @@ class ModuleJsonUtil {
      * @param hqfPath is the file path of hqf file
      * @return HQFVerifyInfo
      */
-    static HQFVerifyInfo parseHQFInfo(String hqfPath) throws BundleException {
+    static HQFInfo parseHQFInfo(String hqfPath) throws BundleException {
         File hqfFile = new File(hqfPath);
         String patchJson = FileUtils.getJsonInZips(hqfFile, PATCH_JSOPN);
         return parsePatch(patchJson);
@@ -1237,8 +1238,7 @@ class ModuleJsonUtil {
      * @param jsonString is the file path of hqf file
      * @return HQFVerifyInfo
      */
-    static HQFVerifyInfo parsePatch(String jsonString) throws BundleException {
-        HQFVerifyInfo hqfVerifyInfo = new HQFVerifyInfo();
+    static HQFInfo parsePatch(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
             jsonObject = JSON.parseObject(jsonString);
@@ -1252,6 +1252,7 @@ class ModuleJsonUtil {
             LOG.error("Error: parsePatch failed, input patch.json is invalid, patch.json has no app!");
             throw new BundleException("Error: parsePatch failed, input patch.json is invalid!");
         }
+        HQFInfo hqfVerifyInfo = new HQFInfo();
         if (appObj.containsKey(BUNDLENAME)) {
             hqfVerifyInfo.setBundleName(appObj.getString(BUNDLENAME));
         }

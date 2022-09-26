@@ -1,5 +1,8 @@
 package ohos;
 
+/**
+ * Collection of members in ModuleApiVersion.
+ */
 class ModuleApiVersion {
     /**
      * Indicates the compatibleApiVersion of app.

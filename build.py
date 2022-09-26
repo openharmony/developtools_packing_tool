@@ -21,6 +21,7 @@ import os
 import sys
 import argparse
 import subprocess
+import re
 
 
 def main():
@@ -49,8 +50,18 @@ def main():
         raise Exception("compile haptobin java class failed!")
 
     # compile app_unpacking_tool.jar
+    version = subprocess.check_output(['javac', '-version'], stderr=subprocess.STDOUT)
+    version = version.decode('utf-8')
+    array = re.findall(r'\d+', version)
+    compatible_version = 8
+    big_version = ''
+    if int(array[0]) > compatible_version:
+        big_version = 'true'
+    else:
+        big_version = 'false'
+    
     unpack_tool_shell_path = os.path.join(root_dir, "unpackingTool.sh")
-    command_unpack = ['bash', unpack_tool_shell_path, root_dir, args.unpackOutput, args.outpath]
+    command_unpack = ['bash', unpack_tool_shell_path, root_dir, args.unpackOutput, args.outpath, big_version]
     child_unpack = subprocess.Popen(command_unpack, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     unpack_out, unpack_err = child_unpack.communicate(timeout=time_out)
     if child_unpack.returncode != 0:
