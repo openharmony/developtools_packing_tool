@@ -24,6 +24,7 @@ import java.util.Locale;
 import ohos.utils.fastjson.JSON;
 import ohos.utils.fastjson.JSONObject;
 import ohos.utils.fastjson.JSONArray;
+import ohos.utils.fastjson.JSONException;
 
 /**
  * Json Util.
@@ -59,6 +60,7 @@ public class JsonUtil {
     private static final String WHEN = "when";
     private static final String STRING_RESOURCE = "$string:";
     private static final String EMPTY = "";
+
 
     /**
      * parse hap list by device type
@@ -117,45 +119,51 @@ public class JsonUtil {
         return JSONArray.parseArray(packages, PackInfo.class);
     }
 
-    private static boolean parseShellVersionInfoToAppInfo(String packInfoJsonStr, AppInfo appInfo) {
+    private static boolean parseShellVersionInfoToAppInfo(
+            String packInfoJsonStr, AppInfo appInfo) throws BundleException {
         LOG.info("Uncompress::parseShellVersionInfoToAppInfo: begin");
         if (!appInfo.isMultiFrameworkBundle()) {
             LOG.info("Uncompress::parseShellVersionInfoToAppInfo: is not a multi framewok bundle.");
             return false;
         }
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
+            if (jsonObject == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+                return false;
+            }
 
-        JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
-        if (jsonObject == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
-            return false;
-        }
+            JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
+            if (summaryJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+                return false;
+            }
+            JSONObject appJson = summaryJson.getJSONObject(APP);
+            if (appJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
+                return false;
+            }
+            JSONObject versionJson = appJson.getJSONObject(VERSION);
+            if (versionJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
+                return false;
+            }
 
-        JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
-        if (summaryJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
-            return false;
+            if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
+                return false;
+            }
+            appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
+            appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
+            return true;
+        } catch (JSONException msg) {
+            LOG.error("parseShellVersionInfoToAppInfo exception");
+            throw new BundleException("parseShellVersionInfoToAppInfo exception");
         }
-        JSONObject appJson = summaryJson.getJSONObject(APP);
-        if (appJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
-            return false;
-        }
-        JSONObject versionJson = appJson.getJSONObject(VERSION);
-        if (versionJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
-            return false;
-        }
-
-        if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
-            return false;
-        }
-        appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
-        appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
-        return true;
     }
 
-    private static void parseDeviceTypeToHapInfo(String packInfoJsonStr, HapInfo hapInfo, String hapName) {
+    private static void parseDeviceTypeToHapInfo(
+            String packInfoJsonStr, HapInfo hapInfo, String hapName) {
         LOG.info("Uncompress::parseDeviceTypeToHapInfo: begin");
         JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
         if (jsonObject == null || !jsonObject.containsKey("packages")) {
@@ -1017,7 +1025,8 @@ public class JsonUtil {
      * @param profileJsons is the profile map
      * @return the pages result
      */
-    static List<String> parseModulePages(JSONObject moduleJson, HashMap<String, String> profileJsons)  {
+    static List<String> parseModulePages(
+            JSONObject moduleJson, HashMap<String, String> profileJsons) {
         List<String> pages = new ArrayList<>();
         String pageFile = getJsonString(moduleJson, "pages");
         pageFile = pageFile.replace(PROFILE, "");
@@ -1276,8 +1285,8 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
-            if (FORM.equals(extensionAbilityInfo.type)) {
-                for (AbilityFormInfo formInfo : formInfos) {
+                if (extensionAbilityInfo.type.equals(FORM)) {
+                        for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
                 }
             }
@@ -1795,7 +1804,7 @@ public class JsonUtil {
                 if (SERVICE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, serviceProviderAbility);
                 }
-                if (PAGE.equals(abilityInfo.type)) {
+                if (abilityInfo.type.equals(PAGE)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, abilityInfo.name);
                 }
                 hapInfo.formInfos.addAll(abilityInfo.formInfos);
@@ -1840,7 +1849,7 @@ public class JsonUtil {
             }
         }
         for (AbilityInfo abilityInfo : abilityInfos) {
-            if (PAGE.equals(abilityInfo.type)) {
+            if (abilityInfo.type.equals(PAGE)) {
                 return abilityInfo.name;
             }
         }
