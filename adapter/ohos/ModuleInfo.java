@@ -23,7 +23,7 @@ import java.util.List;
  *
  */
 class ModuleInfo {
-    private final Integer INSTALLFREE_UNDEFINED = 2;
+    private final Integer INSTALL_FREE_UNDEFINED = 2;
     private final String DEFAULT = "default";
     private final String HML = "hml";
     /**
@@ -65,7 +65,7 @@ class ModuleInfo {
     /**
      * Indicates the installationFree of ModuleInfo.
      */
-    public int installationFree = INSTALLFREE_UNDEFINED;
+    public int installationFree = INSTALL_FREE_UNDEFINED;
     /**
      * Indicates the virtualMachine of ModuleInfo.
      */
