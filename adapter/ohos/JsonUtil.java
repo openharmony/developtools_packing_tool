@@ -24,6 +24,7 @@ import java.util.Locale;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 
 /**
  * Json Util.
@@ -127,42 +128,45 @@ public class JsonUtil {
         return JSONArray.parseArray(packages, PackInfo.class);
     }
 
-    private static boolean parseShellVersionInfoToAppInfo(String packInfoJsonStr, AppInfo appInfo) {
+    private static boolean parseShellVersionInfoToAppInfo(String packInfoJsonStr, AppInfo appInfo)
+            throws BundleException {
         LOG.info("Uncompress::parseShellVersionInfoToAppInfo: begin");
         if (!appInfo.isMultiFrameworkBundle()) {
             LOG.info("Uncompress::parseShellVersionInfoToAppInfo: is not a multi framewok bundle.");
             return false;
         }
-
-        JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
-        if (jsonObject == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
-            return false;
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(packInfoJsonStr);
+            if (jsonObject == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+                return false;
+            }
+            JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
+            if (summaryJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
+                return false;
+            }
+            JSONObject appJson = summaryJson.getJSONObject(APP);
+            if (appJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
+                return false;
+            }
+            JSONObject versionJson = appJson.getJSONObject(VERSION);
+            if (versionJson == null) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
+                return false;
+            }
+            if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
+                LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
+                return false;
+            }
+            appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
+            appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
+            return true;
+        } catch (JSONException msg) {
+            LOG.error("parseShellVersionInfoToAppInfo exception");
+            throw new BundleException("parseShellVersionInfoToAppInfo exception");
         }
-
-        JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
-        if (summaryJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: summary is null");
-            return false;
-        }
-        JSONObject appJson = summaryJson.getJSONObject(APP);
-        if (appJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: app is null");
-            return false;
-        }
-        JSONObject versionJson = appJson.getJSONObject(VERSION);
-        if (versionJson == null) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo error: version is null");
-            return false;
-        }
-
-        if (!versionJson.containsKey(LEGACY_VERSION_CODE) || !versionJson.containsKey(LEGACY_VERSION_NAME)) {
-            LOG.error("Uncompress::parseShellVersionInfoToAppInfo no legacy version info.");
-            return false;
-        }
-        appInfo.setShellVersionCode(versionJson.getString(LEGACY_VERSION_CODE));
-        appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
-        return true;
     }
 
     private static void parseDeviceTypeToHapInfo(String packInfoJsonStr, HapInfo hapInfo, String hapName) {
@@ -1027,7 +1031,8 @@ public class JsonUtil {
      * @param profileJsons is the profile map
      * @return the pages result
      */
-    static List<String> parseModulePages(JSONObject moduleJson, HashMap<String, String> profileJsons)  {
+    static List<String> parseModulePages(
+            JSONObject moduleJson, HashMap<String, String> profileJsons) throws BundleException {
         List<String> pages = new ArrayList<>();
         String pageFile = getJsonString(moduleJson, "pages");
         pageFile = pageFile.replace(PROFILE, "");
@@ -1286,8 +1291,8 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
-            if (extensionAbilityInfo.type.equals(FORM)) {
-                for (AbilityFormInfo formInfo : formInfos) {
+                if (FORM.equals(extensionAbilityInfo.type)) {
+                        for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
                 }
             }
