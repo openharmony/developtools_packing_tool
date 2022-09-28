@@ -44,6 +44,7 @@
           "userDataClearable",
           "accessible",
           "targetBundleList",
+          "multiProjects",
           "default",
           "tablet",
           "tv",
@@ -177,6 +178,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "multiProjects": {
+          "description": "Indicates whether current project supports multiple project.",
+          "type": "boolean",
+          "default": false
         },
         "default": {
           "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
