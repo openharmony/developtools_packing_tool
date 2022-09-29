@@ -54,13 +54,16 @@ public class Uncompress {
     private static final String ENTRY_TYPE = "entry";
     private static final String SYSTEM_ACTION = "action.system.home";
     private static final String SYSTEM_ENTITY = "entity.system.home";
+    private static final String DOT = ".";
     private static final int READ_BUFFER_SIZE = 1024;
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final long FILE_TIME = 1546272000000L;
+    private static final int RANDOM = 65535;
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
     private static final String RESOURCE_PATH = "resources/base/profile/";
+    private static final String TEMP_APP_NAME = "tempAppName";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -153,16 +156,18 @@ public class Uncompress {
         InputStream input = null;
         String srcPath = utility.getAppPath();
         String parseMode = utility.getParseMode();
+        String filename = new File(srcPath).getName();
+        filename = filename.substring(0, filename.lastIndexOf(DOT));
         try {
             if (!parseMode.isEmpty() && UncompressEntrance.PARSE_MODE_HAPLIST.equals(parseMode)) {
                 compressResult = uncompress(utility.getDeviceType(), srcPath, PACK_INFO);
             } else if (!parseMode.isEmpty() && UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode)) {
                 String tmpPath = (new File(srcPath)).getParent().replace(File.separator, LINUX_FILE_SEPARATOR) +
-                        LINUX_FILE_SEPARATOR + TEMP_PATH;
+                        LINUX_FILE_SEPARATOR + TEMP_PATH + System.currentTimeMillis() + filename;
                 File tempDir = new File(tmpPath);
                 boolean deletePath = false;
                 if (!tempDir.exists()) {
-                    tempDir.mkdir();
+                    tempDir.mkdirs();
                     deletePath = true;
                 }
                 String hapName = utility.getHapName();
@@ -180,7 +185,7 @@ public class Uncompress {
                 }
             } else if (!parseMode.isEmpty() && UncompressEntrance.PARSE_MODE_ALL.equals(parseMode)) {
                 input = new BufferedInputStream(new FileInputStream(srcPath));
-                compressResult = uncompressAllByInput(input);
+                compressResult = uncompressAllByInput(input, filename);
             } else {
                 LOG.error("Uncompress::uncompressApp parseMode is invalid!");
                 compressResult.setResult(false);
@@ -225,7 +230,7 @@ public class Uncompress {
             } else if (!parseMode.isEmpty() && UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode)) {
                 compressResult = getProfileInfoByInput(utility.getDeviceType(), parseInput, utility.getHapName());
             } else if (!parseMode.isEmpty() && UncompressEntrance.PARSE_MODE_ALL.equals(parseMode)) {
-                compressResult = uncompressAllByInput(parseInput);
+                compressResult = uncompressAllByInput(parseInput, TEMP_APP_NAME);
             } else {
                 LOG.error("Uncompress::uncompressAppByInput parseMode is invalid!");
                 compressResult.setResult(false);
@@ -273,6 +278,10 @@ public class Uncompress {
     static UncomperssResult uncompressHapByPath(String deviceType, String hapPath) throws BundleException {
         UncomperssResult compressResult = new UncomperssResult();
         try {
+            File hapFile = new File(hapPath);
+            if (!hapFile.exists()) {
+                return compressResult;
+            }
             if (isModuleHap(hapPath, compressResult)) {
                 compressResult = unCompressModuleHap(deviceType, hapPath, MODULE_JSON);
             } else {
@@ -918,13 +927,14 @@ public class Uncompress {
      * @return the uncompress result
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static UncomperssResult uncompressAllByInput(InputStream input) throws BundleException {
+    private static UncomperssResult uncompressAllByInput(InputStream input, String appName) throws BundleException {
         UncomperssResult result = new UncomperssResult();
         BufferedInputStream bufIn = null;
         ZipInputStream zipIn = null;
         BufferedReader bufferedReader = null;
-
-        File tempDir = new File(TEMP_PATH);
+        Random random = new Random();
+        String tempPath = TEMP_PATH + appName + System.currentTimeMillis() + random.nextInt(RANDOM);
+        File tempDir = new File(tempPath);
         boolean deletePath = false;
         if (!tempDir.exists()) {
             tempDir.mkdir();
@@ -949,7 +959,7 @@ public class Uncompress {
                     result.setPackInfoStr(sb.toString());
                     result.setPackInfos(packInfos);
                 } else if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-                    String srcPath = TEMP_PATH + LINUX_FILE_SEPARATOR + entry.getName();
+                    String srcPath = tempPath + LINUX_FILE_SEPARATOR + entry.getName();
                     UncomperssResult compressResult = parseHapInfoByTempPath(zipIn, srcPath);
                     if (compressResult.getProfileInfos() != null && compressResult.getProfileInfos().size() > 0) {
                         result.addProfileInfo(compressResult.getProfileInfos().get(0));
