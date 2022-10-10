@@ -2,11 +2,11 @@
 
 ## 简介
 
-打包工具子系统负责应用包的生成，提供了应用打包、应用拆包、应用解析的能力，具体的功能如下：
+packing_tool子系统用于生成打包工具和拆包工具，其中打包工具用于hap，app，hqf，appqf,har包的生成，拆包工具用于对hap，app，hqf，appqf,har包的拆包及对hap，app，appqf的解析。具体的功能介绍如下：
 
 打包工具子系统架构图如下：
 
-![输入图片说明](https://gitee.com/openharmony/developtools_packing_tool/raw/aa25ddb32f78da91b9615474198890033f9f9172/img/%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7%E6%9E%B6%E6%9E%84%E5%9B%BE.webp)
+![](https://gitee.com/openharmony/developtools_packing_tool/raw/master/img/%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7%E6%9E%B6%E6%9E%84%E5%9B%BE.webp)
 
 ## 1. 打包指令说明
 
@@ -18,14 +18,14 @@
 
 
 ```
-java -jar path\app_packing_tool.jar --mode <option> --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true
+java -jar path\app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true
 ```
 
 - FA模型的打包命令示例：
 
 
 ```
-java -jar app_packing_tool.jar --mode <option> --json-path <option> --maple-so-path [option] --profile-path [option] --maple-so-dir [option] --dex-path [option] --lib-path [option] --resources-path [option] --index-path [option] --out-path <option> --force [option]
+java -jar app_packing_tool.jar --mode hap --json-path <option> --maple-so-path [option] --profile-path [option] --maple-so-dir [option] --dex-path [option] --lib-path [option] --resources-path [option] --index-path [option] --out-path <option> --force [option]
 ```
 
 #### 1.1.2 参数含义及规范
@@ -54,7 +54,7 @@ java -jar app_packing_tool.jar --mode <option> --json-path <option> --maple-so-p
 #### 1.2.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode <option> --json-path <option> --jar-path <option> --lib-path [option] --resources-path [option] --out-path <option> --force [option]
+java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [option>]--lib-path [option] --resources-path [option] --out-path [option] --force [option]
 ```
 
 #### 1.2.2 参数含义及规范
@@ -74,7 +74,7 @@ java -jar app_packing_tool.jar --mode <option> --json-path <option> --jar-path <
 #### 1.3.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode <option> --hap-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info-ph <option> --force [option]
+java -jar app_packing_tool.jar --mode app --hap-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info [option]--force [option]
 ```
 
 #### 1.3.2 参数含义及规范
