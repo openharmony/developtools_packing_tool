@@ -212,7 +212,8 @@ public class UncompressVerify {
         utility.setAPPQFPath(utility.getFormattedPath(utility.getAPPQFPath()));
         File file = new File(utility.getAPPQFPath());
         if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APPQF_SUFFIX)) {
-            LOG.error("UncompressVerify::appqfVerify appqf-path must end with.appqf!");
+            LOG.error("UncompressVerify::appqfVerify appqf-path is invalid,please" +
+                    " check input file is exist or this file is not end with .appqf!");
             return false;
         }
 
