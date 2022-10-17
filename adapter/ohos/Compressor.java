@@ -68,6 +68,7 @@ public class Compressor {
     private static final String RES_DIR_NAME = "res/";
     private static final String RESOURCES_DIR_NAME = "resources/";
     private static final String LIBS_DIR_NAME = "libs/";
+    private static final String AN_DIR_NAME = "an/";
     private static final String ASSETS_DIR_NAME = "assets/";
     private static final String SO_DIR_NAME = "maple/";
     private static final String SO_ARM64_DIR_NAME = "maple/arm64/";
@@ -314,6 +315,10 @@ public class Compressor {
 
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
+        }
+
+        if (!utility.getANPath().isEmpty()) {
+            pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
         }
 
         if (!utility.getFilePath().isEmpty()) {

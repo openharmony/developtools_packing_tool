@@ -86,6 +86,7 @@ public class Utility {
     private String packPath = "";
     private boolean isParse = false;
     private String appqfPath = "";
+    private String anPath = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -682,5 +683,13 @@ public class Utility {
 
     public String getAPPQFPath() {
         return this.appqfPath;
+    }
+
+    public void setANPath(String anPath) {
+        this.anPath = anPath;
+    }
+
+    public String getANPath() {
+        return this.anPath;
     }
 }
