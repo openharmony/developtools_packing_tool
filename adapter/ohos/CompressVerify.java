@@ -240,6 +240,11 @@ public class CompressVerify {
             return false;
         }
 
+        if (isHapPathValid(utility.getANPath())) {
+            LOG.error("CompressVerify::isArgsValidInHapMode an-path is invalid!");
+            return false;
+        }
+
         return isOutPathValid(utility, HAP_SUFFIX);
     }
 
