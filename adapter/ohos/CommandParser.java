@@ -72,6 +72,7 @@ public class CommandParser {
     private static final String CMD_HQF_LIST = "--hqf-list";
     private static final String CMD_APPQF_PATH = "--appqf-path";
     private static final String CMD_HQF_PATH = "--hqf-path";
+    private static final String CMD_AN_PATH = "--an-path";
     private static final Log LOG = new Log(CommandParser.class.toString());
 
     /**
@@ -356,6 +357,10 @@ public class CommandParser {
             }
             case CMD_DIR_LIST: {
                 utility.setDirList(value);
+                return true;
+            }
+            case CMD_AN_PATH: {
+                utility.setANPath(value);
                 return true;
             }
             default : {
