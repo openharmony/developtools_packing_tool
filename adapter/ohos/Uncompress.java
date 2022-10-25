@@ -131,7 +131,7 @@ public class Uncompress {
      * @param utility common data
      */
     static void unpackageHapMode(Utility utility) throws BundleException {
-        if (!utility.getMode().equals(Utility.MODE_HAP)) {
+        if (!Utility.MODE_HAP.equals(utility.getMode())) {
             throw new BundleException("Uncompress::unpackageHapMode input wrong unpack mode");
         }
         try {
@@ -1712,7 +1712,7 @@ public class Uncompress {
         try {
             zipFile = new ZipFile(new File(utility.getAPPQFPath()));
             int entriesNum = 0;
-            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
                 entriesNum++;
                 ZipEntry entry = entries.nextElement();
                 if (entry == null) {
@@ -1760,13 +1760,13 @@ public class Uncompress {
         ZipFile zipFile = null;
         ZipInputStream zipInputStream = null;
         ZipEntry zipEntry = null;
-        List<String> HQFlist = new ArrayList<>();
+        List<String> hqfList = new ArrayList<>();
         try {
             zipFile = new ZipFile(appqfFile);
             zipInputStream = new ZipInputStream(new FileInputStream(appqfFile), Charset.forName("utf-8"));
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.getName().endsWith(HQF_SUFFIX)) {
-                    HQFlist.add(zipEntry.getName());
+                    hqfList.add(zipEntry.getName());
                 }
             }
         } catch (IOException e) {
@@ -1777,7 +1777,7 @@ public class Uncompress {
         }
         // read patch.json in haf file
         List<String> jsonStringList = new ArrayList<>();
-        for (String name : HQFlist) {
+        for (String name : hqfList) {
             ZipFile hqfFile = new ZipFile(new File(tmpPath + File.separator + name));
             jsonStringList.add(FileUtils.getFileStringFromZip(PATCH_JSON, hqfFile));
         }
