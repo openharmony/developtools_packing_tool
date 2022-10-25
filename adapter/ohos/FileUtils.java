@@ -15,7 +15,6 @@
 
 package ohos;
 
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -52,7 +51,6 @@ class FileUtils {
     private static final String SHA256 = "SHA-256";
     private static final String BUNDLE_NAME = "\"bundleName\":";
     private static final char QUATATION = '\"';
-    private static final String LINE_BREAK = "\r\n|\r|\n";
 
     /**
      * generate fileData byte stream
@@ -536,7 +534,7 @@ class FileUtils {
         if (!jsonOptional.isPresent()) {
             return Optional.empty();
         }
-        String jsonStr = jsonOptional.get().replaceAll(LINE_BREAK, "");
+        String jsonStr = jsonOptional.get().replaceAll(System.getProperty("line.separator"), "");
         return Optional.of(getBundleName(jsonStr));
     }
 
@@ -606,7 +604,7 @@ class FileUtils {
             while ((readLength = zipInputStream.read(bytes)) != -1) {
                 bufferedOutputStream.write(bytes, 0, readLength);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOG.error("FileUtil::extractFile failed, IOException is " + e.getMessage());
         } finally {
             Utility.closeStream(bufferedOutputStream);
