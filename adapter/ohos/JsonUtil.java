@@ -68,7 +68,7 @@ public class JsonUtil {
     private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
     private static final String MODULE = "module";
     private static final String DEVICE_TYPES = "deviceTypes";
-    private static final String TYPE= "type";
+    private static final String TYPE = "type";
 
 
     /**
@@ -1807,10 +1807,10 @@ public class JsonUtil {
         String serviceProviderAbility = parseFAServiceProviderAbility(moduleJson, abilityInfos);
         for (AbilityInfo abilityInfo : abilityInfos) {
             if (!abilityInfo.formInfos.isEmpty()) {
-                if (abilityInfo.type.equals(SERVICE)) {
+                if (SERVICE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, serviceProviderAbility);
                 }
-                if (abilityInfo.type.equals(PAGE)) {
+                if (PAGE.equals(abilityInfo.type)) {
                     setProviderAbilityForForm(abilityInfo.formInfos, abilityInfo.name);
                 }
                 hapInfo.formInfos.addAll(abilityInfo.formInfos);
