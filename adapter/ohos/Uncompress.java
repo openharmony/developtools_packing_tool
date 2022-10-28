@@ -1783,6 +1783,7 @@ public class Uncompress {
         }
         return hqfVerifyInfoList;
     }
+    
     private static List<HQFInfo> readPatchJson(List<String> hqfList,
         String tempPath) throws IOException, BundleException {
         List<String> jsonStringList = new ArrayList<>();
