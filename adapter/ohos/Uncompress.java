@@ -1757,12 +1757,10 @@ public class Uncompress {
             LOG.error("Uncompress::parseAPPQFFile unzip file failed!");
             throw new BundleException("Uncompress::parseAPPQFFile unzip file failed!");
         }
-        ZipFile zipFile = null;
         ZipInputStream zipInputStream = null;
         ZipEntry zipEntry = null;
         List<String> hqfList = new ArrayList<>();
         try {
-            zipFile = new ZipFile(appqfFile);
             zipInputStream = new ZipInputStream(new FileInputStream(appqfFile), Charset.forName("utf-8"));
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 if (zipEntry.getName().endsWith(HQF_SUFFIX)) {
