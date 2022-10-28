@@ -1772,7 +1772,6 @@ public class Uncompress {
             throw new BundleException("uncompress::uncompressAPPQFFile failed!");
         } finally {
             Utility.closeStream(zipInputStream);
-            Utility.closeStream(zipFile);
         }
         
         List<HQFInfo> hqfVerifyInfoList = readPatchJson(hqfList, tmpPath);
