@@ -1745,7 +1745,7 @@ public class Uncompress {
      */
     public static List<HQFInfo> parseAPPQFFile(String appqfPath) throws BundleException, IOException {
         File appqfFile = new File(appqfPath);
-        String tmpPath = appqfFile.getParent() + File.separator + TEMP_PATH_APPQF;
+        String tmpPath = appqfFile.getParent() + File.separator + TEMP_PATH_APPQF + appqfFile.getName();
         File tempDir = new File(tmpPath);
         boolean deletePath = false;
         if (!tempDir.exists()) {
@@ -1774,17 +1774,28 @@ public class Uncompress {
             throw new BundleException("uncompress::uncompressAPPQFFile failed!");
         } finally {
             Utility.closeStream(zipInputStream);
+            Utility.closeStream(zipFile);
         }
-        // read patch.json in haf file
-        List<String> jsonStringList = new ArrayList<>();
-        for (String name : hqfList) {
-            ZipFile hqfFile = new ZipFile(new File(tmpPath + File.separator + name));
-            jsonStringList.add(FileUtils.getFileStringFromZip(PATCH_JSON, hqfFile));
-        }
+        
+        List<HQFInfo> hqfVerifyInfoList = readPatchJson(hqfList, tmpPath);
         if (deletePath) {
             FileUtils.deleteDirectory(tmpPath);
         }
-        // parse patch.json
+        return hqfVerifyInfoList;
+    }
+    
+    private static List<HQFInfo> readPatchJson(List<String> hqfList,
+        String tempPath) throws IOException, BundleException {
+        List<String> jsonStringList = new ArrayList<>();
+        for (String name : hqfList) {
+            ZipFile hqfFile = null;
+            try {
+                hqfFile = new ZipFile(new File(tempPath + File.separator + name));
+                jsonStringList.add(FileUtils.getFileStringFromZip(PATCH_JSON, hqfFile));
+            } finally {
+                Utility.closeStream(hqfFile);
+            }
+        }
         List<HQFInfo> hqfVerifyInfoList = new ArrayList<>();
         for (String patchString : jsonStringList) {
             hqfVerifyInfoList.add(JsonUtil.parsePatch(patchString));
