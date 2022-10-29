@@ -15,38 +15,35 @@ set -e
 root_path=$1
 haptobin_build_jar_path=$2
 out_build_path=$3
+toolchain=$4
 final_path=$(pwd)
-echo "root_path is ${root_path}"
-echo ${haptobin_build_jar_path}
-echo ${out_build_path}
-echo ${final_path}
 
 temp_path="."
 jar_dir="jar"
 haptobin_jar_file="haptobin_tool.jar"
-haptobin_jar_path="$final_path/$out_build_path"
-haptobin_jar_file_path="$final_path/$haptobin_build_jar_path"
+haptobin_jar_path="${final_path}/${out_build_path}"
+haptobin_jar_file_path="${final_path}/${haptobin_build_jar_path}"
 # make out dir
-if [ -d "$haptobin_jar_path" ]
+if [ -d "${haptobin_jar_path}" ]
     then
-        echo "$haptobin_jar_path exist"
+        echo "${haptobin_jar_path} exist"
     else 
-        mkdir -p $haptobin_jar_path
+        mkdir -p ${haptobin_jar_path}
 fi
-temp_jar_path="$root_path/jar/$haptobin_jar_file"
-manifest_path=$root_path/META-INF/packingbin_tool/MANIFEST.MF
-echo ${manifest_path}
+final_jar_path="${root_path}/jar/${haptobin_jar_file}"
+manifest_path=${root_path}/META-INF/packingbin_tool/MANIFEST.MF
+
 # compile java class
-out_dir="$root_path/out/production/haptobin"
-if [ -d "$out_dir/ohos" ]
+out_dir="${root_path}/out/${toolchain}/haptobin"
+if [ -d "${out_dir}/ohos" ]
     then
-        echo "$root_path/out/production/haptobin/ohos exist"
+        echo "${out_dir}/ohos exist"
     else
-        mkdir -p "$root_path/out/production/haptobin/ohos"
+        mkdir -p "${out_dir}/ohos"
 fi
 java_suffix=".java"
 class_suffix=".class"
-out_class="$temp_path/$out_dir"
+out_class="${temp_path}/${out_dir}"
 java_collection=""
 declare -a compile_class=(
     "Log"
@@ -64,25 +61,25 @@ done
 
 compile_command="javac -source 1.8 -target 1.8 -d ${out_dir} ${java_collection}"
 eval ${compile_command}
-
 cd ${out_dir}
-class_collextion=""
-declare -a pack_class=(
-    "Log"
-    "LogType"
-    "BinaryTool"
-    "FileUtils"
-    "ConvertHapToBin"
-    "BundleException"
-    "Utility"
-)
-pack_class_length=${#pack_class[@]}
-for ((i=0; i<${pack_class_length};++i))
-do
-    class_collextion="${class_collextion} ohos/${pack_class[$i]}${class_suffix}"
-done
-
-pack_command="jar -cvfm ${temp_jar_path} ${manifest_path} ${class_collextion}"
+temp_jar_path="${root_path}/jar/haptobin_${toolchain}/${haptobin_jar_file}"
+temp_jar_dir="${root_path}/jar/haptobin_${toolchain}"
+pack_command="jar -cvfm ${temp_jar_path}/ ${manifest_path} ./ohos"
+if [ -d "${temp_jar_dir}" ]
+    then
+        echo "${temp_jar_dir} exist"
+    else
+        mkdir -p "${temp_jar_dir}"
+fi
 eval ${pack_command}
+
 copy_command="cp ${temp_jar_path} ${haptobin_jar_file_path}"
 eval ${copy_command}
+# copy to developtoo/packintool/jar
+if [ -f "${final_jar_path}" ]
+    then
+        echo "${final_jar_path} exist"
+    else
+        eval "cp ${temp_jar_path} ${final_jar_path}"
+fi
+rm -rf ${temp_jar_dir}

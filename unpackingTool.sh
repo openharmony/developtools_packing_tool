@@ -16,29 +16,26 @@ root_path=$1
 unpack_build_out_jar_path=$2
 unpack_build_out_path=$3
 big_version=$4
+toolchain=$5
 final_path=$(pwd)
-echo $root_path
-echo $unpack_build_out_jar_path
-echo $unpack_build_out_path
-echo $final_path
 
 jar_dir="jar"
 unpack_jar_file="app_unpacking_tool.jar"
 fastjson_jar_file="fastjson-1.2.83.jar"
-jar_directory="$root_path/$jar_dir"
-unpack_jar_path="$root_path/$jar_dir/$unpack_jar_file"
-fastjson_jar_path="$root_path/jar/fastjson-1.2.83.jar"
-manifest_path="$root_path/META-INF/unpacking_tool/MANIFEST.MF"
-out_dir="$root_path/out/production/unpacking_tool"
-if [ -d "$out_dir/ohos" ]
+jar_directory="${root_path}/${jar_dir}"
+unpack_jar_path="${root_path}/${jar_dir}/${unpack_jar_file}"
+fastjson_jar_path="${root_path}/jar/fastjson-1.2.83.jar"
+manifest_path="${root_path}/META-INF/unpacking_tool/MANIFEST.MF"
+out_dir="${root_path}/out/${toolchain}/unpacking_tool"
+if [ -d "${out_dir}/ohos" ]
     then
-        echo "$out_dir/ohos exist"
+        echo "${out_dir}/ohos exist"
     else
-        mkdir -p "$out_dir/ohos"
+        mkdir -p "${out_dir}/ohos"
 fi
 
-unpack_out_jar_path="$final_path/$unpack_build_out_jar_path"
-unpack_out_path="$final_path/$unpack_build_out_path"
+unpack_out_jar_path="${final_path}/${unpack_build_out_jar_path}"
+unpack_out_path="${final_path}/${unpack_build_out_path}"
 
 java_collection=""
 declare -a unpack_class=(
@@ -115,8 +112,22 @@ if [ "$big_version" == "true" ]
 fi
 
 cd $out_dir
-product_unpack_jar_command="jar -cvfm $unpack_jar_path $manifest_path ./ohos"
+temp_unpack_jar_path="${root_path}/${jar_dir}/unpack_${toolchain}/${unpack_jar_file}"
+temp_unpack_jart_dir="${root_path}/${jar_dir}/unpack_${toolchain}"
+product_unpack_jar_command="jar -cvfm ${temp_unpack_jar_path} $manifest_path ./ohos"
+if [ -d "${temp_unpack_jart_dir}" ]
+    then
+        echo "${temp_unpack_jart_dir} exist"
+    else
+        mkdir -p "${temp_unpack_jart_dir}"
+fi
 eval ${product_unpack_jar_command}
+if [ -f "${unpack_jar_path}" ]
+    then
+        echo "${unpack_jar_path} exist"
+    else
+        cp ${temp_unpack_jar_path} ${unpack_jar_path}
+fi
 # make out dir
 if [ -d "$unpack_out_path" ]
     then
@@ -124,5 +135,6 @@ if [ -d "$unpack_out_path" ]
     else 
         mkdir -p $unpack_out_path
 fi
-copy_command="cp ${unpack_jar_path} ${unpack_out_jar_path}"
+copy_command="cp ${temp_unpack_jar_path} ${unpack_out_jar_path}"
 eval ${copy_command}
+rm -rf ${temp_unpack_jart_dir}
