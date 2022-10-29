@@ -31,17 +31,24 @@ def main():
     parser.add_argument('--unpackOutput', required=True)
     parser.add_argument('--packOutput', required=True)
     parser.add_argument('--outpath', required=True)
+    parser.add_argument('--toolchain', required=True)
+    parser.add_argument('--compileTarget', required=True)
     args = parser.parse_args()
     print(args.haptobinOutput)
     print(args.unpackOutput)
     print(args.packOutput)
     print(args.outpath)
+    print(args.compileTarget)
     root_dir = os.path.dirname(os.path.realpath(__file__))
+    toolchain = args.toolchain
+    tool_list = toolchain.split(':')
+    toolchain = tool_list[-1]
+    toolchain += "_" + args.compileTarget
     time_out = 5000
 
     # compile haptobin_tool.jar
     hap_to_bin_shell_path = os.path.join(root_dir, "haptobin.sh")
-    command_haptobin = ['bash', hap_to_bin_shell_path, root_dir, args.haptobinOutput, args.outpath]
+    command_haptobin = ['bash', hap_to_bin_shell_path, root_dir, args.haptobinOutput, args.outpath, toolchain]
     child_haptobin = subprocess.Popen(command_haptobin, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     haptobin_out, haptobin_err = child_haptobin.communicate(timeout=time_out)
     if child_haptobin.returncode != 0:
@@ -61,7 +68,7 @@ def main():
         big_version = 'false'
     
     unpack_tool_shell_path = os.path.join(root_dir, "unpackingTool.sh")
-    command_unpack = ['bash', unpack_tool_shell_path, root_dir, args.unpackOutput, args.outpath, big_version]
+    command_unpack = ['bash', unpack_tool_shell_path, root_dir, args.unpackOutput, args.outpath, big_version, toolchain]
     child_unpack = subprocess.Popen(command_unpack, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     unpack_out, unpack_err = child_unpack.communicate(timeout=time_out)
     if child_unpack.returncode != 0:
@@ -71,7 +78,7 @@ def main():
     
     #compile app_packing_tool.jar
     pack_tool_shell_path = os.path.join(root_dir, "packingTool.sh")
-    command_pack = ['bash', pack_tool_shell_path, root_dir, args.packOutput, args.outpath]
+    command_pack = ['bash', pack_tool_shell_path, root_dir, args.packOutput, args.outpath, toolchain]
     child_pack = subprocess.Popen(command_pack, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pack_out, pack_err = child_pack.communicate(timeout=time_out)
     if child_pack.returncode != 0:

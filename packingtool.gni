@@ -33,6 +33,20 @@ template("packing_tool") {
       rebase_path(outputs[2], root_build_dir),
       "--outpath",
       rebase_path(outputs[3], root_build_dir),
+      "--toolchain",
+      current_toolchain,
     ]
+    if (build_ohos_sdk) {
+      args += [
+        "--compileTarget",
+        "sdk",
+      ]
+    } else {
+      args += [
+        "--compileTarget",
+        "image",
+      ]
+    }
+    print(args)
   }
 }
