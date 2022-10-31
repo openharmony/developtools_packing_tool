@@ -15,29 +15,26 @@ set -e
 root_path=$1
 pack_build_out_jar_path=$2
 pack_build_out_path=$3
+toolchain=$4
 final_path=$(pwd)
-echo ${root_path}
-echo ${pack_build_out_jar_path}
-echo ${pack_build_out_path}
-echo ${final_path}
 
 jar_dir="jar"
 pack_jar_file="app_packing_tool.jar"
 fastjson_jar_file="fastjson-1.2.83.jar"
-jar_directory="$root_path/jar"
-pack_jar_path="$root_path/$jar_dir/$pack_jar_file"
-manifest_path="$root_path/META-INF/packing_tool/MANIFEST.MF"
+jar_directory="${root_path}/jar"
+pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
+manifest_path="${root_path}/META-INF/packing_tool/MANIFEST.MF"
 
-out_dir="$root_path/out/production/packing_tool"
-if [ -d "$out_dir/ohos" ]
+out_dir="${root_path}/out/${toolchain}/packing_tool"
+if [ -d "${out_dir}/ohos" ]
     then
-        echo "$out_dir/ohos exist"
+        echo "${out_dir}/ohos exist"
     else
-        mkdir -p "$out_dir/ohos"
+        mkdir -p "${out_dir}/ohos"
 fi
 
-jar_path="$root_path/jar"
-fastjson_jar_path="$root_path/jar/fastjson-1.2.83.jar"
+jar_path="${root_path}/jar"
+fastjson_jar_path="${root_path}/jar/fastjson-1.2.83.jar"
 java_suffix=".java"
 java_collection=""
 declare -a compile_class=(
@@ -74,81 +71,56 @@ done
 compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
 eval ${compile_command}
 
-class_collection=""
-declare -a pack_class=(
-            "BundleException.class"
-            "CommandParser.class"
-            "CompressEntrance.class"
-            "Compressor.class"
-            "CompressVerify.class"
-            "Log.class"
-            "LogType.class"
-            "ShowHelp.class"
-            "Utility.class"
-            "ModuleJsonUtil.class"
-            "Version.class"
-            "FileUtils.class"
-            "ModuleApiVersion.class"
-            "VerifyCollection.class"
-            "DistroFilter.class"
-            "ApiVersion.class"
-            "ScreenShape.class"
-            "ScreenDensity.class"
-            "ScreenWindow.class"
-            "CountryCode.class"
-            "ModuleMetadataInfo.class"
-            "HapVerify.class"
-            "HapVerifyInfo.class"
-            "HQFVerify.class"
-            "HQFInfo.class"
-)
-pack_class_length=${#pack_class[@]}
-for ((i=0; i<${pack_class_length};++i))
-do
-  class_collection="${class_collection} ohos/${pack_class[$i]}"
-done
-cd $out_dir
-product_pack_jar_command="jar -cvfm $pack_jar_path $manifest_path $class_collection"
+temp_dir="$root_path/jar/temp_${toolchain}"
+if [ -d "${temp_dir}" ]
+    then
+        echo "${temp_dir} exit"
+    else
+        mkdir ${temp_dir}
+fi
+
+cd ${out_dir}
+product_pack_jar_command="jar -cvfm ${temp_dir}/${pack_jar_file} ${manifest_path} ./ohos"
 eval ${product_pack_jar_command}
 
 # merge app_packing_tool.jar and fastjson
-temp_dir="$root_path/jar/temp"
-temp_two="2"
-if [ -d "$temp_dir" ]
-    then
-        temp_dir="$temp_dir$temp_two"
-    else
-        echo "$temp_dir not exit"
-fi
-mkdir $temp_dir
-cp $pack_jar_path "$temp_dir/$pack_jar_file"
-cp $fastjson_jar_path "$temp_dir/$fastjson_jar_file"
+cp ${fastjson_jar_path} "${temp_dir}/${fastjson_jar_file}"
+detach_pack_jar_command="jar -xvf ${pack_jar_file}"
+detach_fastjson_jar_command="jar -xvf ${fastjson_jar_file}"
+cd ${temp_dir}
+eval ${detach_pack_jar_command}
+eval ${detach_fastjson_jar_command}
+rm ${pack_jar_file}
+rm ${fastjson_jar_file}
 
-detach_pack_jar_command="jar -xvf $pack_jar_file"
-detach_fastjson_jar_command="jar -xvf $fastjson_jar_file"
-cd $temp_dir
-eval $detach_pack_jar_command
-eval $detach_fastjson_jar_command
-rm $pack_jar_file
-rm $fastjson_jar_file
-cd $jar_directory
-merge_pack_fast_jar_command="jar -cvfm $pack_jar_file $manifest_path -C $temp_dir ."
-eval $merge_pack_fast_jar_command
-if [ -d "$temp_dir" ]
+cd ${jar_directory}
+temp_pack_jar_dir="${root_path}/jar/packtool_${toolchain}"
+temp_pack_jar_path="${root_path}/jar/packtool_${toolchain}/${pack_jar_file}"
+merge_pack_fast_jar_command="jar -cvfm ${temp_pack_jar_path} ${manifest_path} -C ${temp_dir} ."
+if [ -d "${temp_pack_jar_dir}" ]
     then
-        rm -rf $temp_dir
+        echo "${temp_pack_jar_dir} exist"
     else
-        echo "$temp_dir not exit"
+        mkdir -p ${temp_pack_jar_dir}
 fi
+eval ${merge_pack_fast_jar_command}
 
 # make out dir
-final_pack_out_path="$final_path/$pack_build_out_path"
-final_pack_jar_path="$final_path/$pack_build_out_jar_path"
+final_pack_out_path="${final_path}/${pack_build_out_path}"
+final_pack_jar_path="${final_path}/${pack_build_out_jar_path}"
 if [ -d "$final_pack_out_path" ]
     then
-        echo "$final_pack_out_path exist"
+        echo "${final_pack_out_path} exist"
     else 
-        mkdir -p $final_pack_out_path
+        mkdir -p ${final_pack_out_path}
 fi
-copy_command="cp $pack_jar_path $final_pack_jar_path"
+copy_command="cp ${temp_pack_jar_path} ${final_pack_jar_path}"
 eval ${copy_command}
+if [ -f "${pack_jar_file}"]
+    then
+        echo "${pack_jar_file} exist"
+    else
+        cp ${temp_pack_jar_path} ${pack_jar_file}
+fi
+rm -rf ${temp_pack_jar_dir}
+rm -rf ${temp_dir}
