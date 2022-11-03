@@ -15,6 +15,11 @@
 
 package ohos;
 
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 /**
  * command parser.
  *
@@ -71,9 +76,182 @@ public class CommandParser {
     private static final String CMD_DIR_LIST = "--dir-list";
     private static final String CMD_HQF_LIST = "--hqf-list";
     private static final String CMD_APPQF_PATH = "--appqf-path";
-    private static final String CMD_HQF_PATH = "--hqf-path";
     private static final String CMD_AN_PATH = "--an-path";
+    private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
+    private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
+
+    static {
+        initCommandFuncs();
+    }
+
+    private static void initCommandFuncs() {
+        commandFuncs.put(CMD_MODE, entry -> {
+            entry.getKey().setMode(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_JSON_PATH, entry -> {
+            entry.getKey().setJsonPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_PROFILE_PATH, entry -> {
+            entry.getKey().setProfilePath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_INDEX_PATH, entry -> {
+            entry.getKey().setIndexPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_JS_PATH, entry -> {
+            entry.getKey().setJsPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_ETS_PATH, entry -> {
+            entry.getKey().setEtsPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_RPCID_PATH, entry -> {
+            entry.getKey().setRpcidPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_RPCID, entry -> {
+            entry.getKey().setRpcid(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_SO_PATH, entry -> {
+            entry.getKey().setSoPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_SO_DIR, entry -> {
+            entry.getKey().setSoDir(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_ABILITY_SO_PATH, entry -> {
+            entry.getKey().setAbilitySoPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_DEX_PATH, entry -> {
+            entry.getKey().setDexPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_ABC_PATH, entry -> {
+            entry.getKey().setAbcPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_FILE_PATH, entry -> {
+            entry.getKey().setFilePath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_LIB_PATH, entry -> {
+            entry.getKey().setLibPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_RES_PATH, entry -> {
+            entry.getKey().setResPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_RESOURCES_PATH, entry -> {
+            entry.getKey().setResourcesPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_ASSETS_PATH, entry -> {
+            entry.getKey().setAssetsPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_APK_PATH, entry -> {
+            entry.getKey().setApkPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HAP_PATH, entry -> {
+            entry.getKey().setHapPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_APP_PATH, entry -> {
+            entry.getKey().setAppPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_SIGNATURE_PATH, entry -> {
+            entry.getKey().setSignaturePath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_CERTIFICATE_PATH, entry -> {
+            entry.getKey().setCertificatePath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_FORCE, entry -> {
+            entry.getKey().setForceRewrite(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_OUT_PATH, entry -> {
+            entry.getKey().setOutPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_PACK_INFO_PATH, entry -> {
+            entry.getKey().setPackInfoPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_BIN_PATH, entry -> {
+            entry.getKey().setBinPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_JAR_PATH, entry -> {
+            entry.getKey().setJarPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_TXT_PATH, entry -> {
+            entry.getKey().setTxtPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HAR_PATH, entry -> {
+            entry.getKey().setHarPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_PACK_RES_PATH, entry -> {
+            entry.getKey().setPackResPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_UNPACKAPK, entry -> {
+            entry.getKey().setUnpackApk(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_UNPACK_CUT_ENTRY_APK, entry -> {
+            entry.getKey().setUnpackCutEntryApk(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_SHAREDLIBS_PATH, entry -> {
+            entry.getKey().setSharedLibsPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_ENTRYCARD_PATH, entry -> {
+            entry.getKey().setEntryCardPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HAP_LIST, entry -> {
+            entry.getKey().setHapList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_APP_LIST, entry -> {
+            entry.getKey().setAppList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_DIR_LIST, entry -> {
+            entry.getKey().setDirList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HQF_LIST, entry -> {
+            entry.getKey().setHqfList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_APPQF_PATH, entry -> {
+            entry.getKey().setAPPQFPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_AN_PATH, entry -> {
+            entry.getKey().setANPath(entry.getValue());
+            return true;
+        });
+    }
+
 
     /**
      * judge args is null and enter parser.
@@ -87,285 +265,29 @@ public class CommandParser {
             LOG.error("CommandParser::commandParser args is null!");
             return false;
         }
-
-        parser(utility, args);
+        for (int i = 0; i < args.length - 1; ++i) {
+            String key = args[i];
+            String value = args[i + 1];
+            Map.Entry<Utility, String> entry = new AbstractMap.SimpleEntry<>(utility, value);
+            if (commandFuncs.get(key) != null) {
+                commandFuncs.get(key).apply(entry);
+                ++i;
+            } else if (CMD_PARSE_MODE.equals(key)) {
+                if (i + PARSE_MODE_VALUE_LENGTH >= args.length) {
+                    LOG.error("input wrong number value for --p command");
+                    return false;
+                }
+                utility.setParseMode(args[i + 1]);
+                if (PARSE_MODE_HAPLIST.equals(utility.getParseMode())) {
+                    utility.setDeviceType(args[i + PARSE_MODE_VALUE_LENGTH]);
+                } else if (PARSE_MODE_HAPINFO.equals(utility.getParseMode())) {
+                    utility.setHapName(args[i + PARSE_MODE_VALUE_LENGTH]);
+                }
+                i += PARSE_MODE_VALUE_LENGTH;
+            } else {
+                LOG.warning(key + " is invalid!");
+            }
+        }
         return true;
-    }
-
-    /**
-     * parse args.
-     *
-     * @param utility common data
-     * @param args command line
-     */
-    private static void parser(Utility utility, String[] args) {
-        for (int i = 0; i < args.length - 1; i++) {
-            if (parseAppCmd(utility, args[i], args[i + 1]) || parseHapCmd(utility, args[i], args[i + 1]) ||
-                parseCommonCmd(utility, args[i], args[i + 1])) {
-                i++;
-                continue;
-            }
-
-            switch (args[i]) {
-                case CMD_BIN_PATH: {
-                    utility.setBinPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_JAR_PATH: {
-                    utility.setJarPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_TXT_PATH: {
-                    utility.setTxtPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_PARSE_MODE: {
-                    utility.setParseMode(args[i + 1]);
-                    if (PARSE_MODE_HAPLIST.equals(utility.getParseMode())) {
-                        utility.setDeviceType(args[i + 2]);
-                    } else if (PARSE_MODE_HAPINFO.equals(utility.getParseMode())) {
-                        utility.setHapName(args[i + 2]);
-                    }
-                    i = i + 2;
-                    break;
-                }
-                case CMD_UNPACKAPK: {
-                    utility.setUnpackApk(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_UNPACK_CUT_ENTRY_APK: {
-                    utility.setUnpackCutEntryApk(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_PACK_INFO_PATH: {
-                    utility.setPackInfoPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_ENTRYCARD_PATH: {
-                    utility.setEntryCardPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_PACK_RES_PATH: {
-                    utility.setPackResPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_ABC_PATH: {
-                    utility.setAbcPath(args[i + 1]);
-                    i++;
-                    break;
-                }
-                case CMD_HQF_LIST: {
-                    utility.setHqfList(args[i + 1]);
-                    i++;
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-        }
-    }
-
-    private static boolean parseCommonCmd(Utility utility, String cmd, String value) {
-        switch (cmd) {
-            case CMD_MODE: {
-                utility.setMode(value);
-                return true;
-            }
-            case CMD_FORCE: {
-                utility.setForceRewrite(value);
-                return true;
-            }
-            case CMD_OUT_PATH: {
-                utility.setOutPath(value);
-                return true;
-            }
-            case CMD_HAR_PATH: {
-                utility.setHarPath(value);
-                return true;
-            }
-            case CMD_APPQF_PATH: {
-                utility.setAPPQFPath(value);
-                return true;
-            }
-            default: {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * parse app args.
-     *
-     * @param utility common data
-     * @param cmd command line
-     * @param value the value to be set
-     * @return parse result
-     */
-    private static boolean parseAppCmd(Utility utility, String cmd, String value) {
-        switch (cmd) {
-            case CMD_HAP_PATH: {
-                utility.setHapPath(value);
-                return true;
-            }
-            case CMD_APP_PATH: {
-                utility.setAppPath(value);
-                return true;
-            }
-            case CMD_CERTIFICATE_PATH: {
-                utility.setCertificatePath(value);
-                return true;
-            }
-            case CMD_SIGNATURE_PATH: {
-                utility.setSignaturePath(value);
-                return true;
-            }
-            case CMD_JSON_PATH: {
-                utility.setJsonPath(value);
-                return true;
-            }
-            case CMD_PACK_INFO_PATH: {
-                utility.setPackInfoPath(value);
-                return true;
-            }
-            case CMD_RES_PATH: {
-                utility.setResPath(value);
-                return true;
-            }
-            case CMD_PACK_RES_PATH: {
-                utility.setPackResPath(value);
-                return true;
-            }
-            case CMD_HAP_LIST: {
-                utility.setHapList(value);
-                return true;
-            }
-            case CMD_APP_LIST: {
-                utility.setAppList(value);
-            }
-            default : {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * parse hap args.
-     *
-     * @param utility common data
-     * @param cmd command line
-     * @param value the value to be set
-     * @return parse result
-     */
-    private static boolean parseHapCmd(Utility utility, String cmd, String value) {
-        switch (cmd) {
-            case CMD_JSON_PATH: {
-                utility.setJsonPath(value);
-                return true;
-            }
-            case CMD_PROFILE_PATH: {
-                utility.setProfilePath(value);
-                return true;
-            }
-            case CMD_INDEX_PATH: {
-                utility.setIndexPath(value);
-                return true;
-            }
-            case CMD_SO_PATH: {
-                utility.setSoPath(value);
-                return true;
-            }
-            case CMD_ABILITY_SO_PATH: {
-                utility.setAbilitySoPath(value);
-                return true;
-            }
-            case CMD_SO_DIR: {
-                utility.setSoDir(value);
-                return true;
-            }
-            case CMD_DEX_PATH: {
-                utility.setDexPath(value);
-                return true;
-            }
-            case CMD_ABC_PATH: {
-                utility.setAbcPath(value);
-                return true;
-            }
-            case CMD_FILE_PATH: {
-                utility.setFilePath(value);
-                return true;
-            }
-            case CMD_LIB_PATH: {
-                utility.setLibPath(value);
-                return true;
-            }
-            case CMD_ASSETS_PATH: {
-                utility.setAssetsPath(value);
-                return true;
-            }
-            case CMD_RES_PATH: {
-                utility.setResPath(value);
-                return true;
-            }
-            case CMD_RESOURCES_PATH: {
-                utility.setResourcesPath(value);
-                return true;
-            }
-            case CMD_SHAREDLIBS_PATH: {
-                utility.setSharedLibsPath(value);
-                return true;
-            }
-            case CMD_APK_PATH: {
-                utility.setApkPath(value);
-                return true;
-            }
-            case CMD_JAR_PATH: {
-                utility.setJarPath(value);
-                return true;
-            }
-            case CMD_TXT_PATH: {
-                utility.setTxtPath(value);
-                return true;
-            }
-            case CMD_PACK_INFO_PATH: {
-                utility.setPackInfoPath(value);
-                return true;
-            }
-            case CMD_JS_PATH: {
-                utility.setJsPath(value);
-                return true;
-            }
-            case CMD_ETS_PATH: {
-                utility.setEtsPath(value);
-                return true;
-            }
-            case CMD_RPCID_PATH: {
-                utility.setRpcidPath(value);
-                return true;
-            }
-            case CMD_RPCID:{
-                utility.setRpcid(value);
-                return true;
-            }
-            case CMD_DIR_LIST: {
-                utility.setDirList(value);
-                return true;
-            }
-            case CMD_AN_PATH: {
-                utility.setANPath(value);
-                return true;
-            }
-            default : {
-                return false;
-            }
-        }
     }
 }
