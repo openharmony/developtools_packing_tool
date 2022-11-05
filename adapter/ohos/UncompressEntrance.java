@@ -225,7 +225,7 @@ public class UncompressEntrance {
             return compressResult;
         }
 
-        compressResult = Uncompress.uncompressApp(utility);
+        compressResult = Uncompress.uncompressAppByPath(utility);
 
         return compressResult;
     }
@@ -244,7 +244,7 @@ public class UncompressEntrance {
      * @return Return the uncomperss result of parseApp
      */
     public static UncomperssResult parseApp(InputStream input, String parseMode, String deviceType, String hapName,
-            String outPath) {
+                                            String outPath) {
         UncomperssResult compressResult = new UncomperssResult();
 
         if (input == null) {
@@ -377,9 +377,6 @@ public class UncompressEntrance {
             result.setSuccess(true);
         } catch (BundleException e) {
             LOG.error("UncompressEntrance::parseAPPQF failed, read patch.json in APPQF file failed!");
-            result.setSuccess(false);
-        } catch (IOException e) {
-            LOG.error("UncompressEntrance::parseAPPQF failed, input APPQF file is invalid!");
             result.setSuccess(false);
         }
         return result;
