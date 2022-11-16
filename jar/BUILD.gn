@@ -24,7 +24,7 @@ ohos_prebuilt_etc("app_unpacking_tool") {
 }
 
 ohos_prebuilt_etc("fastjson_utils_java") {
-  source = "fastjson_utils_java.jar"
+  source = "fastjson-1.2.83.jar"
   install_enable = false
 }
 
