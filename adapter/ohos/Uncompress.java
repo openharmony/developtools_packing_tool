@@ -74,6 +74,7 @@ public class Uncompress {
     private static final String TRUE = "true";
     private static final String HQF_SUFFIX = ".hqf";
     private static final String PATCH_JSON = "patch.json";
+    private static final String EMPTY_STRING = "";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -1627,7 +1628,7 @@ public class Uncompress {
         try {
             zipFile = new ZipFile(appqfPath);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while(entries.hasMoreElements()) {
+            while (entries.hasMoreElements()) {
                 ZipEntry appqfEntry = entries.nextElement();
                 stream = zipFile.getInputStream(appqfEntry);
                 if (!appqfEntry.getName().endsWith(HQF_SUFFIX)) {
@@ -1635,7 +1636,7 @@ public class Uncompress {
                 }
                 zipInputStream = new ZipInputStream(stream);
                 String patchJson = readPatchJson(zipInputStream);
-                if (patchJson == null) {
+                if (EMPTY_STRING.equals(patchJson)) {
                     continue;
                 }
                 patchList.add(patchJson);
