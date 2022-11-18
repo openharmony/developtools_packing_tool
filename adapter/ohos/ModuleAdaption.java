@@ -33,8 +33,8 @@ class ModuleAdaption {
      * @param moduleResult for module.json result
      * @return  UncomperssResult
      */
-    UncomperssResult convertToUncompressResult(ModuleResult moduleResult) {
-        UncomperssResult uncomperssResult = new UncomperssResult();
+    UncompressResult convertToUncompressResult(ModuleResult moduleResult) {
+        UncompressResult uncomperssResult = new UncompressResult();
         uncomperssResult.setResult(moduleResult.getResult());
         uncomperssResult.setMessage(moduleResult.getMessage());
         for (String moduelProfile : moduleResult.moduleProfileStr) {

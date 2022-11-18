@@ -16,14 +16,13 @@
 package ohos;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Locale;
 
 /**
  * uncompress command verify.
  *
  */
-public class UncompressVerify {
+class UncompressVerify {
     private static final String HAP_SUFFIX = ".hap";
     private static final String HAR_SUFFIX = ".har";
     private static final String APP_SUFFIX = ".app";
@@ -63,56 +62,6 @@ public class UncompressVerify {
             return appqfVerify(utility);
         } else {
             LOG.error("UncompressVerify::commandVerify mode is invalid!");
-            return false;
-        }
-    }
-
-    /**
-     * is args valid.
-     *
-     * @param utility common data
-     * @param input the InputStream about the app package.
-     * @return commandVerify if verify valid.
-     */
-    public static boolean inputParseVerify(Utility utility, InputStream input) {
-        if (input == null) {
-            LOG.error("UncompressVerify::isInputVerifyVaild input is invalid!");
-            return false;
-        }
-
-        if (!utility.getForceRewrite().isEmpty() && !"true".equals(utility.getForceRewrite())
-                && !"false".equals(utility.getForceRewrite())) {
-            LOG.error("UncompressVerify::isInputVerifyVaild forceRewrite is invalid!");
-            return false;
-        }
-
-        if (utility.getParseMode().isEmpty() || (!UncompressEntrance.PARSE_MODE_HAPLIST.equals(utility.getParseMode())
-                && !UncompressEntrance.PARSE_MODE_HAPINFO.equals(utility.getParseMode()))
-                && !UncompressEntrance.PARSE_MODE_ALL.equals(utility.getParseMode())) {
-            LOG.error("UncompressVerify::isInputVerifyVaild parseMode is invalid!");
-            return false;
-        }
-
-        if (Utility.MODE_HAP.equals(utility.getMode())) {
-            return true;
-        } else if (Utility.MODE_HAR.equals(utility.getMode())) {
-            return true;
-        } else if (Utility.MODE_APP.equals(utility.getMode())) {
-            if (UncompressEntrance.PARSE_MODE_HAPINFO.equals(utility.getParseMode())
-                    && utility.getHapName().isEmpty()) {
-                LOG.error("UncompressVerify::isArgsVaildInParseMode hapName can't be empty!");
-                return false;
-            }
-
-            if (!utility.getUnpackApk().isEmpty() && !"true".equals(utility.getUnpackApk())
-                    && !"false".equals(utility.getUnpackApk())) {
-                LOG.error("UncompressVerify::isVerifyVaild unpackapk is invalid!");
-                return false;
-            }
-
-            return true;
-        } else {
-            LOG.error("UncompressVerify::InputcommandVerify mode is invalid!");
             return false;
         }
     }
@@ -255,5 +204,26 @@ public class UncompressVerify {
             return true;
         }
         return (!isFile) && file.isDirectory();
+    }
+
+    /**
+     * check path if valid.
+     *
+     * @param parseMode indicates the parse mode of parse app.
+     * @param hapName type indicates the hap name if the mode is HAP_INFO.
+     * @return isParseAppModeValid if path verify.
+     */
+    public static boolean isParseAppModeValid(String parseMode, String hapName) {
+        if (!UncompressEntrance.PARSE_MODE_HAPLIST.equals(parseMode) &&
+                !UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode) &&
+                !UncompressEntrance.PARSE_MODE_ALL.equals(parseMode)) {
+            LOG.error("uncompressVerify parse mode " + parseMode + " is invalid!");
+            return false;
+        }
+        if (UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode) && hapName.isEmpty()) {
+            LOG.error("uncompressVerify hapName should not empty when parse mode is hap-info!");
+            return false;
+        }
+        return true;
     }
 }

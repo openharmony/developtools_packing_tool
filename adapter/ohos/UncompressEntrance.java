@@ -86,10 +86,44 @@ public class UncompressEntrance {
     public static final String DEVICE_TYPE_FITNESSBAND = "fitnessBand";
 
     private static final String APPQF_SUFFIX = ".appqf";
+    private static final String APP_SUFFIX = ".app";
+    private static final String HAP_SUFFIX = ".hap";
 
     private static final int EXIT_STATUS_NORMAL = 0;
     private static final int EXIT_STATUS_EXCEPTION = 1;
     private static final Log LOG = new Log(UncompressEntrance.class.toString());
+
+    /**
+     * Indicates the parseMode for parseApp interface.
+     */
+    public enum ParseAppMode {
+        ALL(0, "all"),
+        HAP_LIST(1, "hap-list"),
+        HAP_INFO(2, "hap-info");
+
+        ParseAppMode(int index, String type) {
+            this.index = index;
+            this.type = type;
+        }
+
+        public static String getType(int index) {
+            for (UncompressEntrance.ParseAppMode resType : UncompressEntrance.ParseAppMode.values()) {
+                if (resType.getIndex() == index) {
+                    return resType.type;
+                }
+            }
+            return "";
+        }
+
+        public int getIndex() {
+            return index;
+        }
+        public String getType() {
+            return type;
+        }
+        private final int index;
+        private final String type;
+    }
 
     /**
      * Unpack the app.
@@ -175,6 +209,7 @@ public class UncompressEntrance {
         return true;
     }
 
+
     /**
      * Parse the app.
      *
@@ -187,39 +222,25 @@ public class UncompressEntrance {
      *                is {@link #PARSE_MODE_HAPINFO}.
      * @param outPath Indicates the out path to unpack the files.
      * @return Return the uncomperss result of parseApp
+     * @deprecated
      */
-    public static UncomperssResult parseApp(String appPath, String parseMode, String deviceType, String hapName,
-            String outPath) {
-        UncomperssResult compressResult = new UncomperssResult();
-
-        if (appPath == null || appPath.isEmpty()) {
-            LOG.error("UncompressEntrance::parseApp appPath is invalid!");
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseApp appPath is invalid");
-            return compressResult;
-        }
-
-        if (parseMode == null || parseMode.isEmpty()) {
-            LOG.error("UncompressEntrance::parseApp parseMode is invalid!");
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseApp parseMode is invalid");
-            return compressResult;
-        }
+    public static UncompressResult parseApp(String appPath, String parseMode, String deviceType, String hapName,
+                                            String outPath) {
+        UncompressResult compressResult = new UncompressResult();
 
         Utility utility = new Utility();
-        utility.setMode(Utility.MODE_APP);
         utility.setAppPath(appPath);
         utility.setParseMode(parseMode);
         utility.setDeviceType(deviceType == null ? "" : deviceType);
         utility.setHapName(hapName == null ? "" : hapName);
-        utility.setForceRewrite("true");
-        utility.setIsParse(true);
-        if (outPath != null && !outPath.isEmpty()) {
-            utility.setOutPath(outPath);
-        }
 
-        if (!UncompressVerify.commandVerify(utility)) {
-            LOG.error("CompressEntrance::parseApp verify failed");
+        if (!UncompressVerify.isPathValid(utility.getAppPath(), true, APP_SUFFIX)) {
+            LOG.error("UncompressEntrance::parseApp must input a app file!");
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp verify failed");
+            return compressResult;
+        }
+        if (!UncompressVerify.isParseAppModeValid(utility.getParseMode(), utility.getHapName())) {
             compressResult.setResult(false);
             compressResult.setMessage("ParseApp verify failed");
             return compressResult;
@@ -242,10 +263,11 @@ public class UncompressEntrance {
      *                is {@link #PARSE_MODE_HAPINFO}.
      * @param outPath Indicates the out path to unzip temp files.
      * @return Return the uncomperss result of parseApp
+     * @deprecated
      */
-    public static UncomperssResult parseApp(InputStream input, String parseMode, String deviceType, String hapName,
+    public static UncompressResult parseApp(InputStream input, String parseMode, String deviceType, String hapName,
                                             String outPath) {
-        UncomperssResult compressResult = new UncomperssResult();
+        UncompressResult compressResult = new UncompressResult();
 
         if (input == null) {
             LOG.error("UncompressEntrance::parseApp input is null!");
@@ -254,26 +276,15 @@ public class UncompressEntrance {
             return compressResult;
         }
 
-        if (parseMode == null || parseMode.isEmpty()) {
-            LOG.error("UncompressEntrance::parseApp parseMode is invalid!");
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseApp parseMode is invalid");
-            return compressResult;
-        }
-
         Utility utility = new Utility();
         utility.setMode(Utility.MODE_APP);
         utility.setParseMode(parseMode);
         utility.setDeviceType(deviceType == null ? "" : deviceType);
         utility.setHapName(hapName == null ? "" : hapName);
-        utility.setForceRewrite("true");
-        utility.setOutPath(outPath == null ? "" : outPath);
-        utility.setIsParse(true);
 
-        if (!UncompressVerify.inputParseVerify(utility, input)) {
-            LOG.error("CompressEntrance::parseApp verity failed");
+        if (!UncompressVerify.isParseAppModeValid(utility.getParseMode(), utility.getHapName())) {
             compressResult.setResult(false);
-            compressResult.setMessage("ParseApp verity failed");
+            compressResult.setMessage("ParseApp verify failed");
             return compressResult;
         }
 
@@ -283,33 +294,82 @@ public class UncompressEntrance {
     }
 
     /**
+     * Parse the app.
+     *
+     * @param appPath Indicates the path about the app package.
+     * @param parseAppMode Indicates the parse mode.
+     * @param hapName Indicates the hap name, This parameter is required when {@code #parseMode}
+     *                is {@link #PARSE_MODE_HAPINFO}.
+     * @return Return the uncomperss result of parseApp
+     */
+    public static UncompressResult parseApp(String appPath, ParseAppMode parseAppMode, String hapName) {
+        UncompressResult compressResult = new UncompressResult();
+        Utility utility = new Utility();
+        utility.setAppPath(appPath);
+        utility.setParseMode(parseAppMode.getType());
+        utility.setDeviceType("");
+        utility.setHapName(hapName);
+        if (!UncompressVerify.isPathValid(utility.getAppPath(), true, APP_SUFFIX)) {
+            LOG.error("UncompressEntrance::parseApp must input a app file!");
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp verify failed");
+            return compressResult;
+        }
+        if (!UncompressVerify.isParseAppModeValid(utility.getParseMode(), utility.getHapName())) {
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp verify failed");
+            return compressResult;
+        }
+        compressResult = Uncompress.uncompressAppByPath(utility);
+
+        return compressResult;
+    }
+
+    /**
+     * Parse the app.
+     *
+     * @param input Indicates the input stream about the app package.
+     * @param parseAppMode Indicates the parse mode.
+     * @param hapName Indicates the hap name, This parameter is required when {@code #parseMode}
+     *                is {@link #PARSE_MODE_HAPINFO}.
+     * @return Return the uncomperss result of parseApp
+     */
+    public static UncompressResult parseApp(InputStream input, ParseAppMode parseAppMode, String hapName) {
+        UncompressResult compressResult = new UncompressResult();
+        if (input == null) {
+            LOG.error("UncompressEntrance::parseApp input is null!");
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp input is null");
+            return compressResult;
+        }
+        Utility utility = new Utility();
+        utility.setParseMode(parseAppMode.getType());
+        utility.setDeviceType("");
+        utility.setHapName(hapName);
+        if (!UncompressVerify.isParseAppModeValid(utility.getParseMode(), utility.getHapName())) {
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp verify failed");
+            return compressResult;
+        }
+        compressResult = Uncompress.uncompressAppByInput(utility, input);
+        return compressResult;
+    }
+
+    /**
      * Parse the hap.
      *
      * @param hapPath Indicates the hap path.
      * @return Return the uncomperss result of parseHap
      */
-    public static UncomperssResult parseHap(String hapPath) {
-        UncomperssResult compressResult = new UncomperssResult();
-
-        if (hapPath == null || hapPath.isEmpty()) {
-            LOG.error("UncompressEntrance::parseHap hapPath is invalid!");
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseHap hapPath is invalid");
-            return compressResult;
-        }
+    public static UncompressResult parseHap(String hapPath) {
+        UncompressResult compressResult = new UncompressResult();
 
         Utility utility = new Utility();
-        utility.setMode(Utility.MODE_HAP);
-        utility.setParseMode(PARSE_MODE_HAPINFO);
         utility.setHapPath(hapPath);
-        utility.setForceRewrite("true");
-        utility.setIsParse(true);
-
-        if (!UncompressVerify.commandVerify(utility)) {
-            LOG.error("UncompressEntrance::parseHap verity failed");
+        if (!UncompressVerify.isPathValid(utility.getHapPath(), true, HAP_SUFFIX)) {
+            LOG.error("UncompressEntrance::parseHap must input a hap file!");
             compressResult.setResult(false);
-            compressResult.setMessage("ParseHap verity failed");
-            return compressResult;
+            compressResult.setMessage("ParseHap hapPath is invalid");
         }
 
         compressResult = Uncompress.uncompressHap(utility);
@@ -323,8 +383,8 @@ public class UncompressEntrance {
      * @param input Indicates the InputStream about the app package.
      * @return Return the uncomperss result of parseHap
      */
-    public static UncomperssResult parseHap(InputStream input) {
-        UncomperssResult compressResult = new UncomperssResult();
+    public static UncompressResult parseHap(InputStream input) {
+        UncompressResult compressResult = new UncompressResult();
 
         if (input == null) {
             LOG.error("UncompressEntrance::parseHap input is null!");
@@ -334,18 +394,6 @@ public class UncompressEntrance {
         }
 
         Utility utility = new Utility();
-        utility.setMode(Utility.MODE_HAP);
-        utility.setParseMode(PARSE_MODE_HAPINFO);
-        utility.setForceRewrite("true");
-        utility.setIsParse(true);
-
-        if (!UncompressVerify.inputParseVerify(utility, input)) {
-            LOG.error("UncompressEntrance::parseHap verity failed");
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseHap verity failed");
-            return compressResult;
-        }
-
         compressResult = Uncompress.uncompressHapByInput(utility, input);
         return compressResult;
     }
