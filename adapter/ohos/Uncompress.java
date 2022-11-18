@@ -73,7 +73,6 @@ public class Uncompress {
     private static final String TRUE = "true";
     private static final String HQF_SUFFIX = ".hqf";
     private static final String PATCH_JSON = "patch.json";
-    private static final String EMPTY_STRING = "";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -1635,7 +1634,7 @@ public class Uncompress {
                 }
                 zipInputStream = new ZipInputStream(stream);
                 String patchJson = readPatchJson(zipInputStream);
-                if (EMPTY_STRING.equals(patchJson)) {
+                if (patchJson == null) {
                     continue;
                 }
                 patchList.add(patchJson);
