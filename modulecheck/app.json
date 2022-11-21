@@ -57,7 +57,7 @@
           "type": "string",
           "maxLength": 127,
           "minLength": 7,
-          "pattern": "^[a-zA-Z][0-9a-zA-Z_/.]+$"
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
         },
         "debug": {
           "description": "Identify whether the application can be debugged.",
