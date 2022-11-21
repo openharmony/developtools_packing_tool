@@ -1627,7 +1627,7 @@ public class Uncompress {
         try {
             zipFile = new ZipFile(appqfPath);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while(entries.hasMoreElements()) {
+            while (entries.hasMoreElements()) {
                 ZipEntry appqfEntry = entries.nextElement();
                 stream = zipFile.getInputStream(appqfEntry);
                 if (!appqfEntry.getName().endsWith(HQF_SUFFIX)) {
