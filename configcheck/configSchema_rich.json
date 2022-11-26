@@ -1004,7 +1004,6 @@
           "distroFilter",
           "uiSyntax",
           "testRunner",
-          "dependencies",
           "libIsolation"
         ]
       },
@@ -3117,14 +3116,6 @@
             }
           }
         },
-        "dependencies": {
-          "description": "Indicates the module names that this module depends on",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "maxLength": 127
-          }
-        },
         "libIsolation": {
           "description": "Indicates whether to isolate the shared libraries in this module.",
           "type": "boolean"
@@ -3170,7 +3161,6 @@
                 "resizeable",
                 "entryTheme",
                 "testRunner",
-                "dependencies",
                 "libIsolation"
               ]
             }
