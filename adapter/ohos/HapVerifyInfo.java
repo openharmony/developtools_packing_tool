@@ -90,6 +90,11 @@ class HapVerifyInfo {
     private List<String> dependencies = new ArrayList<>();
 
     /**
+     * Indicates dependency of module.
+     */
+    private List<DependencyItem> dependencyItemList = new ArrayList<>();
+
+    /**
      * Indicates is config.json string or module.json string of module.
      */
     private String profileStr = "";
@@ -289,6 +294,21 @@ class HapVerifyInfo {
     }
 
     /**
+     * get dependency item list for HapVerifyInfo.
+     */
+    public List<DependencyItem> getDependencyItemList() {
+        return dependencyItemList;
+    }
+
+    /**
+     * set dependency item list for HapVerifyInfo.
+     */
+    public void setDependencyItemList(List<DependencyItem> dependencyItemList) {
+        this.dependencyItemList = dependencyItemList;
+        convertToDependency();
+    }
+
+    /**
      * get json file string form HapVerifyInfo.
      */
     public String getProfileStr() {
@@ -314,5 +334,13 @@ class HapVerifyInfo {
      */
     public void setResourceMap(HashMap<String, String> resourceMap) {
         this.resourceMap = resourceMap;
+    }
+
+    private void convertToDependency() {
+        for (DependencyItem item : dependencyItemList) {
+            if (item.getBundleName() != null && item.getBundleName().equals(bundleName)) {
+                dependencies.add(item.getModuleName());
+            }
+        }
     }
 }
