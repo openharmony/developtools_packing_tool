@@ -494,7 +494,6 @@ public class Compressor {
             }
             // check hap is valid
             if (!checkHapIsValid(fileList)) {
-                LOG.error("Compressor::compressFile file checkHapIsValid failed");
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
                         "apiVersion,moduleName,packageName!");
             }
@@ -565,7 +564,6 @@ public class Compressor {
             if (!checkHapIsValid(fileList)) {
                 String errMsg = "Compressor::compressAppModeForMultiProject There are some " +
                         "haps with different version code or duplicated moduleName or packageName!";
-                LOG.error(errMsg);
                 throw new BundleException(errMsg);
             }
             for (String hapPath : fileList) {
@@ -1985,7 +1983,6 @@ public class Compressor {
             }
         }
         if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
-            LOG.error("Compressor::checkHapIsValid input hap is invalid!");
             return false;
         }
         return true;
