@@ -36,6 +36,8 @@ class HapVerify {
     private static final String EMPTY_STRING = "";
     private static final String ENTRY = "entry";
     private static final String FEATURE = "feature";
+    private static final String REFERENCE_LINK =
+            "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
 
     /**
      * check hap is verify.
@@ -56,7 +58,6 @@ class HapVerify {
         }
         // check moduleName is valid
         if (!checkModuleNameIsValid(hapVerifyInfos)) {
-            LOG.error("Error: moduleName duplicated!");
             return false;
         }
         // check package is valid
@@ -66,7 +67,6 @@ class HapVerify {
         }
         // check entry is valid
         if (!checkEntryIsValid(hapVerifyInfos)) {
-            LOG.error("Error: entry is not valid!");
             return false;
         }
         // check dependency is valid
@@ -76,7 +76,7 @@ class HapVerify {
         }
         // check ability is valid
         if (!checkAbilityNameIsValid(hapVerifyInfos)) {
-            LOG.warning("warning: ability name is duplicated!");
+            LOG.info("Ability name is duplicated!");
         }
         return true;
     }
@@ -170,6 +170,8 @@ class HapVerify {
                         LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has " +
                             hapVerifyInfos.get(i).getDistroFilter().dump());
                     }
+                    LOG.error("Solution: Make sure the module name is valid and do not duplicated!");
+                    LOG.error("Reference: " + REFERENCE_LINK);
                     return false;
                 }
             }
@@ -206,6 +208,8 @@ class HapVerify {
                         LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " "
                             + hapVerifyInfos.get(i).getDistroFilter().dump());
                     }
+                    LOG.error("Solution: Make sure package name is valid and do not duplicated!");
+                    LOG.error("Reference: " + REFERENCE_LINK);
                     return false;
                 }
             }
@@ -243,6 +247,8 @@ class HapVerify {
                         + hapVerifyInfos.get(i).getAbilityNames());
                     LOG.warning("Warning: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
                         + hapVerifyInfos.get(j).getAbilityNames());
+                    LOG.warning("Solution: Make sure ability name is invalid and do not duplicated!");
+                    LOG.error("Reference: " + REFERENCE_LINK);
                     return false;
                 }
             }
@@ -290,6 +296,8 @@ class HapVerify {
                         LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " "
                             + entryHapVerifyInfos.get(j).getDistroFilter().dump());
                     }
+                    LOG.error("Solution: Make sure entry name is valid and do not duplicated!");
+                    LOG.error("Reference: " + REFERENCE_LINK);
                     return false;
                 }
             }
