@@ -82,89 +82,107 @@ public class CompressVerify {
      * @return commandPathVerify if command valid.
      */
     private static boolean commandPathVerify(Utility utility) {
-        if (Utility.MODE_HAP.equals(utility.getMode())) {
-            if (utility.getJsonPath().isEmpty()) {
-                LOG.error("CompressVerify::commandPathVerify json-path is empty!");
-                return false;
-            }
-            if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
-                    && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
-                LOG.error("CompressVerify::isArgsValidInHarMode json-path must be config.json file!");
-                return false;
-            }
-
-            if (!utility.getRpcidPath().isEmpty()) {
-                File file = new File(utility.getRpcidPath());
-                if (!file.isFile()) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path is not a file!");
-                    return false;
+        switch (utility.getMode()) {
+            case Utility.MODE_HAP:
+                if (!utility.getBinPath().isEmpty() && utility.getJsonPath().isEmpty()) {
+                    return isOutPathValid(utility, HAP_SUFFIX);
+                } else {
+                    return isVerifyValidInHapCommonMode(utility) && isVerifyValidInHapMode(utility);
                 }
-                if (!RPCID_PROFILE.equals(file.getName())) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path must be rpcid.sc file!");
-                    return false;
-                }
-            }
+            case Utility.MODE_HAR:
+                return isVerifyValidInHarMode(utility);
+            case Utility.MODE_APP:
+                return isVerifyValidInAppMode(utility);
+            case Utility.MODE_RES:
+                return isVerifyValidInResMode(utility);
+            case Utility.MODE_MULTI_APP:
+                return isVerifyValidInMultiAppMode(utility);
+            case Utility.MODE_HQF:
+                return isVerifyValidInHQFMode(utility);
+            case Utility.MODE_APPQF:
+                return isVerifyValidInAPPQFMode(utility);
+            default:
+                LOG.error("CompressVerify::commandVerify mode is invalid!");
+                return false;
+        }
+    }
 
-            // compress pack.info into hap
-            if (!utility.getPackInfoPath().isEmpty()) {
-                File file = new File(utility.getPackInfoPath());
-                if (!file.isFile()) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path is not a file!");
-                    return false;
-                }
-                if (!PACK_INFO.equals(file.getName())) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path must be pack.info file!");
-                    return false;
-                }
-            }
-
-            if (!utility.getApkPath().isEmpty() && !compatibleProcess(utility, utility.getApkPath(),
-                    utility.getFormattedApkPathList(), APK_SUFFIX)) {
-                LOG.error("CompressVerify::isArgsValidInHapMode shell-apk-path is invalid!");
+    private static boolean isValidRpcid(Utility utility) {
+        if (!utility.getRpcidPath().isEmpty()) {
+            File file = new File(utility.getRpcidPath());
+            if (!file.isFile()) {
+                LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path is not a file!");
                 return false;
             }
-
-            if (!utility.getProfilePath().isEmpty()) {
-                File file = new File(utility.getProfilePath());
-                if (!file.isFile() || !PROFILE_NAME.equals(file.getName())) {
-                    LOG.error("CompressVerify::isArgsValidInHapMode profile-path must be CAPABILITY.profile file!");
-                    return false;
-                }
-            }
-
-            if (!utility.getDexPath().isEmpty() && !compatibleProcess(utility, utility.getDexPath(),
-                    utility.getFormattedDexPathList(), DEX_SUFFIX)) {
-                LOG.error("CompressVerify::isArgsValidInHapMode dex-path is invalid!");
+            if (!RPCID_PROFILE.equals(file.getName())) {
+                LOG.error("CompressVerify::isArgsValidInHapMode rpcid-path must be rpcid.sc file!");
                 return false;
             }
+        }
+        return true;
+    }
 
-            if (!utility.getAbcPath().isEmpty() && !compatibleProcess(utility, utility.getAbcPath(),
-                    utility.getFormattedAbcPathList(), ABC_SUFFIX)) {
-                LOG.error("CompressVerify::isArgsValidInHapMode abc-path is invalid!");
+    private static boolean isValidPackInfo(Utility utility) {
+        if (!utility.getPackInfoPath().isEmpty()) {
+            File file = new File(utility.getPackInfoPath());
+            if (!file.isFile()) {
+                LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path is not a file!");
                 return false;
             }
-
-            if (!utility.getDirList().isEmpty() && !splitDirList(utility, utility.getDirList(), utility.getFormatedDirList())) {
-                LOG.error("CompressVerify::isArgsValidInHapMode --dir-list is invalid!");
+            if (!PACK_INFO.equals(file.getName())) {
+                LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path must be pack.info file!");
                 return false;
             }
-            return isVerifyValidInHapMode(utility);
-        } else if (Utility.MODE_HAR.equals(utility.getMode())) {
-            return isVerifyValidInHarMode(utility);
-        } else if (Utility.MODE_APP.equals(utility.getMode())) {
-            return isVerifyValidInAppMode(utility);
-        } else if (Utility.MODE_RES.equals(utility.getMode())) {
-            return isVerifyValidInResMode(utility);
-        } else if (Utility.MODE_MULTI_APP.equals(utility.getMode())) {
-            return isVerifyValidInMultiAppMode(utility);
-        } else if (Utility.MODE_HQF.equals(utility.getMode())) {
-            return isVerifyValidInHQFMode(utility);
-        } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
-            return isVerifyValidInAPPQFMode(utility);
-        } else {
-            LOG.error("CompressVerify::commandVerify mode is invalid!");
+        }
+        return true;
+    }
+
+    private static boolean isVerifyValidInHapCommonMode(Utility utility) {
+        if (utility.getJsonPath().isEmpty()) {
+            LOG.error("CompressVerify::commandPathVerify json-path is empty!");
             return false;
         }
+        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
+                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
+            LOG.error("CompressVerify::isArgsValidInHarMode json-path must be config.json file!");
+            return false;
+        }
+
+        if (!isValidRpcid(utility) || !isValidPackInfo(utility)) {
+            return false;
+        }
+
+        if (!utility.getApkPath().isEmpty() && !compatibleProcess(utility, utility.getApkPath(),
+                utility.getFormattedApkPathList(), APK_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInHapMode shell-apk-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getProfilePath().isEmpty()) {
+            File file = new File(utility.getProfilePath());
+            if (!file.isFile() || !PROFILE_NAME.equals(file.getName())) {
+                LOG.error("CompressVerify::isArgsValidInHapMode profile-path must be CAPABILITY.profile file!");
+                return false;
+            }
+        }
+
+        if (!utility.getDexPath().isEmpty() && !compatibleProcess(utility, utility.getDexPath(),
+                utility.getFormattedDexPathList(), DEX_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInHapMode dex-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getAbcPath().isEmpty() && !compatibleProcess(utility, utility.getAbcPath(),
+                utility.getFormattedAbcPathList(), ABC_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInHapMode abc-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getDirList().isEmpty() && !splitDirList(utility, utility.getDirList(), utility.getFormatedDirList())) {
+            LOG.error("CompressVerify::isArgsValidInHapMode --dir-list is invalid!");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -231,12 +249,6 @@ public class CompressVerify {
         if (!utility.getTxtPath().isEmpty()
                 && !compatibleProcess(utility, utility.getTxtPath(), utility.getFormattedTxtPathList(), TXT_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInHapMode txt-path is invalid!");
-            return false;
-        }
-
-
-        if (!utility.getPackInfoPath().isEmpty() && !isPathValid(utility.getPackInfoPath(), TYPE_FILE, PACK_INFO)) {
-            LOG.error("CompressVerify::isArgsValidInHapMode pack-info-path is invalid!");
             return false;
         }
 
