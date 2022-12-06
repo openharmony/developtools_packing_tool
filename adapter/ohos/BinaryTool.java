@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * generate binary file
@@ -87,7 +88,8 @@ public class BinaryTool {
      * @return true: success, false: fail
      */
     private static boolean writePackageInfo(final String filePath, RandomAccessFile appStream) {
-        Optional<String> packageName = FileUtils.getBundleNameFromFileContent(JSON_FILE_NAME, filePath);
+        Optional<String> packageName = getValueFromJsonFileContent(PROFILE_KEY, PACKAGE_KEY,
+                JSON_FILE_NAME, filePath);
         if (!packageName.isPresent()) {
             LOG.error("have no config.json or have no key of package!");
             return false;
@@ -156,5 +158,40 @@ public class BinaryTool {
                 }
             }
         }
+    }
+
+    /**
+     * get special value from JSON String
+     *
+     * @param key json main key
+     * @param subKey json sub key
+     * @param jsonFileName json file name
+     * @param filePath path which will be searched
+     * @return value
+     */
+    public static Optional<String> getValueFromJsonFileContent(final String key, final String subKey,
+                                                               final String jsonFileName, final String filePath) {
+        Optional<String> jsonFilePath = FileUtils.searchFile(jsonFileName, filePath);
+        if (!jsonFilePath.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<String> jsonStr = FileUtils.getFileContent(jsonFilePath.get());
+        if (!jsonStr.isPresent()) {
+            return Optional.empty();
+        }
+
+        JSONObject jsonObject = JSONObject.parseObject(jsonStr.get());
+        if (jsonObject == null) {
+            return Optional.empty();
+        }
+
+        if (!jsonObject.containsKey(key)) {
+            return Optional.empty();
+        }
+
+        JSONObject subObject = jsonObject.getJSONObject(key);
+        String value = subObject.getString(subKey);
+        return Optional.of(value);
     }
 }
