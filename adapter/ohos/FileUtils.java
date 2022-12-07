@@ -46,11 +46,7 @@ class FileUtils {
     private static final int SHA256_BUFFER_SIZE = 10240;
     private static final Log LOG = new Log(FileUtils.class.toString());
     private static final String RESOURCE_PATH = "resources/base/profile/";
-    private static final String MODULE_JSON = "module.json";
-    private static final String CONFIG_JSON = "config.json";
     private static final String SHA256 = "SHA-256";
-    private static final String BUNDLE_NAME = "\"bundleName\":";
-    private static final char QUATATION = '\"';
 
     /**
      * generate fileData byte stream
@@ -90,7 +86,7 @@ class FileUtils {
      * @param directory dir path
      * @return filePath
      */
-    private static Optional<String> searchFile(final String fileName, final String directory) {
+    public static Optional<String> searchFile(final String fileName, final String directory) {
         ArrayList<String> fileList = new ArrayList<>();
         getFileList(directory, fileList);
         for (String fileItem : fileList) {
@@ -140,7 +136,7 @@ class FileUtils {
      * @param filePath file path
      * @return String for file
      */
-    private static Optional<String> getFileContent(final String filePath) {
+    public static Optional<String> getFileContent(final String filePath) {
         if (filePath.isEmpty()) {
             return Optional.empty();
         }
@@ -516,47 +512,6 @@ class FileUtils {
             hexString.append(Integer.toHexString(item & 0xFF));
         }
         return hexString.toString();
-    }
-
-    /**
-     * get bundle name for file content
-     *
-     * @param jsonFileName is file name in input directory
-     * @param filePath is the input directory
-     */
-    public static Optional<String> getBundleNameFromFileContent(final String jsonFileName, final String filePath) {
-        Optional<String> jsonFilePath = searchFile(jsonFileName, filePath);
-        if (!jsonFilePath.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<String> jsonOptional = getFileContent(jsonFilePath.get());
-        if (!jsonOptional.isPresent()) {
-            return Optional.empty();
-        }
-        String jsonStr = jsonOptional.get().replaceAll(System.getProperty("line.separator"), "");
-        return Optional.of(getBundleName(jsonStr));
-    }
-
-    private static String getBundleName(String jsonStr) {
-        String realStr = jsonStr.replaceAll(" ", "");
-        if (!realStr.contains(BUNDLE_NAME)) {
-            return "";
-        }
-        int index = realStr.indexOf(BUNDLE_NAME);
-        String res = "";
-        index += BUNDLE_NAME.length();
-        int left = index;
-        while (realStr.charAt(left) != QUATATION) {
-            ++left;
-        }
-        ++left;
-        int right = left;
-        while (realStr.charAt(right) != QUATATION) {
-            ++right;
-        }
-        res = realStr.substring(left, right);
-        return res;
     }
 
     /**
