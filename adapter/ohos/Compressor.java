@@ -224,6 +224,8 @@ public class Compressor {
             case Utility.MODE_APPQF:
                 compressAPPQFMode(utility);
                 break;
+            case Utility.MODE_HSP:
+                compressHSPMode(utility);
             default:
                 compressPackResMode(utility);
         }
@@ -2111,5 +2113,33 @@ public class Compressor {
             return false;
         }
         return true;
+    }
+
+    private void compressHSPMode(Utility utility) throws BundleException {
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+        if (!utility.getLibPath().isEmpty()) {
+            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
+        }
+
+        if (!utility.getResPath().isEmpty()) {
+            pathToFile(utility, utility.getResPath(), RESOURCES_DIR_NAME, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty()) {
+            pathToFile(utility, utility.getResourcesPath(), RESOURCES_DIR_NAME, false);
+        }
+
+        if (!utility.getAssetsPath().isEmpty()) {
+            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
+        }
+
+        for (String jarPathItem : utility.getFormattedJarPathList()) {
+            pathToFile(utility, jarPathItem, NULL_DIR_NAME, false);
+        }
+
+        for (String txtPathItem : utility.getFormattedTxtPathList()) {
+            pathToFile(utility, txtPathItem, NULL_DIR_NAME, false);
+        }
     }
 }

@@ -34,6 +34,7 @@ public class Utility {
     static final String MODE_HQF = "hqf";
     static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
+    static final String MODE_HSP = "hsp";
     static final String FALSE_STRING = "false";
 
     private static final String CMD_PREFIX = "--";
@@ -64,6 +65,7 @@ public class Utility {
     private boolean isCompressNativeLibs = true;
     private String moduleName = "";
     private String harPath = "";
+    private String hspPath = "";
     private String jarPath = "";
     private String txtPath = "";
     private String parseMode = "";
@@ -406,6 +408,12 @@ public class Utility {
     public void setHarPath(String harPath) {
         if (!harPath.startsWith(CMD_PREFIX)) {
             this.harPath = harPath;
+        }
+    }
+
+    public void setHspPath(String hspPath) {
+        if (!hspPath.startsWith(CMD_PREFIX)) {
+            this.hspPath = hspPath;
         }
     }
 
