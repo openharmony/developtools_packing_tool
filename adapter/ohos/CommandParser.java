@@ -65,6 +65,7 @@ public class CommandParser {
     private static final String CMD_JAR_PATH = "--jar-path";
     private static final String CMD_TXT_PATH = "--txt-path";
     private static final String CMD_HAR_PATH = "--har-path";
+    private static final String CMD_HSP_PATH = "--hsp-path";
     private static final String CMD_PARSE_MODE = "--p";
     private static final String CMD_PACK_RES_PATH = "--pack-res-path";
     private static final String CMD_UNPACKAPK = "--unpackapk";
@@ -204,6 +205,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_HAR_PATH, entry -> {
             entry.getKey().setHarPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HSP_PATH, entry -> {
+            entry.getKey().setHspPath(entry.getValue());
             return true;
         });
         commandFuncs.put(CMD_PACK_RES_PATH, entry -> {
