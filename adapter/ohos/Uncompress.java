@@ -59,7 +59,6 @@ public class Uncompress {
     private static final String RPCID_SC = "rpcid.sc";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
-    private static final String TEMP_PATH_APPQF = "temp_appqf_random";
     private static final String HAP_SUFFIXI = ".hap";
     private static final String ENTRY_TYPE = "entry";
     private static final String SYSTEM_ACTION = "action.system.home";
@@ -74,6 +73,8 @@ public class Uncompress {
     private static final String TRUE = "true";
     private static final String HQF_SUFFIX = ".hqf";
     private static final String PATCH_JSON = "patch.json";
+    private static final String HAP_PREFIX = "HAP";
+    private static final String TEMP = "temp";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -418,29 +419,48 @@ public class Uncompress {
      * uncompress hap by InputStream, it can adapt stage module and fa module.
      *
      * @param deviceType indicates the device type of parse type.
-     * @param input indicates the input stream of hap.
+     * @param stream indicates the input stream of hap.
      * @return the uncompress result
      */
-    static UncompressResult uncompressHapByStream(String deviceType, InputStream input,
+    static UncompressResult uncompressHapByStream(String deviceType, InputStream stream,
                                                   String hapName) throws BundleException {
         UncompressResult compressResult = new UncompressResult();
-        ByteArrayOutputStream outputStream = null;
+        compressResult = uncompressHapByBigStream(deviceType, stream, hapName);
+        return compressResult;
+    }
+
+    static UncompressResult uncompressHapByBigStream(String deviceType, InputStream stream, String hapName)
+            throws BundleException {
+        UncompressResult compressResult = new UncompressResult();
+        InputStream fileStream = null;
+        InputStream parseStream = null;
+        File file = null;
         try {
-            outputStream = getOutputStream(input);
-            InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-            if (isModuleInput(inputStream, compressResult)) {
-                InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
-                compressResult = uncompressModuleHapByInput(deviceType, parseInput, MODULE_JSON, hapName);
+            String releativePath = System.getProperty("user.dir");
+            File directory = new File(releativePath);
+            file = File.createTempFile(HAP_PREFIX, HAP_SUFFIX, directory);
+            writeToTempFile(stream, file);
+            fileStream = new FileInputStream(file);
+            boolean isModule = false;
+            if (isModuleInput(fileStream)) {
+                isModule = true;
+            }
+            parseStream = new FileInputStream(file);
+            if (isModule) {
+                compressResult = uncompressModuleHapByInput(deviceType, parseStream, MODULE_JSON, hapName);
             } else {
-                InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
-                compressResult = uncompressByInput(deviceType, parseInput, HARMONY_PROFILE, hapName);
+                compressResult = uncompressByInput(deviceType, parseStream, HARMONY_PROFILE, hapName);
                 compressResult = obtainLabelAndIcon(compressResult);
             }
-        } catch (BundleException e) {
-            LOG.error("Uncompress::uncompressHapByStream Bundle exception");
-            throw new BundleException("Uncompress::uncompressHapByStream failed");
-        }  finally {
-            Utility.closeStream(outputStream);
+        } catch (IOException e) {
+            LOG.error("uncompressHapByBigStream failed for IO exception!");
+            throw new BundleException("uncompressHapByBigStream failed for IO exception!");
+        } finally {
+            Utility.closeStream(fileStream);
+            Utility.closeStream(parseStream);
+            if (file != null) {
+                file.deleteOnExit();
+            }
         }
         return compressResult;
     }
@@ -1458,10 +1478,9 @@ public class Uncompress {
      * Parse the hap type.
      *
      * @param input Indicates the hap FileInputStream.
-     * @param compressResult Indicates the result of parse hap.
      * @return Return the type result of isModuleHap.
      */
-    public static boolean isModuleInput(InputStream input, UncompressResult compressResult) {
+    public static boolean isModuleInput(InputStream input) throws BundleException {
         BufferedInputStream bufIn = null;
         ZipInputStream zipIn = null;
         BufferedReader bufferedReader = null;
@@ -1474,15 +1493,10 @@ public class Uncompress {
                     return true;
                 }
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::isModuleHap file not found exception");
-            compressResult.setResult(false);
-            compressResult.setMessage("judge is module failed");
-        } catch (IOException exception) {
-            LOG.error("Uncompress::isModuleHap io exception: " + exception.getMessage());
-            compressResult.setResult(false);
-            compressResult.setMessage("judge is module failed");
-        }  finally {
+        } catch (IOException ignored) {
+            LOG.error("Uncompress::isModuleHap judge failed!");
+            throw new BundleException("Uncompress::isModuleHap judge failed!");
+        } finally {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(bufIn);
             Utility.closeStream(zipIn);
@@ -1491,25 +1505,29 @@ public class Uncompress {
     }
 
     /**
-     * create outputStream from InputStream .
+     * create file output stream from InputStream .
      *
-     * @param input Indicates the input stream of hap.
-     * @return Return the outputStream.
+     * @param stream Indicates the input stream of hap.
+     * @param file Indicates the temp file to save input stream.
      */
-    static ByteArrayOutputStream getOutputStream(InputStream input) throws BundleException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    static void writeToTempFile(InputStream stream, File file) throws BundleException {
+        FileOutputStream fileOutputStream = null;
         try {
-            byte[] buffer = new byte[1024];
-            int len;
-            while((len = input.read(buffer)) > -1) {
-                outputStream.write(buffer, 0, len);
+            if (file == null) {
+                LOG.error("file not exist!");
             }
-            outputStream.flush();
+            fileOutputStream = new FileOutputStream(file);
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024];
+            while ((bytesRead = stream.read(buffer)) != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead);
+            }
         } catch (IOException e) {
-            LOG.error("Uncompress::getOutputStream io exception: " + e.getMessage());
-            throw new BundleException("getOutputStream by input failed");
+            LOG.error("writeToTempFile failed!");
+            throw new BundleException("writeToTempFile failed!");
+        } finally {
+            Utility.closeStream(fileOutputStream);
         }
-        return outputStream;
     }
 
     /**
