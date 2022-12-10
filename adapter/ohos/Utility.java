@@ -95,6 +95,7 @@ public class Utility {
     private List<String> formattedDexPathList = new ArrayList<>();
     private List<String> formattedAbcPathList = new ArrayList<>();
     private List<String> formattedHapPathList = new ArrayList<>();
+    private List<String> formattedHspPathList = new ArrayList<>();
     private List<String> formattedApkPathList = new ArrayList<>();
     private List<String> formattedJarPathList = new ArrayList<>();
     private List<String> formattedTxtPathList = new ArrayList<>();
@@ -417,6 +418,10 @@ public class Utility {
         }
     }
 
+    public String getHspPath() {
+        return hspPath;
+    }
+
     public String getParseMode() {
         return parseMode;
     }
@@ -555,6 +560,10 @@ public class Utility {
 
     public List<String> getFormattedHapPathList() {
         return formattedHapPathList;
+    }
+
+    public List<String> getFormattedHspPathList() {
+        return formattedHspPathList;
     }
 
     public List<String> getFormattedApkPathList() {
