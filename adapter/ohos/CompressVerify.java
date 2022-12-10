@@ -28,6 +28,7 @@ public class CompressVerify {
     private static final String COMMA_SPLIT = ",";
     private static final String JSON_PROFILE = "config.json";
     private static final String MODULE_PROFILE = "module.json";
+    private static final String MODULE_PROFILE_FIVE = "module.json5";
     private static final String PATCH_PROFILE = "patch.json";
     private static final String PROFILE_NAME = "CAPABILITY.profile";
     private static final String INDEX_PROFILE = "resources.index";
@@ -136,24 +137,6 @@ public class CompressVerify {
                 LOG.error("CompressVerify::isArgsValidInHapMode --pack-info-path must be pack.info file!");
                 return false;
             }
-            return isVerifyValidInHapMode(utility);
-        } else if (Utility.MODE_HAR.equals(utility.getMode())) {
-            return isVerifyValidInHarMode(utility);
-        } else if (Utility.MODE_APP.equals(utility.getMode())) {
-            return isVerifyValidInAppMode(utility);
-        } else if (Utility.MODE_RES.equals(utility.getMode())) {
-            return isVerifyValidInResMode(utility);
-        } else if (Utility.MODE_MULTI_APP.equals(utility.getMode())) {
-            return isVerifyValidInMultiAppMode(utility);
-        } else if (Utility.MODE_HQF.equals(utility.getMode())) {
-            return isVerifyValidInHQFMode(utility);
-        } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
-            return isVerifyValidInAPPQFMode(utility);
-        } else if (Utility.MODE_HSP.equals(utility.getMode())) {
-            return isVerifyValidInHspMode(utility);
-        }
-        else {
-            LOG.error("CompressVerify::commandVerify mode is invalid!");
         }
         return true;
     }
@@ -358,6 +341,11 @@ public class CompressVerify {
 
         if (!compatibleProcess(utility, utility.getHapPath(), utility.getFormattedHapPathList(), HAP_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInAppMode hap-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getHspPath().isEmpty() && !compatibleProcess(utility, utility.getHspPath(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInAppMode hsp-path is invalid!");
             return false;
         }
 
@@ -668,6 +656,7 @@ public class CompressVerify {
         return list;
     }
 
+    //TODO: clarify essential items in hsp
     private static boolean isVerifyValidInHspMode(Utility utility) {
         if (utility.getJsonPath().isEmpty()) {
             LOG.error("CompressVerify::isArgsValidInHspMode json-path is empty!");
@@ -675,7 +664,8 @@ public class CompressVerify {
         }
 
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
-                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
+                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)
+                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE_FIVE)) {
             LOG.error("CompressVerify::isArgsValidInHspMode json-path must be config.json file!");
             return false;
         }
