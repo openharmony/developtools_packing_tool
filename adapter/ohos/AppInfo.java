@@ -79,7 +79,6 @@ public class AppInfo {
     private String shellVersionName = "";
     private boolean multiFrameworkBundle;
 
-    // character for stage module
     /**
      * Indicates the debug of app AppJson.
      */
@@ -93,9 +92,17 @@ public class AppInfo {
      */
     public String label = "";
     /**
+     * Indicates the labels of app AppJson, for multilingual.
+     */
+    public HashMap<String, String> labels;
+    /**
      * Indicates the description of app AppJson.
      */
     public String description = "";
+    /**
+     * Indicates the descriptions of app AppJson, for multilingual.
+     */
+    public HashMap<String, String> descriptions;
     /**
      * Indicates the minCompatibleVersionCode of app AppJson.
      */
