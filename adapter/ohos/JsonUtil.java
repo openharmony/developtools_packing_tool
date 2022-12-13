@@ -69,6 +69,22 @@ public class JsonUtil {
     private static final String MODULE = "module";
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String TYPE = "type";
+    private static final String LABEL = "label";
+    private static final String LABEL_ID = "labelId";
+    private static final String DESCRIPTION = "description";
+    private static final String DESCRIPTION_ID = "descriptionId";
+    private static final String VERSION_CODE = "versionCode";
+    private static final String VENDOR = "vendor";
+    private static final String VERSION_NAME = "versionName";
+    private static final String MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
+    private static final String DEBUG = "debug";
+    private static final String MIN_API_VERSION = "minAPIVersion";
+    private static final String TARGET_API_VERSION = "targetAPIVersion";
+    private static final String API_RELEASE_TYPE = "apiReleaseType";
+    private static final String DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
+    private static final String ENTITY_TYPE = "entityType";
+    private static final String UNSPECIFIED = "unspecified";
+    private static final int DEFAULT_VERSION_CODE = -1;
 
 
     /**
@@ -325,54 +341,40 @@ public class JsonUtil {
             throw new BundleException("Parse module app info failed, appJson is null");
         }
 
-        moduleAppInfo.bundleName = getJsonString(appJson, "bundleName");
-        if (appJson.containsKey("debug")) {
-            moduleAppInfo.debug = appJson.getBoolean("debug");
-        }
-
+        moduleAppInfo.bundleName = getJsonString(appJson, BUNDLENAME);
+        moduleAppInfo.debug = getJsonBooleanValue(appJson, DEBUG, false);
         moduleAppInfo.icon = parseIconById(appJson, data);
-        moduleAppInfo.label = parseResourceByKey(appJson, data, "label", "labelId");
-        moduleAppInfo.description = parseResourceByKey(appJson, data, "description", "descriptionId");
+        moduleAppInfo.label = parseResourceByKey(appJson, data, LABEL, LABEL_ID);
+        moduleAppInfo.labels = parseResourceMapByKey(appJson, data, LABEL_ID);
+        moduleAppInfo.description = parseResourceByKey(appJson, data, DESCRIPTION, DESCRIPTION_ID);
+        moduleAppInfo.descriptions = parseResourceMapByKey(appJson, data, DESCRIPTION_ID);
 
-        if (appJson.containsKey("vendor")) {
-            moduleAppInfo.vendor = getJsonString(appJson, "vendor");
-        }
+        moduleAppInfo.vendor = getJsonString(appJson, VENDOR);
+        moduleAppInfo.versionCode = getJsonIntValue(appJson, VERSION_CODE, DEFAULT_VERSION_CODE);
+        moduleAppInfo.versionName = getJsonString(appJson, VERSION_NAME);
 
-        if (appJson.containsKey("versionCode")) {
-            moduleAppInfo.versionCode = appJson.getIntValue("versionCode");
-        }
-
-        if (appJson.containsKey("versionName")) {
-            moduleAppInfo.versionName = getJsonString(appJson, "versionName");
-        }
-
-        if (appJson.containsKey("minCompatibleVersionCode")) {
-            moduleAppInfo.minCompatibleVersionCode = appJson.getIntValue("minCompatibleVersionCode");
+        if (appJson.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
+            moduleAppInfo.minCompatibleVersionCode =
+                    getJsonIntValue(appJson, MIN_COMPATIBLE_VERSION_CODE, DEFAULT_VERSION_CODE);
         } else {
-            moduleAppInfo.minCompatibleVersionCode = appJson.getIntValue("versionCode");
+            moduleAppInfo.minCompatibleVersionCode = getJsonIntValue(appJson, VERSION_CODE, DEFAULT_VERSION_CODE);
         }
-
-        if (appJson.containsKey("minAPIVersion")) {
-            moduleAppInfo.minAPIVersion = appJson.getIntValue("minAPIVersion");
-        }
-
-        if (appJson.containsKey("targetAPIVersion")) {
-            moduleAppInfo.targetAPIVersion = appJson.getIntValue("targetAPIVersion");
-        }
-
-        if (appJson.containsKey("apiReleaseType")) {
-            moduleAppInfo.apiReleaseType = getJsonString(appJson, "apiReleaseType");
-        }
-
-        if (appJson.containsKey("distributedNotificationEnabled")) {
-            moduleAppInfo.distributedNotificationEnabled = appJson.getBoolean("distributedNotificationEnabled");
-        }
-
-        if (appJson.containsKey("entityType")) {
-            moduleAppInfo.entityType = getJsonString(appJson, "entityType");
-        }
-
+        moduleAppInfo.minAPIVersion = getJsonIntValue(appJson, MIN_API_VERSION, DEFAULT_VERSION_CODE);
+        moduleAppInfo.targetAPIVersion = getJsonIntValue(appJson, TARGET_API_VERSION, DEFAULT_VERSION_CODE);
+        moduleAppInfo.apiReleaseType = getJsonString(appJson, API_RELEASE_TYPE);
+        moduleAppInfo.distributedNotificationEnabled =
+                getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
+        moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
         // parse device type
+        parseSpecifiedDeviceType(appJson, moduleAppInfo);
+        return moduleAppInfo;
+    }
+
+    static void parseSpecifiedDeviceType(JSONObject appJson, ModuleAppInfo moduleAppInfo) throws BundleException {
+        if (appJson == null) {
+            LOG.error("JsonUtil::parseSpecifiedDeviceType exception: appJson is null");
+            throw new BundleException("Parse app info failed, appJson is null");
+        }
         parseDeviceType(appJson, moduleAppInfo, "phone");
         parseDeviceType(appJson, moduleAppInfo, "tablet");
         parseDeviceType(appJson, moduleAppInfo, "tv");
@@ -384,8 +386,6 @@ public class JsonUtil {
         parseDeviceType(appJson, moduleAppInfo, "speaker");
         parseDeviceType(appJson, moduleAppInfo, "linkIOT");
         parseDeviceType(appJson, moduleAppInfo, "router");
-
-        return moduleAppInfo;
     }
 
     /**
@@ -889,20 +889,16 @@ public class JsonUtil {
                                                     String hapName, HashMap<String, String> profileJsons) throws BundleException {
         ModuleProfileInfo moduleProfileInfo = new ModuleProfileInfo();
         JSONObject jsonObject = JSONObject.parseObject(harmonyProfileJsonString);
-        if (jsonObject == null || !jsonObject.containsKey("app") || !jsonObject.containsKey("module")) {
+        if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
             LOG.error("JsonUtil::parseModuleProfileInfo exception: app or module is null");
             throw new BundleException("Parse module profile info failed, app or module is null");
         }
 
-        if (jsonObject.containsKey("app")) {
-            JSONObject appJson = jsonObject.getJSONObject("app");
-            moduleProfileInfo.moduleAppInfo = parseModuleAppInfo(appJson, data);
-        }
-        if (jsonObject.containsKey("module")) {
-            JSONObject moduleJson = jsonObject.getJSONObject("module");
-            moduleProfileInfo.moduleInfo = parseModuleHapInfo(moduleJson, data,
-                    moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);
-        }
+        JSONObject appJson = jsonObject.getJSONObject(APP);
+        moduleProfileInfo.moduleAppInfo = parseModuleAppInfo(appJson, data);
+        JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+        moduleProfileInfo.moduleInfo = parseModuleHapInfo(moduleJson, data,
+                moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);
 
         // parse appName
         for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
@@ -1706,6 +1702,15 @@ public class JsonUtil {
         }
     }
 
+    static HashMap<String, String> parseResourceMapByKey(JSONObject jsonObject, byte[] data, String keyId) {
+        HashMap<String, String> map = new HashMap<>();
+        if (jsonObject.containsKey(keyId)) {
+            int resId = jsonObject.getIntValue(keyId);
+            map = ResourcesParser.getResourceMapById(resId, data);
+        }
+        return map;
+    }
+
     /**
      * get icon path from resource by the key.
      *
@@ -1795,6 +1800,22 @@ public class JsonUtil {
         String value = defaultValue;
         if (jsonObject != null && jsonObject.containsKey(key)) {
             value = jsonObject.get(key).toString();
+        }
+        return value;
+    }
+
+    private static int getJsonIntValue(JSONObject jsonObject, String key, int defaultValue) {
+        int value = defaultValue;
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.getIntValue(key);
+        }
+        return value;
+    }
+
+    private static boolean getJsonBooleanValue(JSONObject jsonObject, String key, boolean defaultValue) {
+        boolean value = defaultValue;
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.getBooleanValue(key);
         }
         return value;
     }
