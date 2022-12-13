@@ -59,7 +59,6 @@ public class Uncompress {
     private static final String RPCID_SC = "rpcid.sc";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
-    private static final String TEMP_PATH_APPQF = "temp_appqf_random";
     private static final String HAP_SUFFIXI = ".hap";
     private static final String ENTRY_TYPE = "entry";
     private static final String SYSTEM_ACTION = "action.system.home";
@@ -74,6 +73,8 @@ public class Uncompress {
     private static final String TRUE = "true";
     private static final String HQF_SUFFIX = ".hqf";
     private static final String PATCH_JSON = "patch.json";
+    private static final String HAP_PREFIX = "HAP";
+    private static final String TEMP = "temp";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -161,8 +162,8 @@ public class Uncompress {
      * @param utility common data
      * @return the uncompress result
      */
-    static UncomperssResult uncompressAppByPath(Utility utility) {
-        UncomperssResult compressResult = new UncomperssResult();
+    static UncompressResult uncompressAppByPath(Utility utility) {
+        UncompressResult compressResult = new UncompressResult();
         InputStream input = null;
         String srcPath = utility.getAppPath();
         String parseMode = utility.getParseMode();
@@ -189,8 +190,8 @@ public class Uncompress {
         return compressResult;
     }
 
-    private static UncomperssResult uncompressHapFromAppPath(String srcPath, Utility utility) throws BundleException {
-        UncomperssResult result = new UncomperssResult();
+    private static UncompressResult uncompressHapFromAppPath(String srcPath, Utility utility) throws BundleException {
+        UncompressResult result = new UncompressResult();
         String hapName = utility.getHapName();
         if (!hapName.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
             hapName += HAP_SUFFIX;
@@ -207,7 +208,7 @@ public class Uncompress {
                 if (!hapName.equals(entry.getName().toLowerCase(Locale.ENGLISH))) {
                     continue;
                 }
-                UncomperssResult hapInfo = uncompressHapByStream("", stream, hapName);
+                UncompressResult hapInfo = uncompressHapByStream("", stream, hapName);
                 if (hapInfo.getProfileInfos() != null && hapInfo.getProfileInfos().size() > 0) {
                     result.addProfileInfo(hapInfo.getProfileInfos().get(0));
                     result.addProfileInfoStr(hapInfo.getProfileInfosStr().get(0));
@@ -224,8 +225,8 @@ public class Uncompress {
         return result;
     }
 
-    private static UncomperssResult uncompressAllAppByPath(String srcPath) throws BundleException {
-        UncomperssResult result = new UncomperssResult();
+    private static UncompressResult uncompressAllAppByPath(String srcPath) throws BundleException {
+        UncompressResult result = new UncompressResult();
         ZipFile appFile = null;
         ZipEntry entry = null;
         InputStream stream = null;
@@ -243,7 +244,7 @@ public class Uncompress {
                     result.setPackInfos(packInfos);
                 }
                 if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-                    UncomperssResult hapInfo = uncompressHapByStream("", stream, entry.getName());
+                    UncompressResult hapInfo = uncompressHapByStream("", stream, entry.getName());
                     if (hapInfo.getProfileInfos() != null && hapInfo.getProfileInfos().size() > 0) {
                         result.addProfileInfo(hapInfo.getProfileInfos().get(0));
                         result.addProfileInfoStr(hapInfo.getProfileInfosStr().get(0));
@@ -270,8 +271,8 @@ public class Uncompress {
      * @param input the InputStream about the app package.
      * @return the uncompress result
      */
-    static UncomperssResult uncompressAppByInput(Utility utility, InputStream input) {
-        UncomperssResult compressResult = new UncomperssResult();
+    static UncompressResult uncompressAppByInput(Utility utility, InputStream input) {
+        UncompressResult compressResult = new UncompressResult();
         String parseMode = utility.getParseMode();
         try {
             if (!parseMode.isEmpty() && UncompressEntrance.PARSE_MODE_HAPLIST.equals(parseMode)) {
@@ -293,13 +294,13 @@ public class Uncompress {
         return compressResult;
     }
 
-    private static UncomperssResult uncompressHapFromAppStream(String deviceType, InputStream stream, String fileName)
+    private static UncompressResult uncompressHapFromAppStream(String deviceType, InputStream stream, String fileName)
             throws BundleException {
         String hapFile = fileName;
         if (!fileName.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
             hapFile += HAP_SUFFIX;
         }
-        UncomperssResult result = new UncomperssResult();
+        UncompressResult result = new UncompressResult();
         ZipInputStream zipInputStream = null;
         try {
             zipInputStream = new ZipInputStream(stream);
@@ -318,8 +319,8 @@ public class Uncompress {
         return result;
     }
 
-    private static UncomperssResult uncompressAllFromAppStream(InputStream stream) throws BundleException {
-        UncomperssResult result = new UncomperssResult();
+    private static UncompressResult uncompressAllFromAppStream(InputStream stream) throws BundleException {
+        UncompressResult result = new UncompressResult();
         ZipInputStream zipInputStream = null;
         ByteArrayOutputStream outputStream = null;
         try {
@@ -335,7 +336,7 @@ public class Uncompress {
                     result.setPackInfos(packInfos);
                 }
                 if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-                    UncomperssResult hapResult = uncompressHapByStream("", zipInputStream, entry.getName());
+                    UncompressResult hapResult = uncompressHapByStream("", zipInputStream, entry.getName());
                     if (hapResult.getProfileInfos() != null && hapResult.getProfileInfos().size() > 0) {
                         result.addProfileInfo(hapResult.getProfileInfos().get(0));
                         result.addProfileInfoStr(hapResult.getProfileInfosStr().get(0));
@@ -360,8 +361,8 @@ public class Uncompress {
      * @param utility common data
      * @return the uncompress result
      */
-    static UncomperssResult uncompressHap(Utility utility) {
-        UncomperssResult compressResult = new UncomperssResult();
+    static UncompressResult uncompressHap(Utility utility) {
+        UncompressResult compressResult = new UncompressResult();
         try {
             compressResult = uncompressHapByPath(utility.getDeviceType(), utility.getHapPath());
         } catch (BundleException ignored) {
@@ -379,8 +380,8 @@ public class Uncompress {
      * @param hapPath indicates the hap path of hap.
      * @return the uncompress result
      */
-    static UncomperssResult uncompressHapByPath(String deviceType, String hapPath) throws BundleException {
-        UncomperssResult compressResult = new UncomperssResult();
+    static UncompressResult uncompressHapByPath(String deviceType, String hapPath) throws BundleException {
+        UncompressResult compressResult = new UncompressResult();
         try {
             if (isModuleHap(hapPath, compressResult)) {
                 compressResult = unCompressModuleHap(deviceType, hapPath, MODULE_JSON);
@@ -402,8 +403,8 @@ public class Uncompress {
      * @param input the InputStream about the app package.
      * @return the uncompress result
      */
-    static UncomperssResult uncompressHapByInput(Utility utility, InputStream input) {
-        UncomperssResult compressResult = new UncomperssResult();
+    static UncompressResult uncompressHapByInput(Utility utility, InputStream input) {
+        UncompressResult compressResult = new UncompressResult();
         try {
             compressResult = uncompressHapByStream(utility.getDeviceType(), input, "");
         } catch (BundleException ignored) {
@@ -418,29 +419,48 @@ public class Uncompress {
      * uncompress hap by InputStream, it can adapt stage module and fa module.
      *
      * @param deviceType indicates the device type of parse type.
-     * @param input indicates the input stream of hap.
+     * @param stream indicates the input stream of hap.
      * @return the uncompress result
      */
-    static UncomperssResult uncompressHapByStream(String deviceType, InputStream input,
+    static UncompressResult uncompressHapByStream(String deviceType, InputStream stream,
                                                   String hapName) throws BundleException {
-        UncomperssResult compressResult = new UncomperssResult();
-        ByteArrayOutputStream outputStream = null;
+        UncompressResult compressResult = new UncompressResult();
+        compressResult = uncompressHapByBigStream(deviceType, stream, hapName);
+        return compressResult;
+    }
+
+    static UncompressResult uncompressHapByBigStream(String deviceType, InputStream stream, String hapName)
+            throws BundleException {
+        UncompressResult compressResult = new UncompressResult();
+        InputStream fileStream = null;
+        InputStream parseStream = null;
+        File file = null;
         try {
-            outputStream = getOutputStream(input);
-            InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-            if (isModuleInput(inputStream, compressResult)) {
-                InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
-                compressResult = uncompressModuleHapByInput(deviceType, parseInput, MODULE_JSON, hapName);
+            String releativePath = System.getProperty("user.dir");
+            File directory = new File(releativePath);
+            file = File.createTempFile(HAP_PREFIX, HAP_SUFFIX, directory);
+            writeToTempFile(stream, file);
+            fileStream = new FileInputStream(file);
+            boolean isModule = false;
+            if (isModuleInput(fileStream)) {
+                isModule = true;
+            }
+            parseStream = new FileInputStream(file);
+            if (isModule) {
+                compressResult = uncompressModuleHapByInput(deviceType, parseStream, MODULE_JSON, hapName);
             } else {
-                InputStream parseInput = new ByteArrayInputStream(outputStream.toByteArray());
-                compressResult = uncompressByInput(deviceType, parseInput, HARMONY_PROFILE, hapName);
+                compressResult = uncompressByInput(deviceType, parseStream, HARMONY_PROFILE, hapName);
                 compressResult = obtainLabelAndIcon(compressResult);
             }
-        } catch (BundleException e) {
-            LOG.error("Uncompress::uncompressHapByStream Bundle exception");
-            throw new BundleException("Uncompress::uncompressHapByStream failed");
-        }  finally {
-            Utility.closeStream(outputStream);
+        } catch (IOException e) {
+            LOG.error("uncompressHapByBigStream failed for IO exception!");
+            throw new BundleException("uncompressHapByBigStream failed for IO exception!");
+        } finally {
+            Utility.closeStream(fileStream);
+            Utility.closeStream(parseStream);
+            if (file != null) {
+                file.deleteOnExit();
+            }
         }
         return compressResult;
     }
@@ -706,14 +726,14 @@ public class Uncompress {
      * @return the uncompress result
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static UncomperssResult uncompress(String deviceType, String srcPath, String fileName)
+    private static UncompressResult uncompress(String deviceType, String srcPath, String fileName)
             throws BundleException {
         if (srcPath.isEmpty() || fileName.isEmpty()) {
             LOG.error("Uncompress::uncompress srcPath, fileName is empty!");
             throw new BundleException("Uncompress failed, srcPath or fileName is empty");
         }
 
-        UncomperssResult result = new UncomperssResult();
+        UncompressResult result = new UncompressResult();
         try {
             HapZipInfo hapZipInfo = unZipHapFileFromHapFile(srcPath);
             if (isPackInfo(fileName)) {
@@ -728,14 +748,14 @@ public class Uncompress {
         return result;
     }
 
-    private static void uncompressPackInfo(String deviceType, HapZipInfo hapZipInfo, UncomperssResult uncomperssResult)
+    private static void uncompressPackInfo(String deviceType, HapZipInfo hapZipInfo, UncompressResult uncomperssResult)
         throws BundleException {
         List<PackInfo> packInfos = JsonUtil.parseHapList(deviceType, hapZipInfo.getPackInfoJsonStr());
         uncomperssResult.setPackInfoStr(hapZipInfo.getPackInfoJsonStr());
         uncomperssResult.setPackInfos(packInfos);
     }
 
-    private static void uncompressProfileInfo(HapZipInfo hapZipInfo, UncomperssResult uncomperssResult)
+    private static void uncompressProfileInfo(HapZipInfo hapZipInfo, UncompressResult uncomperssResult)
         throws BundleException {
         ProfileInfo profileInfo = JsonUtil.parseProfileInfo(hapZipInfo.getHarmonyProfileJsonStr(),
             hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr(), hapZipInfo.getHapFileName());
@@ -797,9 +817,9 @@ public class Uncompress {
      * @return the uncompress result
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static UncomperssResult uncompressByInput(String deviceType, InputStream input,
+    private static UncompressResult uncompressByInput(String deviceType, InputStream input,
                                                       String fileName, String hapName) throws BundleException {
-        UncomperssResult result = new UncomperssResult();
+        UncompressResult result = new UncompressResult();
         try {
             HapZipInfo hapZipInfo = unZipHapFileFromInputStream(input);
             hapZipInfo.setHapFileName(hapName);
@@ -1098,8 +1118,8 @@ public class Uncompress {
      * @param result the result of parse app all mode
      * @return return the result of checkParseAllResult.
      */
-    private static UncomperssResult checkParseAllResult(UncomperssResult result) {
-        UncomperssResult errorResult = new UncomperssResult();
+    private static UncompressResult checkParseAllResult(UncompressResult result) {
+        UncompressResult errorResult = new UncompressResult();
         errorResult.setResult(false);
         errorResult.setMessage("App package is invalid.");
         if (result == null || result.getPackInfos() == null || result.getProfileInfos() == null) {
@@ -1144,7 +1164,7 @@ public class Uncompress {
      * @param result the result of parse app all mode
      * @return return the result which contains icon and label
      */
-    private static UncomperssResult obtainLabelAndIcon(UncomperssResult result) {
+    private static UncompressResult obtainLabelAndIcon(UncompressResult result) {
         List<ProfileInfo> profileInfos = result.getProfileInfos();
         if (profileInfos.isEmpty()) {
             return result;
@@ -1176,7 +1196,7 @@ public class Uncompress {
      * @param hapInfo hap info of entry hap
      * @return return the result which contains icon and label
      */
-    private static UncomperssResult obtainInnerLabelAndIcon(UncomperssResult result, HapInfo hapInfo, Distro distro) {
+    private static UncompressResult obtainInnerLabelAndIcon(UncompressResult result, HapInfo hapInfo, Distro distro) {
         List<AbilityInfo> abilities = hapInfo.abilities;
         if ((abilities == null) || (abilities.isEmpty())) {
             result.setLabel(distro.moduleName);
@@ -1307,13 +1327,13 @@ public class Uncompress {
      * @param fileName indicates json file name.
      * @return the uncompress result
      */
-    static UncomperssResult unCompressModuleHap(String deviceType, String srcPath, String fileName)
+    static UncompressResult unCompressModuleHap(String deviceType, String srcPath, String fileName)
             throws BundleException{
         if (srcPath.isEmpty() || fileName.isEmpty()) {
             LOG.error("Uncompress::uncompress srcPath, fileName is empty!");
             throw new BundleException("Uncompress failed, srcPath or fileName is empty");
         }
-        UncomperssResult uncomperssResult = new UncomperssResult();
+        UncompressResult uncomperssResult = new UncompressResult();
         ModuleResult moduleResult = new ModuleResult();
         try {
             moduleResult = uncompressModule(deviceType, srcPath, fileName);
@@ -1358,20 +1378,20 @@ public class Uncompress {
      * @param fileName the file name of json file.
      * @return the uncompress result
      */
-    static UncomperssResult uncompressModuleHapByInput(String deviceType,
+    static UncompressResult uncompressModuleHapByInput(String deviceType,
                                                        InputStream input, String fileName, String hapName) {
-        UncomperssResult uncomperssResult = new UncomperssResult();
+        UncompressResult uncompressResult = new UncompressResult();
         ModuleResult moduleResult = new ModuleResult();
         try {
             moduleResult = uncompressModuleByInput(deviceType, input, MODULE_JSON, hapName);
             ModuleAdaption moduleAdaption = new ModuleAdaption();
-            uncomperssResult = moduleAdaption.convertToUncompressResult(moduleResult);
+            uncompressResult = moduleAdaption.convertToUncompressResult(moduleResult);
         } catch (BundleException ignored) {
             LOG.error("Uncompress::uncompressHapByInput Bundle exception");
-            uncomperssResult.setResult(false);
-            uncomperssResult.setMessage("uncompressHapByInput Bundle exception");
+            uncompressResult.setResult(false);
+            uncompressResult.setMessage("uncompressHapByInput Bundle exception");
         }
-        return uncomperssResult;
+        return uncompressResult;
     }
 
     /**
@@ -1429,7 +1449,7 @@ public class Uncompress {
      * @param compressResult Indicates the result of parse hap.
      * @return Return the type result of isModuleHap
      */
-    public static boolean isModuleHap(String hapPath, UncomperssResult compressResult) {
+    public static boolean isModuleHap(String hapPath, UncompressResult compressResult) {
         ZipFile zipFile = null;
         try {
             zipFile = new ZipFile(new File(hapPath));
@@ -1458,10 +1478,9 @@ public class Uncompress {
      * Parse the hap type.
      *
      * @param input Indicates the hap FileInputStream.
-     * @param compressResult Indicates the result of parse hap.
      * @return Return the type result of isModuleHap.
      */
-    public static boolean isModuleInput(InputStream input, UncomperssResult compressResult) {
+    public static boolean isModuleInput(InputStream input) throws BundleException {
         BufferedInputStream bufIn = null;
         ZipInputStream zipIn = null;
         BufferedReader bufferedReader = null;
@@ -1474,15 +1493,10 @@ public class Uncompress {
                     return true;
                 }
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::isModuleHap file not found exception");
-            compressResult.setResult(false);
-            compressResult.setMessage("judge is module failed");
-        } catch (IOException exception) {
-            LOG.error("Uncompress::isModuleHap io exception: " + exception.getMessage());
-            compressResult.setResult(false);
-            compressResult.setMessage("judge is module failed");
-        }  finally {
+        } catch (IOException ignored) {
+            LOG.error("Uncompress::isModuleHap judge failed!");
+            throw new BundleException("Uncompress::isModuleHap judge failed!");
+        } finally {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(bufIn);
             Utility.closeStream(zipIn);
@@ -1491,25 +1505,29 @@ public class Uncompress {
     }
 
     /**
-     * create outputStream from InputStream .
+     * create file output stream from InputStream .
      *
-     * @param input Indicates the input stream of hap.
-     * @return Return the outputStream.
+     * @param stream Indicates the input stream of hap.
+     * @param file Indicates the temp file to save input stream.
      */
-    static ByteArrayOutputStream getOutputStream(InputStream input) throws BundleException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    static void writeToTempFile(InputStream stream, File file) throws BundleException {
+        FileOutputStream fileOutputStream = null;
         try {
-            byte[] buffer = new byte[1024];
-            int len;
-            while((len = input.read(buffer)) > -1) {
-                outputStream.write(buffer, 0, len);
+            if (file == null) {
+                LOG.error("file not exist!");
             }
-            outputStream.flush();
+            fileOutputStream = new FileOutputStream(file);
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024];
+            while ((bytesRead = stream.read(buffer)) != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead);
+            }
         } catch (IOException e) {
-            LOG.error("Uncompress::getOutputStream io exception: " + e.getMessage());
-            throw new BundleException("getOutputStream by input failed");
+            LOG.error("writeToTempFile failed!");
+            throw new BundleException("writeToTempFile failed!");
+        } finally {
+            Utility.closeStream(fileOutputStream);
         }
-        return outputStream;
     }
 
     /**
