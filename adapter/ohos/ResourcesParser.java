@@ -20,6 +20,8 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -47,6 +49,7 @@ public class ResourcesParser {
     private static final String BASE = "base";
     private static final int CHAR_LENGTH = 1;
     private static final String EMPTY_STRING = "";
+    private static final int ZERO = 0;
     private enum ResType {
         Values(0, "Values"),
         Animator(1, "Animator"),
@@ -441,6 +444,24 @@ public class ResourcesParser {
         int configCount = byteBuf.getInt();
         List<ConfigIndex> cfg = loadConfig(byteBuf, configCount);
         return readDataAllItem(cfg, byteBuf);
+    }
+
+    /**
+     * Read resource map by id.
+     *
+     * @param resId
+     * @param data config byte buffer
+     * @return the resource map of id.
+     */
+    static HashMap<String, String> getResourceMapById(int resId, byte[] data) {
+        List<ResourceIndexResult> resources = getAllDataItem(data);
+        HashMap<String, String> resourceMap = new HashMap<>();
+        for (ResourceIndexResult indexResult : resources) {
+            if (indexResult.id == resId) {
+                resourceMap.put(indexResult.configClass, indexResult.value);
+            }
+        }
+        return resourceMap;
     }
 
     /**
