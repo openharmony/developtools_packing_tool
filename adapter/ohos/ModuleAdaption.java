@@ -80,7 +80,9 @@ class ModuleAdaption {
         appInfo.debug = moduleAppInfo.debug;
         appInfo.icon = moduleAppInfo.icon;
         appInfo.label = moduleAppInfo.label;
+        appInfo.labels = moduleAppInfo.labels;
         appInfo.description = moduleAppInfo.description;
+        appInfo.descriptions = moduleAppInfo.descriptions;
         appInfo.vendor = moduleAppInfo.vendor;
         appInfo.versionCode = String.valueOf(moduleAppInfo.versionCode);
         appInfo.versionName = moduleAppInfo.versionName;
