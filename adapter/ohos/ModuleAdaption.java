@@ -220,10 +220,12 @@ class ModuleAdaption {
             abilityInfo.name = info.name;
             abilityInfo.srcEntrance = info.srcEntrance;
             abilityInfo.description = info.description;
+            abilityInfo.descriptions = info.descriptions;
             abilityInfo.launchType = info.launchType;
             abilityInfo.icon = info.icon;
             abilityInfo.iconPath = info.icon;
             abilityInfo.label = info.label;
+            abilityInfo.labels = info.labels;
             abilityInfo.labelRes = info.label;
             abilityInfo.permissions = info.permissions;
             abilityInfo.visible = info.visible;

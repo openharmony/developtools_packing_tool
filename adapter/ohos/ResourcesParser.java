@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -49,7 +48,6 @@ public class ResourcesParser {
     private static final String BASE = "base";
     private static final int CHAR_LENGTH = 1;
     private static final String EMPTY_STRING = "";
-    private static final int ZERO = 0;
     private enum ResType {
         Values(0, "Values"),
         Animator(1, "Animator"),
