@@ -33,6 +33,8 @@ import com.alibaba.fastjson.JSONException;
 public class JsonUtil {
     private static final String DEVICE_TYPE = "device-type";
     private static final String NAME = "name";
+    private static final String VALUE = "value";
+    private static final String RESOURCE = "resource";
     private static final String MODULE_TYPE = "module-type";
     private static final String INSTALL_FLAG = "delivery-with-install";
     private static final String DEVICE_TYPE_NEW = "deviceType";
@@ -84,6 +86,44 @@ public class JsonUtil {
     private static final String DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
     private static final String ENTITY_TYPE = "entityType";
     private static final String UNSPECIFIED = "unspecified";
+    private static final String SRC_ENTRANCE = "srcEntrance";
+    private static final String PROCESS = "process";
+    private static final String PHONE = "phone";
+    private static final String TABLET = "tablet";
+    private static final String TV = "tv";
+    private static final String WEARABLE = "wearable";
+    private static final String AR = "ar";
+    private static final String VR = "vr";
+    private static final String CAR = "car";
+    private static final String EARPHONES = "earphones";
+    private static final String SPEAKER = "speaker";
+    private static final String LINK_IOT = "linkIOT";
+    private static final String ROUTER = "router";
+    private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
+    private static final String INSTALLATION_FREE = "installationFree";
+    private static final String VIRTUAL_MACHINE = "virtualMachine";
+    private static final String DEFAULT = "default";
+    private static final String HML = "hml";
+    private static final String UI_SYNTAX = "uiSyntax";
+    private static final String PAGES = "pages";
+    private static final String JSON_SUFFIX = ".json";
+    private static final String META_DATA = "metadata";
+    private static final String SRC = "src";
+    private static final String EXTENSION_ABILITIES = "extensionAbilities";
+    private static final String REQUEST_PERMISSIONS = "requestPermissions";
+    private static final String REASON = "reason";
+    private static final String REASON_ID = "reasonId";
+    private static final String USED_SCENE = "usedScene";
+    private static final String DEFINE_PERMISSIONS = "definePermissions";
+    private static final String DISTRO_FILTER = "distroFilter";
+    private static final String LAUNCH_TYPE = "launchType";
+    private static final String STANDARD = "standard";
+    private static final String PERMISSIONS = "permissions";
+    private static final String VISIBLE = "visible";
+    private static final String CONTINUABLE = "continuable";
+    private static final String SKILLS = "skills";
+    private static final String BACKGROUND_MODES = "backgroundModes";
+
     private static final int DEFAULT_VERSION_CODE = -1;
 
 
@@ -375,17 +415,17 @@ public class JsonUtil {
             LOG.error("JsonUtil::parseSpecifiedDeviceType exception: appJson is null");
             throw new BundleException("Parse app info failed, appJson is null");
         }
-        parseDeviceType(appJson, moduleAppInfo, "phone");
-        parseDeviceType(appJson, moduleAppInfo, "tablet");
-        parseDeviceType(appJson, moduleAppInfo, "tv");
-        parseDeviceType(appJson, moduleAppInfo, "wearable");
-        parseDeviceType(appJson, moduleAppInfo, "ar");
-        parseDeviceType(appJson, moduleAppInfo, "vr");
-        parseDeviceType(appJson, moduleAppInfo, "car");
-        parseDeviceType(appJson, moduleAppInfo, "earphones");
-        parseDeviceType(appJson, moduleAppInfo, "speaker");
-        parseDeviceType(appJson, moduleAppInfo, "linkIOT");
-        parseDeviceType(appJson, moduleAppInfo, "router");
+        parseDeviceType(appJson, moduleAppInfo, PHONE);
+        parseDeviceType(appJson, moduleAppInfo, TABLET);
+        parseDeviceType(appJson, moduleAppInfo, TV);
+        parseDeviceType(appJson, moduleAppInfo, WEARABLE);
+        parseDeviceType(appJson, moduleAppInfo, AR);
+        parseDeviceType(appJson, moduleAppInfo, VR);
+        parseDeviceType(appJson, moduleAppInfo, CAR);
+        parseDeviceType(appJson, moduleAppInfo, EARPHONES);
+        parseDeviceType(appJson, moduleAppInfo, SPEAKER);
+        parseDeviceType(appJson, moduleAppInfo, LINK_IOT);
+        parseDeviceType(appJson, moduleAppInfo, ROUTER);
     }
 
     /**
@@ -406,14 +446,15 @@ public class JsonUtil {
         ModuleDeviceType moduleDeviceType = new ModuleDeviceType();
         if (appJson.containsKey(deviceName)) {
             JSONObject deviceObj = appJson.getJSONObject(deviceName);
-            if (deviceObj.containsKey("minAPIVersion")) {
-                moduleDeviceType.minAPIVersion = deviceObj.getIntValue("minAPIVersion");
+            if (deviceObj.containsKey(MIN_API_VERSION)) {
+                moduleDeviceType.minAPIVersion = deviceObj.getIntValue(MIN_API_VERSION);
             } else {
                 moduleDeviceType.minAPIVersion = moduleAppInfo.minAPIVersion;
             }
 
-            if (deviceObj.containsKey("distributedNotificationEnabled")) {
-                moduleDeviceType.distributedNotificationEnabled = deviceObj.getBoolean("distributedNotificationEnabled");
+            if (deviceObj.containsKey(DISTRIBUTED_NOTIFICATION_ENABLED)) {
+                moduleDeviceType.distributedNotificationEnabled =
+                        deviceObj.getBoolean(DISTRIBUTED_NOTIFICATION_ENABLED);
             } else {
                 moduleDeviceType.distributedNotificationEnabled = moduleAppInfo.distributedNotificationEnabled;
             }
@@ -931,33 +972,45 @@ public class JsonUtil {
             LOG.error("JsonUtil::parseModuleHapInfo exception: moduleJson is null");
             throw new BundleException("Parse module hap info failed, moduleJson is null");
         }
-        if (moduleJson.containsKey("name")) {
-            moduleInfo.name = getJsonString(moduleJson, "name");
-        }
-        if (moduleJson.containsKey("type")) {
-            moduleInfo.type = getJsonString(moduleJson, "type");
-        }
-        if (moduleJson.containsKey("srcEntrance")) {
-            moduleInfo.srcEntrance = getJsonString(moduleJson, "srcEntrance");
-        }
-        moduleInfo.description = parseResourceByKey(moduleJson, data, "description", "descriptionId");
 
-        if (moduleJson.containsKey("process")) {
-            moduleInfo.process = getJsonString(moduleJson, "process");
+        moduleInfo.name = getJsonString(moduleJson, NAME);
+        moduleInfo.type = getJsonString(moduleJson, TYPE);
+        moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
+        moduleInfo.description = parseResourceByKey(moduleJson, data, DESCRIPTION, DESCRIPTION_ID);
+        if (moduleJson.containsKey(PROCESS)) {
+            moduleInfo.process = getJsonString(moduleJson, PROCESS);
         } else {
             moduleInfo.process = hapName;
         }
-        if (moduleJson.containsKey("mainElement")) {
-            moduleInfo.mainElement = getJsonString(moduleJson, "mainElement");
+        moduleInfo.mainElement = getJsonString(moduleJson, MAIN_ELEMENT);
+        if (moduleJson.containsKey(DEVICE_TYPES)) {
+            moduleInfo.deviceTypes = JSONObject.parseArray(getJsonString(moduleJson, DEVICE_TYPES), String.class);
         }
-        if (moduleJson.containsKey("deviceTypes")) {
-            moduleInfo.deviceTypes = JSONObject.parseArray(getJsonString(moduleJson, "deviceTypes"), String.class);
+        moduleInfo.deliveryWithInstall = getJsonBooleanValue(moduleJson, DELIVERY_WITH_INSTALL, true);
+        parseInstallationFree(moduleJson, moduleInfo);
+        moduleInfo.virtualMachine = getJsonString(moduleJson, VIRTUAL_MACHINE, DEFAULT);
+        moduleInfo.uiSyntax = getJsonString(moduleJson, UI_SYNTAX, HML);
+        moduleInfo.pages = parseModulePages(moduleJson, profileJsons);
+        moduleInfo.moduleMetadataInfos = parseModuleMetadataInfos(moduleJson, data, profileJsons);
+        // parse shortcuts and distroFilter
+        if (!moduleInfo.moduleMetadataInfos.isEmpty()) {
+            moduleInfo.moduleShortcuts = parseModuleShortcut(moduleInfo.moduleMetadataInfos, data);
+            moduleInfo.distroFilter = parseModuleDistrofilterFromMetadata(moduleInfo.moduleMetadataInfos);
         }
-        if (moduleJson.containsKey("deliveryWithInstall")) {
-            moduleInfo.deliveryWithInstall = moduleJson.getBoolean("deliveryWithInstall");
-        }
-        if (moduleJson.containsKey("installationFree")) {
-            boolean isFreeInstall = moduleJson.getBoolean("installationFree");
+        // parse abilities
+        parseModuleAbilityAndAddShortcut(moduleJson, moduleInfo, data, profileJsons);
+        // parse extensionAbilities
+        parseStageExtensionAbility(moduleJson, moduleInfo, data, profileJsons);
+        // parse request permission
+        moduleInfo.requestPermissions = parseReqPermission(moduleJson, data);
+        // parse define permission
+        moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
+        return moduleInfo;
+    }
+
+    private static void parseInstallationFree(JSONObject moduleJson,  ModuleInfo moduleInfo) {
+        if (moduleJson.containsKey(INSTALLATION_FREE)) {
+            boolean isFreeInstall = moduleJson.getBoolean(INSTALLATION_FREE);
             if (isFreeInstall) {
                 moduleInfo.installationFree = 1;
             } else {
@@ -966,58 +1019,6 @@ public class JsonUtil {
         } else {
             moduleInfo.installationFree = 2;
         }
-
-        if (moduleJson.containsKey("virtualMachine")) {
-            moduleInfo.virtualMachine = getJsonString(moduleJson, "virtualMachine");
-        }
-
-        if (moduleJson.containsKey("uiSyntax")) {
-            moduleInfo.uiSyntax = getJsonString(moduleJson, "uiSyntax");
-        }
-        // parse pages
-        if (moduleJson.containsKey("pages")) {
-            moduleInfo.pages = parseModulePages(moduleJson, profileJsons);
-        }
-        // parse metadata
-        if (moduleJson.containsKey("metadata")) {
-            moduleInfo.moduleMetadataInfos = parseModuleMetadataInfos(moduleJson, data, profileJsons);
-        }
-        // parse shortcuts
-        if (!moduleInfo.moduleMetadataInfos.isEmpty()) {
-            moduleInfo.moduleShortcuts = parseModuleShortcut(moduleInfo.moduleMetadataInfos, data);
-        }
-        // parse distrofilter
-        if (!moduleInfo.moduleMetadataInfos.isEmpty()) {
-            moduleInfo.distroFilter = parseModuleDistrofilterFromMetadata(moduleInfo.moduleMetadataInfos);
-        }
-        // parse abilities
-        if (moduleJson.containsKey("abilities")) {
-            moduleInfo.abilities = parseModuleAbilities(moduleJson, data, profileJsons);
-            for (ModuleAbilityInfo abilityInfo : moduleInfo.abilities) {
-                moduleInfo.moduleShortcuts.addAll(parseModuleShortcut(abilityInfo.metadata, data));
-            }
-        }
-        // parse extensionabilities
-        if (moduleJson.containsKey("extensionAbilities")) {
-            // parse service providerAbility
-            String serviceProviderAbility = parseStageServiceProvider(moduleJson, moduleInfo.abilities);
-            moduleInfo.extensionAbilityInfos = parseModuleExtensionAbilities(moduleJson, data, profileJsons);
-            // parse abilityform
-            moduleInfo.abilityFormInfos = parseModuleAbilityforms(moduleInfo.extensionAbilityInfos,
-                    data, serviceProviderAbility);
-            // parse commonEvent
-            moduleInfo.commonEvents = parseModuleCommonEvents(moduleInfo.extensionAbilityInfos);
-        }
-
-        // parse request permission
-        if (moduleJson.containsKey("requestPermissions")) {
-            moduleInfo.requestPermissions = parseReqPermission(moduleJson, data);
-        }
-        // parse define permission
-        if (moduleJson.containsKey("definePermissions")) {
-            moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
-        }
-        return moduleInfo;
     }
 
     /**
@@ -1030,14 +1031,17 @@ public class JsonUtil {
     static List<String> parseModulePages(
             JSONObject moduleJson, HashMap<String, String> profileJsons) throws BundleException {
         List<String> pages = new ArrayList<>();
-        String pageFile = getJsonString(moduleJson, "pages");
+        String pageFile = getJsonString(moduleJson, PAGES);
+        if (pageFile.isEmpty()) {
+            return pages;
+        }
         pageFile = pageFile.replace(PROFILE, "");
-        pageFile += ".json";
+        pageFile += JSON_SUFFIX;
         String fileContent = profileJsons.get(pageFile);
         if (fileContent != null) {
             JSONObject pageObj = JSONObject.parseObject(fileContent);
             if (pageObj != null) {
-                pages = JSONObject.parseArray(getJsonString(pageObj, "src"), String.class);
+                pages = JSONObject.parseArray(getJsonString(pageObj, SRC), String.class);
             }
         }
         return pages;
@@ -1058,8 +1062,8 @@ public class JsonUtil {
                 continue;
             }
             JSONObject distroFilter = JSONObject.parseObject(resource);
-            if (distroFilter.containsKey("distroFilter")) {
-                return JSONObject.parseObject(getJsonString(distroFilter, "distroFilter"), DistroFilter.class);
+            if (distroFilter.containsKey(DISTRO_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
         }
         return null;
@@ -1077,13 +1081,28 @@ public class JsonUtil {
     static List<ExtensionAbilityInfo> parseModuleExtensionAbilities(
             JSONObject moduleJson, byte[] data, HashMap<String, String> profileJsons) throws BundleException {
         List<ExtensionAbilityInfo> extensionAbilityInfos = new ArrayList<>();
-        JSONArray extensionAbilities = moduleJson.getJSONArray("extensionAbilities");
+        JSONArray extensionAbilities = moduleJson.getJSONArray(EXTENSION_ABILITIES);
         int size = extensionAbilities.size();
         for (int i = 0; i < size; ++i) {
             JSONObject tmpObj = extensionAbilities.getJSONObject(i);
             extensionAbilityInfos.add(parseModuleExtensionAbility(tmpObj, data, profileJsons));
         }
         return extensionAbilityInfos;
+    }
+
+    private static void parseStageExtensionAbility(JSONObject moduleJson, ModuleInfo moduleInfo, byte[] data,
+                                                   HashMap<String, String> profileJsons) throws BundleException {
+        if (!moduleJson.containsKey(EXTENSION_ABILITIES)) {
+            return;
+        }
+        // parse service providerAbility
+        String serviceProviderAbility = parseStageServiceProvider(moduleJson, moduleInfo.abilities);
+        moduleInfo.extensionAbilityInfos = parseModuleExtensionAbilities(moduleJson, data, profileJsons);
+        // parse abilityform
+        moduleInfo.abilityFormInfos = parseModuleAbilityforms(moduleInfo.extensionAbilityInfos,
+                data, serviceProviderAbility);
+        // parse commonEvent
+        moduleInfo.commonEvents = parseModuleCommonEvents(moduleInfo.extensionAbilityInfos);
     }
 
     /**
@@ -1159,13 +1178,24 @@ public class JsonUtil {
     static List<ModuleAbilityInfo> parseModuleAbilities(JSONObject moduleJson, byte[] data,
                                                         HashMap<String, String> profileJsons) throws BundleException {
         List<ModuleAbilityInfo> abilities = new ArrayList<>();
-        JSONArray abilityObjs = moduleJson.getJSONArray("abilities");
+        if (!moduleJson.containsKey(ABILITIES)) {
+            return abilities;
+        }
+        JSONArray abilityObjs = moduleJson.getJSONArray(ABILITIES);
         int size = abilityObjs.size();
         for (int i = 0; i < size; ++i) {
             JSONObject tmpObj =abilityObjs.getJSONObject(i);
             abilities.add(parseModuleAbility(tmpObj, data, profileJsons));
         }
         return abilities;
+    }
+
+    private static void parseModuleAbilityAndAddShortcut(JSONObject moduleJson, ModuleInfo moduleInfo, byte[] data,
+                                                         HashMap<String, String> profileJsons) throws BundleException {
+        moduleInfo.abilities = parseModuleAbilities(moduleJson, data, profileJsons);
+        for (ModuleAbilityInfo abilityInfo : moduleInfo.abilities) {
+            moduleInfo.moduleShortcuts.addAll(parseModuleShortcut(abilityInfo.metadata, data));
+        }
     }
 
     /**
@@ -1183,38 +1213,29 @@ public class JsonUtil {
             throw new BundleException("Parse ability failed, abilityJson is null");
         }
         ModuleAbilityInfo moduleAbilityInfo = new ModuleAbilityInfo();
-        if (abilityJson.containsKey("name")) {
-            moduleAbilityInfo.name = getJsonString(abilityJson, "name");
-        }
-        if (abilityJson.containsKey("srcEntrance")) {
-            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, "srcEntrance");
-        }
-        if (abilityJson.containsKey("launchType")) {
-            moduleAbilityInfo.launchType = getJsonString(abilityJson, "launchType");
-        }
-        moduleAbilityInfo.description = parseResourceByKey(abilityJson, data, "description", "descriptionId");
+        moduleAbilityInfo.name = getJsonString(abilityJson, NAME);
+        moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
+        moduleAbilityInfo.launchType = getJsonString(abilityJson, LAUNCH_TYPE, STANDARD);
+        moduleAbilityInfo.description = parseResourceByKey(abilityJson, data, DESCRIPTION, DESCRIPTION_ID);
+        moduleAbilityInfo.descriptions = parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID);
+
         moduleAbilityInfo.icon = parseIconById(abilityJson, data);
-        moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, "label", "labelId");
+        moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
+        moduleAbilityInfo.labels = parseResourceMapByKey(abilityJson, data, LABEL_ID);
+        if (abilityJson.containsKey(PERMISSIONS)) {
+            moduleAbilityInfo.permissions = JSONObject.parseArray(getJsonString(abilityJson, PERMISSIONS), String.class);
+        }
+        moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
+        moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
+        moduleAbilityInfo.continuable = getJsonBooleanValue(abilityJson, CONTINUABLE, false);
 
-        if (abilityJson.containsKey("permissions")) {
-            moduleAbilityInfo.permissions = JSONObject.parseArray(getJsonString(abilityJson, "permissions"), String.class);
-        }
-        if (abilityJson.containsKey("metadata")) {
-            moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
-        }
-        if (abilityJson.containsKey("visible")) {
-            moduleAbilityInfo.visible = abilityJson.getBoolean("visible");
-        }
-        if (abilityJson.containsKey("continuable")) {
-            moduleAbilityInfo.continuable = abilityJson.getBoolean("continuable");
-        }
-        if (abilityJson.containsKey("skills")) {
-            moduleAbilityInfo.skills = JSON.parseArray(getJsonString(abilityJson, "skills"), SkillInfo.class);
+        if (abilityJson.containsKey(SKILLS)) {
+            moduleAbilityInfo.skills = JSON.parseArray(getJsonString(abilityJson, SKILLS), SkillInfo.class);
         }
 
-        if (abilityJson.containsKey("backgroundModes")) {
+        if (abilityJson.containsKey(BACKGROUND_MODES)) {
             moduleAbilityInfo.backgroundModes =
-                    JSONArray.parseArray(getJsonString(abilityJson, "backgroundModes"), String.class);
+                    JSONArray.parseArray(getJsonString(abilityJson, BACKGROUND_MODES), String.class);
         }
         return moduleAbilityInfo;
     }
@@ -1230,7 +1251,10 @@ public class JsonUtil {
     static List<ModuleMetadataInfo> parseModuleMetadataInfos(
             JSONObject jsonObject, byte[] data, HashMap<String, String> profileJsons) throws BundleException {
         List<ModuleMetadataInfo> moduleMetadataInfos = new ArrayList<>();
-        JSONArray metadatas = jsonObject.getJSONArray("metadata");
+        if (!jsonObject.containsKey(META_DATA)) {
+            return moduleMetadataInfos;
+        }
+        JSONArray metadatas = jsonObject.getJSONArray(META_DATA);
         for (int i = 0; i < metadatas.size(); ++i) {
             JSONObject metadata = metadatas.getJSONObject(i);
             moduleMetadataInfos.add(parseModuleMetadata(metadata, data, profileJsons));
@@ -1249,21 +1273,18 @@ public class JsonUtil {
     static ModuleMetadataInfo parseModuleMetadata(JSONObject jsonObject, byte[] data,
                                                           HashMap<String, String> profileJson) throws BundleException {
         if (jsonObject == null) {
-            LOG.error("JsonUitl::parseModuleMetadata exception: jsonObject is null");
+            LOG.error("JsonUtil::parseModuleMetadata exception: jsonObject is null");
             throw new BundleException("Parse ModuleMetadataInfo failed, jsonObject is null");
         }
         ModuleMetadataInfo moduleMetadataInfo = new ModuleMetadataInfo();
-        if (jsonObject.containsKey("name")) {
-            moduleMetadataInfo.name = getJsonString(jsonObject, "name");
-        }
-        if (jsonObject.containsKey("value")) {
-            moduleMetadataInfo.value = getJsonString(jsonObject, "value");
-        }
-        if (jsonObject.containsKey("resource")) {
-            moduleMetadataInfo.resource = getJsonString(jsonObject, "resource");
+        moduleMetadataInfo.name = getJsonString(jsonObject, NAME);
+        moduleMetadataInfo.value = getJsonString(jsonObject, VALUE);
+
+        if (jsonObject.containsKey(RESOURCE)) {
+            moduleMetadataInfo.resource = getJsonString(jsonObject, RESOURCE);
             String fileName = moduleMetadataInfo.resource;
             fileName = fileName.replace(PROFILE, "");
-            fileName = fileName + ".json";
+            fileName = fileName + JSON_SUFFIX;
             moduleMetadataInfo.resource = profileJson.get(fileName);
         }
         return moduleMetadataInfo;
@@ -1577,11 +1598,12 @@ public class JsonUtil {
      */
     static List<DefinePermission> parseDefinePermissions(JSONObject moduleJson, byte[] data) throws BundleException {
         List<DefinePermission> definePermissions = new ArrayList<>();
-        if (moduleJson.containsKey("definePermissions")) {
-            JSONArray definePermissionObjs = moduleJson.getJSONArray("definePermissions");
-            for (int i = 0; i < definePermissionObjs.size(); ++i) {
-                definePermissions.add(parseDefinePermission(definePermissionObjs.getJSONObject(i), data));
-            }
+        if (!moduleJson.containsKey(DEFINE_PERMISSIONS)) {
+            return definePermissions;
+        }
+        JSONArray definePermissionObjs = moduleJson.getJSONArray(DEFINE_PERMISSIONS);
+        for (int i = 0; i < definePermissionObjs.size(); ++i) {
+            definePermissions.add(parseDefinePermission(definePermissionObjs.getJSONObject(i), data));
         }
         return definePermissions;
     }
@@ -1744,18 +1766,19 @@ public class JsonUtil {
      */
     static List<ReqPermission> parseReqPermission(JSONObject moduleJson, byte[] data) throws BundleException {
         List<ReqPermission> reqPermissions = new ArrayList<>();
-        JSONArray requestPermissionObjs = moduleJson.getJSONArray("requestPermissions");
+        if (!moduleJson.containsKey(REQUEST_PERMISSIONS)) {
+            return reqPermissions;
+        }
+        JSONArray requestPermissionObjs = moduleJson.getJSONArray(REQUEST_PERMISSIONS);
         for (int i = 0; i < requestPermissionObjs.size(); ++i) {
             ReqPermission reqPermission = new ReqPermission();
             JSONObject requestPermission = requestPermissionObjs.getJSONObject(i);
-            if (requestPermission.containsKey("name")) {
-                reqPermission.name = getJsonString(requestPermission, "name");
+            reqPermission.name = getJsonString(requestPermission, NAME);
+            if (requestPermission.containsKey(REASON_ID)) {
+                reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
             }
-            if (requestPermission.containsKey("reasonId")) {
-                reqPermission.reason = parseResourceByKey(requestPermission, data, "reason", "reasonId");
-            }
-            if (requestPermission.containsKey("usedScene"))  {
-                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject("usedScene"));
+            if (requestPermission.containsKey(USED_SCENE))  {
+                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
             }
             reqPermissions.add(reqPermission);
         }

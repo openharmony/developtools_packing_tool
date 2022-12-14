@@ -17,6 +17,7 @@ package ohos;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,6 +42,10 @@ class ModuleAbilityInfo {
      */
     public String description = "";
     /**
+     * Indicates the descriptions of module ModuleJson, for Multilingual.
+     */
+    public HashMap<String, String> descriptions = new HashMap<>();
+    /**
      * Indicates the icon of module ModuleJson.
      */
     public String icon = "";
@@ -48,6 +53,10 @@ class ModuleAbilityInfo {
      * Indicates the label of module ModuleJson.
      */
     public String label = "";
+    /**
+     * Indicates the labels of module ModuleJson, for Multilingual.
+     */
+    public HashMap<String, String> labels = new HashMap<>();
     /**
      * Indicates the permissions of module ModuleJson.
      */
