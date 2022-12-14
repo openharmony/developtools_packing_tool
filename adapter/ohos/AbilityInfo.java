@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,6 +33,10 @@ public class AbilityInfo {
      * Indicates the description of ability.
      */
     public String description = "";
+    /**
+     * Indicates the descriptions of ability, for Multilingual.
+     */
+    public HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the description resource of ability.
@@ -52,6 +57,11 @@ public class AbilityInfo {
      * Indicates the label of ability.
      */
     public String label = "";
+
+    /**
+     * Indicates the labels of ability, for Multilingual.
+     */
+    public HashMap<String, String> labels = new HashMap<>();
 
     /**
      * Indicates the label resource of ability.
