@@ -28,7 +28,6 @@ public class CompressVerify {
     private static final String COMMA_SPLIT = ",";
     private static final String JSON_PROFILE = "config.json";
     private static final String MODULE_PROFILE = "module.json";
-    private static final String MODULE_PROFILE_FIVE = "module.json5";
     private static final String PATCH_PROFILE = "patch.json";
     private static final String PROFILE_NAME = "CAPABILITY.profile";
     private static final String INDEX_PROFILE = "resources.index";
@@ -334,7 +333,7 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
-        if (utility.getHapPath().isEmpty()) {
+        if (utility.getHapPath().isEmpty() && utility.getHspPath().isEmpty()) {
             LOG.error("CompressVerify::isArgsValidInAppMode hap-path is empty!");
             return false;
         }
@@ -344,7 +343,8 @@ public class CompressVerify {
             return false;
         }
 
-        if (!utility.getHspPath().isEmpty() && !compatibleProcess(utility, utility.getHspPath(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
+        if (!utility.getHspPath().isEmpty()
+                && !compatibleProcess(utility, utility.getHspPath(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInAppMode hsp-path is invalid!");
             return false;
         }
@@ -656,17 +656,14 @@ public class CompressVerify {
         return list;
     }
 
-    //TODO: clarify essential items in hsp
     private static boolean isVerifyValidInHspMode(Utility utility) {
         if (utility.getJsonPath().isEmpty()) {
             LOG.error("CompressVerify::isArgsValidInHspMode json-path is empty!");
             return false;
         }
 
-        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
-                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)
-                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE_FIVE)) {
-            LOG.error("CompressVerify::isArgsValidInHspMode json-path must be config.json file!");
+        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode json-path must be module.json file!");
             return false;
         }
 
