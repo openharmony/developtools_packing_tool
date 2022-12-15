@@ -55,6 +55,7 @@ public class Compressor {
     private static final String JSON_SUFFIX = ".json";
     private static final String INFO_SUFFIX = ".info";
     private static final String HAP_SUFFIX = ".hap";
+    private static final String HSP_SUFFIX = ".hsp";
     private static final String PNG_SUFFIX = ".png";
     private static final String APP_SUFFIX = ".app";
     private static final String UPPERCASE_PNG_SUFFIX = ".PNG";
@@ -506,6 +507,12 @@ public class Compressor {
                 File hspFile = new File(hspPathItem.trim());
                 String hspTempPath = hspTempDir + File.separator + hspFile.getName();
                 fileList.add(hspTempPath);
+                try {
+                    compressPackinfoIntoHap(hspPathItem, hspTempPath, utility.getPackInfoPath());
+                } catch (IOException e) {
+                    LOG.error("Compressor::compressAppMode compress pack.info into hsp failed");
+                    throw new BundleException("Compressor::compressAppMode compress pack.info into hsp failed");
+                }
             }
             // check hap is valid
             if (!checkHapIsValid(fileList)) {
@@ -534,10 +541,11 @@ public class Compressor {
             throw new BundleException("Compressor::compressAppMode compress failed");
         } finally {
             // delete temp file
-            for (String hapPath : fileList) {
-                deleteFile(hapPath);
+            for (String path : fileList) {
+                deleteFile(path);
             }
             deleteFile(tempPath);
+            deleteFile(hspTempDirPath);
         }
     }
 
@@ -1987,7 +1995,8 @@ public class Compressor {
                 LOG.error("Compressor::checkHapIsValid get file name failed!");
                 throw new BundleException("Compressor::checkHapIsValid get file name failed!");
             }
-            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)
+                    && !fileStr.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
                 LOG.error("Compressor::checkHapIsValid input wrong hap file!");
                 throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
             }
@@ -2001,10 +2010,6 @@ public class Compressor {
             return false;
         }
         return true;
-    }
-
-    private boolean checkHspIsValid(List<String> fileList) throws BundleException {
-        return false;
     }
 
     /**
@@ -2193,14 +2198,6 @@ public class Compressor {
 
         if (!utility.getPackInfoPath().isEmpty()) {
             pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
-        }
-
-        // pack --dir-list
-        if (!utility.getFormatedDirList().isEmpty()) {
-            for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
-                String baseDir = new File(utility.getFormatedDirList().get(i)).getName() + File.separator;
-                pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
-            }
         }
 
         compressHapModeMultiple(utility);

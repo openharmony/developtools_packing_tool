@@ -343,7 +343,7 @@ class ModuleJsonUtil {
         }
         JSONObject appObject = jsonObject.getJSONObject(APP);
         if (appObject == null) {
-            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
+            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!" + jsonString);
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
         }
         String bundleName = "";
