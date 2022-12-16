@@ -136,6 +136,7 @@ class ModuleAdaption {
         hapInfo.distro.deliveryWithInstall = moduleInfo.deliveryWithInstall;
         hapInfo.srcEntrance = moduleInfo.srcEntrance;
         hapInfo.description = moduleInfo.description;
+        hapInfo.descriptions = moduleInfo.descriptions;
         hapInfo.process = moduleInfo.process;
         hapInfo.mainElement = moduleInfo.mainElement;
         hapInfo.deviceType = moduleInfo.deviceTypes;

@@ -462,6 +462,16 @@ public class ResourcesParser {
         return resourceMap;
     }
 
+    static String getResourceStringById(int resId, byte[] data) {
+        List<ResourceIndexResult> resources = getAllDataItem(data);
+        for (ResourceIndexResult indexResult : resources) {
+            if (indexResult.id == resId) {
+                return indexResult.value;
+            }
+        }
+        return "";
+    }
+
     /**
      * Read all config item.
      *

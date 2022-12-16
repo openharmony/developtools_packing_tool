@@ -138,6 +138,7 @@ public class JsonUtil {
     private static final String UPDATE_DURATION = "updateDuration";
     private static final String FROM_CONFIG_ABILITY = "formConfigAbility";
     private static final String FORM_VISIBLE_NOTIFY = "formVisibleNotify";
+    private static final String AUTO = "auto";
 
     private static final int DEFAULT_VERSION_CODE = -1;
 
@@ -1548,7 +1549,7 @@ public class JsonUtil {
                     JSON.parseObject(getJsonString(formObj, WINDOW), AbilityFormInfo.ModuleWindowInfo.class);
         }
         moduleFormInfo.isDefault = getJsonBooleanValue(formObj, IS_DEFAULT, false);
-        moduleFormInfo.colorMode = getJsonString(formObj, COLOR_MODE);
+        moduleFormInfo.colorMode = getJsonString(formObj, COLOR_MODE, AUTO);
         if (formObj.containsKey(SUPPORT_DIMENSIONS)) {
             moduleFormInfo.supportDimensions =
                     JSONObject.parseArray(getJsonString(formObj, SUPPORT_DIMENSIONS), String.class);
@@ -1701,7 +1702,7 @@ public class JsonUtil {
         }
         try {
             int finalId = Integer.parseInt(id.substring(index));
-            res = ResourcesParser.getBaseResourceById(finalId, data);
+            res = ResourcesParser.getResourceStringById(finalId, data);
         } catch (NumberFormatException e) {
             LOG.error("parseResourceByStringID failed: input invalid of " + id);
         }
@@ -1716,14 +1717,12 @@ public class JsonUtil {
      * @param key is the index of json object.
      * @param keyId is the index id of resource.
      * @return the result
-     * @throws BundleException Throws this exception when parse failed.
      */
-    static String parseResourceByKey(JSONObject jsonObject, byte[] data, String key, String keyId)
-            throws BundleException {
+    static String parseResourceByKey(JSONObject jsonObject, byte[] data, String key, String keyId) {
         String res = "";
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
-            res = ResourcesParser.getBaseResourceById(resId, data);
+            res = ResourcesParser.getResourceStringById(resId, data);
         }
         if (res != null && !res.isEmpty()) {
             return res;
