@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -84,6 +85,10 @@ public class AbilityFormInfo {
      * Indicates the description of ability form.
      */
     public String description = "";
+    /**
+     * Indicates the descriptions of ability form,for Multilingual.
+     */
+    public HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the src of ability form the attribute is corresponding to the UI code of the form.

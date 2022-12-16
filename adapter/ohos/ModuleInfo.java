@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -46,6 +47,10 @@ class ModuleInfo {
      * Indicates the description of ModuleInfo.
      */
     public String description = "";
+    /**
+     * Indicates the descriptions of ModuleInfo, for Multilingual.
+     */
+    public HashMap<String, String> descriptions = new HashMap<>();
     /**
      * Indicates the process of ModuleInfo.
      */
