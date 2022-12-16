@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -40,9 +41,17 @@ public class ExtensionAbilityInfo {
      */
     public String label = "";
     /**
+     * Indicates the labels of module ModuleJson, .
+     */
+    public HashMap<String, String> labels = new HashMap<>();
+    /**
      * Indicates the description of module ModuleJson.
      */
     public String description = "";
+    /**
+     * Indicates the descriptions of module ModuleJson.
+     */
+    public HashMap<String, String> descriptions = new HashMap<>();
     /**
      * Indicates the type of module ModuleJson.
      */

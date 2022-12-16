@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,6 +33,11 @@ public class ReqPermission {
      * Indicates the reason of ReqPermission.
      */
     public String reason = "";
+
+    /**
+     * Indicates the reasons of ReqPermission, for Multilingual.
+     */
+    public HashMap<String, String> reasons = new HashMap<>();
 
     /**
      * Indicates the usedScene of ReqPermission.
