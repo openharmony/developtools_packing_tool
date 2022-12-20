@@ -31,18 +31,11 @@
                 "type",
                 "srcEntrance",
                 "description",
-                "process",
-                "mainElement",
                 "deliveryWithInstall",
                 "deviceTypes",
-                "installationFree",
-                "virtualMachine",
-                "uiSyntax",
                 "pages",
                 "metadata",
                 "requestPermissions",
-                "definePermissions",
-                "testRunner",
                 "dependencies",
                 "libIsolation"
               ]
