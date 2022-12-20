@@ -458,7 +458,7 @@ public class Uncompress {
             Utility.closeStream(fileStream);
             Utility.closeStream(parseStream);
             if (file != null) {
-                file.deleteOnExit();
+                FileUtils.deleteFile(file.getPath());
             }
         }
         return compressResult;
