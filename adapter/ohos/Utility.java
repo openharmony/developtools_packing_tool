@@ -34,6 +34,7 @@ public class Utility {
     static final String MODE_HQF = "hqf";
     static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
+    static final String MODE_HSP = "hsp";
     static final String FALSE_STRING = "false";
 
     private static final String CMD_PREFIX = "--";
@@ -64,6 +65,7 @@ public class Utility {
     private boolean isCompressNativeLibs = true;
     private String moduleName = "";
     private String harPath = "";
+    private String hspPath = "";
     private String jarPath = "";
     private String txtPath = "";
     private String parseMode = "";
@@ -93,6 +95,7 @@ public class Utility {
     private List<String> formattedDexPathList = new ArrayList<>();
     private List<String> formattedAbcPathList = new ArrayList<>();
     private List<String> formattedHapPathList = new ArrayList<>();
+    private List<String> formattedHspPathList = new ArrayList<>();
     private List<String> formattedApkPathList = new ArrayList<>();
     private List<String> formattedJarPathList = new ArrayList<>();
     private List<String> formattedTxtPathList = new ArrayList<>();
@@ -409,6 +412,16 @@ public class Utility {
         }
     }
 
+    public void setHspPath(String hspPath) {
+        if (!hspPath.startsWith(CMD_PREFIX)) {
+            this.hspPath = hspPath;
+        }
+    }
+
+    public String getHspPath() {
+        return hspPath;
+    }
+
     public String getParseMode() {
         return parseMode;
     }
@@ -547,6 +560,10 @@ public class Utility {
 
     public List<String> getFormattedHapPathList() {
         return formattedHapPathList;
+    }
+
+    public List<String> getFormattedHspPathList() {
+        return formattedHspPathList;
     }
 
     public List<String> getFormattedApkPathList() {
