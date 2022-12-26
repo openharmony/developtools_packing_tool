@@ -117,6 +117,7 @@ public class Compressor {
     private static final String TEMP_HSP_DIR = "tempHspDir";
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
     private static final String ABILITIES_DIR_NAME = "abilities";
+    private static final String EMPTY_STRING = "";
 
 
     // set timestamp to get fixed MD5
@@ -2162,8 +2163,8 @@ public class Compressor {
         if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
-            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace("\"", "").trim()) ||
-                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace("\"", "").trim())) {
+            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
                 resPath = RES_DIR_NAME;
             }
             pathToFile(utility, utility.getResPath(), resPath, false);
