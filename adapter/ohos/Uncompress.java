@@ -51,6 +51,8 @@ public class Uncompress {
     private static final String HAP_SUFFIX = ".hap";
     private static final String APK_SUFFIX = ".apk";
     private static final String JSON_SUFFIX = ".json";
+    private static final String HSP_SUFFIX = ".hsp";
+
     private static final String PACK_INFO = "pack.info";
     private static final String HARMONY_PROFILE = "config.json";
     private static final String MODULE_JSON = "module.json";
@@ -112,6 +114,8 @@ public class Uncompress {
                 dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
             } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
                 uncompressAPPQFFile(utility);
+            } else if (Utility.MODE_HSP.equals(utility.getMode())) {
+                dataTransferAllFiles(utility.getHspPath(), utility.getOutPath());
             } else {
                 LOG.error("Uncompress::unpackageProcess input wrong type!");
                 throw new BundleException("Uncompress::unpackageProcess input wrong type!");
