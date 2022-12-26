@@ -47,6 +47,7 @@ public class CompressVerify {
     private static final String RES_SUFFIX = ".res";
     private static final String HQF_SUFFIX = ".hqf";
     private static final String APPQF_SUFFIX = ".appqf";
+    private static final String HSP_SUFFIX = ".hsp";
     private static final String FALSE = "false";
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
 
@@ -101,6 +102,8 @@ public class CompressVerify {
                 return isVerifyValidInHQFMode(utility);
             case Utility.MODE_APPQF:
                 return isVerifyValidInAPPQFMode(utility);
+            case Utility.MODE_HSP:
+                return isVerifyValidInHspMode(utility);
             default:
                 LOG.error("CompressVerify::commandVerify mode is invalid!");
                 return false;
@@ -330,13 +333,19 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
-        if (utility.getHapPath().isEmpty()) {
+        if (utility.getHapPath().isEmpty() && utility.getHspPath().isEmpty()) {
             LOG.error("CompressVerify::isArgsValidInAppMode hap-path is empty!");
             return false;
         }
 
         if (!compatibleProcess(utility, utility.getHapPath(), utility.getFormattedHapPathList(), HAP_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInAppMode hap-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getHspPath().isEmpty()
+                && !compatibleProcess(utility, utility.getHspPath(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInAppMode hsp-path is invalid!");
             return false;
         }
 
@@ -589,6 +598,14 @@ public class CompressVerify {
             }
         }
 
+        if (HSP_SUFFIX.equals(suffix)) {
+            if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
+                LOG.error("CompressVerify::isOutPathValid out-path must end with .hsp!");
+                return false;
+            } else {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -637,5 +654,51 @@ public class CompressVerify {
             }
         }
         return list;
+    }
+
+    private static boolean isVerifyValidInHspMode(Utility utility) {
+        if (utility.getJsonPath().isEmpty()) {
+            LOG.error("CompressVerify::isArgsValidInHspMode json-path is empty!");
+            return false;
+        }
+
+        if (!isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode json-path must be module.json file!");
+            return false;
+        }
+
+        if (!utility.getJarPath().isEmpty()
+                && !compatibleProcess(utility, utility.getJarPath(), utility.getFormattedJarPathList(), JAR_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode jar-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getTxtPath().isEmpty()
+                && !compatibleProcess(utility, utility.getTxtPath(), utility.getFormattedTxtPathList(), TXT_SUFFIX)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode txt-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getLibPath().isEmpty() && !isPathValid(utility.getLibPath(), TYPE_DIR, null)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode lib-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getResPath().isEmpty() && !isPathValid(utility.getResPath(), TYPE_DIR, null)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode res-path is invalid!");
+            return false;
+        }
+
+        if (utility.getResourcesPath().isEmpty() || !isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode resources-path is invalid!");
+            return false;
+        }
+
+        if (!utility.getAssetsPath().isEmpty() && !isPathValid(utility.getAssetsPath(), TYPE_DIR, null)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode assets-path is invalid!");
+            return false;
+        }
+
+        return isOutPathValid(utility, HSP_SUFFIX);
     }
 }

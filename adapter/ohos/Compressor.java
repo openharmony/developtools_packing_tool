@@ -55,6 +55,7 @@ public class Compressor {
     private static final String JSON_SUFFIX = ".json";
     private static final String INFO_SUFFIX = ".info";
     private static final String HAP_SUFFIX = ".hap";
+    private static final String HSP_SUFFIX = ".hsp";
     private static final String PNG_SUFFIX = ".png";
     private static final String APP_SUFFIX = ".app";
     private static final String UPPERCASE_PNG_SUFFIX = ".PNG";
@@ -113,8 +114,10 @@ public class Compressor {
     private static final String JS_PATH = "js/";
     private static final String ETS_PATH = "ets/";
     private static final String TEMP_HAP_DIR = "tempHapDir";
+    private static final String TEMP_HSP_DIR = "tempHspDir";
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
     private static final String ABILITIES_DIR_NAME = "abilities";
+    private static final String EMPTY_STRING = "";
 
 
     // set timestamp to get fixed MD5
@@ -223,6 +226,9 @@ public class Compressor {
                 break;
             case Utility.MODE_APPQF:
                 compressAPPQFMode(utility);
+                break;
+            case Utility.MODE_HSP:
+                compressHSPMode(utility);
                 break;
             default:
                 compressPackResMode(utility);
@@ -465,6 +471,7 @@ public class Compressor {
         List<String> fileList = new ArrayList<>();
         File appOutputFile = new File(utility.getOutPath().trim());
         String tempPath = appOutputFile.getParentFile().getParent() + File.separator + TEMP_HAP_DIR;
+        String hspTempDirPath = appOutputFile.getParentFile().getParent() + File.separator + TEMP_HSP_DIR;
         try {
             pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
 
@@ -490,6 +497,22 @@ public class Compressor {
                 } catch (IOException e) {
                     LOG.error("Compressor::compressAppMode compress pack.info into hap failed");
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed");
+                }
+            }
+
+            File hspTempDir = new File(hspTempDirPath);
+            if (!hspTempDir.exists()) {
+                hspTempDir.mkdirs();
+            }
+            for (String hspPathItem : utility.getFormattedHspPathList()) {
+                File hspFile = new File(hspPathItem.trim());
+                String hspTempPath = hspTempDir + File.separator + hspFile.getName();
+                fileList.add(hspTempPath);
+                try {
+                    compressPackinfoIntoHap(hspPathItem, hspTempPath, utility.getPackInfoPath());
+                } catch (IOException e) {
+                    LOG.error("Compressor::compressAppMode compress pack.info into hsp failed");
+                    throw new BundleException("Compressor::compressAppMode compress pack.info into hsp failed");
                 }
             }
             // check hap is valid
@@ -519,10 +542,11 @@ public class Compressor {
             throw new BundleException("Compressor::compressAppMode compress failed");
         } finally {
             // delete temp file
-            for (String hapPath : fileList) {
-                deleteFile(hapPath);
+            for (String path : fileList) {
+                deleteFile(path);
             }
             deleteFile(tempPath);
+            deleteFile(hspTempDirPath);
         }
     }
 
@@ -1972,7 +1996,8 @@ public class Compressor {
                 LOG.error("Compressor::checkHapIsValid get file name failed!");
                 throw new BundleException("Compressor::checkHapIsValid get file name failed!");
             }
-            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+            if (!fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)
+                    && !fileStr.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
                 LOG.error("Compressor::checkHapIsValid input wrong hap file!");
                 throw new BundleException("Compressor::checkHapIsValid input wrong hap file!");
             }
@@ -2111,5 +2136,71 @@ public class Compressor {
             return false;
         }
         return true;
+    }
+
+    private void compressHSPMode(Utility utility) throws BundleException {
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
+
+        if (!utility.getIndexPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String assetsPath = NULL_DIR_NAME;
+            pathToFile(utility, utility.getIndexPath(), assetsPath, false);
+        }
+
+        if (!utility.getLibPath().isEmpty()) {
+            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
+        }
+
+        if (!utility.getANPath().isEmpty()) {
+            pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
+        }
+
+        if (!utility.getFilePath().isEmpty()) {
+            pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
+            String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + RESOURCES_DIR_NAME;
+            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
+                resPath = RES_DIR_NAME;
+            }
+            pathToFile(utility, utility.getResPath(), resPath, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String resourcesPath = RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
+        if (!utility.getJsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String jsPath = JS_PATH;
+            pathToFile(utility, utility.getJsPath(), jsPath, false);
+        }
+
+        if (!utility.getEtsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String etsPath = ETS_PATH;
+            pathToFile(utility, utility.getEtsPath(), etsPath, false);
+        }
+
+        if (!utility.getRpcidPath().isEmpty()) {
+            String rpcidPath = NULL_DIR_NAME;
+            pathToFile(utility, utility.getRpcidPath(), rpcidPath, false);
+        }
+
+        if (!utility.getAssetsPath().isEmpty()) {
+            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
+        }
+
+        if (!utility.getBinPath().isEmpty()) {
+            pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getPackInfoPath().isEmpty()) {
+            pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        }
+
+        compressHapModeMultiple(utility);
     }
 }
