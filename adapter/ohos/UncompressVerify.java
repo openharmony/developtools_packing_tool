@@ -27,6 +27,7 @@ class UncompressVerify {
     private static final String HAR_SUFFIX = ".har";
     private static final String APP_SUFFIX = ".app";
     private static final String APPQF_SUFFIX = ".appqf";
+    private static final String HSP_SUFFIX = ".hsp";
     private static final String FALSE = "false";
     private static final String RPCID_SC = "rpcid.sc";
     private static final String TRUE = "true";
@@ -60,6 +61,8 @@ class UncompressVerify {
             return appCommandVerify(utility);
         } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
             return appqfVerify(utility);
+        } else if (Utility.MODE_HSP.equals(utility.getMode())) {
+            return hspCommandVerify(utility);
         } else {
             LOG.error("UncompressVerify::commandVerify mode is invalid!");
             return false;
@@ -88,6 +91,16 @@ class UncompressVerify {
             return rpcidCommandVerify(utility);
         }
 
+        return verifyOutPath(utility, file);
+    }
+
+    private static boolean hspCommandVerify(Utility utility) {
+        utility.setHspPath(utility.getFormattedPath(utility.getHspPath()));
+        File file = new File(utility.getHspPath());
+        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
+            LOG.error("UncompressVerify::isArgsValidInHspMode hsp-path must end with.hsp!");
+            return false;
+        }
         return verifyOutPath(utility, file);
     }
 
