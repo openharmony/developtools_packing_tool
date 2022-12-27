@@ -51,6 +51,8 @@ public class Uncompress {
     private static final String HAP_SUFFIX = ".hap";
     private static final String APK_SUFFIX = ".apk";
     private static final String JSON_SUFFIX = ".json";
+    private static final String HSP_SUFFIX = ".hsp";
+
     private static final String PACK_INFO = "pack.info";
     private static final String HARMONY_PROFILE = "config.json";
     private static final String MODULE_JSON = "module.json";
@@ -104,17 +106,16 @@ public class Uncompress {
                     outPath.mkdirs();
                 }
             }
-            if (Utility.MODE_HAP.equals(utility.getMode())) {
-                unpackageHapMode(utility);
-            } else if (Utility.MODE_HAR.equals(utility.getMode())) {
-                dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
-            } else if (Utility.MODE_APP.equals(utility.getMode())) {
-                dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
-            } else if (Utility.MODE_APPQF.equals(utility.getMode())) {
-                uncompressAPPQFFile(utility);
-            } else {
-                LOG.error("Uncompress::unpackageProcess input wrong type!");
-                throw new BundleException("Uncompress::unpackageProcess input wrong type!");
+            switch (utility.getMode()) {
+                case Utility.MODE_HAP -> unpackageHapMode(utility);
+                case Utility.MODE_HAR -> dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
+                case Utility.MODE_APP -> dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
+                case Utility.MODE_APPQF -> uncompressAPPQFFile(utility);
+                case Utility.MODE_HSP -> dataTransferAllFiles(utility.getHspPath(), utility.getOutPath());
+                default -> {
+                    LOG.error("Uncompress::unpackageProcess input wrong type!");
+                    throw new BundleException("Uncompress::unpackageProcess input wrong type!");
+                }
             }
         } catch (BundleException ignored) {
             unpackageResult = false;
