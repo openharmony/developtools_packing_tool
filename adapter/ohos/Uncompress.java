@@ -107,15 +107,24 @@ public class Uncompress {
                 }
             }
             switch (utility.getMode()) {
-                case Utility.MODE_HAP -> unpackageHapMode(utility);
-                case Utility.MODE_HAR -> dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
-                case Utility.MODE_APP -> dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
-                case Utility.MODE_APPQF -> uncompressAPPQFFile(utility);
-                case Utility.MODE_HSP -> dataTransferAllFiles(utility.getHspPath(), utility.getOutPath());
-                default -> {
+                case Utility.MODE_HAP:
+                    unpackageHapMode(utility);
+                    break;
+                case Utility.MODE_HAR:
+                    dataTransferAllFiles(utility.getHarPath(), utility.getOutPath());
+                    break;
+                case Utility.MODE_APP:
+                    dataTransferFilesByApp(utility, utility.getAppPath(), utility.getOutPath());
+                    break;
+                case Utility.MODE_APPQF:
+                    uncompressAPPQFFile(utility);
+                    break;
+                case Utility.MODE_HSP:
+                    dataTransferAllFiles(utility.getHspPath(), utility.getOutPath());
+                    break;
+                default:
                     LOG.error("Uncompress::unpackageProcess input wrong type!");
                     throw new BundleException("Uncompress::unpackageProcess input wrong type!");
-                }
             }
         } catch (BundleException ignored) {
             unpackageResult = false;
