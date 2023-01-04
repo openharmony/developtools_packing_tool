@@ -15,10 +15,8 @@
 
 package ohos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 /**
  * ModuleJson AppJson info.
@@ -45,9 +43,17 @@ class ModuleAppInfo {
      */
     public String label = "";
     /**
+     * Indicates the labels of app AppJson, for multilingual.
+     */
+    public HashMap<String, String> labels;
+    /**
      * Indicates the description of app AppJson.
      */
     public String description = "";
+    /**
+     * Indicates the descriptions of app AppJson, for multilingual.
+     */
+    public HashMap<String, String> descriptions;
     /**
      * Indicates the vendor of app AppJson.
      */

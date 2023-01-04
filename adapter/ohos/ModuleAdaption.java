@@ -80,7 +80,9 @@ class ModuleAdaption {
         appInfo.debug = moduleAppInfo.debug;
         appInfo.icon = moduleAppInfo.icon;
         appInfo.label = moduleAppInfo.label;
+        appInfo.labels = moduleAppInfo.labels;
         appInfo.description = moduleAppInfo.description;
+        appInfo.descriptions = moduleAppInfo.descriptions;
         appInfo.vendor = moduleAppInfo.vendor;
         appInfo.versionCode = String.valueOf(moduleAppInfo.versionCode);
         appInfo.versionName = moduleAppInfo.versionName;
@@ -134,6 +136,7 @@ class ModuleAdaption {
         hapInfo.distro.deliveryWithInstall = moduleInfo.deliveryWithInstall;
         hapInfo.srcEntrance = moduleInfo.srcEntrance;
         hapInfo.description = moduleInfo.description;
+        hapInfo.descriptions = moduleInfo.descriptions;
         hapInfo.process = moduleInfo.process;
         hapInfo.mainElement = moduleInfo.mainElement;
         hapInfo.deviceType = moduleInfo.deviceTypes;
@@ -218,10 +221,12 @@ class ModuleAdaption {
             abilityInfo.name = info.name;
             abilityInfo.srcEntrance = info.srcEntrance;
             abilityInfo.description = info.description;
+            abilityInfo.descriptions = info.descriptions;
             abilityInfo.launchType = info.launchType;
             abilityInfo.icon = info.icon;
             abilityInfo.iconPath = info.icon;
             abilityInfo.label = info.label;
+            abilityInfo.labels = info.labels;
             abilityInfo.labelRes = info.label;
             abilityInfo.permissions = info.permissions;
             abilityInfo.visible = info.visible;
