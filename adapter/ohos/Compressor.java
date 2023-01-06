@@ -1538,7 +1538,8 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            if (srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
+            String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
+            if (CONFIG_JSON.equals(srcName) || MODULE_JSON.equals(srcName)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 jsonSpecialProcess(utility, srcFile, zipEntry);
                 return;
@@ -1708,7 +1709,12 @@ public class Compressor {
             // parse moduleName from config.json
             parseModuleName(bufferedReader, utility);
             bufferedReader.reset();
-            parseCompressNativeLibs(bufferedReader, utility);
+            String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
+            if (CONFIG_JSON.equals(srcName)) {
+                parseCompressNativeLibs(bufferedReader, utility);
+            } else if (MODULE_JSON.equals(srcName)) {
+                parseStageCompressNativeLibs(bufferedReader, utility);
+            }
             bufferedReader.reset();
             parseDeviceType(bufferedReader, utility);
             bufferedReader.reset();
@@ -1899,6 +1905,22 @@ public class Compressor {
             LOG.error("Compressor::parseModuleName field module-name is fault: " + exception.getMessage());
             throw new BundleException("Parse module name failed, module-name is invalid");
         }
+    }
+
+    private void parseStageCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
+        StringBuffer buffer = new StringBuffer();
+        String lineString = null;
+        String jsonString = null;
+        try {
+            while ((lineString = bufferedReader.readLine()) != null) {
+                buffer.append(lineString.trim());
+            }
+            jsonString = buffer.toString();
+        } catch (IOException exception) {
+            LOG.error("Compressor::parseStageCompressNativeLibs io exception: " + exception.getMessage());
+            throw new BundleException("Parse compress native libs failed!");
+        }
+        utility.setIsCompressNativeLibs(ModuleJsonUtil.stageIsCompressNativeLibs(jsonString));
     }
 
     private void parseCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
