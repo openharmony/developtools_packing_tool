@@ -59,20 +59,11 @@
               "enum": [
                 "name",
                 "type",
-                "srcEntrance",
                 "description",
-                "process",
-                "mainElement",
                 "deviceTypes",
-                "installationFree",
-                "virtualMachine",
                 "uiSyntax",
                 "metadata",
-                "requestPermissions",
-                "definePermissions",
-                "testRunner",
-                "dependencies",
-                "libIsolation"
+                "requestPermissions"
               ]
             },
             "required": [
