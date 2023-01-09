@@ -75,6 +75,7 @@ class ModuleJsonUtil {
     private static final String PATCH_VERSION_NAME = "patchVersionName";
     private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
     private static final String EMPTY_STRING = "";
+    private static final String COMPRESS_NATIVE_LIBS = "compressNativeLibs";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -1298,7 +1299,26 @@ class ModuleJsonUtil {
         return hqfVerifyInfo;
     }
 
+    public static boolean stageIsCompressNativeLibs(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "Error: parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no module!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no module!");
+        }
+        if (moduleObj.containsKey(COMPRESS_NATIVE_LIBS)) {
+            return moduleObj.getBoolean(COMPRESS_NATIVE_LIBS);
+        }
 
+        return true;
+    }
 
     /**
      * get the String from JSONObject by the key.
