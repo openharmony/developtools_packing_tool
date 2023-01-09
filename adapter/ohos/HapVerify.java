@@ -887,7 +887,7 @@ class HapVerify {
             return false;
         }
         for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
-            if (!IsDependencyInFileList(dependency, allHapVerifyInfo)) {
+            if (!checkDependencyInFileList(dependency, allHapVerifyInfo)) {
                 LOG.error("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path");
                 return false;
             }
@@ -908,7 +908,7 @@ class HapVerify {
         return true;
     }
 
-    private static boolean isDependencyInFileList(
+    private static boolean checkDependencyInFileList(
             DependencyItem dependencyItem, List<HapVerifyInfo> allHapVerifyInfo) {
         String moduleName = dependencyItem.getModuleName();
         String bundleName = dependencyItem.getBundleName();
