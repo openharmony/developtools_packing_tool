@@ -690,7 +690,7 @@ public class CompressVerify {
             return false;
         }
 
-        if (utility.getResourcesPath().isEmpty() || !isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
+        if (!utility.getResourcesPath().isEmpty() && !isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
             LOG.error("CompressVerify::isArgsValidInHspMode resources-path is invalid!");
             return false;
         }
