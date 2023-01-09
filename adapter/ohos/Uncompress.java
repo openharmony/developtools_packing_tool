@@ -17,7 +17,6 @@ package ohos;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -459,7 +458,7 @@ public class Uncompress {
             Utility.closeStream(fileStream);
             Utility.closeStream(parseStream);
             if (file != null) {
-                file.deleteOnExit();
+                FileUtils.deleteFile(file.getPath());
             }
         }
         return compressResult;
