@@ -181,8 +181,8 @@ public class CompressVerify {
             return false;
         }
 
-        if (!utility.getDirList().isEmpty()
-                && !splitDirList(utility, utility.getDirList(), utility.getFormatedDirList())) {
+        if (!utility.getDirList().isEmpty() && !splitDirList(utility, utility.getDirList(),
+                utility.getFormatedDirList())) {
             LOG.error("CompressVerify::isArgsValidInHapMode --dir-list is invalid!");
             return false;
         }

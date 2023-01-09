@@ -36,7 +36,8 @@
                 "metadata",
                 "requestPermissions",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "compressNativeLibs"
               ]
             },
             "required": [
@@ -59,20 +60,11 @@
               "enum": [
                 "name",
                 "type",
-                "srcEntrance",
                 "description",
-                "process",
-                "mainElement",
                 "deviceTypes",
-                "installationFree",
-                "virtualMachine",
                 "uiSyntax",
                 "metadata",
-                "requestPermissions",
-                "definePermissions",
-                "testRunner",
-                "dependencies",
-                "libIsolation"
+                "requestPermissions"
               ]
             },
             "required": [
@@ -112,7 +104,8 @@
                 "definePermissions",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "compressNativeLibs"
               ]
             },
             "required": [
@@ -154,7 +147,8 @@
                 "definePermissions",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "compressNativeLibs"
               ]
             },
             "required": [
@@ -1060,6 +1054,11 @@
         "libIsolation": {
           "description": "Indicates whether to isolate the shared libraries in this module.",
           "type": "boolean"
+        },
+        "compressNativeLibs": {
+          "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
+          "type": "boolean",
+          "default": true
         }
       }
     }
