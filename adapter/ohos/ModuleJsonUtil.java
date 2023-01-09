@@ -343,7 +343,7 @@ class ModuleJsonUtil {
         }
         JSONObject appObject = jsonObject.getJSONObject(APP);
         if (appObject == null) {
-            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!" + jsonString);
+            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain app!");
         }
         String bundleName = "";
@@ -847,7 +847,8 @@ class ModuleJsonUtil {
         if (hapVerifyInfo.getProfileStr().isEmpty()) {
             throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, module.json is empty!");
         }
-        hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
+        String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
+        hapVerifyInfo.setBundleName(bundleName);
         hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVersion(parseStageVersion(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setApiVersion(parseStageModuleApiVersion(hapVerifyInfo.getProfileStr()));
@@ -860,7 +861,7 @@ class ModuleJsonUtil {
         List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.addAbilityNames(extensionAbilityNames);
         hapVerifyInfo.setModuleType(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
     }
 
@@ -875,6 +876,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
             throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
         }
+        String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVersion(parseFaVersion(hapVerifyInfo.getProfileStr()));
@@ -885,7 +887,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setModuleType(parseFAIsEntry(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
     }
 
@@ -1148,7 +1150,7 @@ class ModuleJsonUtil {
         return EMPTY_STRING;
     }
 
-    static List<DependencyItem> parseDependencies(String jsonString) throws BundleException {
+    static List<DependencyItem> parseDependencies(String jsonString, String bundleName) throws BundleException {
         JSONObject jsonObj;
         try {
             jsonObj = JSON.parseObject(jsonString);
@@ -1172,6 +1174,8 @@ class ModuleJsonUtil {
             DependencyItem item = new DependencyItem();
             if (object.containsKey(BUNDLE_NAME)) {
                 item.setBundleName(object.getString(BUNDLE_NAME));
+            } else {
+                item.setBundleName(bundleName);
             }
             if (object.containsKey(MODULE_NAME)) {
                 item.setModuleName(object.getString(MODULE_NAME));

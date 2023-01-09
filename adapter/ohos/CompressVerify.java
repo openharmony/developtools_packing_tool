@@ -181,7 +181,8 @@ public class CompressVerify {
             return false;
         }
 
-        if (!utility.getDirList().isEmpty() && !splitDirList(utility, utility.getDirList(), utility.getFormatedDirList())) {
+        if (!utility.getDirList().isEmpty()
+                && !splitDirList(utility, utility.getDirList(), utility.getFormatedDirList())) {
             LOG.error("CompressVerify::isArgsValidInHapMode --dir-list is invalid!");
             return false;
         }
@@ -689,7 +690,7 @@ public class CompressVerify {
             return false;
         }
 
-        if (utility.getResourcesPath().isEmpty() || !isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
+        if (!utility.getResourcesPath().isEmpty() && !isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
             LOG.error("CompressVerify::isArgsValidInHspMode resources-path is invalid!");
             return false;
         }
