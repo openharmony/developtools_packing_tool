@@ -886,12 +886,16 @@ class HapVerify {
                     + getHapVerifyInfoListNames(dependencyList));
             return false;
         }
-        boolean isHsp = SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType());
-        for (String dependency : hapVerifyInfo.getDependencies()) {
-            List<HapVerifyInfo> layerDependencyList = getLayerDependency(dependency, hapVerifyInfo, allHapVerifyInfo);
+        for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
+            if (!IsDependencyInFileList(dependency, allHapVerifyInfo)) {
+                LOG.error("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path");
+                return false;
+            }
+            List<HapVerifyInfo> layerDependencyList = getLayerDependency(
+                    dependency.getModuleName(), hapVerifyInfo, allHapVerifyInfo);
             for (HapVerifyInfo item : layerDependencyList) {
-                if (isHsp && !SHARED_LIBRARY.equals(item.getModuleType())) {
-                    LOG.error("HSP cannot depend on HAP");
+                if (FEATURE.equals(item.getModuleType()) || ENTRY.equals(item.getModuleType())) {
+                    LOG.error("HAP or HSP cannot depend on HAP" + item.getModuleName());
                     return false;
                 }
                 dependencyList.add(item);
@@ -902,6 +906,18 @@ class HapVerify {
             }
         }
         return true;
+    }
+
+    private static boolean isDependencyInFileList(
+            DependencyItem dependencyItem, List<HapVerifyInfo> allHapVerifyInfo) {
+        String moduleName = dependencyItem.getModuleName();
+        String bundleName = dependencyItem.getBundleName();
+        for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
+            if (moduleName.equals(hapVerifyInfo.getModuleName()) && bundleName.equals(hapVerifyInfo.getBundleName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
