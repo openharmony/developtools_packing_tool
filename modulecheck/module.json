@@ -313,7 +313,8 @@
                 "minWindowWidth",
                 "maxWindowHeight",
                 "minWindowHeight",
-                "excludeFromMissions"
+                "excludeFromMissions",
+                "recoverable"
               ]
             },
             "properties": {
@@ -610,6 +611,11 @@
               },
               "excludeFromMissions": {
                 "description": "Specifies whether to display in the recent missions list. For system application only.",
+                "type": "boolean",
+                "default": false
+              },
+              "recoverable": {
+                "description": "Specifies whether to support recover UI interface",
                 "type": "boolean",
                 "default": false
               }
