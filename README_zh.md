@@ -84,7 +84,7 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --out-path [option
 | --mode             | 是         | app           | 多个hap需满足hap的合法性校验。                               |
 | --hap-path         | 是         | NA            | 1.hap包文件路径，文件名必须以.hap为后缀。如果时多个hap包需要用“，”分隔。2.hap包文件路径也可以是目录。 |
 | --pack-info-path   | 是         | NA            | 文件名必须为pack.info                                        |
-| --out-path         | 否         | NA            | 目标文件路径，文件名必须以.app为后缀。                       |
+| --out-path         | 是         | NA            | 目标文件路径，文件名必须以.app为后缀。                       |
 | --signature-path   | 否         | NA            | 签名路径。                                                   |
 | --certificate-path | 否         | NA            | 证书路径。                                                   |
 | --force            | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
