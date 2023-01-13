@@ -139,6 +139,7 @@ public class JsonUtil {
     private static final String FROM_CONFIG_ABILITY = "formConfigAbility";
     private static final String FORM_VISIBLE_NOTIFY = "formVisibleNotify";
     private static final String AUTO = "auto";
+    private static final String DOT = ".";
 
     private static final int DEFAULT_VERSION_CODE = -1;
 
@@ -666,11 +667,13 @@ public class JsonUtil {
                 abilitieList.add(parseAbility(tmpObj, data));
             }
             hapInfo.abilities = abilitieList;
+            adaptAbilityName(hapInfo.abilities, hapInfo.packageStr);
             setFAProviderAbility(hapJson, hapInfo, hapInfo.abilities);
         }
 
         if (hapJson.containsKey("distroFilter")) {
-            hapInfo.distroFilter = JSONObject.parseObject(getJsonString(hapJson, "distroFilter"), DistroFilter.class);
+            hapInfo.distroFilter = JSONObject.parseObject(
+                    getJsonString(hapJson, "distroFilter"), DistroFilter.class);
         }
         return hapInfo;
     }
@@ -804,7 +807,8 @@ public class JsonUtil {
         }
 
         if (abilityJson.containsKey("configChanges")) {
-            ability.configChanges = JSONObject.parseArray(getJsonString(abilityJson, "configChanges"), String.class);
+            ability.configChanges = JSONObject.parseArray(
+                    getJsonString(abilityJson, "configChanges"), String.class);
         }
 
         if (abilityJson.containsKey("srcLanguage")) {
@@ -829,6 +833,17 @@ public class JsonUtil {
         }
 
         return ability;
+    }
+
+    private static void adaptAbilityName(List<AbilityInfo> abilityInfos, String packageName) {
+        if (abilityInfos == null) {
+            return;
+        }
+        for (AbilityInfo abilityInfo : abilityInfos) {
+            if (abilityInfo.name.startsWith(DOT)) {
+                abilityInfo.name = packageName + abilityInfo.name;
+            }
+        }
     }
 
     /**
