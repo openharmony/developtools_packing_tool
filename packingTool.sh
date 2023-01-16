@@ -62,6 +62,7 @@ declare -a compile_class=(
             "HapVerifyInfo"
             "HQFVerify"
             "HQFInfo"
+            "DependencyItem"
             )
 compile_class_length=${#compile_class[@]}
 for ((i=0; i<${compile_class_length};++i))
