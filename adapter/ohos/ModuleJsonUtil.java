@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -847,7 +847,8 @@ class ModuleJsonUtil {
         if (hapVerifyInfo.getProfileStr().isEmpty()) {
             throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, module.json is empty!");
         }
-        hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
+        String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
+        hapVerifyInfo.setBundleName(bundleName);
         hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVersion(parseStageVersion(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setApiVersion(parseStageModuleApiVersion(hapVerifyInfo.getProfileStr()));
@@ -860,7 +861,7 @@ class ModuleJsonUtil {
         List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.addAbilityNames(extensionAbilityNames);
         hapVerifyInfo.setModuleType(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setDependencies(parseDependencies(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
     }
 
@@ -875,6 +876,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
             throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
         }
+        String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVersion(parseFaVersion(hapVerifyInfo.getProfileStr()));
@@ -885,7 +887,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setModuleType(parseFAIsEntry(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setDependencies(parseDependencies(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
     }
 
@@ -1154,25 +1156,39 @@ class ModuleJsonUtil {
      * @param jsonString is the json String of module.json or config.json
      * @return dependencies
      */
-    static List<String> parseDependencies(String jsonString) throws BundleException {
+    static List<DependencyItem> parseDependencies(String jsonString, String bundleName) throws BundleException {
         JSONObject jsonObj;
         try {
             jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed";
+            String errMsg = "parse json object failed!";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
         JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
         if (moduleObj == null) {
-            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module!");
-            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module!");
+            LOG.error("parseDependencies failed: lack of module object!");
+            throw new BundleException("parseDependencies failed: lack of module object!");
         }
-        List<String> dependencies = new ArrayList<>();
-        if (moduleObj.containsKey(DEPENDENCIES)) {
-            dependencies = JSONObject.parseArray(getJsonString(moduleObj, DEPENDENCIES), String.class);
+        List<DependencyItem> dependencyItemList = new ArrayList<>();
+        if (!moduleObj.containsKey(DEPENDENCIES)) {
+            return dependencyItemList;
         }
-        return dependencies;
+        JSONArray dependencyObjList = moduleObj.getJSONArray(DEPENDENCIES);
+        for (int i = 0; i < dependencyObjList.size(); ++i) {
+            JSONObject object = dependencyObjList.getJSONObject(i);
+            DependencyItem item = new DependencyItem();
+            if (object.containsKey(BUNDLE_NAME)) {
+                item.setBundleName(object.getString(BUNDLE_NAME));
+            } else {
+                item.setBundleName(bundleName);
+            }
+            if (object.containsKey(MODULE_NAME)) {
+                item.setModuleName(object.getString(MODULE_NAME));
+            }
+            dependencyItemList.add(item);
+        }
+        return dependencyItemList;
     }
 
     static boolean parseStageInstallation(String jsonString) throws BundleException {

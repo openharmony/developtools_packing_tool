@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 package ohos;
 
 /**
- * command parser.
+ * command parser
  *
  */
 public class CommandParser {
@@ -60,6 +60,7 @@ public class CommandParser {
     private static final String CMD_JAR_PATH = "--jar-path";
     private static final String CMD_TXT_PATH = "--txt-path";
     private static final String CMD_HAR_PATH = "--har-path";
+    private static final String CMD_HSP_PATH = "--hsp-path";
     private static final String CMD_PARSE_MODE = "--p";
     private static final String CMD_PACK_RES_PATH = "--pack-res-path";
     private static final String CMD_UNPACKAPK = "--unpackapk";
@@ -191,6 +192,9 @@ public class CommandParser {
             case CMD_HAR_PATH: {
                 utility.setHarPath(value);
                 return true;
+            }
+            case CMD_HSP_PATH: {
+                utility.setHspPath(value);
             }
             case CMD_APPQF_PATH: {
                 utility.setAPPQFPath(value);

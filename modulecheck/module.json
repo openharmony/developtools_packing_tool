@@ -20,7 +20,64 @@
           "if": {
             "properties": {
               "type": {
+                "const": "shared"
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "name",
+                "type",
+                "description",
+                "deliveryWithInstall",
+                "deviceTypes",
+                "pages",
+                "metadata",
+                "requestPermissions",
+                "dependencies",
+                "libIsolation"
+              ]
+            },
+            "required": [
+              "name",
+              "type",
+              "deviceTypes"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
                 "const": "har"
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "name",
+                "type",
+                "description",
+                "deviceTypes",
+                "uiSyntax",
+                "metadata",
+                "requestPermissions"
+              ]
+            },
+            "required": [
+              "name",
+              "type",
+              "deviceTypes"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "entry"
               }
             }
           },
@@ -34,9 +91,11 @@
                 "process",
                 "mainElement",
                 "deviceTypes",
+                "deliveryWithInstall",
                 "installationFree",
                 "virtualMachine",
                 "uiSyntax",
+                "pages",
                 "metadata",
                 "abilities",
                 "extensionAbilities",
@@ -50,10 +109,21 @@
             "required": [
               "name",
               "type",
-              "deviceTypes"
+              "deviceTypes",
+              "deliveryWithInstall",
+              "pages"
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "feature"
+              }
+            }
           },
-          "else": {
+          "then": {
             "propertyNames": {
               "enum": [
                 "name",
@@ -100,7 +170,8 @@
           "enum": [
             "entry",
             "feature",
-            "har"
+            "har",
+            "shared"
           ]
         },
         "srcEntrance": {
@@ -956,11 +1027,25 @@
           }
         },
         "dependencies": {
-          "description": "Indicates the module names that this module depends on",
+          "description": "Indicates the module names that this module depends on.",
           "type": "array",
           "items": {
-            "type": "string",
-            "maxLength": 127
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "moduleName"
+              ]
+            },
+            "required": [
+              "moduleName"
+            ],
+            "properties":{
+              "moduleName": {
+                "description": "Indicates the module name of the dependency shared library.",
+                "type": "string",
+                "maxLength": 31
+              }
+            }
           }
         },
         "libIsolation": {
