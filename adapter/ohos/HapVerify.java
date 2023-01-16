@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,7 @@ class HapVerify {
     private static final String EMPTY_STRING = "";
     private static final String ENTRY = "entry";
     private static final String FEATURE = "feature";
+    private static final String SHARED_LIBRARY = "shared";
     private static final String REFERENCE_LINK =
             "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
 
@@ -247,7 +248,7 @@ class HapVerify {
                         + hapVerifyInfos.get(i).getAbilityNames());
                     LOG.warning("Warning: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
                         + hapVerifyInfos.get(j).getAbilityNames());
-                    LOG.warning("Solution: Make sure ability name is invalid and do not duplicated!");
+                    LOG.warning("Solution: Make sure ability name is valid and do not duplicated!");
                     LOG.error("Reference: " + REFERENCE_LINK);
                     return false;
                 }
@@ -271,7 +272,7 @@ class HapVerify {
                 entryHapVerifyInfos.add(hapVerifyInfo);
             } else if (FEATURE.equals(hapVerifyInfo.getModuleType())) {
                 featureHapVerifyInfos.add(hapVerifyInfo);
-            } else {
+            } else if (!SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())) {
                 LOG.warning("Input wrong type module");
             }
         }
@@ -846,6 +847,10 @@ class HapVerify {
                 LOG.error("Error: installationFree is different in input hap!");
                 return false;
             }
+            if (isInstallationFree && SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())) {
+                LOG.error("Error: app can not contain both atomic service and hsp!");
+                return false;
+            }
         }
         int depth = isInstallationFree ? SERVICE_DEPTH : APPLICATION_DEPTH;
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
@@ -881,9 +886,18 @@ class HapVerify {
                     + getHapVerifyInfoListNames(dependencyList));
             return false;
         }
-        for (String dependency : hapVerifyInfo.getDependencies()) {
-            List<HapVerifyInfo> layerDependencyList = getLayerDependency(dependency, hapVerifyInfo, allHapVerifyInfo);
+        for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
+            if (!checkDependencyInFileList(dependency, allHapVerifyInfo)) {
+                LOG.error("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path");
+                return false;
+            }
+            List<HapVerifyInfo> layerDependencyList = getLayerDependency(
+                    dependency.getModuleName(), hapVerifyInfo, allHapVerifyInfo);
             for (HapVerifyInfo item : layerDependencyList) {
+                if (FEATURE.equals(item.getModuleType()) || ENTRY.equals(item.getModuleType())) {
+                    LOG.error("HAP or HSP cannot depend on HAP" + item.getModuleName());
+                    return false;
+                }
                 dependencyList.add(item);
                 if (!dfsTraverseDependency(item, allHapVerifyInfo, dependencyList, depth)) {
                     return false;
@@ -892,6 +906,21 @@ class HapVerify {
             }
         }
         return true;
+    }
+
+    private static boolean checkDependencyInFileList(
+            DependencyItem dependencyItem, List<HapVerifyInfo> allHapVerifyInfo) {
+        String moduleName = dependencyItem.getModuleName();
+        String bundleName = dependencyItem.getBundleName();
+        if (bundleName.isEmpty() || moduleName.isEmpty()) {
+            LOG.error("bundleName or moduleName is empty");
+        }
+        for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
+            if (moduleName.equals(hapVerifyInfo.getModuleName()) && bundleName.equals(hapVerifyInfo.getBundleName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
