@@ -256,8 +256,9 @@ public class Compressor {
         if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
-            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace("\"", "").trim()) ||
-                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace("\"", "").trim())) {
+            String deviceTypes = utility.getDeviceType().replace("\"", "").trim();
+            if (DEVICE_TYPE_FITNESSWATCH.equals(deviceTypes) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(deviceTypes)) {
                 resPath = RES_DIR_NAME;
             }
             pathToFile(utility, utility.getResPath(), resPath, false);
@@ -328,8 +329,9 @@ public class Compressor {
         if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
-            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace("\"", "").trim()) ||
-                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace("\"", "").trim())) {
+            String deviceTypes = utility.getDeviceType().replace("\"", "").trim();
+            if (DEVICE_TYPE_FITNESSWATCH.equals(deviceTypes) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(deviceTypes)) {
                 resPath = RES_DIR_NAME;
             }
             pathToFile(utility, utility.getResPath(), resPath, false);
