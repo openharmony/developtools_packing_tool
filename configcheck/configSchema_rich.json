@@ -36,7 +36,8 @@
           "targetBundleList",
           "singleton",
           "removable",
-          "userDataClearable"
+          "userDataClearable",
+          "asanEnabled"
         ]
       },
       "properties": {
@@ -165,6 +166,11 @@
         "userDataClearable": {
           "description": "Specifies whether to allow clear data. only for system application.@deprecated",
           "type": "boolean"
+        },
+        "asanEnabled": {
+          "description": "Indicates whether to support asan. Release version is not configurable",
+          "type": "boolean",
+          "default": false
         }
       }
     },
