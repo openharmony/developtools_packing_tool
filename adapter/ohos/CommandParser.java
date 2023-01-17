@@ -254,6 +254,7 @@ public class CommandParser {
             }
             case CMD_APP_LIST: {
                 utility.setAppList(value);
+                return true;
             }
             default : {
                 return false;
