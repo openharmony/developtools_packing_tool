@@ -62,6 +62,7 @@ public class Uncompress {
     private static final String HAP_SUFFIXI = ".hap";
     private static final String ENTRY_TYPE = "entry";
     private static final String SYSTEM_ACTION = "action.system.home";
+    private static final String SYSTEM_WANT_HOME = "ohos.want.action.home";
     private static final String SYSTEM_ENTITY = "entity.system.home";
     private static final int READ_BUFFER_SIZE = 1024;
     private static final int BUFFER_SIZE = 10 * 1024;
@@ -1225,8 +1226,8 @@ public class Uncompress {
                 }
                 List<String> actions = skill.actions;
                 List<String> entities = skill.entities;
-                if ((!actions.isEmpty()) && (actions.contains(SYSTEM_ACTION)) && (!entities.isEmpty()) &&
-                    (entities.contains(SYSTEM_ENTITY))) {
+                if ((!actions.isEmpty()) && (actions.contains(SYSTEM_ACTION) || actions.contains(SYSTEM_WANT_HOME))
+                        && (!entities.isEmpty()) && (entities.contains(SYSTEM_ENTITY))) {
                     result.setLabel(info.label);
                     result.setIcon(info.icon);
                     return result;
