@@ -1242,7 +1242,8 @@ public class JsonUtil {
         moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
         moduleAbilityInfo.labels = parseResourceMapByKey(abilityJson, data, LABEL_ID);
         if (abilityJson.containsKey(PERMISSIONS)) {
-            moduleAbilityInfo.permissions = JSONObject.parseArray(getJsonString(abilityJson, PERMISSIONS), String.class);
+            moduleAbilityInfo.permissions = JSONObject.parseArray(
+                getJsonString(abilityJson, PERMISSIONS), String.class);
         }
         moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
         moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
