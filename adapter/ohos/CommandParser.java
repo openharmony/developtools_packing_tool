@@ -195,6 +195,7 @@ public class CommandParser {
             }
             case CMD_HSP_PATH: {
                 utility.setHspPath(value);
+                return true;
             }
             case CMD_APPQF_PATH: {
                 utility.setAPPQFPath(value);
