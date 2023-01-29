@@ -446,7 +446,6 @@ public class ResourcesParser {
 
     /**
      * Read resource map by id.
-     *
      * @param resId
      * @param data config byte buffer
      * @return the resource map of id.
