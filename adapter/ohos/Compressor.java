@@ -70,6 +70,7 @@ public class Compressor {
     private static final String RESOURCES_DIR_NAME = "resources/";
     private static final String LIBS_DIR_NAME = "libs/";
     private static final String AN_DIR_NAME = "an/";
+    private static final String AP_PATH_NAME = "ap/";
     private static final String ASSETS_DIR_NAME = "assets/";
     private static final String SO_DIR_NAME = "maple/";
     private static final String SO_ARM64_DIR_NAME = "maple/arm64/";
@@ -326,6 +327,10 @@ public class Compressor {
 
         if (!utility.getANPath().isEmpty()) {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
+        }
+
+        if (!utility.getAPPath().isEmpty()) {
+            pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
         }
 
         if (!utility.getFilePath().isEmpty()) {
