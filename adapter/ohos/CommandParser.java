@@ -78,6 +78,7 @@ public class CommandParser {
     private static final String CMD_HQF_LIST = "--hqf-list";
     private static final String CMD_APPQF_PATH = "--appqf-path";
     private static final String CMD_AN_PATH = "--an-path";
+    private static final String CMD_AP_PATH = "--ap-path";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -253,6 +254,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_AN_PATH, entry -> {
             entry.getKey().setANPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_AP_PATH, entry -> {
+            entry.getKey().setAPPath(entry.getValue());
             return true;
         });
     }
