@@ -1039,7 +1039,7 @@ public class JsonUtil {
         return moduleInfo;
     }
 
-    private static void parseInstallationFree(JSONObject moduleJson,  ModuleInfo moduleInfo) {
+    private static void parseInstallationFree(JSONObject moduleJson, ModuleInfo moduleInfo) {
         if (moduleJson.containsKey(INSTALLATION_FREE)) {
             boolean isFreeInstall = moduleJson.getBoolean(INSTALLATION_FREE);
             if (isFreeInstall) {
@@ -1529,7 +1529,7 @@ public class JsonUtil {
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String jsonStr = moduleMetadataInfo.resource;
             JSONObject jsonObj = JSONObject.parseObject(jsonStr);
-            if (jsonObj!= null && jsonObj.containsKey(FORMS)) {
+            if (jsonObj != null && jsonObj.containsKey(FORMS)) {
                 JSONArray jsonForms = JSONObject.parseArray(getJsonString(jsonObj, FORMS));
                 int size = jsonForms.size();
                 for (int j = 0; j < size; ++j) {
@@ -1802,7 +1802,7 @@ public class JsonUtil {
                 reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
                 reqPermission.reasons = parseResourceMapByKey(requestPermission, data, REASON_ID);
             }
-            if (requestPermission.containsKey(USED_SCENE))  {
+            if (requestPermission.containsKey(USED_SCENE)) {
                 reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
             }
             reqPermissions.add(reqPermission);
