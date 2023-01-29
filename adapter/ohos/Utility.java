@@ -89,6 +89,7 @@ public class Utility {
     private boolean isParse = false;
     private String appqfPath = "";
     private String anPath = "";
+    private String apPath = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -708,5 +709,13 @@ public class Utility {
 
     public String getANPath() {
         return this.anPath;
+    }
+
+    public void setAPPath(String apPath) {
+        this.apPath = apPath;
+    }
+
+    public String getAPPath() {
+        return this.apPath;
     }
 }
