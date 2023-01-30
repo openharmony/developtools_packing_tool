@@ -47,10 +47,20 @@ class ModuleInfo {
      * Indicates the description of ModuleInfo.
      */
     public String description = "";
+
     /**
      * Indicates the descriptions of ModuleInfo, for Multilingual.
      */
-    public HashMap<String, String> descriptions = new HashMap<>();
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
     /**
      * Indicates the process of ModuleInfo.
      */
