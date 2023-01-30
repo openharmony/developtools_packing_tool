@@ -1226,11 +1226,12 @@ public class Uncompress {
                 }
                 List<String> actions = skill.actions;
                 List<String> entities = skill.entities;
-                if ((!actions.isEmpty()) && (actions.contains(SYSTEM_ACTION) || actions.contains(SYSTEM_WANT_HOME))
-                        && (!entities.isEmpty()) && (entities.contains(SYSTEM_ENTITY))) {
-                    result.setLabel(info.label);
-                    result.setIcon(info.icon);
-                    return result;
+                if ((!actions.isEmpty()) && (actions.contains(SYSTEM_ACTION) || actions.contains(SYSTEM_WANT_HOME))) {
+                    if ((!entities.isEmpty()) && (entities.contains(SYSTEM_ENTITY))) {
+                        result.setLabel(info.label);
+                        result.setIcon(info.icon);
+                        return result;
+                    }
                 }
             }
         }
