@@ -2193,7 +2193,8 @@ public class Compressor {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
             if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
-                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(
+                        utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
                 resPath = RES_DIR_NAME;
             }
             pathToFile(utility, utility.getResPath(), resPath, false);
