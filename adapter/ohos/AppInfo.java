@@ -91,18 +91,38 @@ public class AppInfo {
      * Indicates the label of app AppJson.
      */
     public String label = "";
+
     /**
      * Indicates the labels of app AppJson, for multilingual.
      */
-    public HashMap<String, String> labels;
+    private HashMap<String, String> labels = new HashMap<>();
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
+
     /**
      * Indicates the description of app AppJson.
      */
     public String description = "";
+
     /**
      * Indicates the descriptions of app AppJson, for multilingual.
      */
-    public HashMap<String, String> descriptions;
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
     /**
      * Indicates the minCompatibleVersionCode of app AppJson.
      */
