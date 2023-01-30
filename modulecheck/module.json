@@ -123,8 +123,7 @@
               "name",
               "type",
               "deviceTypes",
-              "deliveryWithInstall",
-              "pages"
+              "deliveryWithInstall"
             ]
           }
         },
@@ -166,8 +165,7 @@
               "name",
               "type",
               "deviceTypes",
-              "deliveryWithInstall",
-              "pages"
+              "deliveryWithInstall"
             ]
           }
         }
