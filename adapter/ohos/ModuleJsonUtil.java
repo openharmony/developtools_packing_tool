@@ -1299,6 +1299,12 @@ class ModuleJsonUtil {
         return hqfVerifyInfo;
     }
 
+    /**
+     * determine whether it is a native compression libs.
+     *
+     * @param jsonString is the file path of hqf file
+     * @return the result
+     */
     public static boolean stageIsCompressNativeLibs(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
