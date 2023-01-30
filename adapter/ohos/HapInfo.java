@@ -38,10 +38,20 @@ public class HapInfo {
      * Indicates the description of HapInfo.
      */
     public String description = "";
+
     /**
      * Indicates the descriptions of HapInfo.
      */
-    public HashMap<String, String> descriptions = new HashMap<>();
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
 
     /**
      * Indicates the supportedModes of HapInfo.

@@ -85,10 +85,19 @@ public class AbilityFormInfo {
      * Indicates the description of ability form.
      */
     public String description = "";
+
     /**
      * Indicates the descriptions of ability form,for Multilingual.
      */
-    public HashMap<String, String> descriptions = new HashMap<>();
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
 
     /**
      * Indicates the src of ability form the attribute is corresponding to the UI code of the form.
