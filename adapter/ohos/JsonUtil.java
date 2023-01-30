@@ -401,9 +401,9 @@ public class JsonUtil {
         moduleAppInfo.debug = getJsonBooleanValue(appJson, DEBUG, false);
         moduleAppInfo.icon = parseIconById(appJson, data);
         moduleAppInfo.label = parseResourceByKey(appJson, data, LABEL, LABEL_ID);
-        moduleAppInfo.labels = parseResourceMapByKey(appJson, data, LABEL_ID);
+        moduleAppInfo.setLabels(parseResourceMapByKey(appJson, data, LABEL_ID));
         moduleAppInfo.description = parseResourceByKey(appJson, data, DESCRIPTION, DESCRIPTION_ID);
-        moduleAppInfo.descriptions = parseResourceMapByKey(appJson, data, DESCRIPTION_ID);
+        moduleAppInfo.setDescriptions(parseResourceMapByKey(appJson, data, DESCRIPTION_ID));
 
         moduleAppInfo.vendor = getJsonString(appJson, VENDOR);
         moduleAppInfo.versionCode = getJsonIntValue(appJson, VERSION_CODE, DEFAULT_VERSION_CODE);
@@ -1007,7 +1007,7 @@ public class JsonUtil {
         moduleInfo.type = getJsonString(moduleJson, TYPE);
         moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
         moduleInfo.description = parseResourceByKey(moduleJson, data, DESCRIPTION, DESCRIPTION_ID);
-        moduleInfo.descriptions = parseResourceMapByKey(moduleJson, data, DESCRIPTION_ID);
+        moduleInfo.setDescriptions(parseResourceMapByKey(moduleJson, data, DESCRIPTION_ID));
         if (moduleJson.containsKey(PROCESS)) {
             moduleInfo.process = getJsonString(moduleJson, PROCESS);
         } else {
@@ -1157,10 +1157,10 @@ public class JsonUtil {
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
         moduleExtensionAbilityInfo.label =
                 parseResourceByKey(extensionAbilityJson, data, LABEL, LABEL_ID);
-        moduleExtensionAbilityInfo.labels = parseResourceMapByKey(extensionAbilityJson, data, LABEL_ID);
+        moduleExtensionAbilityInfo.setLabels(parseResourceMapByKey(extensionAbilityJson, data, LABEL_ID));
         moduleExtensionAbilityInfo.description =
                 parseResourceByKey(extensionAbilityJson, data, DESCRIPTION, DESCRIPTION_ID);
-        moduleExtensionAbilityInfo.descriptions = parseResourceMapByKey(extensionAbilityJson, data, DESCRIPTION_ID);
+        moduleExtensionAbilityInfo.setDescriptions(parseResourceMapByKey(extensionAbilityJson, data, DESCRIPTION_ID));
         moduleExtensionAbilityInfo.type = getJsonString(extensionAbilityJson, TYPE);
 
         if (extensionAbilityJson.containsKey(PERMISSIONS)) {
@@ -1236,11 +1236,11 @@ public class JsonUtil {
         moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
         moduleAbilityInfo.launchType = getJsonString(abilityJson, LAUNCH_TYPE, STANDARD);
         moduleAbilityInfo.description = parseResourceByKey(abilityJson, data, DESCRIPTION, DESCRIPTION_ID);
-        moduleAbilityInfo.descriptions = parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID);
+        moduleAbilityInfo.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
 
         moduleAbilityInfo.icon = parseIconById(abilityJson, data);
         moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
-        moduleAbilityInfo.labels = parseResourceMapByKey(abilityJson, data, LABEL_ID);
+        moduleAbilityInfo.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
         if (abilityJson.containsKey(PERMISSIONS)) {
             moduleAbilityInfo.permissions = JSONObject.parseArray(getJsonString(abilityJson, PERMISSIONS), String.class);
         }
@@ -1556,7 +1556,7 @@ public class JsonUtil {
         AbilityFormInfo moduleFormInfo = new AbilityFormInfo();
         moduleFormInfo.name = getJsonString(formObj, NAME);
         moduleFormInfo.description = parseFormDescription(formObj, data);
-        moduleFormInfo.descriptions = parseFormDescriptions(formObj, data);
+        moduleFormInfo.setDescriptions(parseFormDescriptions(formObj, data));
         moduleFormInfo.src = getJsonString(formObj, SRC);
 
         if (formObj.containsKey(WINDOW)) {
@@ -1800,7 +1800,7 @@ public class JsonUtil {
             reqPermission.name = getJsonString(requestPermission, NAME);
             if (requestPermission.containsKey(REASON_ID)) {
                 reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
-                reqPermission.reasons = parseResourceMapByKey(requestPermission, data, REASON_ID);
+                reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
             }
             if (requestPermission.containsKey(USED_SCENE))  {
                 reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
