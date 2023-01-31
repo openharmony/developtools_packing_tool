@@ -44,6 +44,7 @@
           "userDataClearable",
           "accessible",
           "multiProjects",
+          "asanEnabled",
           "default",
           "tablet",
           "tv",
@@ -171,6 +172,11 @@
         },
         "multiProjects": {
           "description": "Indicates whether current project supports multiple project.",
+          "type": "boolean",
+          "default": false
+        },
+        "asanEnabled": {
+          "description": "Indicates whether to support asan. Release version is not configurable",
           "type": "boolean",
           "default": false
         },
