@@ -212,6 +212,10 @@ class UncompressVerify {
      * @return isPathValid if path verify
      */
     public static boolean isPathValid(String path, boolean isFile, String flag) {
+        if (!FileUtils.matchPattern(path)) {
+            LOG.error("Input invalid file " + path);
+            return false;
+        }
         File file = new File(path);
         if (isFile && (file.isFile()) && file.getName().toLowerCase(Locale.ENGLISH).endsWith(flag)) {
             return true;
