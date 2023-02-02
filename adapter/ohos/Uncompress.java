@@ -34,6 +34,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
@@ -555,6 +557,9 @@ public class Uncompress {
                     continue;
                 }
                 String tempPath = tempDir + LINUX_FILE_SEPARATOR + entryName;
+                if (!FileUtils.matchPattern(tempPath)) {
+                    throw new BundleException("Input invalid file " + tempPath);
+                }
                 File destFile = new File(tempPath);
                 dataTransfer(zipFile, entry, destFile);
                 if (JSON_SUFFIX.equals(suffix)) {
@@ -564,11 +569,8 @@ public class Uncompress {
                     repackHap(tempPath, tempDir, entryName, utility.getUnpackApk());
                 }
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::unzipInHapMode file not found exception");
-            throw new BundleException("Unzip in hap mode failed");
-        } catch (IOException exception) {
-            LOG.error("Uncompress::unzipInHapMode io exception: " + exception.getMessage());
+        } catch (IOException | BundleException exception) {
+            LOG.error("Uncompress::unzipInHapMode failed: " + exception.getMessage());
             throw new BundleException("Unzip in hap mode failed");
         } finally {
             Utility.closeStream(zipFile);
@@ -587,6 +589,10 @@ public class Uncompress {
         InputStream fileInputStream = null;
         FileOutputStream fileOutStream = null;
         try {
+            if (!FileUtils.matchPattern(destFile.getCanonicalPath())) {
+                LOG.error("Input invalid file " + destFile);
+                throw new BundleException("Input invalid file" + destFile.getCanonicalPath());
+            }
             fileInputStream = zipFile.getInputStream(entry);
             fileOutStream = new FileOutputStream(destFile);
             byte[] data = new byte[BUFFER_SIZE];
@@ -597,11 +603,8 @@ public class Uncompress {
                 total += count;
                 count = fileInputStream.read(data);
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::dataTransfer file not found exception");
-            throw new BundleException("DataTransfer failed");
-        } catch (IOException exception) {
-            LOG.error("Uncompress::dataTransfer io exception: " + exception.getMessage());
+        } catch (IOException | BundleException exception) {
+            LOG.error("Uncompress::dataTransfer file " + exception.getMessage());
             throw new BundleException("DataTransfer failed");
         } finally {
             Utility.closeStream(fileOutStream);
@@ -619,6 +622,9 @@ public class Uncompress {
     private static void dataTransferAllFiles(String srcPath, String destDirPath) throws BundleException {
         ZipFile zipFile = null;
         try {
+            if (!FileUtils.matchPattern(srcPath)) {
+                throw new BundleException("Input invalid file " + srcPath);
+            }
             zipFile = new ZipFile(new File(srcPath));
             int entriesNum = 0;
             for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
@@ -658,6 +664,9 @@ public class Uncompress {
                     continue;
                 }
                 String filePath = destDirPath + LINUX_FILE_SEPARATOR + entry.getName();
+                if (!FileUtils.matchPattern(filePath)) {
+                    throw new BundleException("Input invalid path " + filePath);
+                }
                 File destFile = new File(filePath);
                 if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
                     destFile.getParentFile().mkdirs();
@@ -676,11 +685,8 @@ public class Uncompress {
                     dataTransfer(zipFile, entry, destFile);
                 }
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::unzipApk file not found exception");
-            throw new BundleException("Unzip Apk failed");
-        } catch (IOException exception) {
-            LOG.error("Uncompress::unzipApk io exception: " + exception.getMessage());
+        } catch (IOException | BundleException exception) {
+            LOG.error("Uncompress::unzipApk file failed " + exception.getMessage());
             throw new BundleException("Unzip Apk failed");
         } finally {
             Utility.closeStream(zipFile);
@@ -713,6 +719,10 @@ public class Uncompress {
         throws BundleException, IOException {
         HapZipInfo hapZipInfo = new HapZipInfo();
         ZipFile zipFile = null;
+        if (!FileUtils.matchPattern(srcPath)) {
+            LOG.error("Input invalid path " + srcPath);
+            throw new BundleException("Input invalid path " + srcPath);
+        }
         try {
             File srcFile = new File(srcPath);
             zipFile = new ZipFile(srcFile);
@@ -965,7 +975,11 @@ public class Uncompress {
         ZipOutputStream zipOut = null;
 
         try {
-            File zipFile = new File(destDirPath + LINUX_FILE_SEPARATOR + fileName);
+            String zipPath = destDirPath + LINUX_FILE_SEPARATOR + fileName;
+            if (!FileUtils.matchPattern(zipPath)) {
+                throw new BundleException("Input invalid file" + zipPath);
+            }
+            File zipFile = new File(zipPath);
             fileOut = new FileOutputStream(zipFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipOutputStream(checkedOut);
@@ -985,8 +999,8 @@ public class Uncompress {
                     compressFile(srcFile, "", zipOut, false);
                 }
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::packFilesByPath file not found exception");
+        } catch (FileNotFoundException | BundleException exception) {
+            LOG.error("Uncompress::packFilesByPath " + exception.getMessage());
             throw new BundleException("Pack files by path failed");
         } finally {
             Utility.closeStream(zipOut);
@@ -1623,6 +1637,10 @@ public class Uncompress {
                     continue;
                 }
                 String filePath = utility.getOutPath() + File.separator + entry.getName();
+                if (!FileUtils.matchPattern(filePath)) {
+                    LOG.error("uncompressAPPQFFile: Input invalid file" + filePath);
+                    throw new BundleException("uncompressAPPQFFile: Input invalid file" + filePath);
+                }
                 File destFile = new File(filePath);
                 if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
                     destFile.getParentFile().mkdirs();
