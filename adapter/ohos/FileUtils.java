@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -47,6 +48,7 @@ class FileUtils {
     private static final Log LOG = new Log(FileUtils.class.toString());
     private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final String SHA256 = "SHA-256";
+    private static final String PATTERN = "[0-9A-Za-z/].{0,255}";
 
     /**
      * generate fileData byte stream
@@ -216,13 +218,17 @@ class FileUtils {
                 if (entry == null) {
                     continue;
                 }
+                String filePath = destDir + File.separator + entry.getName();
+                if (!matchPattern(filePath)) {
+                    throw new BundleException("Input invalid file " + filePath);
+                }
                 if (entry.isDirectory()) {
-                    new File(destDir + File.separator + entry.getName()).mkdirs();
+                    new File(filePath).mkdirs();
                     continue;
                 }
 
                 bis = new BufferedInputStream(zipFile.getInputStream(entry));
-                File newFile = new File(destDir + File.separator + entry.getName());
+                File newFile = new File(filePath);
                 File parent = newFile.getParentFile();
                 if (parent != null && (!parent.exists())) {
                     parent.mkdirs();
@@ -244,10 +250,8 @@ class FileUtils {
                 fos.close();
                 bis.close();
             }
-        } catch (FileNotFoundException ignored) {
-            LOG.error("unzip file not found exception");
-        } catch (IOException msg) {
-            LOG.error("unzip IOException : " + msg.getMessage());
+        } catch (IOException | BundleException exception) {
+            LOG.error("unzip file failed " + exception.getMessage());
         } finally {
             closeStream(bos);
             closeStream(fos);
@@ -532,6 +536,10 @@ class FileUtils {
             ZipEntry entry = zipInputStream.getNextEntry();
             while (entry != null) {
                 String filePath = destDirPath + File.separator + entry.getName();
+                if (!matchPattern(filePath)) {
+                    LOG.error("Input invalid file " + filePath);
+                    return false;
+                }
                 if (!entry.isDirectory()) {
                     extractFile(zipInputStream, filePath);
                 } else {
@@ -553,16 +561,27 @@ class FileUtils {
     private static void extractFile(ZipInputStream zipInputStream, String filePath) {
         BufferedOutputStream bufferedOutputStream = null;
         try {
+            if (!matchPattern(filePath)) {
+                throw new BundleException("input invalid file " + filePath);
+            }
             bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath));
             byte[] bytes = new byte[BUFFER_SIZE];
             int readLength = 0;
             while ((readLength = zipInputStream.read(bytes)) != -1) {
                 bufferedOutputStream.write(bytes, 0, readLength);
             }
-        } catch (IOException e) {
-            LOG.error("FileUtil::extractFile failed, IOException is " + e.getMessage());
+        } catch (IOException | BundleException e) {
+            LOG.error("FileUtil::extractFile failed, Exception is " + e.getMessage());
         } finally {
             Utility.closeStream(bufferedOutputStream);
         }
+    }
+
+    static boolean matchPattern(String path) {
+        if (!Pattern.matches(PATTERN, path)) {
+            LOG.error("Error: input invalid file of " + path);
+            return false;
+        }
+        return true;
     }
 }
