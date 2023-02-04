@@ -803,8 +803,10 @@ public class Compressor {
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         } finally {
-            fwriter.flush();
-            fwriter.close();
+            if (fwriter != null) {
+                fwriter.flush();
+                fwriter.close();
+            }
         }
     }
 
