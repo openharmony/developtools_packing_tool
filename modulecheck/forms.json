@@ -23,6 +23,7 @@
             "name",
             "description",
             "src",
+            "uiSyntax",
             "window",
             "colorMode",
             "formConfigAbility",
@@ -155,6 +156,15 @@
           "src": {
             "description": "Indicates the src of form.",
             "type": "string"
+          },
+          "uiSyntax": {
+            "description": "This tag identifies the ui syntax.",
+            "type": "string",
+            "default": "hml",
+            "enum": [
+              "hml",
+              "arkts"
+            ]
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
