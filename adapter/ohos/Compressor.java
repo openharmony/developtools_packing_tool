@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
@@ -119,7 +120,7 @@ public class Compressor {
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
     private static final String ABILITIES_DIR_NAME = "abilities";
     private static final String EMPTY_STRING = "";
-
+    private static final String RELEASE = "Release";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -207,11 +208,7 @@ public class Compressor {
     private void compressExcute(Utility utility) throws BundleException {
         switch (utility.getMode()) {
             case Utility.MODE_HAP:
-                if (isModuleJSON(utility.getJsonPath())) {
-                    compressHapModeForModule(utility);
-                } else {
-                    compressHapMode(utility);
-                }
+                compressHap(utility);
                 break;
             case Utility.MODE_HAR:
                 compressHarMode(utility);
@@ -234,6 +231,54 @@ public class Compressor {
             default:
                 compressPackResMode(utility);
         }
+    }
+
+    private void compressHap(Utility utility) throws BundleException {
+        if (isModuleJSON(utility.getJsonPath())) {
+            if (!checkStageHap(utility)) {
+                LOG.error("Error: checkStageHap failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+            compressHapModeForModule(utility);
+        } else {
+            if (!checkFAHap(utility)) {
+                LOG.error("Error: checkFAHap failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+            compressHapMode(utility);
+        }
+    }
+
+    private static boolean checkStageHap(Utility utility) throws BundleException {
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        return checkStageAsanEnabledValid(jsonString);
+    }
+
+    private static boolean checkStageAsanEnabledValid(String jsonString) throws BundleException {
+        boolean asanEnabled = ModuleJsonUtil.getStageAsanEnabled(jsonString);
+        String apiReleaseType = ModuleJsonUtil.getStageApiReleaseType(jsonString);
+        if (asanEnabled && apiReleaseType.contains(RELEASE)) {
+            LOG.error("Error: asanEnabled is not supported for Release!");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkFAHap(Utility utility) throws BundleException {
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        return checkFAAsanEnabledValid(jsonString);
+    }
+
+    private static boolean checkFAAsanEnabledValid(String jsonString) throws BundleException {
+        boolean asanEnabled = ModuleJsonUtil.getFAAsanEnabled(jsonString);
+        String releaseType = ModuleJsonUtil.getFAReleaseType(jsonString);
+        if (asanEnabled && releaseType.contains(RELEASE)) {
+            LOG.error("Error: asanEnabled is not supported for Release!");
+            return false;
+        }
+        return true;
     }
 
     /**
