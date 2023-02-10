@@ -52,10 +52,6 @@ class ModuleAppInfo {
         return labels;
     }
 
-    public void setLabels(HashMap<String, String> labels) {
-        this.labels = labels;
-    }
-
     /**
      * Indicates the description of app AppJson.
      */
@@ -68,10 +64,6 @@ class ModuleAppInfo {
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
-    }
-
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
     }
 
     /**
@@ -122,4 +114,12 @@ class ModuleAppInfo {
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
 }

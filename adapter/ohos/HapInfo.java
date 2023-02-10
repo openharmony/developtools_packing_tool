@@ -48,11 +48,6 @@ public class HapInfo {
         return descriptions;
     }
 
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
-
     /**
      * Indicates the supportedModes of HapInfo.
      */
@@ -172,5 +167,9 @@ public class HapInfo {
             }
         }
         return "";
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
     }
 }

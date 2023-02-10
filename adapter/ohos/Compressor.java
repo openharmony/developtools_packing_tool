@@ -2239,7 +2239,8 @@ public class Compressor {
         if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
-            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
+            if (DEVICE_TYPE_FITNESSWATCH.equals(
+                utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
                     DEVICE_TYPE_FITNESSWATCH_NEW.equals(
                         utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
                 resPath = RES_DIR_NAME;
