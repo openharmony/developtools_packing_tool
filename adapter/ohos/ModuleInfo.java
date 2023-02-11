@@ -129,4 +129,8 @@ class ModuleInfo {
      * Indicates the define permissions of ModuleInfo.
      */
     List<DefinePermission> definePermissions = new ArrayList<>();
+    /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
 }
