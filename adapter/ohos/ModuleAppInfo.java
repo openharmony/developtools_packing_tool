@@ -122,4 +122,8 @@ class ModuleAppInfo {
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
+    /**
+     * Indicates the atomic service of app AppJson.
+     */
+    public AppAtomicService appAtomicService = new AppAtomicService();
 }

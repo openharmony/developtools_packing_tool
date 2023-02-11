@@ -139,6 +139,11 @@ public class JsonUtil {
     private static final String FORM_VISIBLE_NOTIFY = "formVisibleNotify";
     private static final String AUTO = "auto";
     private static final String DOT = ".";
+    private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String SPLIT = "split";
+    private static final String MAIN = "main";
+    private static final String PRELOADS = "preloads";
+    private static final String MODULE_NAME = "moduleName";
 
     private static final int DEFAULT_VERSION_CODE = -1;
 
@@ -420,9 +425,25 @@ public class JsonUtil {
         moduleAppInfo.distributedNotificationEnabled =
                 getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
         moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
+        moduleAppInfo.appAtomicService = parseAppAtomicService(appJson);
+
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
+    }
+
+    static AppAtomicService parseAppAtomicService(JSONObject appJson) {
+        AppAtomicService appAtomicService = new AppAtomicService();
+        JSONObject atomicServiceObj = null;
+        if (appJson.containsKey(ATOMIC_SERVICE)) {
+            atomicServiceObj = appJson.getJSONObject(ATOMIC_SERVICE);
+        }
+        if (atomicServiceObj == null) {
+            return appAtomicService;
+        }
+        appAtomicService.setSplit(getJsonBooleanValue(atomicServiceObj, SPLIT, true));
+        appAtomicService.setMain(getJsonString(atomicServiceObj, MAIN));
+        return appAtomicService;
     }
 
     static void parseSpecifiedDeviceType(JSONObject appJson, ModuleAppInfo moduleAppInfo) throws BundleException {
@@ -1035,6 +1056,7 @@ public class JsonUtil {
         moduleInfo.requestPermissions = parseReqPermission(moduleJson, data);
         // parse define permission
         moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
+        moduleInfo.moduleAtomicService = parseModuleAtomicService(moduleJson);
         return moduleInfo;
     }
 
@@ -1627,6 +1649,28 @@ public class JsonUtil {
             definePermissions.add(parseDefinePermission(definePermissionObjs.getJSONObject(i), data));
         }
         return definePermissions;
+    }
+
+    static ModuleAtomicService parseModuleAtomicService(JSONObject moduleJson) {
+        ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+        JSONObject atomicServiceObj = null;
+        if (!moduleJson.containsKey(ATOMIC_SERVICE)) {
+            return moduleAtomicService;
+        }
+        atomicServiceObj = moduleJson.getJSONObject(ATOMIC_SERVICE);
+        JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
+        List<PreloadItem> preloadItems = new ArrayList<>();
+        for (int i = 0; i < preloadObjs.size(); ++i) {
+            PreloadItem preloadItem = new PreloadItem();
+            JSONObject itemObj = preloadObjs.getJSONObject(i);
+            if (itemObj.containsKey(MODULE_NAME)) {
+                preloadItem.setModuleName(getJsonString(itemObj, MODULE_NAME));
+            }
+            preloadItems.add(preloadItem);
+        }
+        moduleAtomicService.setPreloadItems(preloadItems);
+
+        return moduleAtomicService;
     }
 
     /**
