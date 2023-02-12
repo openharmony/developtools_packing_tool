@@ -63,6 +63,7 @@ declare -a compile_class=(
             "HQFVerify"
             "HQFInfo"
             "DependencyItem"
+            "PreloadItem"
             )
 compile_class_length=${#compile_class[@]}
 for ((i=0; i<${compile_class_length};++i))

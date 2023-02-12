@@ -252,7 +252,16 @@ public class Compressor {
     private static boolean checkStageHap(Utility utility) throws BundleException {
         Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
         String jsonString = optional.get();
-        return checkStageAsanEnabledValid(jsonString);
+        if (!checkStageAsanEnabledValid(jsonString)) {
+            LOG.error("Error: checkStageAsanEnabledValid failed!");
+            return false;
+        }
+        // check atomicService in module.json
+        if (!checkStageAtomicService(jsonString)) {
+            LOG.error("Error: checkStageAtomicService failed!");
+            return false;
+        }
+        return true;
     }
 
     private static boolean checkStageAsanEnabledValid(String jsonString) throws BundleException {
@@ -262,6 +271,21 @@ public class Compressor {
             LOG.error("Error: asanEnabled is not supported for Release!");
             return false;
         }
+        return true;
+    }
+
+    private static boolean checkStageAtomicService(String jsonString) throws BundleException {
+        // check split and main
+        if (!ModuleJsonUtil.isAtomicServiceSplitValid(jsonString)) {
+            LOG.error("Error: check isAtomicServiceSplitValid failed!");
+            return false;
+        }
+        // check consistency of atomicService
+        if (!ModuleJsonUtil.isModuleAtomicServiceValid(jsonString)) {
+            LOG.error("Error: check module atomicService failed!");
+            return false;
+        }
+
         return true;
     }
 
@@ -2099,6 +2123,7 @@ public class Compressor {
         HapVerifyInfo hapVerifyInfo = readStageHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(true);
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
+        hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         return hapVerifyInfo;
     }
 
@@ -2111,6 +2136,7 @@ public class Compressor {
     public static HapVerifyInfo parseFAHapVerifyInfo(String filePath) throws BundleException {
         HapVerifyInfo hapVerifyInfo = readFAHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(false);
+        hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
     }
