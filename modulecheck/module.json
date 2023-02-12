@@ -37,7 +37,9 @@
                 "requestPermissions",
                 "dependencies",
                 "libIsolation",
-                "compressNativeLibs"
+                "compressNativeLibs",
+                "installationFree",
+                "atomicService"
               ]
             },
             "required": [
@@ -116,7 +118,8 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "compressNativeLibs"
+                "compressNativeLibs",
+                "atomicService"
               ]
             },
             "required": [
@@ -158,7 +161,8 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "compressNativeLibs"
+                "compressNativeLibs",
+                "atomicService"
               ]
             },
             "required": [
@@ -288,6 +292,7 @@
         "abilities": {
           "description": "Indicates all abilities in the current module. The value is an array of objects, each of which represents an ability.This label can be left blank by default,and indicates no capability exists in the current module.",
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "object",
             "required": [
@@ -1074,6 +1079,37 @@
           "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
           "type": "boolean",
           "default": true
+        },
+        "atomicService": {
+          "description": "Indicates the module config in atomic service.",
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "preloads"
+            ]
+          },
+          "properties": {
+            "preloads": {
+              "description": "Indicates modules are preloaded when the current module is run.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "enum": [
+                    "moduleName"
+                  ]
+                },
+                "properties": {
+                  "moduleName": {
+                    "description": "Indicates module is preloaded when the current module is run.",
+                    "type": "string",
+                    "maxLength": 31
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
