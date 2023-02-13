@@ -172,4 +172,5 @@ public class HapInfo {
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
     }
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
 }

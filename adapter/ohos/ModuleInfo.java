@@ -129,4 +129,8 @@ class ModuleInfo {
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
     }
+    /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
 }

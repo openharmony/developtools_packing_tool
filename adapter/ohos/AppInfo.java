@@ -193,4 +193,5 @@ public class AppInfo {
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;
     }
+    public AppAtomicService appAtomicService = new AppAtomicService();
 }
