@@ -1289,6 +1289,9 @@ class ModuleJsonUtil {
             return preloadItems;
         }
         atomicServiceObj = moduleObj.getJSONObject(ATOMIC_SERVICE);
+        if (!atomicServiceObj.containsKey(PRELOADS)) {
+            return preloadItems;
+        }
         JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
         for (int i = 0; i < preloadObjs.size(); ++i) {
             PreloadItem preloadItem = new PreloadItem();
@@ -1601,9 +1604,35 @@ class ModuleJsonUtil {
             LOG.error("Error: can not config preloads when split is false!");
             return false;
         }
+        return true;
+    }
+
+    /**
+     * check module atomic installation free is valid
+     * @param jsonString is the file content of config.json
+     * @return the result
+     */
+    public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageApiReleaseType!");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType!");
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, config.json has no module!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, module.json has no app!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, module.json has no app!");
+        }
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!installationFree && appObj.containsKey(ATOMIC_SERVICE)) {
-            LOG.error("Error: installationFree must be true when app config atomicService!");
+            LOG.error("Error: installationFree must be true for atomic service");
             return false;
         }
         return true;
