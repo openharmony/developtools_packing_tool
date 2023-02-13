@@ -57,10 +57,6 @@ class ModuleInfo {
         return descriptions;
     }
 
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
     /**
      * Indicates the process of ModuleInfo.
      */
@@ -129,6 +125,10 @@ class ModuleInfo {
      * Indicates the define permissions of ModuleInfo.
      */
     List<DefinePermission> definePermissions = new ArrayList<>();
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
     /**
      * Indicates the module atomic service of ModuleInfo.
      */
