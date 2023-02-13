@@ -50,10 +50,6 @@ class ModuleAbilityInfo {
         return descriptions;
     }
 
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
     /**
      * Indicates the icon of module ModuleJson.
      */
@@ -70,10 +66,6 @@ class ModuleAbilityInfo {
 
     public HashMap<String, String> getLabels() {
         return labels;
-    }
-
-    public void setLabels(HashMap<String, String> labels) {
-        this.labels = labels;
     }
 
     /**
@@ -100,4 +92,12 @@ class ModuleAbilityInfo {
      * Indicates the backgroundModes of module ModuleJson.
      */
     public List<String> backgroundModes = new ArrayList<String>();
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
 }

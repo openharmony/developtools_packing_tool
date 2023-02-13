@@ -101,10 +101,6 @@ public class AppInfo {
         return labels;
     }
 
-    public void setLabels(HashMap<String, String> labels) {
-        this.labels = labels;
-    }
-
     /**
      * Indicates the description of app AppJson.
      */
@@ -117,10 +113,6 @@ public class AppInfo {
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
-    }
-
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
     }
 
     /**
@@ -194,5 +186,12 @@ public class AppInfo {
         this.shellVersionName = versionName;
     }
 
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
     public AppAtomicService appAtomicService = new AppAtomicService();
 }

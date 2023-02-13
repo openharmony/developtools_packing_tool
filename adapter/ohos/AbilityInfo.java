@@ -43,10 +43,6 @@ public class AbilityInfo {
         return descriptions;
     }
 
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
     /**
      * Indicates the description resource of ability.
      */
@@ -74,10 +70,6 @@ public class AbilityInfo {
 
     public HashMap<String, String> getLabels() {
         return labels;
-    }
-
-    public void setLabels(HashMap<String, String> labels) {
-        this.labels = labels;
     }
 
     /**
@@ -231,5 +223,13 @@ public class AbilityInfo {
             }
         }
         return "";
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
     }
 }

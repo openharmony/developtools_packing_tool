@@ -43,12 +43,12 @@ public class ReqPermission {
         return reasons;
     }
 
-    public void setReasons(HashMap<String, String> reasons) {
-        this.reasons = reasons;
-    }
-
     /**
      * Indicates the usedScene of ReqPermission.
      */
     public UsedScene usedScene = null;
+
+    public void setReasons(HashMap<String, String> reasons) {
+        this.reasons = reasons;
+    }
 }
