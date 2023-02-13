@@ -1309,19 +1309,34 @@ class HapVerify {
                 preloadModule.add(preloadItem.getModuleName());
             }
             List<String> preloadModuleDependency = getPreloadItemDependency(preloadModule, hapVerifyInfoList);
-            if (getPreloadSize(preloadModuleDependency, hapVerifyInfoList) >
+            if (getPreloadSize(preloadModule, preloadModuleDependency, hapVerifyInfoList) >
                     ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                LOG.error("Error: preload size is bigger than 2M!");
+                LOG.error("Error:" + hapVerifyInfo.getModuleName() + " preload size is bigger than 2M!");
                 return false;
             }
         }
         return true;
     }
 
-    private static long getPreloadSize(List<String> preloadModuleDependency, List<HapVerifyInfo> hapVerifyInfoList) {
+    private static long getPreloadSize(List<String> preloadModules, List<String> preloadModuleDependency,
+                                       List<HapVerifyInfo> hapVerifyInfoList) {
         long preloadSize = 0L;
-        for (String item : preloadModuleDependency) {
+        List<String> finalPreloadModules = new ArrayList<>();
+        for (String preloadModule : preloadModules) {
+            if (!finalPreloadModules.contains(preloadModule)) {
+                finalPreloadModules.add(preloadModule);
+            }
+        }
+        for (String dependencyItem : preloadModuleDependency) {
+            if (!finalPreloadModules.contains(dependencyItem)) {
+                finalPreloadModules.add(dependencyItem);
+            }
+        }
+        for (String item : finalPreloadModules) {
             HapVerifyInfo hapVerifyInfo = findAtomicServiceHapVerifyInfo(item, hapVerifyInfoList);
+            if (hapVerifyInfo == null) {
+                continue;
+            }
             preloadSize += hapVerifyInfo.getFileLength();
         }
         return preloadSize;

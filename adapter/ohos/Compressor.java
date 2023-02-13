@@ -285,6 +285,11 @@ public class Compressor {
             LOG.error("Error: check module atomicService failed!");
             return false;
         }
+        // check installationFree
+        if (!ModuleJsonUtil.checkAtomicServiceInstallationFree(jsonString)) {
+            LOG.error("Error: check atomic service installationFree failed!");
+            return false;
+        }
 
         return true;
     }
