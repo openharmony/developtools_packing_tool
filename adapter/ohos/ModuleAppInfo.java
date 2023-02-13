@@ -122,4 +122,8 @@ class ModuleAppInfo {
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;
     }
+    /**
+     * Indicates the atomic service of app AppJson.
+     */
+    public AppAtomicService appAtomicService = new AppAtomicService();
 }
