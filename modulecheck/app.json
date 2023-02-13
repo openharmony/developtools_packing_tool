@@ -64,6 +64,9 @@
         "atomicService": {
           "description": "Indicates the config for atomic service.",
           "type": "object",
+          "required": [
+            "split"
+          ],
           "propertyNames": {
             "enum": [
               "split",
