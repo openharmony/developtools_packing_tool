@@ -1230,9 +1230,6 @@ class HapVerify {
             moduleNameWithType.put(hapVerifyInfo.getModuleName(), hapVerifyInfo.getModuleType());
         }
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            if (!hapVerifyInfo.getModuleType().equals(FEATURE)) {
-                continue;
-            }
             List<PreloadItem> preloadItems = hapVerifyInfo.getPreloadItems();
             for (PreloadItem preloadItem : preloadItems) {
                 String moduleName = preloadItem.getModuleName();
