@@ -74,6 +74,7 @@ public class CommandParser {
     private static final String CMD_APPQF_PATH = "--appqf-path";
     private static final String CMD_HQF_PATH = "--hqf-path";
     private static final String CMD_AN_PATH = "--an-path";
+    private static final String CMD_AP_PATH = "--ap-path";
     private static final Log LOG = new Log(CommandParser.class.toString());
 
     /**
@@ -367,6 +368,10 @@ public class CommandParser {
             }
             case CMD_AN_PATH: {
                 utility.setANPath(value);
+                return true;
+            }
+            case CMD_AP_PATH: {
+                utility.setAPPath(value);
                 return true;
             }
             default : {
