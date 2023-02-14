@@ -1056,17 +1056,32 @@
             "type": "object",
             "propertyNames": {
               "enum": [
-                "moduleName"
+                "bundleName",
+                "moduleName",
+                "versionCode"
               ]
             },
             "required": [
               "moduleName"
             ],
             "properties":{
+              "bundleName": {
+                "description": "Indicates the bundle name of the dependency shared library. It uniquely identifies the dependency shared library. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the dependency shared library name. This label is a string type and cannot be defaulted.",
+                "type": "string",
+                "maxLength": 127,
+                "minLength": 7,
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+              },
               "moduleName": {
                 "description": "Indicates the module name of the dependency shared library.",
                 "type": "string",
                 "maxLength": 31
+              },
+              "versionCode": {
+                "description": "Indicates the versionCode number of the dependency shared library. The value is an integer greater than 0. A larger value generally represents a later version.The system determines the dependency shared library version based on the tag value.This label cannot be left blank.",
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
               }
             }
           }
