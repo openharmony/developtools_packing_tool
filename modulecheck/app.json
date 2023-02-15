@@ -150,11 +150,13 @@
         "distributedNotificationEnabled": {
           "description": "Describes whether the application has distributed notifications.",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": false
         },
         "entityType": {
           "description": "Describes the application type.",
           "type": "string",
+          "deprecationMessage": "Deprecated since api 9.",
           "enum": [
             "game",
             "media",
