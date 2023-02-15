@@ -60,6 +60,7 @@
                 "name",
                 "type",
                 "srcEntrance",
+                "srcEntry",
                 "description",
                 "process",
                 "mainElement",
@@ -98,6 +99,7 @@
                 "name",
                 "type",
                 "srcEntrance",
+                "srcEntry",
                 "description",
                 "process",
                 "mainElement",
@@ -140,6 +142,7 @@
                 "name",
                 "type",
                 "srcEntrance",
+                "srcEntry",
                 "description",
                 "process",
                 "mainElement",
@@ -173,6 +176,7 @@
         "name": {
           "description": "Indicates the module name.",
           "type": "string",
+          "pattern": "[^\u4e00-\u9fa5]+",
           "maxLength": 31
         },
         "type": {
@@ -186,6 +190,12 @@
           ]
         },
         "srcEntrance": {
+          "description": "This tag indicates the entry js code path corresponding to hap",
+          "type": "string",
+          "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+          "maxLength": 127
+        },
+        "srcEntry": {
           "description": "This tag indicates the entry js code path corresponding to hap",
           "type": "string",
           "maxLength": 127
@@ -238,7 +248,8 @@
           "default": "default"
         },
         "uiSyntax": {
-          "description": "Indicates the syntax type of JS Component.Default is hml.@deprecated",
+          "description": "Indicates the syntax type of JS Component.Default is hml.",
+          "deprecationMessage": "Deprecated since api 9",
           "type": "string",
           "enum": [
             "ets",
@@ -289,17 +300,30 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "name",
-              "srcEntrance",
-              "startWindowIcon",
-              "startWindowBackground"
+            "oneOf": [
+              {
+                "required": [
+                  "name",
+                  "srcEntrance",
+                  "startWindowIcon",
+                  "startWindowBackground"
+                ]
+              },
+              {
+                "required": [
+                  "name",
+                  "srcEntry",
+                  "startWindowIcon",
+                  "startWindowBackground"
+                ]
+              }
             ],
             "propertyNames": {
               "enum": [
                 "priority",
                 "name",
                 "srcEntrance",
+                "srcEntry",
                 "launchType",
                 "description",
                 "icon",
@@ -307,6 +331,7 @@
                 "permissions",
                 "metadata",
                 "visible",
+                "exported",
                 "skills",
                 "backgroundModes",
                 "continuable",
@@ -334,9 +359,16 @@
               "name": {
                 "description": "Indicates the name of the ability.",
                 "type": "string",
+                "pattern": "[^\u4e00-\u9fa5]+",
                 "maxLength": 127
               },
               "srcEntrance": {
+                "description": "Indicates the js code path corresponding to the ability.",
+                "type": "string",
+                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "maxLength": 127
+              },
+              "srcEntry": {
                 "description": "Indicates the js code path corresponding to the ability.",
                 "type": "string",
                 "maxLength": 127
@@ -347,7 +379,8 @@
                 "enum": [
                   "standard",
                   "singleton",
-                  "specified"
+                  "specified",
+                  "multiton"
                 ],
                 "default": "singleton"
               },
@@ -409,6 +442,12 @@
                 }
               },
               "visible": {
+                "description": "Specifies whether the ability can be called by other applications.The \"true\" indicates the ability can be called by other applications.The \"false\" indicates the ability cannot be called by other applications.This tag is optional. The default value is false.",
+                "type": "boolean",
+                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "default": false
+              },
+              "exported": {
                 "description": "Specifies whether the ability can be called by other applications.The \"true\" indicates the ability can be called by other applications.The \"false\" indicates the ability cannot be called by other applications.This tag is optional. The default value is false.",
                 "type": "boolean",
                 "default": false
