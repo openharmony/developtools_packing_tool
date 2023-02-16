@@ -87,6 +87,7 @@ public class JsonUtil {
     private static final String ENTITY_TYPE = "entityType";
     private static final String UNSPECIFIED = "unspecified";
     private static final String SRC_ENTRANCE = "srcEntrance";
+    private static final String SRC_ENTRY = "srcEntry";
     private static final String PROCESS = "process";
     private static final String PHONE = "phone";
     private static final String TABLET = "tablet";
@@ -116,12 +117,15 @@ public class JsonUtil {
     private static final String USED_SCENE = "usedScene";
     private static final String DEFINE_PERMISSIONS = "definePermissions";
     private static final String DISTRO_FILTER = "distroFilter";
+    private static final String DISTRIBUTION_FILTER = "distributionFilter";
     private static final String LAUNCH_TYPE = "launchType";
     private static final String STANDARD = "standard";
+    private static final String SINGLETON = "singleton";
     private static final String PERMISSIONS = "permissions";
     private static final String READ_PERMISSION = "readPermission";
     private static final String WRITE_PERMISSION = "writePermission";
     private static final String VISIBLE = "visible";
+    private static final String EXPORTED = "exported";
     private static final String CONTINUABLE = "continuable";
     private static final String SKILLS = "skills";
     private static final String BACKGROUND_MODES = "backgroundModes";
@@ -1025,7 +1029,11 @@ public class JsonUtil {
 
         moduleInfo.name = getJsonString(moduleJson, NAME);
         moduleInfo.type = getJsonString(moduleJson, TYPE);
-        moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
+        if (moduleJson.containsKey(SRC_ENTRY)) {
+            moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRY);
+        } else {
+            moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
+        }
         moduleInfo.description = parseResourceByKey(moduleJson, data, DESCRIPTION, DESCRIPTION_ID);
         moduleInfo.setDescriptions(parseResourceMapByKey(moduleJson, data, DESCRIPTION_ID));
         if (moduleJson.containsKey(PROCESS)) {
@@ -1114,6 +1122,9 @@ public class JsonUtil {
                 continue;
             }
             JSONObject distroFilter = JSONObject.parseObject(resource);
+            if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+            }
             if (distroFilter.containsKey(DISTRO_FILTER)) {
                 return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
@@ -1174,7 +1185,11 @@ public class JsonUtil {
         }
         ExtensionAbilityInfo moduleExtensionAbilityInfo = new ExtensionAbilityInfo();
         moduleExtensionAbilityInfo.name = getJsonString(extensionAbilityJson, NAME);
-        moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
+        if (extensionAbilityJson.containsKey(SRC_ENTRY)) {
+            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRY);
+        } else {
+            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
+        }
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
         moduleExtensionAbilityInfo.label =
                 parseResourceByKey(extensionAbilityJson, data, LABEL, LABEL_ID);
@@ -1203,7 +1218,11 @@ public class JsonUtil {
             ModuleAdaption adaption = new ModuleAdaption();
             moduleExtensionAbilityInfo.metadata = adaption.convertToMetadata(moduleExtensionAbilityInfo.metadataInfos);
         }
-        moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, VISIBLE, false);
+        if (extensionAbilityJson.containsKey(EXPORTED)) {
+            moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, EXPORTED, false);
+        } else {
+            moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, VISIBLE, false);
+        }
         return moduleExtensionAbilityInfo;
     }
 
@@ -1254,7 +1273,12 @@ public class JsonUtil {
         }
         ModuleAbilityInfo moduleAbilityInfo = new ModuleAbilityInfo();
         moduleAbilityInfo.name = getJsonString(abilityJson, NAME);
-        moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
+        if (abilityJson.containsKey(SRC_ENTRY)) {
+            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRY);
+        } else {
+            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
+        }
+
         moduleAbilityInfo.launchType = getJsonString(abilityJson, LAUNCH_TYPE, STANDARD);
         moduleAbilityInfo.description = parseResourceByKey(abilityJson, data, DESCRIPTION, DESCRIPTION_ID);
         moduleAbilityInfo.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
@@ -1267,7 +1291,11 @@ public class JsonUtil {
                 getJsonString(abilityJson, PERMISSIONS), String.class);
         }
         moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
-        moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
+        if (abilityJson.containsKey(EXPORTED)) {
+            moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, EXPORTED, false);
+        } else {
+            moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
+        }
         moduleAbilityInfo.continuable = getJsonBooleanValue(abilityJson, CONTINUABLE, false);
 
         if (abilityJson.containsKey(SKILLS)) {
