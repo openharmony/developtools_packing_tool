@@ -75,6 +75,7 @@ class ModuleJsonUtil {
     private static final String PATCH_VERSION_NAME = "patchVersionName";
     private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
     private static final String EMPTY_STRING = "";
+    private static final String ASAN_ENABLED = "asanEnabled";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -1304,7 +1305,103 @@ class ModuleJsonUtil {
         return hqfVerifyInfo;
     }
 
+    /**
+     * get asanEnabled in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the value of asanEnabled
+     */
+    public static boolean getStageAsanEnabled(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageAsanEnabled!");
+            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        if (appObj.containsKey(ASAN_ENABLED)) {
+            return appObj.getBoolean(ASAN_ENABLED);
+        }
+        return false;
+    }
 
+    /**
+     * get asanEnabled in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getStageApiReleaseType(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageApiReleaseType!");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        return getJsonString(appObj, API_RELEASE_TYPE);
+    }
+
+    /**
+     * get asanEnabled in config.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the value of asanEnabled
+     */
+    public static boolean getFAAsanEnabled(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageAsanEnabled!");
+            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        if (appObj.containsKey(ASAN_ENABLED)) {
+            return appObj.getBoolean(ASAN_ENABLED);
+        }
+        return false;
+    }
+
+    /**
+     * get releaseType in config.json
+     *
+     * @param jsonString is the file content of config.json
+     * @return the result
+     */
+    public static String getFAReleaseType(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageApiReleaseType!");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, config.json has no app!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, config.json has no app!");
+        }
+        JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
+        if (apiVersionObj == null) {
+            return "";
+        }
+        return getJsonString(apiVersionObj, RELEASE_TYPE);
+    }
 
     /**
      * get the String from JSONObject by the key.
