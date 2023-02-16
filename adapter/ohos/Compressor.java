@@ -119,6 +119,7 @@ public class Compressor {
     private static final String ABILITIES_DIR_NAME = "abilities";
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
+    private static final String AP_PATH_NAME = "ap/";
 
 
     // set timestamp to get fixed MD5
@@ -371,6 +372,10 @@ public class Compressor {
 
         if (!utility.getANPath().isEmpty()) {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
+        }
+
+        if (!utility.getAPPath().isEmpty()) {
+            pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
         }
 
         if (!utility.getFilePath().isEmpty()) {
