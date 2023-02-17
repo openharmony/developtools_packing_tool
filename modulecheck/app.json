@@ -106,7 +106,9 @@
           "tablet",
           "tv",
           "wearable",
-          "car"
+          "car",
+          "targetBundleName",
+          "targetPriority"
         ]
       },
       "properties": {
@@ -278,6 +280,19 @@
         },
         "car": {
           "$ref": "#/definitions/default"
+        },
+        "targetBundleName": {
+          "description": "Indicates the target bundle name of an overlay application. It uniquely identifies the application. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
+          "type": "string",
+          "maxLength": 127,
+          "minLength": 7,
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+        },
+        "targetPriority": {
+          "description": "Indicates the priority of the overlay module. 1 to 100, default value is 1.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
         }
       }
     }
