@@ -69,6 +69,12 @@ public class JsonUtil {
     private static final String MODULE = "module";
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String TYPE = "type";
+    private static final String SRC_ENTRANCE = "srcEntrance";
+    private static final String SRC_ENTRY = "srcEntry";
+    private static final String DISTRO_FILTER = "distroFilter";
+    private static final String DISTRIBUTION_FILTER = "distributionFilter";
+    private static final String EXPORTED = "exported";
+    private static final String VISIBLE = "visible";
 
 
     /**
@@ -941,8 +947,10 @@ public class JsonUtil {
         if (moduleJson.containsKey("type")) {
             moduleInfo.type = getJsonString(moduleJson, "type");
         }
-        if (moduleJson.containsKey("srcEntrance")) {
-            moduleInfo.srcEntrance = getJsonString(moduleJson, "srcEntrance");
+        if (moduleJson.containsKey(SRC_ENTRY)) {
+            moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRY);
+        } else {
+            moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
         }
         moduleInfo.description = parseResourceByKey(moduleJson, data, "description", "descriptionId");
 
@@ -1062,8 +1070,11 @@ public class JsonUtil {
                 continue;
             }
             JSONObject distroFilter = JSONObject.parseObject(resource);
-            if (distroFilter.containsKey("distroFilter")) {
-                return JSONObject.parseObject(getJsonString(distroFilter, "distroFilter"), DistroFilter.class);
+            if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+            }
+            if (distroFilter.containsKey(DISTRO_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
         }
         return null;
@@ -1109,8 +1120,10 @@ public class JsonUtil {
         if (extensionAbilityJson.containsKey("name")) {
             moduleExtensionAbilityInfo.name = getJsonString(extensionAbilityJson, "name");
         }
-        if (extensionAbilityJson.containsKey("srcEntrance")) {
-            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, "srcEntrance");
+        if (extensionAbilityJson.containsKey(SRC_ENTRY)) {
+            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRY);
+        } else {
+            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
         }
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
         moduleExtensionAbilityInfo.label =
@@ -1145,8 +1158,10 @@ public class JsonUtil {
             moduleExtensionAbilityInfo.metadata = adaption.convertToMetadata(moduleExtensionAbilityInfo.metadataInfos);
         }
 
-        if (extensionAbilityJson.containsKey("visible")) {
-            moduleExtensionAbilityInfo.visible = extensionAbilityJson.getBoolean("visible");
+        if (extensionAbilityJson.containsKey(EXPORTED)) {
+            moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, EXPORTED, false);
+        } else {
+            moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, VISIBLE, false);
         }
 
         return moduleExtensionAbilityInfo;
@@ -1190,8 +1205,10 @@ public class JsonUtil {
         if (abilityJson.containsKey("name")) {
             moduleAbilityInfo.name = getJsonString(abilityJson, "name");
         }
-        if (abilityJson.containsKey("srcEntrance")) {
-            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, "srcEntrance");
+        if (abilityJson.containsKey(SRC_ENTRY)) {
+            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRY);
+        } else {
+            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
         }
         if (abilityJson.containsKey("launchType")) {
             moduleAbilityInfo.launchType = getJsonString(abilityJson, "launchType");
@@ -1206,8 +1223,10 @@ public class JsonUtil {
         if (abilityJson.containsKey("metadata")) {
             moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
         }
-        if (abilityJson.containsKey("visible")) {
-            moduleAbilityInfo.visible = abilityJson.getBoolean("visible");
+        if (abilityJson.containsKey(EXPORTED)) {
+            moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, EXPORTED, false);
+        } else {
+            moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
         }
         if (abilityJson.containsKey("continuable")) {
             moduleAbilityInfo.continuable = abilityJson.getBoolean("continuable");
@@ -1919,5 +1938,13 @@ public class JsonUtil {
             hqfVerifyInfo.setOriginalModuleHash(moduleObj.getString(ORIGINAL_MODULE_HASH));
         }
         return hqfVerifyInfo;
+    }
+
+    private static boolean getJsonBooleanValue(JSONObject jsonObject, String key, boolean defaultValue) {
+        boolean value = defaultValue;
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.getBooleanValue(key);
+        }
+        return value;
     }
 }
