@@ -713,16 +713,14 @@
                   "required": [
                     "name",
                     "srcEntrance",
-                    "type",
-                    "uri"
+                    "type"
                   ]
                 },
                 {
                   "required": [
                     "name",
                     "srcEntry",
-                    "type",
-                    "uri"
+                    "type"
                   ]
                 }
               ]
