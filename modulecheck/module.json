@@ -121,7 +121,9 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService"
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -165,7 +167,9 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService"
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -1186,6 +1190,17 @@
               }
             }
           }
+        },
+        "targetModuleName": {
+          "description": "Indicates the target module name of an overlay module.",
+          "type": "string",
+          "maxLength": 31
+        },
+        "targetPriority": {
+          "description": "Indicates the priority of the overlay module. 1 to 100, default value is 1.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
         }
       }
     }
