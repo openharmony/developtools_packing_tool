@@ -877,10 +877,6 @@ class HapVerify {
                 LOG.error("Error: installationFree is different in input hap!");
                 return false;
             }
-            if (isInstallationFree && SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())) {
-                LOG.error("Error: app can not contain both atomic service and hsp!");
-                return false;
-            }
         }
         int depth = isInstallationFree ? SERVICE_DEPTH : APPLICATION_DEPTH;
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
@@ -1070,11 +1066,6 @@ class HapVerify {
         if (!appType.equals(ATOMIC_SERVICE)) {
             return true;
         }
-        // check module name duplicated
-        if (!checkModuleNameDuplicated(hapVerifyInfoList)) {
-            LOG.error("Error: checkModuleNameDuplicated failed!");
-            return false;
-        }
         // check split and module
         if (!checkAtomicServiceSplitWithModule(hapVerifyInfoList)) {
             LOG.error("Error: checkSplitAndModuleNumbers failed!");
@@ -1103,18 +1094,6 @@ class HapVerify {
         return true;
     }
 
-    private static boolean checkModuleNameDuplicated(List<HapVerifyInfo> hapVerifyInfoList) {
-        List<String> moduleNames = new ArrayList<>();
-        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            if (moduleNames.contains(hapVerifyInfo.getModuleName())) {
-                LOG.error("Error: module name can not duplicated for atomicService!");
-                return false;
-            }
-            moduleNames.add(hapVerifyInfo.getModuleName());
-        }
-        return true;
-    }
-
     private static boolean checkAtomicServiceSplitWithModule(List<HapVerifyInfo> hapVerifyInfoList)
             throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
@@ -1123,13 +1102,11 @@ class HapVerify {
         }
         boolean split = hapVerifyInfoList.get(0).isSplit();
         if (!split) {
-            if (hapVerifyInfoList.size() != ATOMIC_SERVICE_NUMBER) {
-                LOG.error("Error: atomicService can only contain one module when split is false!");
-                return false;
-            }
-            if (!ENTRY.equals(hapVerifyInfoList.get(0).getModuleType())) {
-                LOG.error("Error: atomicService can only contain one entry module when split is false!");
-                return false;
+            for (HapVerifyInfo info : hapVerifyInfoList) {
+                if (!ENTRY.equals(info.getModuleType())) {
+                    LOG.error("Error: atomicService can only contain entry module when split is false!");
+                    return false;
+                }
             }
         }
         return true;
