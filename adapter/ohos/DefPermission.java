@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,8 +49,28 @@ public class DefPermission {
      */
     public String label = "";
 
+    private HashMap<String, String> labels = new HashMap<>();
+
     /**
      * Indicates the description of DefPermission.
      */
     public String description = "";
+
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
 }
