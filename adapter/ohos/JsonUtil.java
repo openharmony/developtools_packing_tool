@@ -111,6 +111,7 @@ public class JsonUtil {
     private static final String META_DATA = "metadata";
     private static final String SRC = "src";
     private static final String EXTENSION_ABILITIES = "extensionAbilities";
+    private static final String REQ_PERMISSIONS = "reqPermissions";
     private static final String REQUEST_PERMISSIONS = "requestPermissions";
     private static final String REASON = "reason";
     private static final String REASON_ID = "reasonId";
@@ -618,6 +619,7 @@ public class JsonUtil {
         hapInfo.packageStr = getJsonString(hapJson, "package");
         hapInfo.name = getJsonString(hapJson, "name");
         hapInfo.description = parseResourceByKey(hapJson, data, "description", "descriptionId");
+        hapInfo.setDescriptions(parseResourceMapByKey(hapJson, data, DESCRIPTION_ID));
 
         if (hapJson.containsKey(MAIN_ABILITY)) {
             hapInfo.mainElement = getJsonString(hapJson, MAIN_ABILITY);
@@ -669,8 +671,7 @@ public class JsonUtil {
         }
 
         if (hapJson.containsKey("reqPermissions")) {
-            hapInfo.reqPermissions = JSONObject.parseArray(getJsonString(hapJson, "reqPermissions"),
-                    ReqPermission.class);
+            hapInfo.reqPermissions = parseFAReqPermission(hapJson, data);
         }
 
         if (hapJson.containsKey("commonEvents")) {
@@ -700,6 +701,28 @@ public class JsonUtil {
                     getJsonString(hapJson, "distroFilter"), DistroFilter.class);
         }
         return hapInfo;
+    }
+
+    static List<ReqPermission> parseFAReqPermission(JSONObject hapJson, byte[] data) throws BundleException {
+        List<ReqPermission> reqPermissions = new ArrayList<>();
+        if (!hapJson.containsKey(REQ_PERMISSIONS)) {
+            return reqPermissions;
+        }
+        JSONArray reqPermissionObjs = hapJson.getJSONArray(REQ_PERMISSIONS);
+        for (int i = 0; i < reqPermissionObjs.size(); ++i) {
+            ReqPermission reqPermission = new ReqPermission();
+            JSONObject requestPermission = reqPermissionObjs.getJSONObject(i);
+            reqPermission.name = getJsonString(requestPermission, NAME);
+            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
+            if (requestPermission.containsKey(REASON_ID)) {
+                reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
+            }
+            if (requestPermission.containsKey(USED_SCENE)) {
+                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
+            }
+            reqPermissions.add(reqPermission);
+        }
+        return reqPermissions;
     }
 
     /**
@@ -791,6 +814,7 @@ public class JsonUtil {
         }
         ability.description = ability.descriptionRes != null && !ability.descriptionRes.isEmpty() ?
                 ability.descriptionRes : getJsonString(abilityJson, "description");
+        ability.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
 
         if (abilityJson.containsKey("labelId")) {
             int labelId = abilityJson.getIntValue("labelId");
@@ -803,6 +827,7 @@ public class JsonUtil {
         } else {
             ability.label = ability.name;
         }
+        ability.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
 
         ability.type = getJsonString(abilityJson, "type");
         ability.launchType = getJsonString(abilityJson, "launchType");
@@ -942,6 +967,7 @@ public class JsonUtil {
         abilityForm.name = getJsonString(abilityFormJson, "name");
         abilityForm.type = getJsonString(abilityFormJson, "type");
         abilityForm.description = parseResourceByKey(abilityFormJson, data, "description", "descriptionId");
+        abilityForm.setDescriptions(parseResourceMapByKey(abilityFormJson, data, DESCRIPTION_ID));
         if (abilityFormJson.containsKey("isDefault")) {
             abilityForm.isDefault = abilityFormJson.getBoolean("isDefault");
         }
@@ -1503,6 +1529,8 @@ public class JsonUtil {
         if (shortcutObj.containsKey("label")) {
             moduleShortcut.setLabel(parseResourceByStringID(data, getJsonString(shortcutObj, "label")));
         }
+        moduleShortcut.setLabels(parseResourceMapByKey(shortcutObj, data, LABEL_ID));
+
         if (shortcutObj.containsKey("icon")) {
             String iconPath = parseResourceByStringID(data, getJsonString(shortcutObj, "icon"));
             moduleShortcut.setIcon(iconPath.substring(iconPath.indexOf("resources")));
@@ -1552,6 +1580,7 @@ public class JsonUtil {
         if (shortcutObj.containsKey("label")) {
             shortcut.label = parseResourceByKey(shortcutObj, data, "label", "labelId");
         }
+        shortcut.setLabels(parseResourceMapByKey(shortcutObj, data, LABEL_ID));
         if (shortcutObj.containsKey("icon")) {
             shortcut.icon = parseIconById(shortcutObj, data);
         }
@@ -1722,8 +1751,11 @@ public class JsonUtil {
         }
         definePermission.label =
                 parseResourceByKey(definePermissionObj, data, "label", "labelId");
+        definePermission.setLabels(parseResourceMapByKey(definePermissionObj, data, LABEL_ID));
+
         definePermission.description =
                 parseResourceByKey(definePermissionObj, data, "description", "descriptionId");
+        definePermission.setDescriptions(parseResourceMapByKey(definePermissionObj, data, DESCRIPTION_ID));
 
         return definePermission;
     }
@@ -1766,7 +1798,11 @@ public class JsonUtil {
                     JSONObject.parseArray(getJsonString(defPermissionObj, "availableScope"), String.class);
         }
         defPermission.label = parseResourceByKey(defPermissionObj, data, "label", "labelId");
+        defPermission.setLabels(parseResourceMapByKey(defPermissionObj, data, LABEL_ID));
+
         defPermission.description = parseResourceByKey(defPermissionObj, data, "description", "descriptionId");
+        defPermission.setDescriptions(parseResourceMapByKey(defPermissionObj, data, DESCRIPTION_ID));
+
         if (defPermissionObj.containsKey("group")) {
             defPermission.group = getJsonString(defPermissionObj, "group");
         }
@@ -1870,8 +1906,8 @@ public class JsonUtil {
             ReqPermission reqPermission = new ReqPermission();
             JSONObject requestPermission = requestPermissionObjs.getJSONObject(i);
             reqPermission.name = getJsonString(requestPermission, NAME);
+            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
             if (requestPermission.containsKey(REASON_ID)) {
-                reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
                 reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
             }
             if (requestPermission.containsKey(USED_SCENE)) {
