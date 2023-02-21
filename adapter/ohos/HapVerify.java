@@ -1030,7 +1030,8 @@ class HapVerify {
         }
         String appType = hapVerifyInfoList.get(0).getAppType();
         boolean installationFree = hapVerifyInfoList.get(0).isInstallationFree();
-        if (ATOMIC_SERVICE.equals(appType) || !installationFree) {
+        boolean isFaModule = !hapVerifyInfoList.get(0).isStageModule();
+        if (isFaModule || ATOMIC_SERVICE.equals(appType) || !installationFree) {
             return true;
         }
         if (hapVerifyInfoList.size() == ONE &&
@@ -1038,7 +1039,14 @@ class HapVerify {
             LOG.error("Error: final app size is bigger than 10M when installationFree is true");
             return false;
         }
-        if (hapVerifyInfoList.size() > ONE) {
+        boolean split = false;
+        for (HapVerifyInfo info : hapVerifyInfoList) {
+            if (!info.getModuleType().equals(ENTRY)) {
+                split = true;
+                break;
+            }
+        }
+        if (split) {
             // check module size
             long finalAppSize = 0L;
             for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
@@ -1278,15 +1286,15 @@ class HapVerify {
         List<HapVerifyInfo> preloadHapVerifyInfos = new ArrayList<>();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
             List<PreloadItem> preloadItems = hapVerifyInfo.getPreloadItems();
-            List<String> preloadModule = new ArrayList<>();
             for (PreloadItem preloadItem : preloadItems) {
+                List<String> preloadModule = new ArrayList<>();
                 preloadModule.add(preloadItem.getModuleName());
-            }
-            List<String> preloadModuleDependency = getPreloadItemDependency(preloadModule, hapVerifyInfoList);
-            if (getPreloadSize(preloadModule, preloadModuleDependency, hapVerifyInfoList) >
-                    ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                LOG.error("Error:" + hapVerifyInfo.getModuleName() + " preload size is bigger than 2M!");
-                return false;
+                List<String> preloadModuleDependency = getPreloadItemDependency(preloadModule, hapVerifyInfoList);
+                if (getPreloadSize(preloadModule, preloadModuleDependency, hapVerifyInfoList) >
+                        ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
+                    LOG.error("Error:" + hapVerifyInfo.getModuleName() + " preload size is bigger than 2M!");
+                    return false;
+                }
             }
         }
         return true;
