@@ -75,6 +75,11 @@ public class JsonUtil {
     private static final String DISTRIBUTION_FILTER = "distributionFilter";
     private static final String EXPORTED = "exported";
     private static final String VISIBLE = "visible";
+    private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String SPLIT = "split";
+    private static final String MAIN = "main";
+    private static final String PRELOADS = "preloads";
+    private static final String MODULE_NAME = "moduleName";
 
 
     /**
@@ -339,6 +344,7 @@ public class JsonUtil {
         moduleAppInfo.icon = parseIconById(appJson, data);
         moduleAppInfo.label = parseResourceByKey(appJson, data, "label", "labelId");
         moduleAppInfo.description = parseResourceByKey(appJson, data, "description", "descriptionId");
+        moduleAppInfo.appAtomicService = parseAppAtomicService(appJson);
 
         if (appJson.containsKey("vendor")) {
             moduleAppInfo.vendor = getJsonString(appJson, "vendor");
@@ -392,6 +398,20 @@ public class JsonUtil {
         parseDeviceType(appJson, moduleAppInfo, "router");
 
         return moduleAppInfo;
+    }
+
+    static AppAtomicService parseAppAtomicService(JSONObject appJson) {
+        AppAtomicService appAtomicService = new AppAtomicService();
+        JSONObject atomicServiceObj = null;
+        if (appJson.containsKey(ATOMIC_SERVICE)) {
+            atomicServiceObj = appJson.getJSONObject(ATOMIC_SERVICE);
+        }
+        if (atomicServiceObj == null) {
+            return appAtomicService;
+        }
+        appAtomicService.setSplit(getJsonBooleanValue(atomicServiceObj, SPLIT, true));
+        appAtomicService.setMain(getJsonString(atomicServiceObj, MAIN));
+        return appAtomicService;
     }
 
     /**
@@ -1029,6 +1049,8 @@ public class JsonUtil {
         if (moduleJson.containsKey("definePermissions")) {
             moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
         }
+
+        moduleInfo.moduleAtomicService = parseModuleAtomicService(moduleJson);
         return moduleInfo;
     }
 
@@ -1607,6 +1629,28 @@ public class JsonUtil {
             }
         }
         return definePermissions;
+    }
+
+    static ModuleAtomicService parseModuleAtomicService(JSONObject moduleJson) {
+        ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+        JSONObject atomicServiceObj = null;
+        if (!moduleJson.containsKey(ATOMIC_SERVICE)) {
+            return moduleAtomicService;
+        }
+        atomicServiceObj = moduleJson.getJSONObject(ATOMIC_SERVICE);
+        JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
+        List<PreloadItem> preloadItems = new ArrayList<>();
+        for (int i = 0; i < preloadObjs.size(); ++i) {
+            PreloadItem preloadItem = new PreloadItem();
+            JSONObject itemObj = preloadObjs.getJSONObject(i);
+            if (itemObj.containsKey(MODULE_NAME)) {
+                preloadItem.setModuleName(getJsonString(itemObj, MODULE_NAME));
+            }
+            preloadItems.add(preloadItem);
+        }
+        moduleAtomicService.setPreloadItems(preloadItems);
+
+        return moduleAtomicService;
     }
 
     /**
