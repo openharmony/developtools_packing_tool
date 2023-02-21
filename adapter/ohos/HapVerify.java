@@ -1292,7 +1292,7 @@ class HapVerify {
                 List<String> preloadModuleDependency = getPreloadItemDependency(preloadModule, hapVerifyInfoList);
                 if (getPreloadSize(preloadModule, preloadModuleDependency, hapVerifyInfoList) >
                         ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                    LOG.error("Error:" + hapVerifyInfo.getModuleName() + " preload size is bigger than 2M!");
+                    LOG.error("Error:" + hapVerifyInfo.getModuleName() + " dependencies size is bigger than 2M!");
                     return false;
                 }
             }
@@ -1346,7 +1346,8 @@ class HapVerify {
 
     private static List<String> getModuleDependency(HapVerifyInfo hapVerifyInfo,
                                                     List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
-        List<String> dependencyModules = hapVerifyInfo.getDependencies();
+        List<String> dependencyModules = new ArrayList<>();
+        dependencyModules.addAll(hapVerifyInfo.getDependencies());
         List<String> dependencyItems = hapVerifyInfo.getDependencies();
         for (String dependency : dependencyItems) {
             HapVerifyInfo dependencyHapVerifyInfo = findAtomicServiceHapVerifyInfo(dependency, hapVerifyInfoList);
