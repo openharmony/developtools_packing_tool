@@ -82,6 +82,7 @@
         "enum": [
           "bundleName",
           "debug",
+          "atomicService",
           "icon",
           "label",
           "description",
@@ -115,6 +116,31 @@
           "maxLength": 127,
           "minLength": 7,
           "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+        },
+        "atomicService": {
+          "description": "Indicates the config for atomic service.",
+          "type": "object",
+          "required": [
+            "split"
+          ],
+          "propertyNames": {
+            "enum": [
+              "split",
+              "main"
+            ]
+          },
+          "properties": {
+            "split": {
+              "description": "Indicates whether to split bundle in atomicService.",
+              "type": "boolean",
+              "default": true
+            },
+            "main": {
+              "description": "Indicates the name of main module when split is true.",
+              "type": "string",
+              "maxLength": 31
+            }
+          }
         },
         "debug": {
           "description": "Identify whether the application can be debugged.",
