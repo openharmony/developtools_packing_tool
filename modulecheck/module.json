@@ -805,7 +805,8 @@
                   "window",
                   "enterpriseAdmin",
                   "thumbnail",
-                  "preview"
+                  "preview",
+                  "print"
                 ]
               },
               "permissions": {
