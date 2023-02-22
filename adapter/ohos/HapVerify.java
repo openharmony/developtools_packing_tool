@@ -1220,7 +1220,7 @@ class HapVerify {
                 String moduleName = preloadItem.getModuleName();
                 if (moduleNameWithType.get(moduleName).equals(ENTRY)
                         || moduleNameWithType.get(moduleName).equals(HAR)) {
-                    LOG.error("Error: feature can not preload entry or har");
+                    LOG.error("Error: feature or shared can not preload entry or har");
                     return false;
                 }
             }
