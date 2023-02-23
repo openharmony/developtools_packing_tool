@@ -124,6 +124,10 @@ class HapVerifyInfo {
      */
     private String main = "";
 
+    private boolean sharedHsp = false;
+
+    private String compatiblePolicy = "";
+
     private List<PreloadItem> preloadItems = new ArrayList<>();
 
     private long fileLength = 0L;
@@ -414,5 +418,21 @@ class HapVerifyInfo {
 
     public void setFileLength(long fileLength) {
         this.fileLength = fileLength;
+    }
+
+    public boolean isSharedHsp() {
+        return sharedHsp;
+    }
+
+    public void setSharedHsp(boolean sharedHsp) {
+        this.sharedHsp = sharedHsp;
+    }
+
+    public String getCompatiblePolicy() {
+        return compatiblePolicy;
+    }
+
+    public void setCompatiblePolicy(String compatiblePolicy) {
+        this.compatiblePolicy = compatiblePolicy;
     }
 }

@@ -121,6 +121,7 @@ public class Compressor {
     private static final String ABILITIES_DIR_NAME = "abilities";
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
+    private static final String TYPE_SHARED = "shared";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -226,6 +227,10 @@ public class Compressor {
                 compressAPPQFMode(utility);
                 break;
             case Utility.MODE_HSP:
+                if (!verifySharedHsp(utility)) {
+                    LOG.error("Error: SharedApp can only contain HSP");
+                    return;
+                }
                 compressHSPMode(utility);
                 break;
             default:
@@ -597,7 +602,7 @@ public class Compressor {
                 }
             }
             // check hap is valid
-            if (!checkHapIsValid(fileList)) {
+            if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
                         "apiVersion,moduleName,packageName!");
             }
@@ -666,7 +671,7 @@ public class Compressor {
                 compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath);
             }
             // check hap is valid
-            if (!checkHapIsValid(fileList)) {
+            if (!checkHapIsValid(fileList, false)) {
                 String errMsg = "Compressor::compressAppModeForMultiProject There are some " +
                         "haps with different version code or duplicated moduleName or packageName!";
                 throw new BundleException(errMsg);
@@ -2088,7 +2093,7 @@ public class Compressor {
      * @return true is for successful and false is for failed
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private boolean checkHapIsValid(List<String> fileLists) throws BundleException {
+    private boolean checkHapIsValid(List<String> fileLists, boolean isSharedApp) throws BundleException {
         List<HapVerifyInfo> hapVerifyInfos = new ArrayList<>();
         for (String hapPath : fileLists) {
             if (hapPath.isEmpty()) {
@@ -2114,6 +2119,9 @@ public class Compressor {
         }
         if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
             return false;
+        }
+        if (isSharedApp && !hapVerifyInfos.isEmpty()) {
+            return hapVerifyInfos.get(0).isSharedHsp();
         }
         return true;
     }
@@ -2240,6 +2248,19 @@ public class Compressor {
         }
         if (!HQFVerify.checkHQFIsValid(hqfVerifyInfos)) {
             LOG.error("Error: input hqf is invalid!");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean verifySharedHsp(Utility utility) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        hapVerifyInfo.setProfileStr(jsonString);
+        ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
+        if (hapVerifyInfo.isSharedHsp() &&
+                !TYPE_SHARED.equals(hapVerifyInfo.getModuleType())) {
             return false;
         }
         return true;
