@@ -227,15 +227,27 @@ public class Compressor {
                 compressAPPQFMode(utility);
                 break;
             case Utility.MODE_HSP:
-                if (!verifySharedHsp(utility)) {
-                    LOG.error("Error: SharedApp can only contain HSP");
-                    return;
-                }
-                compressHSPMode(utility);
+                compressHsp(utility);
                 break;
             default:
                 compressPackResMode(utility);
         }
+    }
+
+    private void compressHsp(Utility utility) throws BundleException {
+        if (!verifySharedHsp(utility)) {
+            LOG.error("Error: SharedApp can only contain HSP");
+            throw new BundleException("Error: checkStageHap failed!");
+        }
+        if (isModuleJSON(utility.getJsonPath())) {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
+            if (!checkStageAtomicService(jsonString)) {
+                LOG.error("Error: checkStageAtomicService failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+        }
+        compressHSPMode(utility);
     }
 
     private void compressHap(Utility utility) throws BundleException {

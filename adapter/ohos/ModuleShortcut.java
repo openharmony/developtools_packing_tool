@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,6 +33,8 @@ class ModuleShortcut {
      * Indicates the label of module Shortcut.
      */
     private String label = "";
+
+    private HashMap<String, String> labels = new HashMap<>();
 
     /**
      * Indicates the icon of module Shortcut.
@@ -57,6 +60,14 @@ class ModuleShortcut {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
     }
 
     public String getIcon() {

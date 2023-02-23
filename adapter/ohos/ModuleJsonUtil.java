@@ -1592,7 +1592,7 @@ class ModuleJsonUtil {
             return false;
         }
         if (split && !atomicServiceObj.containsKey(MAIN)) {
-            LOG.error("Error: atomicServic must contain main when split is true!");
+            LOG.error("Error: atomicService must contain main when split is true!");
             return false;
         }
 
