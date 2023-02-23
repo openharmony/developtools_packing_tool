@@ -158,4 +158,6 @@ public class HapInfo {
         }
         return "";
     }
+
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
 }

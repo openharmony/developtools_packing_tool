@@ -36,7 +36,9 @@
                 "metadata",
                 "requestPermissions",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "installationFree",
+                "atomicService"
               ]
             },
             "required": [
@@ -116,7 +118,8 @@
                 "definePermissions",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "atomicService"
               ]
             },
             "required": [
@@ -159,7 +162,8 @@
                 "definePermissions",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "atomicService"
               ]
             },
             "required": [
@@ -1138,6 +1142,37 @@
         "libIsolation": {
           "description": "Indicates whether to isolate the shared libraries in this module.",
           "type": "boolean"
+        },
+        "atomicService": {
+          "description": "Indicates the module config in atomic service.",
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "preloads"
+            ]
+          },
+          "properties": {
+            "preloads": {
+              "description": "Indicates modules are preloaded when the current module is run.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "enum": [
+                    "moduleName"
+                  ]
+                },
+                "properties": {
+                  "moduleName": {
+                    "description": "Indicates module is preloaded when the current module is run.",
+                    "type": "string",
+                    "maxLength": 31
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

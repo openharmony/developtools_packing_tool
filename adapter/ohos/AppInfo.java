@@ -166,4 +166,6 @@ public class AppInfo {
         this.shellVersionCode = versionCode;
         this.shellVersionName = versionName;
     }
+
+    public AppAtomicService appAtomicService = new AppAtomicService();
 }
