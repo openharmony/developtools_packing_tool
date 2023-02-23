@@ -128,6 +128,14 @@ class HapVerifyInfo {
 
     private String compatiblePolicy = "";
 
+    private String targetBundleName = "";
+
+    private int targetPriority = 0;
+
+    private String targetModuleName = "";
+
+    private int targetModulePriority = 0;
+
     private List<PreloadItem> preloadItems = new ArrayList<>();
 
     private long fileLength = 0L;
@@ -410,6 +418,38 @@ class HapVerifyInfo {
 
     public void setPreloadItems(List<PreloadItem> preloadItems) {
         this.preloadItems = preloadItems;
+    }
+
+    public String getTargetBundleName() {
+        return targetBundleName;
+    }
+
+    public void setTargetBundleName(String targetBundleName) {
+        this.targetBundleName = targetBundleName;
+    }
+
+    public int getTargetPriority() {
+        return targetPriority;
+    }
+
+    public void setTargetPriority(int priority) {
+        this.targetPriority = priority;
+    }
+
+    public String getTargetModuleName() {
+        return targetModuleName;
+    }
+
+    public void setTargetModuleName(String targetModuleName) {
+        this.targetModuleName = targetModuleName;
+    }
+
+    public int getTargetModulePriority() {
+        return targetModulePriority;
+    }
+
+    public void setTargetModulePriority(int priority) {
+        this.targetModulePriority = priority;
     }
 
     public long getFileLength() {

@@ -56,6 +56,10 @@ class VerifyCollection {
      */
     public String releaseType = "";
 
+    public String targetBundleName = "";
+
+    public int targetPriority = 0;
+
     /**
      * Indicates the split of atomicService in app.
      */

@@ -1195,6 +1195,7 @@
         "targetModuleName": {
           "description": "Indicates the target module name of an overlay module.",
           "type": "string",
+          "pattern": "[^\u4e00-\u9fa5]+",
           "maxLength": 31
         },
         "targetPriority": {
