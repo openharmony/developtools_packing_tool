@@ -98,7 +98,11 @@ class HapVerify {
         if (!checkAbilityNameIsValid(hapVerifyInfos)) {
             LOG.info("Ability name is duplicated!");
         }
-
+        // check targetModuleName
+        if (!checkTargetModuleNameIsExisted(hapVerifyInfos)) {
+            LOG.error("Ability name is duplicated!");
+            return false;
+        }
         return true;
     }
 
@@ -124,6 +128,8 @@ class HapVerify {
         verifyCollection.releaseType = hapVerifyInfos.get(0).getApiVersion().getReleaseType();
         verifyCollection.setSplit(hapVerifyInfos.get(0).isSplit());
         verifyCollection.setMain(hapVerifyInfos.get(0).getMain());
+        verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
+        verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
@@ -164,6 +170,14 @@ class HapVerify {
             }
             if (!verifyCollection.getMain().equals(hapVerifyInfo.getMain())) {
                 LOG.error("Error: input module main is different!");
+                return false;
+            }
+            if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
+                LOG.error("Error: targetBundleName is different!");
+                return false;
+            }
+            if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
+                LOG.error("Error: targetPriority is different!");
                 return false;
             }
         }
@@ -283,6 +297,41 @@ class HapVerify {
                     return false;
                 }
             }
+        }
+        return true;
+    }
+
+    /**
+     * check targetModuleName is existed.
+     *
+     * @param hapVerifyInfos is the collection of hap infos
+     * @return true if targetModuleName is erxisted
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    private static boolean checkTargetModuleNameIsExisted(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        List<HapVerifyInfo> internalOverlayHap = new ArrayList<>();
+        List<HapVerifyInfo> nonOverlayHap = new ArrayList<>();
+        List<String> targetModuleList = new ArrayList<>();
+        List<String> moduleList = new ArrayList<>();
+        for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+            if (!hapInfo.getTargetModuleName().isEmpty()) {
+                internalOverlayHap.add(hapInfo);
+                targetModuleList.add(hapInfo.getTargetModuleName());
+                continue;
+            }
+            nonOverlayHap.add(hapInfo);
+            moduleList.add(hapInfo.getModuleName());
+        }
+        if (internalOverlayHap.isEmpty()) {
+            return true;
+        }
+        if (nonOverlayHap.isEmpty()) {
+            LOG.error("Error: " + "target modules are needed to pack with overlay module");
+            return false;
+        }
+        if (!moduleList.containsAll(targetModuleList)) {
+            LOG.error("Error: " + "target modules are needed to pack with overlay module");
+            return false;
         }
         return true;
     }
