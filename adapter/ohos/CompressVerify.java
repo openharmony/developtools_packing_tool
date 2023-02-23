@@ -55,6 +55,7 @@ public class CompressVerify {
 
     private static final boolean TYPE_FILE = true;
     private static final boolean TYPE_DIR = false;
+    private static final Integer ONE = 1;
 
     /**
      * if args valid.
@@ -287,7 +288,7 @@ public class CompressVerify {
         }
 
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
-            && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
+                && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
             LOG.error("CompressVerify::isArgsValidInHarMode json-path must be config.json file!");
             return false;
         }
@@ -334,12 +335,14 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
-        if (utility.getHapPath().isEmpty() && utility.getHspPath().isEmpty()) {
+        boolean isSharedApp = isSharedApp(utility);
+        if (utility.getHapPath().isEmpty() && !isSharedApp) {
             LOG.error("CompressVerify::isArgsValidInAppMode hap-path is empty!");
             return false;
         }
 
-        if (!compatibleProcess(utility, utility.getHapPath(), utility.getFormattedHapPathList(), HAP_SUFFIX)) {
+        if (!utility.getHapPath().isEmpty()
+                && !compatibleProcess(utility, utility.getHapPath(), utility.getFormattedHapPathList(), HAP_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInAppMode hap-path is invalid!");
             return false;
         }
@@ -378,7 +381,7 @@ public class CompressVerify {
             return false;
         }
         if (!utility.getPackResPath().isEmpty() && !isPathValid(utility.getPackResPath(), TYPE_FILE, PACK_RES)) {
-            LOG.error("CompressVerify::isArgsValidInAppMode pack-res-path is invalid!:" );
+            LOG.error("CompressVerify::isArgsValidInAppMode pack-res-path is invalid!");
             return false;
         }
 
@@ -397,7 +400,7 @@ public class CompressVerify {
             return false;
         }
         if (!utility.getAppList().isEmpty()) {
-            if (!compatibleProcess(utility,utility.getAppList(), utility.getFormattedAppList(), APP_SUFFIX)) {
+            if (!compatibleProcess(utility, utility.getAppList(), utility.getFormattedAppList(), APP_SUFFIX)) {
                 LOG.error("CompressVerify::isVerifyValidInMultiAppMode app-list is invalid!");
                 return false;
             }
@@ -436,7 +439,7 @@ public class CompressVerify {
 
         if (!isDirectoryValidStrictCase(utility.getEntryCardPath(), ENTRY_CARD_DIRECTORY_NAME)) {
             LOG.error("CompressVerify::isArgsValidInResMode the level-1 directory name must is EntryCard" +
-                ", current is " + utility.getEntryCardPath());
+                    ", current is " + utility.getEntryCardPath());
             return false;
         }
         if (!compatibleProcess(utility, utility.getEntryCardPath(),
@@ -509,7 +512,7 @@ public class CompressVerify {
      * @return Returns {@code true} if the compatible is successful; returns {@code false} otherwise.
      */
     private static boolean compatibleProcess(Utility utility, String inputPath,
-        List<String> fileList, String suffix) {
+                                             List<String> fileList, String suffix) {
         if (isPathValid(inputPath, TYPE_DIR, null)) {
             File inputFile = new File(inputPath);
             File[] files = inputFile.listFiles();
@@ -630,7 +633,7 @@ public class CompressVerify {
         File file = new File(path);
         if (!file.exists()) {
             LOG.error("CompressVerify::isDirectoryValidStrictCase directory is not exist, directoryPath: "
-                + path);
+                    + path);
             return false;
         }
         if (file.isDirectory()) {
@@ -701,5 +704,20 @@ public class CompressVerify {
         }
 
         return isOutPathValid(utility, HSP_SUFFIX);
+    }
+
+    private static boolean isSharedApp(Utility utility) {
+        if (!utility.getHapPath().isEmpty()) {
+            return false;
+        }
+        if (utility.getHspPath().isEmpty()) {
+            return false;
+        }
+        List<String> tmpHspPathList = new ArrayList<>();
+        if(compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)) {
+            utility.setIsSharedApp(true);
+            return ONE.equals(tmpHspPathList.size());
+        }
+        return false;
     }
 }

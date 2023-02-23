@@ -90,6 +90,7 @@ public class Utility {
     private String appqfPath = "";
     private String anPath = "";
     private String apPath = "";
+    private Boolean isSharedApp = false;
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -717,5 +718,13 @@ public class Utility {
 
     public String getAPPath() {
         return this.apPath;
+    }
+
+    public void setIsSharedApp(boolean isSharedApp) {
+        this.isSharedApp = isSharedApp;
+    }
+
+    public Boolean getSharedApp() {
+        return isSharedApp;
     }
 }

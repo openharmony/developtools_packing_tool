@@ -81,6 +81,8 @@ class ModuleJsonUtil {
     private static final String SPLIT = "split";
     private static final String MAIN = "main";
     private static final String PRELOADS = "preloads";
+    private static final String SHARED = "shared";
+    private static final String COMPATIBLE_POLICY = "compatiblePolicy";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -873,6 +875,8 @@ class ModuleJsonUtil {
         hapVerifyInfo.setMain(parseStageAtomicServiceMain(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setAppType(parseStageAppType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPreloadItems(parseAtomicServicePreloads(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setSharedHsp(parseSharedApp(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompatiblePolicy(parseCompatiblePolicy(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1302,6 +1306,38 @@ class ModuleJsonUtil {
             preloadItems.add(preloadItem);
         }
         return preloadItems;
+    }
+
+    static JSONObject getAppObj(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain app!");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain app!");
+        }
+        return appObj;
+    }
+
+    static boolean parseSharedApp(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+        JSONObject sharedObj = appObj.getJSONObject(SHARED);
+        return sharedObj != null;
+    }
+
+    static String parseCompatiblePolicy(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+        JSONObject sharedObj = appObj.getJSONObject(SHARED);
+        if (sharedObj != null && sharedObj.containsKey(COMPATIBLE_POLICY)) {
+            return sharedObj.getString(COMPATIBLE_POLICY);
+        }
+        return EMPTY_STRING;
     }
 
     static boolean parseFAInstallationFree(String jsonString) throws BundleException {
