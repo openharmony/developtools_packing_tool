@@ -1329,9 +1329,6 @@ class ModuleJsonUtil {
         String targetBundleName = "";
         if (appObject.containsKey(TARGET_BUNDLE_NAME)) {
             targetBundleName = appObject.getString(TARGET_BUNDLE_NAME);
-        } else {
-            LOG.error("ModuleJsonUtil::parseTargetBundleName json object do not contain targetBundleName!");
-            throw new BundleException("ModuleJsonUtil::parseTargetBundleName json object do not contain targetBundleName!");
         }
         return targetBundleName;
     }
@@ -1353,9 +1350,6 @@ class ModuleJsonUtil {
         int targetPriority = 0;
         if (appObject.containsKey(TARGET_PRIORITY)) {
             targetPriority = appObject.getIntValue(TARGET_PRIORITY);
-        } else {
-            LOG.error("ModuleJsonUtil::parseTargetPriority json object do not contain targetPriority!");
-            throw new BundleException("ModuleJsonUtil::parseTargetPriority json object do not contain targetPriority!");
         }
         return targetPriority;
     }
@@ -1377,9 +1371,6 @@ class ModuleJsonUtil {
         String targetModuleName = "";
         if (appObject.containsKey(TARGET_MODULE_NAME)) {
             targetModuleName = appObject.getString(TARGET_MODULE_NAME);
-        } else {
-            LOG.error("ModuleJsonUtil::parseTargetBundleName json object do not contain targetModuleName!");
-            throw new BundleException("ModuleJsonUtil::parseTargetBundleName json object do not contain targetModuleName!");
         }
         return targetModuleName;
     }
@@ -1401,9 +1392,6 @@ class ModuleJsonUtil {
         int targetModulePriority = 0;
         if (appObject.containsKey(TARGET_PRIORITY)) {
             targetModulePriority = appObject.getIntValue(TARGET_PRIORITY);
-        } else {
-            LOG.error("ModuleJsonUtil::parseTargetPriority json object do not contain targetPriority!");
-            throw new BundleException("ModuleJsonUtil::parseTargetPriority json object do not contain targetPriority!");
         }
         return targetModulePriority;
     }
