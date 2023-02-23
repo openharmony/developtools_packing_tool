@@ -121,7 +121,9 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService"
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -165,7 +167,9 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService"
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -688,18 +692,41 @@
               }
             },
             "then": {
-              "required": [
-                "name",
-                "srcEntrance",
-                "type",
-                "uri"
+              "oneOf": [
+                {
+                  "required": [
+                    "name",
+                    "srcEntrance",
+                    "type",
+                    "uri"
+                  ]
+                },
+                {
+                  "required": [
+                    "name",
+                    "srcEntry",
+                    "type",
+                    "uri"
+                  ]
+                }
               ]
             },
             "else": {
-              "required": [
-                "name",
-                "srcEntrance",
-                "type"
+              "oneOf": [
+                {
+                  "required": [
+                    "name",
+                    "srcEntrance",
+                    "type"
+                  ]
+                },
+                {
+                  "required": [
+                    "name",
+                    "srcEntry",
+                    "type"
+                  ]
+                }
               ]
             },
             "propertyNames": {
@@ -707,6 +734,7 @@
                 "priority",
                 "name",
                 "srcEntrance",
+                "srcEntry",
                 "icon",
                 "label",
                 "description",
@@ -716,6 +744,7 @@
                 "readPermission",
                 "writePermission",
                 "visible",
+                "exported",
                 "skills",
                 "metadata"
               ]
@@ -733,6 +762,12 @@
                 "maxLength": 127
               },
               "srcEntrance": {
+                "description": "Indicates the js code path corresponding to the extension.",
+                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "type": "string",
+                "maxLength": 127
+              },
+              "srcEntry": {
                 "description": "Indicates the js code path corresponding to the extension.",
                 "type": "string",
                 "maxLength": 127
@@ -770,7 +805,8 @@
                   "window",
                   "enterpriseAdmin",
                   "thumbnail",
-                  "preview"
+                  "preview",
+                  "print"
                 ]
               },
               "permissions": {
@@ -798,6 +834,12 @@
                 "maxLength": 255
               },
               "visible": {
+                "description": "Specifies whether the extension can be called by other applications.",
+                "deprecationMessage": "Deprecated since api 9, use exported instead.",
+                "type": "boolean",
+                "default": false
+              },
+              "exported": {
                 "description": "Specifies whether the extension can be called by other applications.",
                 "type": "boolean",
                 "default": false
@@ -1149,6 +1191,17 @@
               }
             }
           }
+        },
+        "targetModuleName": {
+          "description": "Indicates the target module name of an overlay module.",
+          "type": "string",
+          "maxLength": 31
+        },
+        "targetPriority": {
+          "description": "Indicates the priority of the overlay module. 1 to 100, default value is 1.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
         }
       }
     }

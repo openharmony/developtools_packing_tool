@@ -439,7 +439,7 @@ public class CompressVerify {
 
         if (!isDirectoryValidStrictCase(utility.getEntryCardPath(), ENTRY_CARD_DIRECTORY_NAME)) {
             LOG.error("CompressVerify::isArgsValidInResMode the level-1 directory name must is EntryCard" +
-                    ", current is " + utility.getEntryCardPath());
+                ", current is " + utility.getEntryCardPath());
             return false;
         }
         if (!compatibleProcess(utility, utility.getEntryCardPath(),
@@ -512,7 +512,7 @@ public class CompressVerify {
      * @return Returns {@code true} if the compatible is successful; returns {@code false} otherwise.
      */
     private static boolean compatibleProcess(Utility utility, String inputPath,
-                                             List<String> fileList, String suffix) {
+        List<String> fileList, String suffix) {
         if (isPathValid(inputPath, TYPE_DIR, null)) {
             File inputFile = new File(inputPath);
             File[] files = inputFile.listFiles();
@@ -633,7 +633,7 @@ public class CompressVerify {
         File file = new File(path);
         if (!file.exists()) {
             LOG.error("CompressVerify::isDirectoryValidStrictCase directory is not exist, directoryPath: "
-                    + path);
+                + path);
             return false;
         }
         if (file.isDirectory()) {
