@@ -172,8 +172,7 @@ class HapVerify {
                 LOG.error("Error: input module main is different!");
                 return false;
             }
-            if (hapVerifyInfo.getTargetBundleName().isEmpty() ||
-                !verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
+            if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
                 LOG.error("Error: targetBundleName is different!");
                 return false;
             }
@@ -330,111 +329,11 @@ class HapVerify {
             LOG.error("Error: " + "target modules are needed to pack with overlay module");
             return false;
         }
-        if (!moduleList.containsAll(targetModuleList)) {
+        if (moduleList.containsAll(targetModuleList)) {
             LOG.error("Error: " + "target modules are needed to pack with overlay module");
             return false;
         }
-        for (HapVerifyInfo hapInfo : internalOverlayHap) {
-            String targetModuleName = hapInfo.getTargetModuleName();
-            for (HapVerifyInfo nonOverlayHapInfo : nonOverlayHap) {
-                if (!targetModuleName.equals(nonOverlayHapInfo.getModuleName())) {
-                    continue;
-                }
-                if (!checkDeviceTypeAndDistroFilter(hapInfo, nonOverlayHapInfo)) {
-                    LOG.error("Error: " + "valid target modules are needed");
-                    return false;
-                }
-            }
-        }
         return true;
-    }
-
-    private static boolean checkDeviceTypeAndDistroFilter(HapVerifyInfo overlyInfo, HapVerifyInfo nonOverlayInfo) throws BundleException {
-        if (overlyInfo == null || nonOverlayInfo == null) {
-            LOG.error("Error: " + "invalid internal overlay hap or non-overlay hap");
-            return false;
-        }
-
-        List<String> overlayDeviceList = overlyInfo.getDeviceType();
-        List<String> nonOverlayDeviceList = nonOverlayInfo.getDeviceType();
-        if (overlayDeviceList == null || nonOverlayDeviceList == null) {
-            return false;
-        }
-        if (!new HashSet<>(nonOverlayDeviceList).containsAll(overlayDeviceList)) {
-            LOG.error("Error: " + "thetarget module");
-            return false;
-        }
-
-        if (!checkDistroFilter(overlyInfo.getDistroFilter(), nonOverlayInfo.getDistroFilter())) {
-            return  false;
-        }
-
-        return true;
-    }
-
-    private static boolean checkDistroFilter(DistroFilter distroFilterLeft, DistroFilter distroFilterRight) throws BundleException {
-        if (distroFilterLeft == null || distroFilterRight == null) {
-            return  false;
-        }
-        if (distroFilterLeft.apiVersion != null && distroFilterRight.apiVersion != null) {
-            if (checkPolicyDisjoint(distroFilterLeft.apiVersion.policy, distroFilterLeft.apiVersion.value,
-                    distroFilterRight.apiVersion.policy, distroFilterRight.apiVersion.value)) {
-                return true;
-            }
-
-        }
-        if (distroFilterLeft.screenShape != null && distroFilterRight.screenShape != null) {
-            if (checkPolicyDisjoint(distroFilterLeft.screenShape.policy, distroFilterLeft.screenShape.value,
-                    distroFilterRight.screenShape.policy, distroFilterRight.screenShape.value)) {
-                return true;
-            }
-        }
-        if (distroFilterLeft.screenDensity != null && distroFilterRight.screenDensity != null) {
-            if (checkPolicyDisjoint(distroFilterLeft.screenDensity.policy, distroFilterLeft.screenDensity.value,
-                    distroFilterRight.screenDensity.policy, distroFilterRight.screenDensity.value)) {
-                return true;
-            }
-        }
-        if (distroFilterLeft.screenWindow != null && distroFilterRight.screenWindow != null) {
-            if (checkPolicyDisjoint(distroFilterLeft.screenWindow.policy, distroFilterLeft.screenWindow.value,
-                    distroFilterRight.screenWindow.policy, distroFilterRight.screenWindow.value)) {
-                return true;
-            }
-        }
-        if (distroFilterLeft.countryCode != null && distroFilterRight.countryCode != null) {
-            if (checkPolicyDisjoint(distroFilterLeft.countryCode.policy, distroFilterLeft.countryCode.value,
-                    distroFilterRight.countryCode.policy, distroFilterRight.countryCode.value)) {
-                return true;
-            }
-        }
-        return  true;
-    }
-
-    private static boolean checkPolicyDisjoint(String policyLeft, List<String> valueLeft, String policyRight,
-                                                    List<String> valueRight) throws BundleException {
-        if (valueLeft == null || valueRight == null) {
-            LOG.error("HapVerify::checkPolicyDisjoint value should not empty!");
-            throw new BundleException("HapVerify::checkPolicyDisjoint value should not empty!");
-        }
-        if (EXCLUDE.equals(policyLeft) && INCLUDE.equals(policyRight)) {
-            if (valueRight.isEmpty() || valueLeft.containsAll(valueRight)) {
-                return false;
-            }
-        } else if (INCLUDE.equals(policyLeft) && INCLUDE.equals(policyRight)) {
-            if (!valueRight.containsAll(valueLeft)) {
-                return false;
-            }
-        } else if (INCLUDE.equals(policyLeft) && EXCLUDE.equals(policyRight)) {
-            if (!Collections.disjoint(valueLeft, valueRight)) {
-                return false;
-            }
-        } else if (EXCLUDE.equals(policyLeft) && EXCLUDE.equals(policyRight)) {
-            return true;
-        } else {
-            LOG.error("HapVerify::checkPolicyDisjoint input policy is invalid!");
-            throw new BundleException("HapVerify::checkPolicyDisjoint input policy is invalid!");
-        }
-        return false;
     }
 
     /**
