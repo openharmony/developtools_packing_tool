@@ -81,6 +81,10 @@ class ModuleJsonUtil {
     private static final String SPLIT = "split";
     private static final String MAIN = "main";
     private static final String PRELOADS = "preloads";
+    private static final String REQUEST_PERMISSIONS = "requestPermissions";
+    private static final String TARGET_MODULE_NAME = "targetModuleName";
+    private static final String TARGET_PRIORITY = "targetPriority";
+    private static final String TARGET_BUNDLE_NAME = "targetBundleName";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -873,6 +877,10 @@ class ModuleJsonUtil {
         hapVerifyInfo.setMain(parseStageAtomicServiceMain(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setAppType(parseStageAppType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPreloadItems(parseAtomicServicePreloads(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setTargetBundleName(parseTargetBundleName(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setTargetPriority(parseTargetPriority(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setTargetModulePriority(parseTargetModulePriority(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -883,8 +891,8 @@ class ModuleJsonUtil {
      */
     public static void parseFAHapVerifyInfo(HapVerifyInfo hapVerifyInfo) throws BundleException {
         if (hapVerifyInfo.getProfileStr().isEmpty()) {
-            LOG.error("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
-            throw new BundleException("ModuleJsonUtil::parseStageHapVerifyInfo failed, config.json is empty!");
+            LOG.error("ModuleJsonUtil::parseFAHapVerifyInfo failed, config.json is empty!");
+            throw new BundleException("ModuleJsonUtil::parseFAHapVerifyInfo failed, config.json is empty!");
         }
         String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
@@ -1304,6 +1312,90 @@ class ModuleJsonUtil {
         return preloadItems;
     }
 
+    static String parseTargetBundleName(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObject = jsonObject.getJSONObject(APP);
+        if (appObject == null) {
+            LOG.error("ModuleJsonUtil::parseTargetBundleName json object do not contain app!");
+            throw new BundleException("ModuleJsonUtil::parseTargetBundleName json object do not contain app!");
+        }
+        String targetBundleName = "";
+        if (appObject.containsKey(TARGET_BUNDLE_NAME)) {
+            targetBundleName = appObject.getString(TARGET_BUNDLE_NAME);
+        }
+        return targetBundleName;
+    }
+
+    static int parseTargetPriority(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObject = jsonObject.getJSONObject(APP);
+        if (appObject == null) {
+            LOG.error("ModuleJsonUtil::parseTargetPriority json object do not contain app!");
+            throw new BundleException("ModuleJsonUtil::parseTargetPriority json object do not contain app!");
+        }
+        int targetPriority = 0;
+        if (appObject.containsKey(TARGET_PRIORITY)) {
+            targetPriority = appObject.getIntValue(TARGET_PRIORITY);
+        }
+        return targetPriority;
+    }
+
+    static String parseTargetModuleName(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObject = jsonObject.getJSONObject(MODULE);
+        if (appObject == null) {
+            LOG.error("ModuleJsonUtil::parseTargetBundleName json object do not contain app!");
+            throw new BundleException("ModuleJsonUtil::parseTargetBundleName json object do not contain app!");
+        }
+        String targetModuleName = "";
+        if (appObject.containsKey(TARGET_MODULE_NAME)) {
+            targetModuleName = appObject.getString(TARGET_MODULE_NAME);
+        }
+        return targetModuleName;
+    }
+
+    static int parseTargetModulePriority(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObject = jsonObject.getJSONObject(MODULE);
+        if (appObject == null) {
+            LOG.error("ModuleJsonUtil::parseTargetPriority json object do not contain app!");
+            throw new BundleException("ModuleJsonUtil::parseTargetPriority json object do not contain app!");
+        }
+        int targetModulePriority = 0;
+        if (appObject.containsKey(TARGET_PRIORITY)) {
+            targetModulePriority = appObject.getIntValue(TARGET_PRIORITY);
+        }
+        return targetModulePriority;
+    }
+
     static boolean parseFAInstallationFree(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
@@ -1469,6 +1561,118 @@ class ModuleJsonUtil {
             throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
         }
         return getJsonString(appObj, API_RELEASE_TYPE);
+    }
+
+    /**
+     * get targetModuleName in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getStageTargetModuleName(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageTargetModuleName!");
+            throw new BundleException("parse JOSNObject failed in getStageTargetModuleName!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(MODULE);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        return getJsonString(appObj, TARGET_MODULE_NAME);
+    }
+
+    /**
+     * get targetBundleName in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getStageTargetBundleName(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageTargetModuleName!");
+            throw new BundleException("parse JOSNObject failed in getStageTargetModuleName!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        return getJsonString(appObj, TARGET_BUNDLE_NAME);
+    }
+
+    /**
+     * is existed abilities in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean isExistedStageAbilities(String jsonString) throws BundleException {
+        return isExistedProperty(jsonString, MODULE, ABILITIES);
+    }
+
+    /**
+     * is existed extensionAbilities in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean isExistedStageExtensionAbilities(String jsonString) throws BundleException {
+        return isExistedProperty(jsonString, MODULE, EXTENSION_ABILITIES);
+    }
+
+    /**
+     * is existed requestPermission in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean isExistedStageRequestPermissions(String jsonString) throws BundleException {
+        return isExistedProperty(jsonString, MODULE, REQUEST_PERMISSIONS);
+    }
+
+    /**
+     * is existed targetPriority in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean isExistedStageModuleTargetPriority(String jsonString) throws BundleException {
+        return isExistedProperty(jsonString, MODULE, TARGET_PRIORITY);
+    }
+
+    /**
+     * is existed targetPriority in app.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean isExistedStageAppTargetPriority(String jsonString) throws BundleException {
+        return isExistedProperty(jsonString, APP, TARGET_PRIORITY);
+    }
+
+    private static boolean isExistedProperty(String jsonString, String fatherProperty,
+                                             String childProperty) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in isExistedProperty!");
+            throw new BundleException("parse JOSNObject failed in isExistedProperty!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(fatherProperty);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no " + fatherProperty);
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no " +
+                    fatherProperty);
+        }
+        return appObj.containsKey(childProperty);
     }
 
     /**

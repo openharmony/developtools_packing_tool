@@ -273,6 +273,10 @@ public class Compressor {
             LOG.error("Error: checkStageAtomicService failed!");
             return false;
         }
+        if (!checkStageOverlayCfg(jsonString)) {
+            LOG.error("Error: checkStageOverlayCfg failed!");
+            return false;
+        }
         return true;
     }
 
@@ -303,6 +307,49 @@ public class Compressor {
             return false;
         }
 
+        return true;
+    }
+
+    private static boolean checkStageOverlayCfg(String jsonString) throws BundleException {
+        // check module
+        String targetModuleName = ModuleJsonUtil.getStageTargetModuleName(jsonString);
+        if (!targetModuleName.isEmpty()) {
+            // check targetModuleName and abilities, extensionAbilities, requestPermission
+            if (ModuleJsonUtil.isExistedStageAbilities(jsonString) ||
+                ModuleJsonUtil.isExistedStageExtensionAbilities(jsonString) ||
+                ModuleJsonUtil.isExistedStageRequestPermissions(jsonString)) {
+                LOG.error("Error: targetModuleName cannot be existed with abilities, extensionAbilities or" +
+                    "requestPermission simultaneously!");
+                return false;
+            }
+            // check targetModuleName and name
+            if (targetModuleName.equals(ModuleJsonUtil.parseStageModuleName(jsonString))) {
+                LOG.error("Error: targetModuleName cannot be same with name in the overlay module");
+                return false;
+            }
+        } else {
+            if (ModuleJsonUtil.isExistedStageModuleTargetPriority(jsonString)) {
+                LOG.error("Error: targetPriority cannot be existed without the targetModuleName in app.json");
+                return false;
+            }
+        }
+        // check app
+        String targetBundleName = ModuleJsonUtil.getStageTargetBundleName(jsonString);
+        if (!targetBundleName.isEmpty()) {
+            if (targetModuleName.isEmpty()) {
+                LOG.error("Error: targetModuleName is necessary in the overlay bundle");
+                return false;
+            }
+            if (targetBundleName.equals(ModuleJsonUtil.parseBundleName(jsonString))) {
+                LOG.error("Error: targetBundleName cannot be same with the bundleName");
+                return false;
+            }
+        } else {
+            if (ModuleJsonUtil.isExistedStageAppTargetPriority(jsonString)) {
+                LOG.error("Error: targetPriority cannot be existed without the targetBundleName in module.json");
+                return false;
+            }
+        }
         return true;
     }
 
