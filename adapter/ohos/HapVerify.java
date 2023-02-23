@@ -329,7 +329,7 @@ class HapVerify {
             LOG.error("Error: " + "target modules are needed to pack with overlay module");
             return false;
         }
-        if (moduleList.containsAll(targetModuleList)) {
+        if (!moduleList.containsAll(targetModuleList)) {
             LOG.error("Error: " + "target modules are needed to pack with overlay module");
             return false;
         }
