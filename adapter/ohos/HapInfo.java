@@ -44,10 +44,6 @@ public class HapInfo {
      */
     private HashMap<String, String> descriptions = new HashMap<>();
 
-    public HashMap<String, String> getDescriptions() {
-        return descriptions;
-    }
-
     /**
      * Indicates the supportedModes of HapInfo.
      */
@@ -153,9 +149,22 @@ public class HapInfo {
     public  List<ExtensionAbilityInfo> extensionAbilityInfos = new ArrayList<>();
 
     /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    /**
      * Indicates the form of module ModuleJson.
      */
     public List<AbilityFormInfo> formInfos = new ArrayList<>();
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
 
     /**
      * get the customize Data value defined in this module.
@@ -168,10 +177,4 @@ public class HapInfo {
         }
         return "";
     }
-
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
-    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
 }

@@ -34,8 +34,6 @@ public class Shortcut {
      */
     public String label = "";
 
-    private HashMap<String, String> labels = new HashMap<>();
-
     /**
      * Indicates the icon of app Shortcut.
      */
@@ -45,6 +43,8 @@ public class Shortcut {
      * Indicates the intents of app Shortcut.
      */
     public List<IntentInfo> intents = new ArrayList<IntentInfo>();
+
+    private HashMap<String, String> labels = new HashMap<>();
 
     public HashMap<String, String> getLabels() {
         return labels;

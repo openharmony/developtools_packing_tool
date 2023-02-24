@@ -39,10 +39,6 @@ public class ReqPermission {
      */
     private HashMap<String, String> reasons = new HashMap<>();
 
-    public HashMap<String, String> getReasons() {
-        return reasons;
-    }
-
     /**
      * Indicates the usedScene of ReqPermission.
      */
@@ -50,5 +46,9 @@ public class ReqPermission {
 
     public void setReasons(HashMap<String, String> reasons) {
         this.reasons = reasons;
+    }
+
+    public HashMap<String, String> getReasons() {
+        return reasons;
     }
 }

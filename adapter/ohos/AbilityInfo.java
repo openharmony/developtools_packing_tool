@@ -39,10 +39,6 @@ public class AbilityInfo {
      */
     private HashMap<String, String> descriptions = new HashMap<>();
 
-    public HashMap<String, String> getDescriptions() {
-        return descriptions;
-    }
-
     /**
      * Indicates the description resource of ability.
      */
@@ -67,10 +63,6 @@ public class AbilityInfo {
      * Indicates the labels of ability, for Multilingual.
      */
     private HashMap<String, String> labels = new HashMap<>();
-
-    public HashMap<String, String> getLabels() {
-        return labels;
-    }
 
     /**
      * Indicates the label resource of ability.
@@ -231,5 +223,13 @@ public class AbilityInfo {
 
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;
+    }
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
     }
 }
