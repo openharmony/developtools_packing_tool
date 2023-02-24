@@ -149,7 +149,8 @@ public class JsonUtil {
     private static final String MAIN = "main";
     private static final String PRELOADS = "preloads";
     private static final String MODULE_NAME = "moduleName";
-
+    private static final String SHARED = "shared";
+    private static final String COMPATIBLE_POLICY = "compatiblePolicy";
     private static final int DEFAULT_VERSION_CODE = -1;
 
 

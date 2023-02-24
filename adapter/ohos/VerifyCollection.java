@@ -71,6 +71,10 @@ class VerifyCollection {
     private String main = "";
 
     /**
+     * Indicates whether the app type is Shared
+     */
+    private boolean sharedApp = false;
+    /**
      * Indicates the moduleNames of app.
      */
     List<String> moduleNames = new ArrayList<>();
@@ -93,5 +97,13 @@ class VerifyCollection {
 
     public void setSplit(boolean split) {
         this.split = split;
+    }
+
+    public boolean isSharedApp() {
+        return sharedApp;
+    }
+
+    public void setSharedApp(boolean sharedApp) {
+        this.sharedApp = sharedApp;
     }
 }
