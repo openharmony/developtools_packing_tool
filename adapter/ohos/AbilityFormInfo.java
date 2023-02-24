@@ -95,10 +95,6 @@ public class AbilityFormInfo {
         return descriptions;
     }
 
-    public void setDescriptions(HashMap<String, String> descriptions) {
-        this.descriptions = descriptions;
-    }
-
     /**
      * Indicates the src of ability form the attribute is corresponding to the UI code of the form.
      */
@@ -144,5 +140,9 @@ public class AbilityFormInfo {
             }
         }
         return "";
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
     }
 }

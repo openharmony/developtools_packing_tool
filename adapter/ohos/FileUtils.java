@@ -584,4 +584,19 @@ class FileUtils {
         }
         return true;
     }
+
+    /**
+     * getFileSize
+     *
+     * @param filePath is the input file path
+     * @return file length
+     */
+    public static long getFileSize(String filePath) {
+        File file = new File(filePath);
+        if (file.exists() && file.isFile()) {
+            return file.length();
+        }
+        LOG.error("Error: input " + filePath + " is not a valid file!");
+        return 0;
+    }
 }

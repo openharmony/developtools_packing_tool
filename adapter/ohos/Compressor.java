@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
@@ -119,7 +120,8 @@ public class Compressor {
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
     private static final String ABILITIES_DIR_NAME = "abilities";
     private static final String EMPTY_STRING = "";
-
+    private static final String RELEASE = "Release";
+    private static final String TYPE_SHARED = "shared";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -207,11 +209,7 @@ public class Compressor {
     private void compressExcute(Utility utility) throws BundleException {
         switch (utility.getMode()) {
             case Utility.MODE_HAP:
-                if (isModuleJSON(utility.getJsonPath())) {
-                    compressHapModeForModule(utility);
-                } else {
-                    compressHapMode(utility);
-                }
+                compressHap(utility);
                 break;
             case Utility.MODE_HAR:
                 compressHarMode(utility);
@@ -229,11 +227,151 @@ public class Compressor {
                 compressAPPQFMode(utility);
                 break;
             case Utility.MODE_HSP:
-                compressHSPMode(utility);
+                compressHsp(utility);
                 break;
             default:
                 compressPackResMode(utility);
         }
+    }
+
+    private void compressHsp(Utility utility) throws BundleException {
+        if (!verifySharedHsp(utility)) {
+            LOG.error("Error: SharedApp can only contain HSP");
+            throw new BundleException("Error: checkStageHap failed!");
+        }
+        if (isModuleJSON(utility.getJsonPath())) {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
+            if (!checkStageAtomicService(jsonString)) {
+                LOG.error("Error: checkStageAtomicService failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+        }
+        compressHSPMode(utility);
+    }
+
+    private void compressHap(Utility utility) throws BundleException {
+        if (isModuleJSON(utility.getJsonPath())) {
+            if (!checkStageHap(utility)) {
+                LOG.error("Error: checkStageHap failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+            compressHapModeForModule(utility);
+        } else {
+            if (!checkFAHap(utility)) {
+                LOG.error("Error: checkFAHap failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+            compressHapMode(utility);
+        }
+    }
+
+    private static boolean checkStageHap(Utility utility) throws BundleException {
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        if (!checkStageAsanEnabledValid(jsonString)) {
+            LOG.error("Error: checkStageAsanEnabledValid failed!");
+            return false;
+        }
+        // check atomicService in module.json
+        if (!checkStageAtomicService(jsonString)) {
+            LOG.error("Error: checkStageAtomicService failed!");
+            return false;
+        }
+        if (!checkStageOverlayCfg(jsonString)) {
+            LOG.error("Error: checkStageOverlayCfg failed!");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkStageAsanEnabledValid(String jsonString) throws BundleException {
+        boolean asanEnabled = ModuleJsonUtil.getStageAsanEnabled(jsonString);
+        String apiReleaseType = ModuleJsonUtil.getStageApiReleaseType(jsonString);
+        if (asanEnabled && apiReleaseType.contains(RELEASE)) {
+            LOG.error("Error: asanEnabled is not supported for Release!");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkStageAtomicService(String jsonString) throws BundleException {
+        // check split and main
+        if (!ModuleJsonUtil.isAtomicServiceSplitValid(jsonString)) {
+            LOG.error("Error: check isAtomicServiceSplitValid failed!");
+            return false;
+        }
+        // check consistency of atomicService
+        if (!ModuleJsonUtil.isModuleAtomicServiceValid(jsonString)) {
+            LOG.error("Error: check module atomicService failed!");
+            return false;
+        }
+        // check installationFree
+        if (!ModuleJsonUtil.checkAtomicServiceInstallationFree(jsonString)) {
+            LOG.error("Error: check atomic service installationFree failed!");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static boolean checkStageOverlayCfg(String jsonString) throws BundleException {
+        // check module
+        String targetModuleName = ModuleJsonUtil.getStageTargetModuleName(jsonString);
+        if (!targetModuleName.isEmpty()) {
+            // check targetModuleName and abilities, extensionAbilities, requestPermission
+            if (ModuleJsonUtil.isExistedStageAbilities(jsonString) ||
+                ModuleJsonUtil.isExistedStageExtensionAbilities(jsonString) ||
+                ModuleJsonUtil.isExistedStageRequestPermissions(jsonString)) {
+                LOG.error("Error: targetModuleName cannot be existed with abilities, extensionAbilities or" +
+                    "requestPermission simultaneously!");
+                return false;
+            }
+            // check targetModuleName and name
+            if (targetModuleName.equals(ModuleJsonUtil.parseStageModuleName(jsonString))) {
+                LOG.error("Error: targetModuleName cannot be same with name in the overlay module");
+                return false;
+            }
+        } else {
+            if (ModuleJsonUtil.isExistedStageModuleTargetPriority(jsonString)) {
+                LOG.error("Error: targetPriority cannot be existed without the targetModuleName in app.json");
+                return false;
+            }
+        }
+        // check app
+        String targetBundleName = ModuleJsonUtil.getStageTargetBundleName(jsonString);
+        if (!targetBundleName.isEmpty()) {
+            if (targetModuleName.isEmpty()) {
+                LOG.error("Error: targetModuleName is necessary in the overlay bundle");
+                return false;
+            }
+            if (targetBundleName.equals(ModuleJsonUtil.parseBundleName(jsonString))) {
+                LOG.error("Error: targetBundleName cannot be same with the bundleName");
+                return false;
+            }
+        } else {
+            if (ModuleJsonUtil.isExistedStageAppTargetPriority(jsonString)) {
+                LOG.error("Error: targetPriority cannot be existed without the targetBundleName in module.json");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkFAHap(Utility utility) throws BundleException {
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        return checkFAAsanEnabledValid(jsonString);
+    }
+
+    private static boolean checkFAAsanEnabledValid(String jsonString) throws BundleException {
+        boolean asanEnabled = ModuleJsonUtil.getFAAsanEnabled(jsonString);
+        String releaseType = ModuleJsonUtil.getFAReleaseType(jsonString);
+        if (asanEnabled && releaseType.contains(RELEASE)) {
+            LOG.error("Error: asanEnabled is not supported for Release!");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -523,7 +661,7 @@ public class Compressor {
                 }
             }
             // check hap is valid
-            if (!checkHapIsValid(fileList)) {
+            if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
                         "apiVersion,moduleName,packageName!");
             }
@@ -592,7 +730,7 @@ public class Compressor {
                 compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath);
             }
             // check hap is valid
-            if (!checkHapIsValid(fileList)) {
+            if (!checkHapIsValid(fileList, false)) {
                 String errMsg = "Compressor::compressAppModeForMultiProject There are some " +
                         "haps with different version code or duplicated moduleName or packageName!";
                 throw new BundleException(errMsg);
@@ -2014,7 +2152,7 @@ public class Compressor {
      * @return true is for successful and false is for failed
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private boolean checkHapIsValid(List<String> fileLists) throws BundleException {
+    private boolean checkHapIsValid(List<String> fileLists, boolean isSharedApp) throws BundleException {
         List<HapVerifyInfo> hapVerifyInfos = new ArrayList<>();
         for (String hapPath : fileLists) {
             if (hapPath.isEmpty()) {
@@ -2041,6 +2179,9 @@ public class Compressor {
         if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
             return false;
         }
+        if (isSharedApp && !hapVerifyInfos.isEmpty()) {
+            return hapVerifyInfos.get(0).isSharedHsp();
+        }
         return true;
     }
 
@@ -2054,6 +2195,7 @@ public class Compressor {
         HapVerifyInfo hapVerifyInfo = readStageHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(true);
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
+        hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         return hapVerifyInfo;
     }
 
@@ -2066,6 +2208,7 @@ public class Compressor {
     public static HapVerifyInfo parseFAHapVerifyInfo(String filePath) throws BundleException {
         HapVerifyInfo hapVerifyInfo = readFAHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(false);
+        hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
     }
@@ -2169,6 +2312,19 @@ public class Compressor {
         return true;
     }
 
+    private boolean verifySharedHsp(Utility utility) throws BundleException {
+        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        hapVerifyInfo.setProfileStr(jsonString);
+        ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
+        if (hapVerifyInfo.isSharedHsp() &&
+                !TYPE_SHARED.equals(hapVerifyInfo.getModuleType())) {
+            return false;
+        }
+        return true;
+    }
+
     private void compressHSPMode(Utility utility) throws BundleException {
         pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
 
@@ -2194,7 +2350,8 @@ public class Compressor {
         if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
-            if (DEVICE_TYPE_FITNESSWATCH.equals(utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
+            if (DEVICE_TYPE_FITNESSWATCH.equals(
+                utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
                     DEVICE_TYPE_FITNESSWATCH_NEW.equals(
                         utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
                 resPath = RES_DIR_NAME;
