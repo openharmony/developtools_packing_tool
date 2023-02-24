@@ -355,7 +355,8 @@ class HapVerify {
                 LOG.warning("Input wrong type module");
             }
         }
-        if (entryHapVerifyInfos.isEmpty()) {
+        if (hapVerifyInfos.isEmpty()
+                || (entryHapVerifyInfos.isEmpty() && !hapVerifyInfos.get(0).isSharedHsp())) {
             LOG.warning("Warning: has no entry module!");
         }
 
@@ -962,6 +963,9 @@ class HapVerify {
             return false;
         }
         for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
+            if (!dependency.getBundleName().equals(hapVerifyInfo.getBundleName())) {
+                continue;
+            }
             if (!checkDependencyInFileList(dependency, allHapVerifyInfo)) {
                 LOG.error("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path");
                 return false;
