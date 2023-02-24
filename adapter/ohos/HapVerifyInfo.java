@@ -75,9 +75,19 @@ class HapVerifyInfo {
     private boolean isStageModule = true;
 
     /**
-     * Indicates is entry of module.
+     * Indicates is type of module.
      */
     private String moduleType = "";
+
+    /**
+     * Indicates app type of module, contain app and atomicService.
+     */
+    private String appType = "";
+
+    /**
+     * Indicates atomic service type, contain main, normal.
+     */
+    private String atomicServiceType = "";
 
     /**
      * Indicates is installationFree of module.
@@ -103,6 +113,32 @@ class HapVerifyInfo {
      * Indicates is file in profile of module.
      */
     private HashMap<String, String> resourceMap = new HashMap<>();
+
+    /**
+     * Indicates whether to split for atomic service.
+     */
+    private boolean split = true;
+
+    /**
+     * Indicates the main module name for atomic service.
+     */
+    private String main = "";
+
+    private boolean sharedHsp = false;
+
+    private String compatiblePolicy = "";
+
+    private String targetBundleName = "";
+
+    private int targetPriority = 0;
+
+    private String targetModuleName = "";
+
+    private int targetModulePriority = 0;
+
+    private List<PreloadItem> preloadItems = new ArrayList<>();
+
+    private long fileLength = 0L;
 
     /**
      * get bundle name form HapVerifyInfo.
@@ -342,5 +378,101 @@ class HapVerifyInfo {
                 dependencies.add(item.getModuleName());
             }
         }
+    }
+
+    public boolean isSplit() {
+        return split;
+    }
+
+    public void setSplit(boolean split) {
+        this.split = split;
+    }
+
+    public String getMain() {
+        return main;
+    }
+
+    public void setMain(String main) {
+        this.main = main;
+    }
+
+    public String getAppType() {
+        return appType;
+    }
+
+    public void setAppType(String appType) {
+        this.appType = appType;
+    }
+
+    public String getAtomicServiceType() {
+        return atomicServiceType;
+    }
+
+    public void setAtomicServiceType(String atomicServiceType) {
+        this.atomicServiceType = atomicServiceType;
+    }
+
+    public List<PreloadItem> getPreloadItems() {
+        return preloadItems;
+    }
+
+    public void setPreloadItems(List<PreloadItem> preloadItems) {
+        this.preloadItems = preloadItems;
+    }
+
+    public String getTargetBundleName() {
+        return targetBundleName;
+    }
+
+    public void setTargetBundleName(String targetBundleName) {
+        this.targetBundleName = targetBundleName;
+    }
+
+    public int getTargetPriority() {
+        return targetPriority;
+    }
+
+    public void setTargetPriority(int priority) {
+        this.targetPriority = priority;
+    }
+
+    public String getTargetModuleName() {
+        return targetModuleName;
+    }
+
+    public void setTargetModuleName(String targetModuleName) {
+        this.targetModuleName = targetModuleName;
+    }
+
+    public int getTargetModulePriority() {
+        return targetModulePriority;
+    }
+
+    public void setTargetModulePriority(int priority) {
+        this.targetModulePriority = priority;
+    }
+
+    public long getFileLength() {
+        return fileLength;
+    }
+
+    public void setFileLength(long fileLength) {
+        this.fileLength = fileLength;
+    }
+
+    public boolean isSharedHsp() {
+        return sharedHsp;
+    }
+
+    public void setSharedHsp(boolean sharedHsp) {
+        this.sharedHsp = sharedHsp;
+    }
+
+    public String getCompatiblePolicy() {
+        return compatiblePolicy;
+    }
+
+    public void setCompatiblePolicy(String compatiblePolicy) {
+        this.compatiblePolicy = compatiblePolicy;
     }
 }

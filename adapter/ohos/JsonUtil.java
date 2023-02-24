@@ -87,6 +87,7 @@ public class JsonUtil {
     private static final String ENTITY_TYPE = "entityType";
     private static final String UNSPECIFIED = "unspecified";
     private static final String SRC_ENTRANCE = "srcEntrance";
+    private static final String SRC_ENTRY = "srcEntry";
     private static final String PROCESS = "process";
     private static final String PHONE = "phone";
     private static final String TABLET = "tablet";
@@ -110,18 +111,22 @@ public class JsonUtil {
     private static final String META_DATA = "metadata";
     private static final String SRC = "src";
     private static final String EXTENSION_ABILITIES = "extensionAbilities";
+    private static final String REQ_PERMISSIONS = "reqPermissions";
     private static final String REQUEST_PERMISSIONS = "requestPermissions";
     private static final String REASON = "reason";
     private static final String REASON_ID = "reasonId";
     private static final String USED_SCENE = "usedScene";
     private static final String DEFINE_PERMISSIONS = "definePermissions";
     private static final String DISTRO_FILTER = "distroFilter";
+    private static final String DISTRIBUTION_FILTER = "distributionFilter";
     private static final String LAUNCH_TYPE = "launchType";
     private static final String STANDARD = "standard";
+    private static final String SINGLETON = "singleton";
     private static final String PERMISSIONS = "permissions";
     private static final String READ_PERMISSION = "readPermission";
     private static final String WRITE_PERMISSION = "writePermission";
     private static final String VISIBLE = "visible";
+    private static final String EXPORTED = "exported";
     private static final String CONTINUABLE = "continuable";
     private static final String SKILLS = "skills";
     private static final String BACKGROUND_MODES = "backgroundModes";
@@ -139,7 +144,13 @@ public class JsonUtil {
     private static final String FORM_VISIBLE_NOTIFY = "formVisibleNotify";
     private static final String AUTO = "auto";
     private static final String DOT = ".";
-
+    private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String SPLIT = "split";
+    private static final String MAIN = "main";
+    private static final String PRELOADS = "preloads";
+    private static final String MODULE_NAME = "moduleName";
+    private static final String SHARED = "shared";
+    private static final String COMPATIBLE_POLICY = "compatiblePolicy";
     private static final int DEFAULT_VERSION_CODE = -1;
 
 
@@ -420,9 +431,25 @@ public class JsonUtil {
         moduleAppInfo.distributedNotificationEnabled =
                 getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
         moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
+        moduleAppInfo.appAtomicService = parseAppAtomicService(appJson);
+
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
+    }
+
+    static AppAtomicService parseAppAtomicService(JSONObject appJson) {
+        AppAtomicService appAtomicService = new AppAtomicService();
+        JSONObject atomicServiceObj = null;
+        if (appJson.containsKey(ATOMIC_SERVICE)) {
+            atomicServiceObj = appJson.getJSONObject(ATOMIC_SERVICE);
+        }
+        if (atomicServiceObj == null) {
+            return appAtomicService;
+        }
+        appAtomicService.setSplit(getJsonBooleanValue(atomicServiceObj, SPLIT, true));
+        appAtomicService.setMain(getJsonString(atomicServiceObj, MAIN));
+        return appAtomicService;
     }
 
     static void parseSpecifiedDeviceType(JSONObject appJson, ModuleAppInfo moduleAppInfo) throws BundleException {
@@ -593,6 +620,7 @@ public class JsonUtil {
         hapInfo.packageStr = getJsonString(hapJson, "package");
         hapInfo.name = getJsonString(hapJson, "name");
         hapInfo.description = parseResourceByKey(hapJson, data, "description", "descriptionId");
+        hapInfo.setDescriptions(parseResourceMapByKey(hapJson, data, DESCRIPTION_ID));
 
         if (hapJson.containsKey(MAIN_ABILITY)) {
             hapInfo.mainElement = getJsonString(hapJson, MAIN_ABILITY);
@@ -644,8 +672,7 @@ public class JsonUtil {
         }
 
         if (hapJson.containsKey("reqPermissions")) {
-            hapInfo.reqPermissions = JSONObject.parseArray(getJsonString(hapJson, "reqPermissions"),
-                    ReqPermission.class);
+            hapInfo.reqPermissions = parseFAReqPermission(hapJson, data);
         }
 
         if (hapJson.containsKey("commonEvents")) {
@@ -675,6 +702,28 @@ public class JsonUtil {
                     getJsonString(hapJson, "distroFilter"), DistroFilter.class);
         }
         return hapInfo;
+    }
+
+    static List<ReqPermission> parseFAReqPermission(JSONObject hapJson, byte[] data) throws BundleException {
+        List<ReqPermission> reqPermissions = new ArrayList<>();
+        if (!hapJson.containsKey(REQ_PERMISSIONS)) {
+            return reqPermissions;
+        }
+        JSONArray reqPermissionObjs = hapJson.getJSONArray(REQ_PERMISSIONS);
+        for (int i = 0; i < reqPermissionObjs.size(); ++i) {
+            ReqPermission reqPermission = new ReqPermission();
+            JSONObject requestPermission = reqPermissionObjs.getJSONObject(i);
+            reqPermission.name = getJsonString(requestPermission, NAME);
+            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
+            if (requestPermission.containsKey(REASON_ID)) {
+                reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
+            }
+            if (requestPermission.containsKey(USED_SCENE)) {
+                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
+            }
+            reqPermissions.add(reqPermission);
+        }
+        return reqPermissions;
     }
 
     /**
@@ -766,6 +815,7 @@ public class JsonUtil {
         }
         ability.description = ability.descriptionRes != null && !ability.descriptionRes.isEmpty() ?
                 ability.descriptionRes : getJsonString(abilityJson, "description");
+        ability.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
 
         if (abilityJson.containsKey("labelId")) {
             int labelId = abilityJson.getIntValue("labelId");
@@ -778,6 +828,7 @@ public class JsonUtil {
         } else {
             ability.label = ability.name;
         }
+        ability.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
 
         ability.type = getJsonString(abilityJson, "type");
         ability.launchType = getJsonString(abilityJson, "launchType");
@@ -917,6 +968,7 @@ public class JsonUtil {
         abilityForm.name = getJsonString(abilityFormJson, "name");
         abilityForm.type = getJsonString(abilityFormJson, "type");
         abilityForm.description = parseResourceByKey(abilityFormJson, data, "description", "descriptionId");
+        abilityForm.setDescriptions(parseResourceMapByKey(abilityFormJson, data, DESCRIPTION_ID));
         if (abilityFormJson.containsKey("isDefault")) {
             abilityForm.isDefault = abilityFormJson.getBoolean("isDefault");
         }
@@ -1004,7 +1056,11 @@ public class JsonUtil {
 
         moduleInfo.name = getJsonString(moduleJson, NAME);
         moduleInfo.type = getJsonString(moduleJson, TYPE);
-        moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
+        if (moduleJson.containsKey(SRC_ENTRY)) {
+            moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRY);
+        } else {
+            moduleInfo.srcEntrance = getJsonString(moduleJson, SRC_ENTRANCE);
+        }
         moduleInfo.description = parseResourceByKey(moduleJson, data, DESCRIPTION, DESCRIPTION_ID);
         moduleInfo.setDescriptions(parseResourceMapByKey(moduleJson, data, DESCRIPTION_ID));
         if (moduleJson.containsKey(PROCESS)) {
@@ -1035,6 +1091,7 @@ public class JsonUtil {
         moduleInfo.requestPermissions = parseReqPermission(moduleJson, data);
         // parse define permission
         moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
+        moduleInfo.moduleAtomicService = parseModuleAtomicService(moduleJson);
         return moduleInfo;
     }
 
@@ -1092,6 +1149,9 @@ public class JsonUtil {
                 continue;
             }
             JSONObject distroFilter = JSONObject.parseObject(resource);
+            if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+            }
             if (distroFilter.containsKey(DISTRO_FILTER)) {
                 return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
@@ -1152,7 +1212,11 @@ public class JsonUtil {
         }
         ExtensionAbilityInfo moduleExtensionAbilityInfo = new ExtensionAbilityInfo();
         moduleExtensionAbilityInfo.name = getJsonString(extensionAbilityJson, NAME);
-        moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
+        if (extensionAbilityJson.containsKey(SRC_ENTRY)) {
+            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRY);
+        } else {
+            moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
+        }
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
         moduleExtensionAbilityInfo.label =
                 parseResourceByKey(extensionAbilityJson, data, LABEL, LABEL_ID);
@@ -1181,7 +1245,11 @@ public class JsonUtil {
             ModuleAdaption adaption = new ModuleAdaption();
             moduleExtensionAbilityInfo.metadata = adaption.convertToMetadata(moduleExtensionAbilityInfo.metadataInfos);
         }
-        moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, VISIBLE, false);
+        if (extensionAbilityJson.containsKey(EXPORTED)) {
+            moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, EXPORTED, false);
+        } else {
+            moduleExtensionAbilityInfo.visible = getJsonBooleanValue(extensionAbilityJson, VISIBLE, false);
+        }
         return moduleExtensionAbilityInfo;
     }
 
@@ -1232,7 +1300,12 @@ public class JsonUtil {
         }
         ModuleAbilityInfo moduleAbilityInfo = new ModuleAbilityInfo();
         moduleAbilityInfo.name = getJsonString(abilityJson, NAME);
-        moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
+        if (abilityJson.containsKey(SRC_ENTRY)) {
+            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRY);
+        } else {
+            moduleAbilityInfo.srcEntrance = getJsonString(abilityJson, SRC_ENTRANCE);
+        }
+
         moduleAbilityInfo.launchType = getJsonString(abilityJson, LAUNCH_TYPE, STANDARD);
         moduleAbilityInfo.description = parseResourceByKey(abilityJson, data, DESCRIPTION, DESCRIPTION_ID);
         moduleAbilityInfo.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
@@ -1245,7 +1318,11 @@ public class JsonUtil {
                 getJsonString(abilityJson, PERMISSIONS), String.class);
         }
         moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
-        moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
+        if (abilityJson.containsKey(EXPORTED)) {
+            moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, EXPORTED, false);
+        } else {
+            moduleAbilityInfo.visible = getJsonBooleanValue(abilityJson, VISIBLE, false);
+        }
         moduleAbilityInfo.continuable = getJsonBooleanValue(abilityJson, CONTINUABLE, false);
 
         if (abilityJson.containsKey(SKILLS)) {
@@ -1453,6 +1530,8 @@ public class JsonUtil {
         if (shortcutObj.containsKey("label")) {
             moduleShortcut.setLabel(parseResourceByStringID(data, getJsonString(shortcutObj, "label")));
         }
+        moduleShortcut.setLabels(parseResourceMapByKey(shortcutObj, data, LABEL_ID));
+
         if (shortcutObj.containsKey("icon")) {
             String iconPath = parseResourceByStringID(data, getJsonString(shortcutObj, "icon"));
             moduleShortcut.setIcon(iconPath.substring(iconPath.indexOf("resources")));
@@ -1502,6 +1581,7 @@ public class JsonUtil {
         if (shortcutObj.containsKey("label")) {
             shortcut.label = parseResourceByKey(shortcutObj, data, "label", "labelId");
         }
+        shortcut.setLabels(parseResourceMapByKey(shortcutObj, data, LABEL_ID));
         if (shortcutObj.containsKey("icon")) {
             shortcut.icon = parseIconById(shortcutObj, data);
         }
@@ -1629,6 +1709,28 @@ public class JsonUtil {
         return definePermissions;
     }
 
+    static ModuleAtomicService parseModuleAtomicService(JSONObject moduleJson) {
+        ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+        JSONObject atomicServiceObj = null;
+        if (!moduleJson.containsKey(ATOMIC_SERVICE)) {
+            return moduleAtomicService;
+        }
+        atomicServiceObj = moduleJson.getJSONObject(ATOMIC_SERVICE);
+        JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
+        List<PreloadItem> preloadItems = new ArrayList<>();
+        for (int i = 0; i < preloadObjs.size(); ++i) {
+            PreloadItem preloadItem = new PreloadItem();
+            JSONObject itemObj = preloadObjs.getJSONObject(i);
+            if (itemObj.containsKey(MODULE_NAME)) {
+                preloadItem.setModuleName(getJsonString(itemObj, MODULE_NAME));
+            }
+            preloadItems.add(preloadItem);
+        }
+        moduleAtomicService.setPreloadItems(preloadItems);
+
+        return moduleAtomicService;
+    }
+
     /**
      * parse define permission objects
      *
@@ -1650,8 +1752,11 @@ public class JsonUtil {
         }
         definePermission.label =
                 parseResourceByKey(definePermissionObj, data, "label", "labelId");
+        definePermission.setLabels(parseResourceMapByKey(definePermissionObj, data, LABEL_ID));
+
         definePermission.description =
                 parseResourceByKey(definePermissionObj, data, "description", "descriptionId");
+        definePermission.setDescriptions(parseResourceMapByKey(definePermissionObj, data, DESCRIPTION_ID));
 
         return definePermission;
     }
@@ -1694,7 +1799,11 @@ public class JsonUtil {
                     JSONObject.parseArray(getJsonString(defPermissionObj, "availableScope"), String.class);
         }
         defPermission.label = parseResourceByKey(defPermissionObj, data, "label", "labelId");
+        defPermission.setLabels(parseResourceMapByKey(defPermissionObj, data, LABEL_ID));
+
         defPermission.description = parseResourceByKey(defPermissionObj, data, "description", "descriptionId");
+        defPermission.setDescriptions(parseResourceMapByKey(defPermissionObj, data, DESCRIPTION_ID));
+
         if (defPermissionObj.containsKey("group")) {
             defPermission.group = getJsonString(defPermissionObj, "group");
         }
@@ -1798,8 +1907,8 @@ public class JsonUtil {
             ReqPermission reqPermission = new ReqPermission();
             JSONObject requestPermission = requestPermissionObjs.getJSONObject(i);
             reqPermission.name = getJsonString(requestPermission, NAME);
+            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
             if (requestPermission.containsKey(REASON_ID)) {
-                reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
                 reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
             }
             if (requestPermission.containsKey(USED_SCENE)) {

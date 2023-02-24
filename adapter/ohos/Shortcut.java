@@ -16,6 +16,7 @@
 package ohos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,6 +34,8 @@ public class Shortcut {
      */
     public String label = "";
 
+    private HashMap<String, String> labels = new HashMap<>();
+
     /**
      * Indicates the icon of app Shortcut.
      */
@@ -42,4 +45,12 @@ public class Shortcut {
      * Indicates the intents of app Shortcut.
      */
     public List<IntentInfo> intents = new ArrayList<IntentInfo>();
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
 }

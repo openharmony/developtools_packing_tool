@@ -37,7 +37,9 @@
                 "requestPermissions",
                 "dependencies",
                 "libIsolation",
-                "compressNativeLibs"
+                "compressNativeLibs",
+                "installationFree",
+                "atomicService"
               ]
             },
             "required": [
@@ -61,6 +63,7 @@
                 "name",
                 "type",
                 "srcEntrance",
+                "srcEntry",
                 "description",
                 "process",
                 "mainElement",
@@ -99,6 +102,7 @@
                 "name",
                 "type",
                 "srcEntrance",
+                "srcEntry",
                 "description",
                 "process",
                 "mainElement",
@@ -116,7 +120,10 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "compressNativeLibs"
+                "compressNativeLibs",
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -141,6 +148,7 @@
                 "name",
                 "type",
                 "srcEntrance",
+                "srcEntry",
                 "description",
                 "process",
                 "mainElement",
@@ -158,7 +166,10 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "compressNativeLibs"
+                "compressNativeLibs",
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -174,6 +185,7 @@
         "name": {
           "description": "Indicates the module name.",
           "type": "string",
+          "pattern": "[^\u4e00-\u9fa5]+",
           "maxLength": 31
         },
         "type": {
@@ -187,6 +199,12 @@
           ]
         },
         "srcEntrance": {
+          "description": "This tag indicates the entry js code path corresponding to hap",
+          "type": "string",
+          "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+          "maxLength": 127
+        },
+        "srcEntry": {
           "description": "This tag indicates the entry js code path corresponding to hap",
           "type": "string",
           "maxLength": 127
@@ -239,7 +257,8 @@
           "default": "default"
         },
         "uiSyntax": {
-          "description": "Indicates the syntax type of JS Component.Default is hml.@deprecated",
+          "description": "Indicates the syntax type of JS Component.Default is hml.",
+          "deprecationMessage": "Deprecated since api 9",
           "type": "string",
           "enum": [
             "ets",
@@ -288,19 +307,33 @@
         "abilities": {
           "description": "Indicates all abilities in the current module. The value is an array of objects, each of which represents an ability.This label can be left blank by default,and indicates no capability exists in the current module.",
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "object",
-            "required": [
-              "name",
-              "srcEntrance",
-              "startWindowIcon",
-              "startWindowBackground"
+            "oneOf": [
+              {
+                "required": [
+                  "name",
+                  "srcEntrance",
+                  "startWindowIcon",
+                  "startWindowBackground"
+                ]
+              },
+              {
+                "required": [
+                  "name",
+                  "srcEntry",
+                  "startWindowIcon",
+                  "startWindowBackground"
+                ]
+              }
             ],
             "propertyNames": {
               "enum": [
                 "priority",
                 "name",
                 "srcEntrance",
+                "srcEntry",
                 "launchType",
                 "description",
                 "icon",
@@ -308,6 +341,7 @@
                 "permissions",
                 "metadata",
                 "visible",
+                "exported",
                 "skills",
                 "backgroundModes",
                 "continuable",
@@ -336,9 +370,16 @@
               "name": {
                 "description": "Indicates the name of the ability.",
                 "type": "string",
+                "pattern": "[^\u4e00-\u9fa5]+",
                 "maxLength": 127
               },
               "srcEntrance": {
+                "description": "Indicates the js code path corresponding to the ability.",
+                "type": "string",
+                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "maxLength": 127
+              },
+              "srcEntry": {
                 "description": "Indicates the js code path corresponding to the ability.",
                 "type": "string",
                 "maxLength": 127
@@ -349,7 +390,8 @@
                 "enum": [
                   "standard",
                   "singleton",
-                  "specified"
+                  "specified",
+                  "multiton"
                 ],
                 "default": "singleton"
               },
@@ -411,6 +453,12 @@
                 }
               },
               "visible": {
+                "description": "Specifies whether the ability can be called by other applications.The \"true\" indicates the ability can be called by other applications.The \"false\" indicates the ability cannot be called by other applications.This tag is optional. The default value is false.",
+                "type": "boolean",
+                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "default": false
+              },
+              "exported": {
                 "description": "Specifies whether the ability can be called by other applications.The \"true\" indicates the ability can be called by other applications.The \"false\" indicates the ability cannot be called by other applications.This tag is optional. The default value is false.",
                 "type": "boolean",
                 "default": false
@@ -644,18 +692,41 @@
               }
             },
             "then": {
-              "required": [
-                "name",
-                "srcEntrance",
-                "type",
-                "uri"
+              "oneOf": [
+                {
+                  "required": [
+                    "name",
+                    "srcEntrance",
+                    "type",
+                    "uri"
+                  ]
+                },
+                {
+                  "required": [
+                    "name",
+                    "srcEntry",
+                    "type",
+                    "uri"
+                  ]
+                }
               ]
             },
             "else": {
-              "required": [
-                "name",
-                "srcEntrance",
-                "type"
+              "oneOf": [
+                {
+                  "required": [
+                    "name",
+                    "srcEntrance",
+                    "type"
+                  ]
+                },
+                {
+                  "required": [
+                    "name",
+                    "srcEntry",
+                    "type"
+                  ]
+                }
               ]
             },
             "propertyNames": {
@@ -663,6 +734,7 @@
                 "priority",
                 "name",
                 "srcEntrance",
+                "srcEntry",
                 "icon",
                 "label",
                 "description",
@@ -672,6 +744,7 @@
                 "readPermission",
                 "writePermission",
                 "visible",
+                "exported",
                 "skills",
                 "metadata"
               ]
@@ -689,6 +762,12 @@
                 "maxLength": 127
               },
               "srcEntrance": {
+                "description": "Indicates the js code path corresponding to the extension.",
+                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "type": "string",
+                "maxLength": 127
+              },
+              "srcEntry": {
                 "description": "Indicates the js code path corresponding to the extension.",
                 "type": "string",
                 "maxLength": 127
@@ -727,6 +806,7 @@
                   "enterpriseAdmin",
                   "thumbnail",
                   "preview",
+                  "print",
                   "push"
                 ]
               },
@@ -755,6 +835,12 @@
                 "maxLength": 255
               },
               "visible": {
+                "description": "Specifies whether the extension can be called by other applications.",
+                "deprecationMessage": "Deprecated since api 9, use exported instead.",
+                "type": "boolean",
+                "default": false
+              },
+              "exported": {
                 "description": "Specifies whether the extension can be called by other applications.",
                 "type": "boolean",
                 "default": false
@@ -1075,6 +1161,49 @@
           "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
           "type": "boolean",
           "default": true
+        },
+        "atomicService": {
+          "description": "Indicates the module config in atomic service.",
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "preloads"
+            ]
+          },
+          "properties": {
+            "preloads": {
+              "description": "Indicates modules are preloaded when the current module is run.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "enum": [
+                    "moduleName"
+                  ]
+                },
+                "properties": {
+                  "moduleName": {
+                    "description": "Indicates module is preloaded when the current module is run.",
+                    "type": "string",
+                    "maxLength": 31
+                  }
+                }
+              }
+            }
+          }
+        },
+        "targetModuleName": {
+          "description": "Indicates the target module name of an overlay module.",
+          "type": "string",
+          "pattern": "[^\u4e00-\u9fa5]+",
+          "maxLength": 31
+        },
+        "targetPriority": {
+          "description": "Indicates the priority of the overlay module. 1 to 100, default value is 1.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
         }
       }
     }
