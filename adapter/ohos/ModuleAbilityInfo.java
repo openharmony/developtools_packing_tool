@@ -29,31 +29,32 @@ class ModuleAbilityInfo {
      * Indicates the name of module ModuleJson.
      */
     public String name = "";
+
     /**
      * Indicates the srcEntrance of module ModuleJson.
      */
     public String srcEntrance = "";
+
     /**
      * Indicates the launchType of module ModuleJson.
      */
     public String launchType = "standard";
+
     /**
      * Indicates the description of module ModuleJson.
      */
     public String description = "";
+
     /**
      * Indicates the descriptions of module ModuleJson, for Multilingual.
      */
     private HashMap<String, String> descriptions = new HashMap<>();
 
-    public HashMap<String, String> getDescriptions() {
-        return descriptions;
-    }
-
     /**
      * Indicates the icon of module ModuleJson.
      */
     public String icon = "";
+
     /**
      * Indicates the label of module ModuleJson.
      */
@@ -64,30 +65,31 @@ class ModuleAbilityInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
-    public HashMap<String, String> getLabels() {
-        return labels;
-    }
-
     /**
      * Indicates the permissions of module ModuleJson.
      */
     public List<String> permissions = new ArrayList<String>();
+
     /**
      * Indicates the metadata of module ModuleJson.
      */
     public List<ModuleMetadataInfo> metadata = new ArrayList<ModuleMetadataInfo>();
+
     /**
      * Indicates the visible of module ModuleJson.
      */
     public boolean visible = false;
+
     /**
      * Indicates the continuable of module ModuleJson.
      */
     public boolean continuable = false;
+
     /**
      * Indicates the skills of module ModuleJson.
      */
     public List<SkillInfo> skills = new ArrayList<SkillInfo>();
+
     /**
      * Indicates the backgroundModes of module ModuleJson.
      */
@@ -99,5 +101,13 @@ class ModuleAbilityInfo {
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public HashMap<String, String> getLabels() {
+        return labels;
     }
 }

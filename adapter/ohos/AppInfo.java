@@ -97,10 +97,6 @@ public class AppInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
-    public HashMap<String, String> getLabels() {
-        return labels;
-    }
-
     /**
      * Indicates the description of app AppJson.
      */
@@ -111,10 +107,6 @@ public class AppInfo {
      */
     private HashMap<String, String> descriptions = new HashMap<>();
 
-    public HashMap<String, String> getDescriptions() {
-        return descriptions;
-    }
-
     /**
      * Indicates the minCompatibleVersionCode of app AppJson.
      */
@@ -123,6 +115,11 @@ public class AppInfo {
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
     public boolean distributedNotificationEnabled = false;
+
+    /**
+     * Indicates the atomic service of app AppJson.
+     */
+    public AppAtomicService appAtomicService = new AppAtomicService();
 
     /**
      * Get shell version code.
@@ -193,5 +190,12 @@ public class AppInfo {
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;
     }
-    public AppAtomicService appAtomicService = new AppAtomicService();
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
 }
