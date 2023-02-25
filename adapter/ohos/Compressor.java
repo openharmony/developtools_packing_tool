@@ -122,6 +122,7 @@ public class Compressor {
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
     private static final String TYPE_SHARED = "shared";
+    private static final Integer ONE = 1;
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -2176,11 +2177,11 @@ public class Compressor {
                 hapVerifyInfos.add(parseFAHapVerifyInfo(hapPath));
             }
         }
+        if (isSharedApp) {
+            return checkSharedAppIsValid(hapVerifyInfos);
+        }
         if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
             return false;
-        }
-        if (isSharedApp && !hapVerifyInfos.isEmpty()) {
-            return hapVerifyInfos.get(0).isSharedHsp();
         }
         return true;
     }
@@ -2391,5 +2392,17 @@ public class Compressor {
         }
 
         compressHapModeMultiple(utility);
+    }
+
+    private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) {
+        if (hapVerifyInfos.isEmpty() || !ONE.equals(hapVerifyInfos.size())) {
+            return false;
+        }
+        HapVerifyInfo sharedHspInfo = hapVerifyInfos.get(0);
+        if (!sharedHspInfo.getDependencyItemList().isEmpty()) {
+            LOG.error("Shared hsp cannot depend on other modules");
+            return false;
+        }
+        return sharedHspInfo.isSharedHsp();
     }
 }
