@@ -872,7 +872,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
         List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.addAbilityNames(extensionAbilityNames);
-        hapVerifyInfo.setModuleType(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setModuleType(parseModuleType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setSplit(parseStageAtomicServiceSpilt(hapVerifyInfo.getProfileStr()));
@@ -1127,7 +1127,7 @@ class ModuleJsonUtil {
      * @param jsonString is the json String of module.json or config.json
      * @return is entry
      */
-    public static String parseStageIsEntry(String jsonString) throws BundleException {
+    public static String parseModuleType(String jsonString) throws BundleException {
         JSONObject jsonObj;
         try {
             jsonObj = JSON.parseObject(jsonString);

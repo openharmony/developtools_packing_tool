@@ -122,6 +122,8 @@ public class Compressor {
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
     private static final String TYPE_SHARED = "shared";
+    private static final String TYPE_ENTRY = "entry";
+    private static final String TYPE_FEATURE = "feature";
     private static final Integer ONE = 1;
 
     // set timestamp to get fixed MD5
@@ -236,15 +238,16 @@ public class Compressor {
     }
 
     private void compressHsp(Utility utility) throws BundleException {
-        if (!verifySharedHsp(utility)) {
-            LOG.error("Error: SharedApp can only contain HSP");
-            throw new BundleException("Error: checkStageHap failed!");
-        }
         if (isModuleJSON(utility.getJsonPath())) {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("Error: checkStageAtomicService failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+            String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
+            if (!TYPE_SHARED.equals(moduleType)) {
+                LOG.error("Error: module type must be shared!");
                 throw new BundleException("Error: checkStageHap failed!");
             }
         }
@@ -2179,6 +2182,13 @@ public class Compressor {
         }
         if (isSharedApp) {
             return checkSharedAppIsValid(hapVerifyInfos);
+        } else {
+            for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+                if (hapVerifyInfo.isSharedHsp()) {
+                    LOG.error("Compressor::checkHapIsValid shared app should not be included in --hsp-path!");
+                    return false;
+                }
+            }
         }
         if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
             return false;
@@ -2313,19 +2323,6 @@ public class Compressor {
         return true;
     }
 
-    private boolean verifySharedHsp(Utility utility) throws BundleException {
-        HapVerifyInfo hapVerifyInfo = new HapVerifyInfo();
-        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-        String jsonString = optional.get();
-        hapVerifyInfo.setProfileStr(jsonString);
-        ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
-        if (hapVerifyInfo.isSharedHsp() &&
-                !TYPE_SHARED.equals(hapVerifyInfo.getModuleType())) {
-            return false;
-        }
-        return true;
-    }
-
     private void compressHSPMode(Utility utility) throws BundleException {
         pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
 
@@ -2403,6 +2400,10 @@ public class Compressor {
             LOG.error("Shared hsp cannot depend on other modules");
             return false;
         }
-        return sharedHspInfo.isSharedHsp();
+        if (!sharedHspInfo.isSharedHsp()) {
+            LOG.error("The input hsp is invalid for shared app");
+            return false;
+        }
+        return true;
     }
 }
