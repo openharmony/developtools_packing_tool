@@ -83,6 +83,7 @@
           "bundleName",
           "debug",
           "atomicService",
+          "shared",
           "icon",
           "label",
           "description",
@@ -141,6 +142,24 @@
               "description": "Indicates the name of main module when split is true.",
               "type": "string",
               "maxLength": 31
+            }
+          }
+        },
+        "shared": {
+          "description": "Indicates the application is a shared library package.",
+          "type":"object",
+          "propertyNames": {
+            "enum": [
+              "compatiblePolicy"
+            ]
+          },
+          "properties": {
+            "compatiblePolicy": {
+              "description": "Indicates the shared package compatible policy",
+              "type":"string",
+              "enum": [
+                "backwardCompatibility"
+              ]
             }
           }
         },
