@@ -65,7 +65,7 @@ java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [optio
 | --json-path | 是         | NA            | .json文件路径，文件名必须为config.json。                     |
 | --jar-path  | 否         | NA            | 1.jar文件路径，文件名必须以.jar为后缀。如果是多个jar需要用“，”分隔。2.jar文件路径也可以为目录。 |
 | --lib-path  | 否         | NA            | lib库文件路径。                                              |
-| --res-path  | 否         | NA            | resources资源包路径。                                        |
+| --res-path  | 是         | NA            | resources资源包路径。                                        |
 | --out-path  | 是         | NA            | 目标文件路径，文件名必须以.hap为后缀。                       |
 | --force     | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
 
