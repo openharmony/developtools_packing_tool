@@ -961,17 +961,18 @@ public class Compressor {
     }
 
     private void compressPackinfoIntoHap(String hapPathItem, String outPathString, String packInfo)
-            throws FileNotFoundException, IOException, BundleException {
+            throws IOException, BundleException {
         ZipFile sourceHapFile = new ZipFile(hapPathItem);
         ZipOutputStream append = new ZipOutputStream(new FileOutputStream(outPathString));
         try {
             Enumeration<? extends ZipEntry> entries = sourceHapFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry zipEntry = entries.nextElement();
-                if (zipEntry.getName() != null && PACKINFO_NAME.equals(zipEntry.getName())) {
+                if (PACKINFO_NAME.equals(zipEntry.getName())) {
                     continue;
                 }
-                append.putNextEntry(zipEntry);
+                ZipEntry newEntry = new ZipEntry(zipEntry.getName());
+                append.putNextEntry(newEntry);
                 if (!zipEntry.isDirectory()) {
                     copy(sourceHapFile.getInputStream(zipEntry), append);
                 }
