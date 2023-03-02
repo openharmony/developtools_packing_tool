@@ -455,7 +455,7 @@
               "visible": {
                 "description": "Specifies whether the ability can be called by other applications.The \"true\" indicates the ability can be called by other applications.The \"false\" indicates the ability cannot be called by other applications.This tag is optional. The default value is false.",
                 "type": "boolean",
-                "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
+                "deprecationMessage": "Deprecated since api 9, use exported instead.",
                 "default": false
               },
               "exported": {
