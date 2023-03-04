@@ -45,6 +45,7 @@
             "required": [
               "name",
               "type",
+              "deliveryWithInstall",
               "deviceTypes"
             ]
           }
