@@ -1134,6 +1134,7 @@
         "dependencies": {
           "description": "Indicates the module names that this module depends on.",
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "object",
             "propertyNames": {
