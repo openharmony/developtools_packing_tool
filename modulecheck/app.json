@@ -146,7 +146,7 @@
           }
         },
         "shared": {
-          "description": "Indicates the application is a shared library package.",
+          "description": "Indicates the application is a shared bundle.",
           "type":"object",
           "propertyNames": {
             "enum": [
@@ -155,7 +155,7 @@
           },
           "properties": {
             "compatiblePolicy": {
-              "description": "Indicates the shared package compatible policy",
+              "description": "Indicates the shared bundle compatible policy",
               "type":"string",
               "enum": [
                 "backwardCompatibility"
