@@ -61,7 +61,7 @@ class FileUtils {
         long fileSize = file.length();
         byte[] buffer = new byte[(int) fileSize];
         if (fileSize > Integer.MAX_VALUE) {
-            LOG.error("file too big!");
+            LOG.error("file too big.");
             return buffer;
         }
         FileInputStream fi = null;
@@ -108,12 +108,12 @@ class FileUtils {
     public static void getFileList(final String filePath, ArrayList<String> fileList) {
         File file = new File(filePath);
         if (!file.exists()) {
-            LOG.error("getFileList: file is not exists");
+            LOG.error("getFileList: file is not exists.");
             return;
         }
         File[] files = file.listFiles();
         if (files == null) {
-            LOG.error("getFileList: no file in this file path");
+            LOG.error("getFileList: no file in this file path.");
             return;
         }
         for (File f : files) {
@@ -123,7 +123,7 @@ class FileUtils {
                 } else if (f.isDirectory()) {
                     getFileList(f.getCanonicalPath(), fileList);
                 } else {
-                    LOG.error("It's not file or directory!");
+                    LOG.error("It's not file or directory.");
                 }
             } catch (IOException msg) {
                 LOG.error("IOException error: " + msg.getMessage());
@@ -282,7 +282,7 @@ class FileUtils {
                 } else if (file.isDirectory()) {
                     deleteDirectory(file.getCanonicalPath());
                 } else {
-                    LOG.error("It's not file or directory!");
+                    LOG.error("It's not file or directory.");
                 }
             } catch (IOException msg) {
                 LOG.error("deleteDirectory IOException : " + msg.getMessage());
@@ -341,7 +341,7 @@ class FileUtils {
      */
     public static void copyFile(File sourceFile, File destFile) throws IOException, BundleException {
         if (sourceFile == null || destFile == null) {
-            String errMsg = "CompressorFileUtil::copyFile input file is null!";
+            String errMsg = "CompressorFileUtil::copyFile input file is null.";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
@@ -369,7 +369,7 @@ class FileUtils {
      */
     public static void makeDir(File dirFile) throws IOException, BundleException {
         if (dirFile == null) {
-            String errMsg = "CompressorFileUtil::makeDir input file is null!";
+            String errMsg = "CompressorFileUtil::makeDir input file is null.";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
@@ -412,7 +412,7 @@ class FileUtils {
             jsonStr = new StringBuilder(jsonStr.toString().replaceAll("\r|\n|\t", ""));
         } catch (IOException exception) {
             LOG.error("Compressor::checkModuleTypeInHaps io exception: " + exception.getMessage());
-            throw new BundleException("Compressor::checkModuleTypeInHaps failed");
+            throw new BundleException("Compressor::checkModuleTypeInHaps failed.");
         } finally {
             Utility.closeStream(zipFile);
             Utility.closeStream(zipInput);
@@ -444,8 +444,8 @@ class FileUtils {
                 }
             }
         } catch (IOException e) {
-            LOG.error("FileUtil::getProfileJson IOException");
-            throw new BundleException("FileUtil::getProfileJson failed");
+            LOG.error("FileUtil::getProfileJson IOException.");
+            throw new BundleException("FileUtil::getProfileJson failed.");
         }
         return resourceMap;
     }
@@ -460,7 +460,7 @@ class FileUtils {
             throws IOException {
         ZipEntry entry = zipFile.getEntry(fileName);
         if (entry == null) {
-            LOG.debug("Uncompress::readStringFromFile " + fileName + " not found exception");
+            LOG.debug("Uncompress::readStringFromFile " + fileName + " not found exception.");
             return "";
         }
         InputStream fileInputStream = null;
@@ -499,11 +499,11 @@ class FileUtils {
             }
             sha256 = toHex(md5.digest());
         } catch (FileNotFoundException e) {
-            LOG.error("input hap file is not found!");
+            LOG.error("input hap file is not found.");
         } catch (NoSuchAlgorithmException e) {
-            LOG.error("can not provide sha-256 algorithm");
+            LOG.error("can not provide sha-256 algorithm.");
         } catch (IOException e) {
-            LOG.error("input hap IO exception!");
+            LOG.error("input hap IO exception.");
         } finally {
             Utility.closeStream(inputStream);
         }
@@ -537,7 +537,7 @@ class FileUtils {
             while (entry != null) {
                 String filePath = destDirPath + File.separator + entry.getName();
                 if (!matchPattern(filePath)) {
-                    LOG.error("Input invalid file " + filePath);
+                    LOG.error("Input invalid file " + filePath + ".");
                     return false;
                 }
                 if (!entry.isDirectory()) {
@@ -562,7 +562,7 @@ class FileUtils {
         BufferedOutputStream bufferedOutputStream = null;
         try {
             if (!matchPattern(filePath)) {
-                throw new BundleException("input invalid file " + filePath);
+                throw new BundleException("input invalid file " + filePath + ".");
             }
             bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath));
             byte[] bytes = new byte[BUFFER_SIZE];
@@ -579,7 +579,7 @@ class FileUtils {
 
     static boolean matchPattern(String path) {
         if (!Pattern.matches(PATTERN, path)) {
-            LOG.error("Error: input invalid file of " + path);
+            LOG.error("input invalid file of " + path + ".");
             return false;
         }
         return true;
@@ -596,7 +596,7 @@ class FileUtils {
         if (file.exists() && file.isFile()) {
             return file.length();
         }
-        LOG.error("Error: input " + filePath + " is not a valid file!");
+        LOG.error("input " + filePath + " is not a valid file.");
         return 0;
     }
 }
