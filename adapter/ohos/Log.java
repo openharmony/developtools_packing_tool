@@ -15,6 +15,7 @@
 
 package ohos;
 
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +33,11 @@ public class Log {
      */
     public Log(String className) {
         log = Logger.getLogger(className);
+        log.setUseParentHandlers(false);
+        PackFormatter formatter = new PackFormatter();
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(formatter);
+        log.addHandler(handler);
         log.setLevel(Level.WARNING);
     }
 

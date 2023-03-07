@@ -50,7 +50,6 @@ public class Uncompress {
     private static final String HAP_SUFFIX = ".hap";
     private static final String APK_SUFFIX = ".apk";
     private static final String JSON_SUFFIX = ".json";
-    private static final String HSP_SUFFIX = ".hsp";
 
     private static final String PACK_INFO = "pack.info";
     private static final String HARMONY_PROFILE = "config.json";
@@ -75,7 +74,6 @@ public class Uncompress {
     private static final String HQF_SUFFIX = ".hqf";
     private static final String PATCH_JSON = "patch.json";
     private static final String HAP_PREFIX = "HAP";
-    private static final String TEMP = "temp";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -331,7 +329,6 @@ public class Uncompress {
     private static UncompressResult uncompressAllFromAppStream(InputStream stream) throws BundleException {
         UncompressResult result = new UncompressResult();
         ZipInputStream zipInputStream = null;
-        ByteArrayOutputStream outputStream = null;
         try {
             zipInputStream = new ZipInputStream(stream);
             ZipEntry entry;
@@ -359,7 +356,6 @@ public class Uncompress {
             throw new BundleException("uncompressAllFromAppStream failed!");
         } finally {
             Utility.closeStream(zipInputStream);
-            Utility.closeStream(outputStream);
         }
         return result;
     }
