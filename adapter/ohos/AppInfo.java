@@ -167,5 +167,8 @@ public class AppInfo {
         this.shellVersionName = versionName;
     }
 
+    /**
+     * Indicates the atomic service of app AppJson.
+     */
     public AppAtomicService appAtomicService = new AppAtomicService();
 }
