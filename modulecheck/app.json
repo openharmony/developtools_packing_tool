@@ -82,6 +82,7 @@
         "enum": [
           "bundleName",
           "debug",
+          "bundleType",
           "shared",
           "icon",
           "label",
@@ -137,8 +138,8 @@
             }
           }
         },
-        "appCategory": {
-          "description": "Indicates the category of app",
+        "bundleType": {
+          "description": "Indicates the type of bundle",
           "type":"string",
           "enum": [
             "app",
