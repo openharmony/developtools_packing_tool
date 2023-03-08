@@ -1043,8 +1043,8 @@ class HapVerify {
                 fileSize += dependency.getFileLength();
             }
             if (fileSize > ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                LOG.error("Error: "+ hapVerifyInfo.getModuleName() +
-                        " and its dependencies size is over 2M in atomicService!");
+                LOG.error("Error: " + hapVerifyInfo.getModuleName() +
+                    " and its dependencies size is over 2M in atomicService!");
                 return false;
             }
         }
@@ -1198,11 +1198,11 @@ class HapVerify {
         }
         String main = hapVerifyInfoList.get(0).getMain();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-             if (main.equals(hapVerifyInfo.getModuleName())) {
-                 hapVerifyInfo.setAtomicServiceType(MAIN);
-             } else {
-                 hapVerifyInfo.setAtomicServiceType(NORMAL);
-             }
+            if (main.equals(hapVerifyInfo.getModuleName())) {
+                hapVerifyInfo.setAtomicServiceType(MAIN);
+            } else {
+                hapVerifyInfo.setAtomicServiceType(NORMAL);
+            }
         }
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
             if (hapVerifyInfo.getAtomicServiceType().equals(MAIN)) {
