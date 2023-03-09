@@ -414,7 +414,7 @@ public class CompressVerify {
 
         if (!utility.getHspList().isEmpty()) {
             if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
-                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hsp-list is invalid!");
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hsp-list is invalid.");
                 return false;
             }
         }

@@ -15,7 +15,6 @@
 
 package ohos;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -772,7 +771,7 @@ public class Compressor {
                                          String finalAppPackInfo) throws BundleException, IOException {
         List<String> selectedHapsInApp = new ArrayList<>();
         // classify hap in app
-        copyHapFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
+        copyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
         // rebuild pack.info
         String packInfoStr = FileUtils.getJsonInZips(new File(appPath), PACKINFO_NAME);
         if (packInfoStr.isEmpty()) {
@@ -800,8 +799,8 @@ public class Compressor {
      * @param selectedHaps is the list of haps and hsps selected in input
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static void copyHapFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
-                                       String tempDir) throws BundleException {
+    private static void copyHapAndHspFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
+                                             String tempDir) throws BundleException {
         ZipInputStream zipInput = null;
         ZipFile zipFile = null;
         OutputStream outputStream = null;
