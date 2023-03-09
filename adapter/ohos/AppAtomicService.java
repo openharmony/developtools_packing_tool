@@ -24,6 +24,7 @@ public class AppAtomicService {
      * Indicates whether to split for atomicService.
      */
     private boolean split = true;
+
     /**
      * Indicates the moduleName of main module.
      */
