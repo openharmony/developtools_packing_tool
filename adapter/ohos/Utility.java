@@ -85,7 +85,6 @@ public class Utility {
     private String VersionName = "";
     private boolean isModuleJson = false;
     private String rpcid = FALSE_STRING;
-    private String packPath = "";
     private boolean isParse = false;
     private String appqfPath = "";
     private String anPath = "";
@@ -105,7 +104,6 @@ public class Utility {
     private List<String> formNameList = new ArrayList<>();
     private List<String> formattedAppList = new ArrayList<>();
     private List<String> formattedHapList = new ArrayList<>();
-    private List<String> formattedHspList = new ArrayList<>();
 
     private List<String> formatedDirList = new ArrayList<>();
 
@@ -737,13 +735,5 @@ public class Utility {
 
     public void setHspList(String hspList) {
         this.hspList = hspList;
-    }
-
-    public List<String> getFormattedHspList() {
-        return formattedHspList;
-    }
-
-    public void setFormattedHspList(List<String> formattedHspList) {
-        this.formattedHspList = formattedHspList;
     }
 }
