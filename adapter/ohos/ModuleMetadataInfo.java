@@ -15,8 +15,6 @@
 
 package ohos;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ModuleJson Meta data info.

@@ -15,11 +15,6 @@
 
 package ohos;
 
-import java.io.File;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * bundle tool main class.
  * step1: parse arguments

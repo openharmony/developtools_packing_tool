@@ -48,6 +48,7 @@ out_class="${temp_path}/${out_dir}"
 java_collection=""
 declare -a compile_class=(
     "Log"
+    "PackFormatter"
     "BinaryTool"
     "FileUtils"
     "ConvertHapToBin"
