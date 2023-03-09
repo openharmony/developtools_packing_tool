@@ -73,6 +73,7 @@ public class CommandParser {
     private static final String CMD_SHAREDLIBS_PATH = "--shared-libs-path";
     private static final String CMD_ENTRYCARD_PATH = "--entrycard-path";
     private static final String CMD_HAP_LIST = "--hap-list";
+    private static final String CMD_HSP_LIST = "--hsp-list";
     private static final String CMD_APP_LIST = "--app-list";
     private static final String CMD_DIR_LIST = "--dir-list";
     private static final String CMD_HQF_LIST = "--hqf-list";
@@ -234,6 +235,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_HAP_LIST, entry -> {
             entry.getKey().setHapList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HSP_LIST, entry -> {
+            entry.getKey().setHspList(entry.getValue());
             return true;
         });
         commandFuncs.put(CMD_APP_LIST, entry -> {
