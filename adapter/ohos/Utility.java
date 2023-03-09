@@ -85,7 +85,6 @@ public class Utility {
     private String VersionName = "";
     private boolean isModuleJson = false;
     private String rpcid = FALSE_STRING;
-    private String packPath = "";
     private boolean isParse = false;
     private String appqfPath = "";
     private String anPath = "";
