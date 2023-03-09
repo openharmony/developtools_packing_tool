@@ -817,8 +817,8 @@ public class Compressor {
      * copy hap from app file
      *
      * @param appPath is common data
-     * @param selectedHapsInApp is list of haps selected in app file
-     * @param selectedHaps is the list of haps selected in input
+     * @param selectedHapsInApp is list of haps and hsps selected in app file
+     * @param selectedHaps is the list of haps and hsps selected in input
      * @throws BundleException FileNotFoundException|IOException.
      */
     private static void copyHapFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
@@ -833,7 +833,7 @@ public class Compressor {
             zipFile = new ZipFile(appPath);
             while((zipEntry = zipInput.getNextEntry()) != null) {
                 File file = null;
-                if (!zipEntry.getName().endsWith(HAP_SUFFIX)) {
+                if (!zipEntry.getName().endsWith(HAP_SUFFIX) && !zipEntry.getName().endsWith(HSP_SUFFIX)) {
                     continue;
                 }
                 // copy duplicated hap to duplicated dir and get moduleName of duplicated hap
@@ -916,7 +916,7 @@ public class Compressor {
 
             if (packInfo.isEmpty()) {
                 String errMsg = "Compressor::disposeHap failed, hap has no pack.info!";
-                LOG.error(errMsg);
+                LOG.error(errMsg + hapPath);
                 throw new BundleException(errMsg);
             }
             if (finalPackInfoStr.isEmpty()) {

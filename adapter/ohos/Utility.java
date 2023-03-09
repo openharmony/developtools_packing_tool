@@ -105,6 +105,8 @@ public class Utility {
     private List<String> formNameList = new ArrayList<>();
     private List<String> formattedAppList = new ArrayList<>();
     private List<String> formattedHapList = new ArrayList<>();
+    private List<String> formattedHspList = new ArrayList<>();
+
     private List<String> formatedDirList = new ArrayList<>();
 
     private List<String> formatedHQFList = new ArrayList<>();
@@ -114,6 +116,7 @@ public class Utility {
     private String hapList = "";
     private String dirList = "";
     private String hqfList = "";
+    private String hspList = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -726,5 +729,21 @@ public class Utility {
 
     public Boolean getSharedApp() {
         return isSharedApp;
+    }
+
+    public String getHspList() {
+        return hspList;
+    }
+
+    public void setHspList(String hspList) {
+        this.hspList = hspList;
+    }
+
+    public List<String> getFormattedHspList() {
+        return formattedHspList;
+    }
+
+    public void setFormattedHspList(List<String> formattedHspList) {
+        this.formattedHspList = formattedHspList;
     }
 }

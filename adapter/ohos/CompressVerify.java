@@ -412,6 +412,13 @@ public class CompressVerify {
             }
         }
 
+        if (!utility.getHspList().isEmpty()) {
+            if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hap-list is invalid!");
+                return false;
+            }
+        }
+
         File outFile = new File(utility.getOutPath());
         if (("false".equals(utility.getForceRewrite())) && outFile.exists()) {
             LOG.error("CompressVerify::isVerifyValidInMultiAppMode out file already existed!");
