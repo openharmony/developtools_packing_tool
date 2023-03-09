@@ -15,9 +15,6 @@
 
 package ohos;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Version info.
  *
