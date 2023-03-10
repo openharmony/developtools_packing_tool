@@ -200,7 +200,7 @@ class HapVerify {
                 if (hapVerifyInfos.get(i).getModuleName().equals(hapVerifyInfos.get(j).getModuleName()) &&
                     !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
                     LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
-                        hapVerifyInfos.get(j).getModuleName() + ") have same moduleName, " +
+                        hapVerifyInfos.get(j).getModuleName() + ") have the same moduleName, " +
                             "please check deviceType or distroFilter of the module.");
                     LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
                         + hapVerifyInfos.get(i).getDeviceType() + ".");
@@ -239,7 +239,7 @@ class HapVerify {
                 if (hapVerifyInfos.get(i).getPackageName().equals(hapVerifyInfos.get(j).getPackageName()) &&
                         !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
                     LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
-                            hapVerifyInfos.get(j).getModuleName() + ") have same packageName, " +
+                            hapVerifyInfos.get(j).getModuleName() + ") have the same packageName, " +
                             "please check deviceType or distroFilter of the module.");
                     LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
                             + hapVerifyInfos.get(i).getDeviceType() + ".");
@@ -287,7 +287,7 @@ class HapVerify {
                         hapVerifyInfos.get(j).getAbilityNames()) &&
                         !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
                     LOG.warning("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
-                            hapVerifyInfos.get(j).getModuleName() + ") have same ability name.");
+                            hapVerifyInfos.get(j).getModuleName() + ") have the same ability name.");
                     LOG.warning("Module: " + hapVerifyInfos.get(i).getModuleName() + " has ability "
                         + hapVerifyInfos.get(i).getAbilityNames() + ".");
                     LOG.warning( "Module: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
