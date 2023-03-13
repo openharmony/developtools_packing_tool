@@ -3,6 +3,62 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": true,
+  "definitions": {
+    "default": {
+      "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "minAPIVersion",
+          "distributedNotificationEnabled",
+          "keepAlive",
+          "removable",
+          "singleton",
+          "userDataClearable",
+          "accessible"
+        ]
+      },
+      "properties": { 
+        "minAPIVersion": {
+          "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "distributedNotificationEnabled": {
+          "description": "Describes whether the application has distributed notifications.",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "keepAlive": {
+          "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "default": false
+        },
+        "removable": {
+          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "default": true
+        },
+        "singleton": {
+          "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "default": false
+        },
+        "userDataClearable": {
+          "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "default": true
+        },
+        "accessible": {
+          "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  },
   "required": [
     "app"
   ],
@@ -26,6 +82,7 @@
         "enum": [
           "bundleName",
           "debug",
+          "atomicService",
           "icon",
           "label",
           "description",
@@ -44,6 +101,7 @@
           "userDataClearable",
           "accessible",
           "multiProjects",
+          "asanEnabled",
           "default",
           "tablet",
           "tv",
@@ -58,6 +116,31 @@
           "maxLength": 127,
           "minLength": 7,
           "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+        },
+        "atomicService": {
+          "description": "Indicates the config for atomic service.",
+          "type": "object",
+          "required": [
+            "split"
+          ],
+          "propertyNames": {
+            "enum": [
+              "split",
+              "main"
+            ]
+          },
+          "properties": {
+            "split": {
+              "description": "Indicates whether to split bundle in atomicService.",
+              "type": "boolean",
+              "default": true
+            },
+            "main": {
+              "description": "Indicates the name of main module when split is true.",
+              "type": "string",
+              "maxLength": 31
+            }
+          }
         },
         "debug": {
           "description": "Identify whether the application can be debugged.",
@@ -123,11 +206,13 @@
         "distributedNotificationEnabled": {
           "description": "Describes whether the application has distributed notifications.",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": false
         },
         "entityType": {
           "description": "Describes the application type.",
           "type": "string",
+          "deprecationMessage": "Deprecated since api 9.",
           "enum": [
             "game",
             "media",
@@ -174,272 +259,28 @@
           "type": "boolean",
           "default": false
         },
+        "asanEnabled": {
+          "description": "Indicates whether to support asan. Release version is not configurable",
+          "type": "boolean",
+          "default": false
+        },
         "default": {
-          "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "minAPIVersion",
-              "distributedNotificationEnabled",
-              "keepAlive",
-              "removable",
-              "singleton",
-              "userDataClearable",
-              "accessible"
-            ]
-          },
-          "properties": { 
-            "minAPIVersion": {
-              "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2147483647
-            },
-            "distributedNotificationEnabled": {
-              "description": "Describes whether the application has distributed notifications.",
-              "type": "boolean",
-              "default": false
-            },
-            "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "accessible": {
-              "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "$ref": "#/definitions/default"
         },
         "tablet": {
-          "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "minAPIVersion",
-              "distributedNotificationEnabled",
-              "keepAlive",
-              "removable",
-              "singleton",
-              "userDataClearable",
-              "accessible"
-            ]
-          },
-          "properties": {
-            "minAPIVersion": {
-              "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2147483647
-            },
-            "distributedNotificationEnabled": {
-              "description": "Describes whether the application has distributed notifications.",
-              "type": "boolean",
-              "default": false
-            },
-            "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "accessible": {
-              "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "$ref": "#/definitions/default"
         },
         "tv": {
-          "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "minAPIVersion",
-              "distributedNotificationEnabled",
-              "keepAlive",
-              "removable",
-              "singleton",
-              "userDataClearable",
-              "accessible"
-            ]
-          },
-          "properties": {
-            "minAPIVersion": {
-              "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2147483647
-            },
-            "distributedNotificationEnabled": {
-              "description": "Describes whether the application has distributed notifications.",
-              "type": "boolean",
-              "default": false
-            },
-            "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "accessible": {
-              "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "$ref": "#/definitions/default"
         },
         "wearable": {
-          "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "minAPIVersion",
-              "distributedNotificationEnabled",
-              "keepAlive",
-              "removable",
-              "singleton",
-              "userDataClearable",
-              "accessible"
-            ]
-          },
-          "properties": {
-            "minAPIVersion": {
-              "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2147483647
-            },
-            "distributedNotificationEnabled": {
-              "description": "Describes whether the application has distributed notifications.",
-              "type": "boolean",
-              "default": false
-            },
-            "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "accessible": {
-              "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "$ref": "#/definitions/default"
         },
         "car": {
-          "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "minAPIVersion",
-              "distributedNotificationEnabled",
-              "keepAlive",
-              "removable",
-              "singleton",
-              "userDataClearable",
-              "accessible"
-            ]
-          },
-          "properties": {
-            "minAPIVersion": {
-              "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2147483647
-            },
-            "distributedNotificationEnabled": {
-              "description": "Describes whether the application has distributed notifications.",
-              "type": "boolean",
-              "default": false
-            },
-            "keepAlive": {
-              "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "removable": {
-              "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "singleton": {
-              "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": false
-            },
-            "userDataClearable": {
-              "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
-              "type": "boolean",
-              "default": true
-            },
-            "accessible": {
-              "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
-              "type": "boolean",
-              "default": false
-            }
-          }
+          "$ref": "#/definitions/default"
         }
       }
     }
   }
 }
+
