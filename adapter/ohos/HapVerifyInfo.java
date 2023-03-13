@@ -80,11 +80,6 @@ class HapVerifyInfo {
     private String moduleType = "";
 
     /**
-     * Indicates app type of module, contain app and atomicService.
-     */
-    private String appType = "";
-
-    /**
      * Indicates atomic service type, contain main, normal.
      */
     private String atomicServiceType = "";
@@ -114,15 +109,7 @@ class HapVerifyInfo {
      */
     private HashMap<String, String> resourceMap = new HashMap<>();
 
-    /**
-     * Indicates whether to split for atomic service.
-     */
-    private boolean split = true;
-
-    /**
-     * Indicates the main module name for atomic service.
-     */
-    private String main = "";
+    private String bundleType = "app";
 
     private boolean sharedHsp = false;
 
@@ -380,28 +367,12 @@ class HapVerifyInfo {
         }
     }
 
-    public boolean isSplit() {
-        return split;
+    public String getBundleType() {
+        return bundleType;
     }
 
-    public void setSplit(boolean split) {
-        this.split = split;
-    }
-
-    public String getMain() {
-        return main;
-    }
-
-    public void setMain(String main) {
-        this.main = main;
-    }
-
-    public String getAppType() {
-        return appType;
-    }
-
-    public void setAppType(String appType) {
-        this.appType = appType;
+    public void setBundleType(String bundleType) {
+        this.bundleType = bundleType;
     }
 
     public String getAtomicServiceType() {
