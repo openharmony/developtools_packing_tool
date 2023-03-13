@@ -76,6 +76,11 @@ class ModuleJsonUtil {
     private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
     private static final String EMPTY_STRING = "";
     private static final String ASAN_ENABLED = "asanEnabled";
+
+    private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String SPLIT = "split";
+    private static final String MAIN = "main";
+    private static final String PRELOADS = "preloads";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -864,6 +869,10 @@ class ModuleJsonUtil {
         hapVerifyInfo.setModuleType(parseStageIsEntry(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setSplit(parseStageAtomicServiceSpilt(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setMain(parseStageAtomicServiceMain(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setAppType(parseStageAppType(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setPreloadItems(parseAtomicServicePreloads(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1212,6 +1221,95 @@ class ModuleJsonUtil {
         return false;
     }
 
+    static boolean parseStageAtomicServiceSpilt(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageAsanEnabled!");
+            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        if (!appObj.containsKey(ATOMIC_SERVICE)) {
+            return true;
+        }
+        JSONObject atomicService = appObj.getJSONObject(ATOMIC_SERVICE);
+        return getJsonBooleanValue(atomicService, SPLIT, true);
+    }
+
+    static String parseStageAtomicServiceMain(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageAsanEnabled!");
+            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        if (!appObj.containsKey(ATOMIC_SERVICE)) {
+            return "";
+        }
+        JSONObject atomicServiceObj = appObj.getJSONObject(ATOMIC_SERVICE);
+        return getJsonString(atomicServiceObj, MAIN);
+    }
+
+    static String parseStageAppType(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageAsanEnabled!");
+            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input module.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        if (appObj.containsKey(ATOMIC_SERVICE)) {
+            return ATOMIC_SERVICE;
+        }
+        return APP;
+    }
+
+    static List<PreloadItem> parseAtomicServicePreloads(String jsonString) throws BundleException {
+        List<PreloadItem> preloadItems = new ArrayList<>();
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageAsanEnabled!");
+            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled!");
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        JSONObject atomicServiceObj = null;
+        if (!moduleObj.containsKey(ATOMIC_SERVICE)) {
+            return preloadItems;
+        }
+        atomicServiceObj = moduleObj.getJSONObject(ATOMIC_SERVICE);
+        if (!atomicServiceObj.containsKey(PRELOADS)) {
+            return preloadItems;
+        }
+        JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
+        for (int i = 0; i < preloadObjs.size(); ++i) {
+            PreloadItem preloadItem = new PreloadItem();
+            JSONObject itemObj = preloadObjs.getJSONObject(i);
+            if (itemObj.containsKey(MODULE_NAME)) {
+                preloadItem.setModuleName(getJsonString(itemObj, MODULE_NAME));
+            }
+            preloadItems.add(preloadItem);
+        }
+        return preloadItems;
+    }
+
     static boolean parseFAInstallationFree(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
@@ -1404,6 +1502,122 @@ class ModuleJsonUtil {
     }
 
     /**
+     * check atomicService split is valid
+     * if split is true , must config main
+     * if split is false, can not config main
+     * @param jsonString is the file content of config.json
+     * @return the result
+     */
+    public static boolean isAtomicServiceSplitValid(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageApiReleaseType!");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, config.json has no app!");
+            throw new BundleException("Error: parse failed, input module.json is invalid, module.json has no app!");
+        }
+        if (!appObj.containsKey(ATOMIC_SERVICE)) {
+            return true;
+        }
+        JSONObject atomicServiceObj = appObj.getJSONObject(ATOMIC_SERVICE);
+        if (!atomicServiceObj.containsKey(SPLIT)) {
+            LOG.error("Error: atomicService must contain split!");
+            return false;
+        }
+        boolean split = getJsonBooleanValue(atomicServiceObj, SPLIT, true);
+        if (!split && atomicServiceObj.containsKey(MAIN)) {
+            LOG.error("Error: atomicService can not contain main when split is false!");
+            return false;
+        }
+        if (split && !atomicServiceObj.containsKey(MAIN)) {
+            LOG.error("Error: atomicService must contain main when split is true!");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * check module atomic service is valid
+     * @param jsonString is the file content of config.json
+     * @return the result
+     */
+    public static boolean isModuleAtomicServiceValid(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageApiReleaseType!");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType!");
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, config.json has no module!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, module.json has no app!");
+        }
+        if (!moduleObj.containsKey(ATOMIC_SERVICE)) {
+            return true;
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, module.json has no app!");
+        }
+        if (moduleObj.containsKey(ATOMIC_SERVICE) && !appObj.containsKey(ATOMIC_SERVICE)) {
+            LOG.error("Error: module can not config atomicService when app do not contain atomicService!");
+            return false;
+        }
+        JSONObject appAtomicServiceObj = appObj.getJSONObject(ATOMIC_SERVICE);
+        if (!appAtomicServiceObj.containsKey(SPLIT)) {
+            LOG.error("Error: atomicService must contain split!");
+            return false;
+        }
+        boolean split = getJsonBooleanValue(appAtomicServiceObj, SPLIT, true);
+        JSONObject moduleAtomicService = moduleObj.getJSONObject(ATOMIC_SERVICE);
+        if (!split && moduleAtomicService.containsKey(PRELOADS)) {
+            LOG.error("Error: can not config preloads when split is false!");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check module atomic installation free is valid
+     * @param jsonString is the file content of config.json
+     * @return the result
+     */
+    public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("Error: parse JOSNObject failed in getStageApiReleaseType!");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType!");
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, config.json has no module!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, module.json has no app!");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("Error: parse failed, input config.json is invalid, module.json has no app!");
+            throw new BundleException("Error: parse failed, input config.json is invalid, module.json has no app!");
+        }
+        boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
+        if (!installationFree && appObj.containsKey(ATOMIC_SERVICE)) {
+            LOG.error("Error: installationFree must be true for atomic service");
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * get the String from JSONObject by the key.
      *
      * @param jsonObject uncompress json object
@@ -1414,6 +1628,14 @@ class ModuleJsonUtil {
         String value = "";
         if (jsonObject != null && jsonObject.containsKey(key)) {
             value = jsonObject.get(key).toString();
+        }
+        return value;
+    }
+
+    private static boolean getJsonBooleanValue(JSONObject jsonObject, String key, boolean defaultValue) {
+        boolean value = defaultValue;
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.getBooleanValue(key);
         }
         return value;
     }

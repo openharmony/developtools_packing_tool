@@ -96,6 +96,9 @@ declare -a unpack_class=(
             "FileUtils.java"
             "HQFInfo.java"
             "APPQFResult.java"
+            "AppAtomicService.java"
+            "ModuleAtomicService.java"
+            "PreloadItem.java"
             )
 unpack_class_length=${#unpack_class[@]}
 for ((i=0; i<${unpack_class_length};++i))

@@ -91,6 +91,7 @@ class ModuleAdaption {
         appInfo.distributedNotificationEnabled = moduleAppInfo.distributedNotificationEnabled;
         appInfo.appName = moduleAppInfo.appName;
         appInfo.appNameEN = moduleAppInfo.appNameEN;
+        appInfo.appAtomicService = moduleAppInfo.appAtomicService;
         return appInfo;
     }
 
@@ -155,6 +156,7 @@ class ModuleAdaption {
         hapInfo.formInfos = moduleInfo.abilityFormInfos;
         hapInfo.commonEvents = moduleInfo.commonEvents;
         hapInfo.definePermissions = moduleInfo.definePermissions;
+        hapInfo.moduleAtomicService = moduleInfo.moduleAtomicService;
         return hapInfo;
     }
 

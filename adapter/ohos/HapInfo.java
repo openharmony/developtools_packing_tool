@@ -148,6 +148,11 @@ public class HapInfo {
     public List<AbilityFormInfo> formInfos = new ArrayList<>();
 
     /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    /**
      * get the customize Data value defined in this module.
      */
     public String getCustomizeDataValue(String customizeDataName) {

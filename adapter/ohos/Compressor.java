@@ -119,6 +119,7 @@ public class Compressor {
     private static final String ABILITIES_DIR_NAME = "abilities";
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
+    private static final String AP_PATH_NAME = "ap/";
 
 
     // set timestamp to get fixed MD5
@@ -225,11 +226,23 @@ public class Compressor {
                 compressAPPQFMode(utility);
                 break;
             case Utility.MODE_HSP:
-                compressHSPMode(utility);
+                compressHsp(utility);
                 break;
             default:
                 compressPackResMode(utility);
         }
+    }
+
+    private void compressHsp(Utility utility) throws BundleException {
+        if (isModuleJSON(utility.getJsonPath())) {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
+            if (!checkStageAtomicService(jsonString)) {
+                LOG.error("Error: checkStageAtomicService failed!");
+                throw new BundleException("Error: checkStageHap failed!");
+            }
+        }
+        compressHSPMode(utility);
     }
 
     private void compressHap(Utility utility) throws BundleException {
@@ -251,7 +264,16 @@ public class Compressor {
     private static boolean checkStageHap(Utility utility) throws BundleException {
         Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
         String jsonString = optional.get();
-        return checkStageAsanEnabledValid(jsonString);
+        if (!checkStageAsanEnabledValid(jsonString)) {
+            LOG.error("Error: checkStageAsanEnabledValid failed!");
+            return false;
+        }
+        // check atomicService in module.json
+        if (!checkStageAtomicService(jsonString)) {
+            LOG.error("Error: checkStageAtomicService failed!");
+            return false;
+        }
+        return true;
     }
 
     private static boolean checkStageAsanEnabledValid(String jsonString) throws BundleException {
@@ -261,6 +283,26 @@ public class Compressor {
             LOG.error("Error: asanEnabled is not supported for Release.");
             return false;
         }
+        return true;
+    }
+
+    private static boolean checkStageAtomicService(String jsonString) throws BundleException {
+        // check split and main
+        if (!ModuleJsonUtil.isAtomicServiceSplitValid(jsonString)) {
+            LOG.error("Error: check isAtomicServiceSplitValid failed!");
+            return false;
+        }
+        // check consistency of atomicService
+        if (!ModuleJsonUtil.isModuleAtomicServiceValid(jsonString)) {
+            LOG.error("Error: check module atomicService failed!");
+            return false;
+        }
+        // check installationFree
+        if (!ModuleJsonUtil.checkAtomicServiceInstallationFree(jsonString)) {
+            LOG.error("Error: check atomic service installationFree failed!");
+            return false;
+        }
+
         return true;
     }
 
@@ -371,6 +413,10 @@ public class Compressor {
 
         if (!utility.getANPath().isEmpty()) {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
+        }
+
+        if (!utility.getAPPath().isEmpty()) {
+            pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
         }
 
         if (!utility.getFilePath().isEmpty()) {
@@ -2066,6 +2112,7 @@ public class Compressor {
         HapVerifyInfo hapVerifyInfo = readStageHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(true);
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
+        hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         return hapVerifyInfo;
     }
 
@@ -2078,6 +2125,7 @@ public class Compressor {
     public static HapVerifyInfo parseFAHapVerifyInfo(String filePath) throws BundleException {
         HapVerifyInfo hapVerifyInfo = readFAHapVerifyInfo(filePath);
         hapVerifyInfo.setStageModule(false);
+        hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         ModuleJsonUtil.parseFAHapVerifyInfo(hapVerifyInfo);
         return hapVerifyInfo;
     }
