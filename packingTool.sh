@@ -44,6 +44,7 @@ declare -a compile_class=(
             "Compressor"
             "CompressVerify"
             "Log"
+            "PackFormatter"
             "ShowHelp"
             "Utility"
             "ModuleJsonUtil"
