@@ -28,6 +28,10 @@ class VerifyCollection {
      */
     public String bundleName = "";
     /**
+     * Indicates the type of bundle
+     */
+    public String bundleType = "app";
+    /**
      * Indicates the vendor of app.
      */
     public String vendor = "";

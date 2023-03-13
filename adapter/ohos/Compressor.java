@@ -279,14 +279,14 @@ public class Compressor {
     }
 
     private static boolean checkStageAtomicService(String jsonString) throws BundleException {
-        // check split and main
-        if (!ModuleJsonUtil.isAtomicServiceSplitValid(jsonString)) {
-            LOG.error("check isAtomicServiceSplitValid failed.");
-            return false;
-        }
         // check consistency of atomicService
         if (!ModuleJsonUtil.isModuleAtomicServiceValid(jsonString)) {
             LOG.error("check module atomicService failed.");
+            return false;
+        }
+        //check entry module must have ability
+        if (!ModuleJsonUtil.checkEntryInAtomicService(jsonString)) {
+            LOG.error("checkEntryInAtomicService failed.");
             return false;
         }
         // check installationFree

@@ -96,7 +96,6 @@ declare -a unpack_class=(
             "FileUtils.java"
             "HQFInfo.java"
             "APPQFResult.java"
-            "AppAtomicService.java"
             "ModuleAtomicService.java"
             "PreloadItem.java"
             )

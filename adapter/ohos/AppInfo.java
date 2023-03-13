@@ -28,6 +28,11 @@ public class AppInfo {
     public String bundleName = "";
 
     /**
+     * Indicates the type of bundle.
+     */
+    public String bundleType = "app";
+
+    /**
      * Indicates the vendor of app AppInfo.
      */
     public String vendor = "";
@@ -112,11 +117,6 @@ public class AppInfo {
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
     public boolean distributedNotificationEnabled = false;
-
-    /**
-     * Indicates the atomic service of app AppJson.
-     */
-    public AppAtomicService appAtomicService = new AppAtomicService();
 
     /**
      * Get shell version code.
