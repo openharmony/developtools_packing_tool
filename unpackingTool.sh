@@ -42,6 +42,7 @@ declare -a unpack_class=(
             "BundleException.java"
             "CommandParser.java"
             "Log.java"
+            "PackFormatter.java"
             "ShowHelp.java"
             "UncompressEntrance.*"
             "Uncompress.java"
