@@ -920,8 +920,8 @@ class HapVerify {
         }
         for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
             if (!checkDependencyInFileList(dependency, allHapVerifyInfo)) {
-                LOG.error("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path.");
-                return false;
+                LOG.warning("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path.");
+                continue;
             }
             List<HapVerifyInfo> layerDependencyList = getLayerDependency(
                     dependency.getModuleName(), hapVerifyInfo, allHapVerifyInfo);
