@@ -79,6 +79,9 @@ public class CommandParser {
     private static final String CMD_APPQF_PATH = "--appqf-path";
     private static final String CMD_AN_PATH = "--an-path";
     private static final String CMD_AP_PATH = "--ap-path";
+    private static final String MAIN_MODULE_LIMIT = "--main-module-limit";
+    private static final String NORMAL_MODULE_LIMIT = "--normal-module-limit";
+    private static final String TOTAL_LIMIT = "--total-limit";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -258,6 +261,18 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_AP_PATH, entry -> {
             entry.getKey().setAPPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(MAIN_MODULE_LIMIT, entry -> {
+            entry.getKey().setMainModuleLimit(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(NORMAL_MODULE_LIMIT, entry -> {
+            entry.getKey().setNormalModuleLimit(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(TOTAL_LIMIT, entry -> {
+            entry.getKey().setTotalLimit(entry.getValue());
             return true;
         });
     }
