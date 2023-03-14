@@ -90,6 +90,9 @@ public class Utility {
     private String anPath = "";
     private String apPath = "";
     private Boolean isSharedApp = false;
+    private String mainModuleLimit = "";
+    private String normalModuleLimit = "";
+    private String totalLimit = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -725,5 +728,29 @@ public class Utility {
 
     public Boolean getSharedApp() {
         return isSharedApp;
+    }
+
+    public void setMainModuleLimit(String limit) {
+        this.mainModuleLimit = limit;
+    }
+
+    public String getMainModuleLimit() {
+        return mainModuleLimit;
+    }
+
+    public String getNormalModuleLimit() {
+        return normalModuleLimit;
+    }
+
+    public void setNormalModuleLimit(String limit) {
+        this.normalModuleLimit = limit;
+    }
+
+    public String getTotalLimit() {
+        return totalLimit;
+    }
+
+    public void setTotalLimit(String limit) {
+        this.totalLimit = limit;
     }
 }

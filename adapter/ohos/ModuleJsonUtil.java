@@ -537,7 +537,7 @@ class ModuleJsonUtil {
             srcBundleType = getJsonString(srcAppObj, BUNDLE_TYPE);
         }
         if (!finalBundleType.equals(srcBundleType)) {
-            LOG.error("Error: bundleType in pack.info is not same!");
+            LOG.error("bundleType in pack.info is not same.");
             return false;
         }
         return true;
@@ -942,7 +942,7 @@ class ModuleJsonUtil {
             throw new BundleException("ModuleJsonUtil::parseFAHapVerifyInfo failed, config.json is empty.");
         }
         String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
-        hapVerifyInfo.setBundleName(parseBundleName(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setBundleName(bundleName);
         hapVerifyInfo.setBundleType(parseFaBundleType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVersion(parseFaVersion(hapVerifyInfo.getProfileStr()));
@@ -1292,27 +1292,27 @@ class ModuleJsonUtil {
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                LOG.error("Error: bundleType must be app when installtionFree is true!");
-                throw new BundleException("Error: bundleType must be app when installtionFree is true!");
+                LOG.error("bundleType must be atomicService when installtionFree is true.");
+                throw new BundleException("bundleType must be atomicService when installtionFree is true.");
             }
             return APP;
         } else {
             String bundleType = getJsonString(appObj, BUNDLE_TYPE);
             if (bundleType.equals(APP)) {
                 if (installationFree) {
-                    LOG.error("Error: installationFree must be false when bundleType is app!");
-                    throw new BundleException("Error: installationFree must be false when bundleType is app!");
+                    LOG.error("installationFree must be false when bundleType is app.");
+                    throw new BundleException("installationFree must be false when bundleType is app.");
                 }
                 return APP;
             } else if (bundleType.equals(ATOMIC_SERVICE)) {
                 if (!installationFree) {
-                    LOG.error("Error: installationFree must be true when bundleType is atomicService!");
-                    throw new BundleException("Error: installationFree must be true when bundleType is atomicService!");
+                    LOG.error("installationFree must be true when bundleType is atomicService.");
+                    throw new BundleException("installationFree must be true when bundleType is atomicService.");
                 }
                 return ATOMIC_SERVICE;
             } else {
-                LOG.error("Error: bundleType is invalid in app.json!");
-                throw new BundleException("Error: bundleType is invalid in app.json!");
+                LOG.error("bundleType is invalid in app.json.");
+                throw new BundleException("bundleType is invalid in app.json.");
             }
         }
     }
@@ -1821,12 +1821,18 @@ class ModuleJsonUtil {
         }
         if (moduleObj.containsKey(ATOMIC_SERVICE) && (!appObj.containsKey(BUNDLE_TYPE) ||
                 !getJsonString(appObj, BUNDLE_TYPE).equals(ATOMIC_SERVICE))) {
-            LOG.error("Error: module can not config atomicService when bundleType is not atomicService!");
+            LOG.error("module can not config atomicService when bundleType is not atomicService.");
             return false;
         }
         return true;
     }
 
+    /**
+     * check entry module must contain at least one ability.
+     *
+     * @param jsonString Indicates the jsonString.
+     * @return Returns true if jsonString is valid.
+     */
     public static boolean checkEntryInAtomicService(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
@@ -1849,7 +1855,7 @@ class ModuleJsonUtil {
             return true;
         }
         if (parseModuleType(jsonString).equals(ENTRY) && parseAbilityNames(jsonString).isEmpty()) {
-            LOG.error("Error: entry module must contain at least one ability!");
+            LOG.error("entry module must contain at least one ability.");
             return false;
         }
         return true;
@@ -1881,25 +1887,25 @@ class ModuleJsonUtil {
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                LOG.error("Error: bundleType must be app when installtionFree is true!");
+                LOG.error("bundleType must be app when installtionFree is true.");
+                return false;
+            }
+            return true;
+        }
+        String bundleType = getJsonString(appObj, BUNDLE_TYPE);
+        if (bundleType.equals(APP)) {
+            if (installationFree) {
+                LOG.error("installationFree must be false when bundleType is app.");
+                return false;
+            }
+        } else if (bundleType.equals(ATOMIC_SERVICE)) {
+            if (!installationFree) {
+                LOG.error("installationFree must be true when bundleType is atomicService.");
                 return false;
             }
         } else {
-            String bundleType = getJsonString(appObj, BUNDLE_TYPE);
-            if (bundleType.equals(APP)) {
-                if (installationFree) {
-                    LOG.error("Error: installationFree must be false when bundleType is app!");
-                    return false;
-                }
-            } else if (bundleType.equals(ATOMIC_SERVICE)) {
-                if (!installationFree) {
-                    LOG.error("Error: installationFree must be true when bundleType is atomicService!");
-                    return false;
-                }
-            } else {
-                LOG.error("Error: bundleType is invalid in app.json!");
-                return false;
-            }
+            LOG.error("bundleType is invalid in app.json.");
+            return false;
         }
         return true;
     }

@@ -126,6 +126,13 @@ class HapVerifyInfo {
     private List<PreloadItem> preloadItems = new ArrayList<>();
 
     private long fileLength = 0L;
+    private int entrySizeLimit = 2;
+
+    private int notEntrySizeLimit = 2;
+
+    private int sumSizeLimit = 10;
+
+    private boolean debug = false;
 
     /**
      * get bundle name form HapVerifyInfo.
@@ -442,8 +449,31 @@ class HapVerifyInfo {
     public String getCompatiblePolicy() {
         return compatiblePolicy;
     }
-
     public void setCompatiblePolicy(String compatiblePolicy) {
         this.compatiblePolicy = compatiblePolicy;
+    }
+
+    public void setEntrySizeLimit(int limit) {
+        this.entrySizeLimit = limit;
+    }
+
+    public int getEntrySizeLimit() {
+        return entrySizeLimit;
+    }
+
+    public void setNotEntrySizeLimit(int notEntrySizeLimit) {
+        this.notEntrySizeLimit = notEntrySizeLimit;
+    }
+
+    public int getNotEntrySizeLimit() {
+        return notEntrySizeLimit;
+    }
+
+    public void setSumSizeLimit(int sumSizeLimit) {
+        this.sumSizeLimit = sumSizeLimit;
+    }
+
+    public int getSumSizeLimit() {
+        return sumSizeLimit;
     }
 }
