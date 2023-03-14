@@ -724,7 +724,8 @@ class ModuleJsonUtil {
         JSONArray finalPackages = finalPackObj.getJSONArray(PACKAGES);
         JSONArray srcPackages = srcPackObj.getJSONArray(PACKAGES);
         if (finalPackages == null || srcPackages == null) {
-            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info do not contain packages.";
+            String errMsg =
+                "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info do not contain packages.";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }

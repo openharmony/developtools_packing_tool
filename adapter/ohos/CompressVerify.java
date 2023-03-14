@@ -378,7 +378,7 @@ public class CompressVerify {
             return false;
         }
         if (!utility.getPackResPath().isEmpty() && !isPathValid(utility.getPackResPath(), TYPE_FILE, PACK_RES)) {
-            LOG.error("CompressVerify::isArgsValidInAppMode pack-res-path is invalid." );
+            LOG.error("CompressVerify::isArgsValidInAppMode pack-res-path is invalid.");
             return false;
         }
 

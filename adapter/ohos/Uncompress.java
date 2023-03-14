@@ -526,7 +526,7 @@ public class Uncompress {
             }
 
             int entriesNum = 0;
-            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
                 entriesNum++;
                 ZipEntry entry = entries.nextElement();
                 String entryName = "";
@@ -626,7 +626,7 @@ public class Uncompress {
             }
             zipFile = new ZipFile(new File(srcPath));
             int entriesNum = 0;
-            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
                 entriesNum++;
                 ZipEntry entry = entries.nextElement();
                 if (entry == null) {
@@ -656,7 +656,7 @@ public class Uncompress {
         try {
             zipFile = new ZipFile(new File(srcPath));
             int entriesNum = 0;
-            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
                 entriesNum++;
                 ZipEntry entry = entries.nextElement();
                 if (entry == null) {
@@ -696,7 +696,7 @@ public class Uncompress {
         int entriesNum = 0;
         InputStream indexInputStream = null;
         try {
-            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements(); ) {
+            for (Enumeration<? extends ZipEntry> entries = zipFile.entries(); entries.hasMoreElements();) {
                 entriesNum++;
                 ZipEntry indexEntry = entries.nextElement();
                 if (indexEntry == null) {

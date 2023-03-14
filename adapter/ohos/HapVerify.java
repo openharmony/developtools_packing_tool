@@ -277,7 +277,7 @@ class HapVerify {
                             hapVerifyInfos.get(j).getModuleName() + ") have the same ability name.");
                     LOG.warning("Module: " + hapVerifyInfos.get(i).getModuleName() + " has ability "
                             + hapVerifyInfos.get(i).getAbilityNames() + ".");
-                    LOG.warning( "Module: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
+                    LOG.warning("Module: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
                             + hapVerifyInfos.get(j).getAbilityNames() + ".");
                     LOG.warning("Solution: Make sure ability name is valid and unique.");
                     LOG.warning("Reference: " + REFERENCE_LINK + ".");
@@ -326,7 +326,7 @@ class HapVerify {
                             + entryHapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
                     if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error( entryHapVerifyInfos.get(j).getModuleName() + " "
+                        LOG.error(entryHapVerifyInfos.get(j).getModuleName() + " "
                             + entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
                     LOG.error("Solution: Make sure entry name is valid and unique.");
@@ -490,7 +490,7 @@ class HapVerify {
             }
             List<HapVerifyInfo> entryHaps = deviceHap.get(device);
             if (!checkFeatureDistroFilter(featureHap, entryHaps)) {
-                LOG.warning( featureHap.getModuleName() +
+                LOG.warning(featureHap.getModuleName() +
                         " distroFilter has not covered by entry.");
                 if (!EMPTY_STRING.equals(featureHap.getDistroFilter().dump())) {
                     LOG.warning("Warning: " + featureHap.getModuleName() + " has " +
