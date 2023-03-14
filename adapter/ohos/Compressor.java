@@ -221,12 +221,12 @@ public class Compressor {
             String jsonString = optional.get();
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("checkStageAtomicService failed.");
-                throw new BundleException("checkStageHap failed.");
+                throw new BundleException("checkStageHsp failed.");
             }
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
             if (!TYPE_SHARED.equals(moduleType)) {
                 LOG.error("module type must be shared.");
-                throw new BundleException("checkStageHap failed.");
+                throw new BundleException("checkStageHsp failed.");
             }
         }
         compressHSPMode(utility);
@@ -236,6 +236,16 @@ public class Compressor {
         if (isModuleJSON(utility.getJsonPath())) {
             if (!checkStageHap(utility)) {
                 LOG.error("checkStageHap failed.");
+                throw new BundleException("checkStageHap failed.");
+            }
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
+            String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
+            if (TYPE_SHARED.equals(moduleType)) {
+                LOG.warning("Compress mode is hap, but module type is shared.");
+            }
+            if (ModuleJsonUtil.parseSharedApp(jsonString)) {
+                LOG.error("App type must not be shared");
                 throw new BundleException("checkStageHap failed.");
             }
             compressHapModeForModule(utility);
