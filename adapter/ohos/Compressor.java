@@ -292,12 +292,12 @@ public class Compressor {
             String jsonString = optional.get();
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("checkStageAtomicService failed.");
-                throw new BundleException("checkStageHap failed.");
+                throw new BundleException("checkStageHsp failed.");
             }
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
             if (!TYPE_SHARED.equals(moduleType)) {
                 LOG.error("module type must be shared.");
-                throw new BundleException("checkStageHap failed.");
+                throw new BundleException("checkStageHsp failed.");
             }
         }
         compressHSPMode(utility);
@@ -307,6 +307,16 @@ public class Compressor {
         if (isModuleJSON(utility.getJsonPath())) {
             if (!checkStageHap(utility)) {
                 LOG.error("checkStageHap failed.");
+                throw new BundleException("checkStageHap failed.");
+            }
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
+            String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
+            if (TYPE_SHARED.equals(moduleType)) {
+                LOG.warning("Compress mode is hap, but module type is shared.");
+            }
+            if (ModuleJsonUtil.parseSharedApp(jsonString)) {
+                LOG.error("App type must not be shared");
                 throw new BundleException("checkStageHap failed.");
             }
             compressHapModeForModule(utility);
@@ -843,7 +853,7 @@ public class Compressor {
                                          String finalAppPackInfo) throws BundleException, IOException {
         List<String> selectedHapsInApp = new ArrayList<>();
         // classify hap in app
-        copyHapFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
+        copyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
         // rebuild pack.info
         String packInfoStr = FileUtils.getJsonInZips(new File(appPath), PACKINFO_NAME);
         if (packInfoStr.isEmpty()) {
@@ -867,12 +877,12 @@ public class Compressor {
      * copy hap from app file
      *
      * @param appPath is common data
-     * @param selectedHapsInApp is list of haps selected in app file
-     * @param selectedHaps is the list of haps selected in input
+     * @param selectedHapsInApp is list of haps and hsps selected in app file
+     * @param selectedHaps is the list of haps and hsps selected in input
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static void copyHapFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
-                                       String tempDir) throws BundleException {
+    private static void copyHapAndHspFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
+                                             String tempDir) throws BundleException {
         ZipInputStream zipInput = null;
         ZipFile zipFile = null;
         OutputStream outputStream = null;
@@ -883,7 +893,7 @@ public class Compressor {
             zipFile = new ZipFile(appPath);
             while((zipEntry = zipInput.getNextEntry()) != null) {
                 File file = null;
-                if (!zipEntry.getName().endsWith(HAP_SUFFIX)) {
+                if (!zipEntry.getName().endsWith(HAP_SUFFIX) && !zipEntry.getName().endsWith(HSP_SUFFIX)) {
                     continue;
                 }
                 // copy duplicated hap to duplicated dir and get moduleName of duplicated hap
