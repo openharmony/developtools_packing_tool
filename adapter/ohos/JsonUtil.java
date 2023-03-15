@@ -63,6 +63,7 @@ public class JsonUtil {
     private static final String STRING_RESOURCE = "$string:";
     private static final String EMPTY = "";
     private static final String BUNDLENAME = "bundleName";
+    private static final String BUNDLE_TYPE = "bundleType";
     private static final String VERSIONCODE = "versionCode";
     private static final String VERSIONNAME = "versionName";
     private static final String PATCH_VERSION_CODE = "patchVersionCode";
@@ -360,6 +361,7 @@ public class JsonUtil {
             throw new BundleException("Parse app info failed, appJson is null.");
         }
         appInfo.bundleName = getJsonString(appJson, "bundleName");
+        appInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
         appInfo.vendor = getJsonString(appJson, "vendor");
         appInfo.relatedBundleName = getJsonString(appJson, "relatedBundleName");
         if (appJson.containsKey(VERSION)) {
@@ -428,25 +430,11 @@ public class JsonUtil {
         moduleAppInfo.distributedNotificationEnabled =
                 getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
         moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
-        moduleAppInfo.appAtomicService = parseAppAtomicService(appJson);
+        moduleAppInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
 
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
-    }
-
-    static AppAtomicService parseAppAtomicService(JSONObject appJson) {
-        AppAtomicService appAtomicService = new AppAtomicService();
-        JSONObject atomicServiceObj = null;
-        if (appJson.containsKey(ATOMIC_SERVICE)) {
-            atomicServiceObj = appJson.getJSONObject(ATOMIC_SERVICE);
-        }
-        if (atomicServiceObj == null) {
-            return appAtomicService;
-        }
-        appAtomicService.setSplit(getJsonBooleanValue(atomicServiceObj, SPLIT, true));
-        appAtomicService.setMain(getJsonString(atomicServiceObj, MAIN));
-        return appAtomicService;
     }
 
     static void parseSpecifiedDeviceType(JSONObject appJson, ModuleAppInfo moduleAppInfo) throws BundleException {

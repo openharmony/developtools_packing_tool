@@ -84,7 +84,7 @@ public class Uncompress {
      */
     static boolean unpackageProcess(Utility utility) {
         if (utility == null) {
-            LOG.error("Uncompress::unpackageProcess utility is null!");
+            LOG.error("Uncompress::unpackageProcess utility is null.");
             return false;
         }
         boolean unpackageResult = true;

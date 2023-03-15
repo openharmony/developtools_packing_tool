@@ -52,6 +52,12 @@ import java.util.zip.ZipOutputStream;
  *
  */
 public class Compressor {
+    private ZipOutputStream zipOut = null;
+    private boolean mIsContain2x2EntryCard = true;
+    private List<String> list = new ArrayList<String>();
+    private List<String> formNamesList = new ArrayList<String>();
+    private List<String> fileNameList = new ArrayList<String>();
+    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
     private static final String HAP_SUFFIX = ".hap";
     private static final String HSP_SUFFIX = ".hsp";
     private static final String PNG_SUFFIX = ".png";
@@ -105,21 +111,86 @@ public class Compressor {
     private static final String RELEASE = "Release";
     private static final String TYPE_SHARED = "shared";
     private static final Integer ONE = 1;
+    private static final String ATOMIC_SERVICE = "atomicService";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
+    private static final int ENTRY_FILE_LIMIT_DEFAULT = 2;
+    private static final int NOT_ENTRY_FILE_LIMIT_DEFAULT = 2;
+    private static final int TOTAL_FILE_LIMIT_DEFAULT = 10;
+    private static final int FILE_LIMIT = 10;
 
     // set buffer size of each read
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final Log LOG = new Log(Compressor.class.toString());
+    private static int entryModuleSizeLimit = 2;
+    private static int notEntryModuleSizeLimit = 2;
+    private static int sumModuleSizeLimit = 10;
 
-    private ZipOutputStream zipOut = null;
-    private boolean mIsContain2x2EntryCard = true;
+    public static int getEntryModuleSizeLimit() {
+        return entryModuleSizeLimit;
+    }
 
-    private List<String> list = new ArrayList<String>();
-    private List<String> formNamesList = new ArrayList<String>();
-    private List<String> fileNameList = new ArrayList<String>();
-    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
+    public static void setEntryModuleSizeLimit(int entry) {
+        entryModuleSizeLimit = entry;
+    }
+
+    public static int getNotEntryModuleSizeLimit() {
+        return notEntryModuleSizeLimit;
+    }
+
+    public static void setNotEntryModuleSizeLimit(int notEntry) {
+        notEntryModuleSizeLimit = notEntry;
+    }
+
+    public static int getSumModuleSizeLimit() {
+        return sumModuleSizeLimit;
+    }
+
+    public static void setSumModuleSizeLimit(int sumModule) {
+        sumModuleSizeLimit = sumModule;
+    }
+
+    /**
+     * parse file size limit from utility.
+     *
+     * @param utility Indicates the utility.
+     */
+    public void parseFileSizeLimit(Utility utility) throws BundleException {
+        int sumLimit = TOTAL_FILE_LIMIT_DEFAULT;
+        String totalLimit = utility.getTotalLimit();
+        if (!totalLimit.isEmpty()) {
+            sumLimit = Integer.parseInt(totalLimit);
+            if (sumLimit <= 0 || sumLimit > FILE_LIMIT) {
+                LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
+            }
+        }
+
+        String normalLimit = utility.getNormalModuleLimit();
+        int notEntry = NOT_ENTRY_FILE_LIMIT_DEFAULT;
+        if (!normalLimit.isEmpty()) {
+            notEntry = Integer.parseInt(normalLimit);
+            if (notEntry <= 0 || notEntry > sumLimit || notEntry > FILE_LIMIT) {
+                LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
+            }
+        }
+
+        String mainLimit = utility.getMainModuleLimit();
+        int entryLimit = ENTRY_FILE_LIMIT_DEFAULT;
+        if (!mainLimit.isEmpty()) {
+            entryLimit = Integer.parseInt(mainLimit);
+            if (entryLimit <= 0 || entryLimit > sumLimit || entryLimit > FILE_LIMIT) {
+                LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
+            }
+        }
+
+        setEntryModuleSizeLimit(entryLimit);
+        setNotEntryModuleSizeLimit(notEntry);
+        setSumModuleSizeLimit(sumLimit);
+    }
 
     /**
      * check path if is a module.json file
@@ -288,14 +359,14 @@ public class Compressor {
     }
 
     private static boolean checkStageAtomicService(String jsonString) throws BundleException {
-        // check split and main
-        if (!ModuleJsonUtil.isAtomicServiceSplitValid(jsonString)) {
-            LOG.error("check isAtomicServiceSplitValid failed.");
-            return false;
-        }
         // check consistency of atomicService
         if (!ModuleJsonUtil.isModuleAtomicServiceValid(jsonString)) {
             LOG.error("check module atomicService failed.");
+            return false;
+        }
+        // check entry module must have ability
+        if (!ModuleJsonUtil.checkEntryInAtomicService(jsonString)) {
+            LOG.error("checkEntryInAtomicService failed.");
             return false;
         }
         // check installationFree
@@ -652,6 +723,7 @@ public class Compressor {
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hsp failed.");
                 }
             }
+            parseFileSizeLimit(utility);
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
@@ -2000,6 +2072,7 @@ public class Compressor {
                 }
             }
         }
+        setAtomicServiceFileSizeLimit(hapVerifyInfos);
         if (!HapVerify.checkHapIsValid(hapVerifyInfos)) {
             return false;
         }
@@ -2018,6 +2091,22 @@ public class Compressor {
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
         hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
         return hapVerifyInfo;
+    }
+
+    /**
+     * set file size limit for each HapVerifyInfo.
+     *
+     * @param hapVerifyInfos Indicates hapVerifyInfo list.
+     */
+    public static void setAtomicServiceFileSizeLimit(List<HapVerifyInfo>hapVerifyInfos) {
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            if (!hapVerifyInfo.getBundleType().equals(ATOMIC_SERVICE)) {
+                continue;
+            }
+            hapVerifyInfo.setEntrySizeLimit(getEntryModuleSizeLimit());
+            hapVerifyInfo.setNotEntrySizeLimit(getNotEntryModuleSizeLimit());
+            hapVerifyInfo.setSumSizeLimit(getSumModuleSizeLimit());
+        }
     }
 
     /**
