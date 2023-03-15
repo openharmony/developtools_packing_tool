@@ -113,6 +113,7 @@ public class Utility {
     private String hapList = "";
     private String dirList = "";
     private String hqfList = "";
+    private String hspList = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -717,5 +718,13 @@ public class Utility {
 
     public String getAPPath() {
         return this.apPath;
+    }
+
+    public String getHspList() {
+        return hspList;
+    }
+
+    public void setHspList(String hspList) {
+        this.hspList = hspList;
     }
 }
