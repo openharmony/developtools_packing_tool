@@ -28,6 +28,10 @@ class VerifyCollection {
      */
     public String bundleName = "";
     /**
+     * Indicates the type of bundle
+     */
+    private String bundleType = "app";
+    /**
      * Indicates the vendor of app.
      */
     public String vendor = "";
@@ -105,5 +109,13 @@ class VerifyCollection {
 
     public void setSharedApp(boolean sharedApp) {
         this.sharedApp = sharedApp;
+    }
+
+    public void setBundleType(String bundleType) {
+        this.bundleType = bundleType;
+    }
+
+    public String getBundleType() {
+        return bundleType;
     }
 }
