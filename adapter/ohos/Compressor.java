@@ -316,8 +316,7 @@ public class Compressor {
                 LOG.warning("Compress mode is hap, but module type is shared.");
             }
             if (ModuleJsonUtil.parseSharedApp(jsonString)) {
-                LOG.error("App type must not be shared");
-                throw new BundleException("checkStageHap failed.");
+                LOG.warning("Compress mode is hap, but app type is shared.");
             }
             compressHapModeForModule(utility);
         } else {
