@@ -276,7 +276,7 @@ class HapVerify {
                             hapVerifyInfos.get(j).getModuleName() + ") have the same ability name.");
                     LOG.warning("Module: " + hapVerifyInfos.get(i).getModuleName() + " has ability "
                         + hapVerifyInfos.get(i).getAbilityNames() + ".");
-                    LOG.warning( "Module: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
+                    LOG.warning("Module: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
                         + hapVerifyInfos.get(j).getAbilityNames() + ".");
                     LOG.warning("Solution: Make sure ability name is valid and unique.");
                     LOG.warning("Reference: " + REFERENCE_LINK + ".");

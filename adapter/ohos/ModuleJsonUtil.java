@@ -753,7 +753,8 @@ class ModuleJsonUtil {
         JSONArray srcModules = srcSummaryObj.getJSONArray(MODULES);
         if (finalModules == null || srcModules == null) {
             LOG.error("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
-            throw new BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
+            throw new
+                BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
         }
         boolean findModule = false;
         for (int index = 0; index < srcModules.size(); ++index) {
@@ -775,7 +776,8 @@ class ModuleJsonUtil {
         JSONArray finalPackages = finalPackObj.getJSONArray(PACKAGES);
         JSONArray srcPackages = srcPackObj.getJSONArray(PACKAGES);
         if (finalPackages == null || srcPackages == null) {
-            String errMsg = "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info do not contain packages.";
+            String errMsg =
+                "ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair failed: pack.info do not contain packages.";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
