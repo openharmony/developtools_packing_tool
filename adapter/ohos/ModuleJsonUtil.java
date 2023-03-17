@@ -702,7 +702,8 @@ class ModuleJsonUtil {
         JSONArray srcModules = srcSummaryObj.getJSONArray(MODULES);
         if (finalModules == null || srcModules == null) {
             LOG.error("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
-            throw new BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
+            throw new
+                BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
         }
         boolean findModule = false;
         for (int index = 0; index < srcModules.size(); ++index) {
