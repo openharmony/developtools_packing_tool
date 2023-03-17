@@ -156,7 +156,8 @@ class ModuleJsonUtil {
             version.versionCode = versionObj.getIntValue(CODE);
         } else {
             LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
-            throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
+            throw new BundleException(
+                "ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
         }
         if (versionObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
             version.minCompatibleVersionCode = versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE);
