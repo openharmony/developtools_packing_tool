@@ -33,6 +33,7 @@ import com.alibaba.fastjson.JSONException;
 public class JsonUtil {
     private static final String DEVICE_TYPE = "device-type";
     private static final String NAME = "name";
+    private static final String BUNDLE_TYPE = "bundleType";
     private static final String MODULE_TYPE = "module-type";
     private static final String INSTALL_FLAG = "delivery-with-install";
     private static final String DEVICE_TYPE_NEW = "deviceType";
@@ -294,6 +295,7 @@ public class JsonUtil {
         appInfo.bundleName = getJsonString(appJson, "bundleName");
         appInfo.vendor = getJsonString(appJson, "vendor");
         appInfo.relatedBundleName = getJsonString(appJson, "relatedBundleName");
+        appInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
         if (appJson.containsKey(VERSION)) {
             JSONObject version = appJson.getJSONObject(VERSION);
             appInfo.versionName = getJsonString(version, "name");
@@ -344,7 +346,7 @@ public class JsonUtil {
         moduleAppInfo.icon = parseIconById(appJson, data);
         moduleAppInfo.label = parseResourceByKey(appJson, data, "label", "labelId");
         moduleAppInfo.description = parseResourceByKey(appJson, data, "description", "descriptionId");
-        moduleAppInfo.appAtomicService = parseAppAtomicService(appJson);
+        moduleAppInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
 
         if (appJson.containsKey("vendor")) {
             moduleAppInfo.vendor = getJsonString(appJson, "vendor");
@@ -398,20 +400,6 @@ public class JsonUtil {
         parseDeviceType(appJson, moduleAppInfo, "router");
 
         return moduleAppInfo;
-    }
-
-    static AppAtomicService parseAppAtomicService(JSONObject appJson) {
-        AppAtomicService appAtomicService = new AppAtomicService();
-        JSONObject atomicServiceObj = null;
-        if (appJson.containsKey(ATOMIC_SERVICE)) {
-            atomicServiceObj = appJson.getJSONObject(ATOMIC_SERVICE);
-        }
-        if (atomicServiceObj == null) {
-            return appAtomicService;
-        }
-        appAtomicService.setSplit(getJsonBooleanValue(atomicServiceObj, SPLIT, true));
-        appAtomicService.setMain(getJsonString(atomicServiceObj, MAIN));
-        return appAtomicService;
     }
 
     /**

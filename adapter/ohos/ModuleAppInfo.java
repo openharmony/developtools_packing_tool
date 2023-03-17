@@ -33,6 +33,10 @@ class ModuleAppInfo {
      */
     public String bundleName = "";
     /**
+     * Indicates the type of bundle.
+     */
+    public String bundleType = "app";
+    /**
      * Indicates the debug of app AppJson.
      */
     public boolean debug = false;
@@ -96,8 +100,4 @@ class ModuleAppInfo {
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
-    /**
-     * Indicates the atomic service of app AppJson.
-     */
-    public AppAtomicService appAtomicService = new AppAtomicService();
 }

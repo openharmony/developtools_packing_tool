@@ -15,6 +15,7 @@
 
 package ohos;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,13 +42,8 @@ class HapVerify {
     private static final String REFERENCE_LINK =
             "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
     private static final String ATOMIC_SERVICE = "atomicService";
-    private static final int ATOMIC_SERVICE_NUMBER = 1;
-    private static final String MAIN = "main";
-    private static final String NORMAL = "normal";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
     private static final int ONE = 1;
-    private static final int ATOMIC_SERVICE_APP_LIMIT_SIZE = 10;
-    private static final int ATOMIC_SERVICE_MODULE_SIZE = 2;
 
     /**
      * check hap is verify.
@@ -58,7 +54,7 @@ class HapVerify {
      */
     public static boolean checkHapIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
-            LOG.error("HapVerify::checkHapIsValid hapVerifyInfos is empty.");
+            LOG.error("HapVerify::checkHapIsValid hapVerifyInfos is empty");
             return false;
         }
         // check app variable is same
@@ -82,11 +78,6 @@ class HapVerify {
         // check dependency is valid
         if (!checkDependencyIsValid(hapVerifyInfos)) {
             LOG.error("Error: module dependency is invalid.");
-            return false;
-        }
-        // check old atomic service size
-        if (!checkOldAtomicServiceSize(hapVerifyInfos)) {
-            LOG.error("Error: checkOldAtomicServiceSize failed!");
             return false;
         }
         // check atomic service is valid
@@ -115,6 +106,7 @@ class HapVerify {
         }
         VerifyCollection verifyCollection = new VerifyCollection();
         verifyCollection.bundleName = hapVerifyInfos.get(0).getBundleName();
+        verifyCollection.setBundleType(hapVerifyInfos.get(0).getBundleType());
         verifyCollection.vendor = hapVerifyInfos.get(0).getVendor();
         verifyCollection.versionCode = hapVerifyInfos.get(0).getVersion().versionCode;
         verifyCollection.versionName = hapVerifyInfos.get(0).getVersion().versionName;
@@ -122,8 +114,6 @@ class HapVerify {
         verifyCollection.compatibleApiVersion = hapVerifyInfos.get(0).getApiVersion().getCompatibleApiVersion();
         verifyCollection.targetApiVersion = hapVerifyInfos.get(0).getApiVersion().getTargetApiVersion();
         verifyCollection.releaseType = hapVerifyInfos.get(0).getApiVersion().getReleaseType();
-        verifyCollection.setSplit(hapVerifyInfos.get(0).isSplit());
-        verifyCollection.setMain(hapVerifyInfos.get(0).getMain());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
@@ -158,12 +148,8 @@ class HapVerify {
                 LOG.error("Error: input module releaseType is different.");
                 return false;
             }
-            if (verifyCollection.isSplit() != hapVerifyInfo.isSplit()) {
-                LOG.error("Error: input module split is different!");
-                return false;
-            }
-            if (!verifyCollection.getMain().equals(hapVerifyInfo.getMain())) {
-                LOG.error("Error: input module main is different!");
+            if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
+                LOG.error("input module bundleType is different.");
                 return false;
             }
         }
@@ -458,7 +444,7 @@ class HapVerify {
      * @return deviceHap that is classfied
      */
     private static Map<String, List<HapVerifyInfo>> classifyEntry(List<HapVerifyInfo> entryHapVerifyInfos) {
-        HashMap<String, List<HapVerifyInfo>> deviceHaps = new HashMap<>();
+        Map<String, List<HapVerifyInfo>> deviceHaps = new HashMap<>();
         for (HapVerifyInfo hapVerifyInfo : entryHapVerifyInfos) {
             for (String device : hapVerifyInfo.getDeviceType()) {
                 if (deviceHaps.containsKey(device)) {
@@ -1034,9 +1020,11 @@ class HapVerify {
 
     private static boolean checkAtomicServiceModuleSize(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkAtomicServiceIsValid failed, hapVerifyInfoList is empty!");
+            LOG.error("checkAtomicServiceIsValid failed, hapVerifyInfoList is empty.");
             return false;
         }
+        int entryLimit = hapVerifyInfoList.get(0).getEntrySizeLimit();
+        int notEntryLimit = hapVerifyInfoList.get(0).getNotEntrySizeLimit();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
             List<String> dependencies = getModuleDependency(hapVerifyInfo, hapVerifyInfoList);
             List<HapVerifyInfo> dependenciesInfos = new ArrayList<>();
@@ -1046,181 +1034,96 @@ class HapVerify {
             }
             long fileSize = hapVerifyInfo.getFileLength();
             for (HapVerifyInfo dependency : dependenciesInfos) {
+                if (dependency == null) {
+                    continue;
+                }
                 fileSize += dependency.getFileLength();
             }
-            if (fileSize > ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                LOG.error("Error: " + hapVerifyInfo.getModuleName() +
-                    " and its dependencies size is over 2M in atomicService!");
+            double file = new BigDecimal((float) fileSize
+                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if (hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize > entryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + " and it's dependencies size is " +
+                        file + "MB, which is overlarge than " + entryLimit + "MB.");
+                return false;
+            }
+            if (!hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize > notEntryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + " and it's dependencies size is " +
+                        file + "MB, which is overlarge than " + notEntryLimit + "MB.");
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean checkOldAtomicServiceSize(List<HapVerifyInfo> hapVerifyInfoList) {
+    private static Map<String, List<HapVerifyInfo>> getDeviceHapVerifyInfoMap(List<HapVerifyInfo> hapVerifyInfoList)
+            throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkOldAtomicServiceSize failed, hapVerifyInfoList is empty!");
-            return false;
+            LOG.error("getDeviceHapVerifyInfoMap failed, hapVerifyInfoList is empty.");
+            throw new BundleException("getDeviceHapVerifyInfoMap failed, hapVerifyInfoList is empty.");
         }
-        String appType = hapVerifyInfoList.get(0).getAppType();
-        boolean installationFree = hapVerifyInfoList.get(0).isInstallationFree();
-        boolean isFaModule = !hapVerifyInfoList.get(0).isStageModule();
-        if (isFaModule || ATOMIC_SERVICE.equals(appType) || !installationFree) {
-            return true;
-        }
-        if (hapVerifyInfoList.size() == ONE &&
-                hapVerifyInfoList.get(0).getFileLength() > ATOMIC_SERVICE_APP_LIMIT_SIZE * FILE_LENGTH_1M) {
-            LOG.error("Error: final app size is bigger than 10M when installationFree is true");
-            return false;
-        }
-        boolean split = false;
-        for (HapVerifyInfo info : hapVerifyInfoList) {
-            if (!info.getModuleType().equals(ENTRY)) {
-                split = true;
-                break;
-            }
-        }
-        if (split) {
-            // check module size
-            long finalAppSize = 0L;
-            for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-                finalAppSize += hapVerifyInfo.getFileLength();
-                if (hapVerifyInfo.getFileLength() > ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                    LOG.error("Error: " + hapVerifyInfo.getModuleName() + " is bigger than 2M!");
-                    return false;
-                }
-                if (finalAppSize > ATOMIC_SERVICE_APP_LIMIT_SIZE * FILE_LENGTH_1M) {
-                    LOG.error("Error: final app size is bigger than 10M!");
-                    return false;
-                }
-                try {
-                    boolean result = checkAtomicServiceModuleSize(hapVerifyInfoList);
-                    if (!result) {
-                        LOG.error("checkAtomicServiceModuleSize failed!");
-                        return false;
-                    }
-                } catch (BundleException e) {
-                    LOG.error("checkAtomicServiceModuleSize failed!");
-                    return false;
+        Map<String, List<HapVerifyInfo>> deviceInfoMap = new HashMap<String, List<HapVerifyInfo>>();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            List<String> deviceTypes = hapVerifyInfo.getDeviceType();
+            for (String device : deviceTypes) {
+                if (!deviceInfoMap.containsKey(device)) {
+                    List<HapVerifyInfo> infos = new ArrayList<>();
+                    infos.add(hapVerifyInfo);
+                    deviceInfoMap.put(device, infos);
+                } else {
+                    deviceInfoMap.get(device).add(hapVerifyInfo);
                 }
             }
         }
-        return true;
+        return deviceInfoMap;
     }
 
     private static boolean checkAtomicServiceIsValid(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkAtomicServiceIsValid failed, hapVerifyInfoList is empty!");
+            LOG.error("checkAtomicServiceIsValid failed, hapVerifyInfoList is empty.");
             return false;
         }
-        String appType = hapVerifyInfoList.get(0).getAppType();
-        if (!appType.equals(ATOMIC_SERVICE)) {
+        String bundleType = hapVerifyInfoList.get(0).getBundleType();
+        if (!bundleType.equals(ATOMIC_SERVICE)) {
             return true;
         }
-        // check split and module
-        if (!checkAtomicServiceSplitWithModule(hapVerifyInfoList)) {
-            LOG.error("Error: checkSplitAndModuleNumbers failed!");
+        if (!checkAtomicServiceSumLimit(hapVerifyInfoList)) {
+            LOG.error("checkAtomicServiceSumLimit failed.");
             return false;
         }
-        // check main is valid
-        if (!checkAtomicServiceMainIsValid(hapVerifyInfoList)) {
-            LOG.error("Error: checkAtomicServiceMainIsValid failed!");
-            return false;
-        }
-        // check atomic service type
-        if (!checkAtomicServiceTypeIsValid(hapVerifyInfoList)) {
-            LOG.error("Error: checkAtomicServiceTypeIsValid failed!");
-            return false;
+        boolean isStage = hapVerifyInfoList.get(0).isStageModule();
+        if (!isStage) {
+            return true;
         }
         // check preloads is valid
-        if (!checkAtomicServicePreloadsIsValid(hapVerifyInfoList)) {
-            LOG.error("Error: checkAtomicServicePreloadsIsValid failed!");
-            return false;
+        Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
+        for (String device : deviceInfoMap.keySet()) {
+            List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
+            if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
+                LOG.error("checkAtomicServicePreloadsIsValid failed on device " + device + ".");
+                return false;
+            }
         }
         // check file size is valid
         if (!checkFileSizeIsValid(hapVerifyInfoList)) {
-            LOG.error("Error: checkFileSizeIsValid failed!");
+            LOG.error("checkFileSizeIsValid failed.");
             return false;
         }
         return true;
     }
 
-    private static boolean checkAtomicServiceSplitWithModule(List<HapVerifyInfo> hapVerifyInfoList)
-            throws BundleException {
-        if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkAtomicServiceSplitWithModule failed, hapVerifyInfoList is empty!");
-            throw new BundleException("Error: checkAtomicServiceSplitWithModule failed, hapVerifyInfoList is empty!");
-        }
-        boolean split = hapVerifyInfoList.get(0).isSplit();
-        if (!split) {
-            for (HapVerifyInfo info : hapVerifyInfoList) {
-                if (!ENTRY.equals(info.getModuleType())) {
-                    LOG.error("Error: atomicService can only contain entry module when split is false!");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkAtomicServiceMainIsValid(List<HapVerifyInfo> hapVerifyInfoList)
-            throws BundleException {
-        if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkAtomicServiceMainIsValid failed, hapVerifyInfoList is empty!");
-            throw new BundleException("Error: checkAtomicServiceMainIsValid failed, hapVerifyInfoList is empty!");
-        }
-        String main = hapVerifyInfoList.get(0).getMain();
-        boolean split = hapVerifyInfoList.get(0).isSplit();
-        if (!split) {
+    private static boolean checkAtomicServiceSumLimit(List<HapVerifyInfo>hapVerifyInfos) {
+        int sumLimit = hapVerifyInfos.get(0).getSumSizeLimit();
+        if (!hapVerifyInfos.get(0).isStageModule()) {
             return true;
         }
-        if (main.isEmpty()) {
-            LOG.error("Error: atomicService must config main when split is true!");
-            return false;
-        }
-        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            if (main.equals(hapVerifyInfo.getModuleName())) {
-                if (!hapVerifyInfo.getModuleType().equals(ENTRY)) {
-                    LOG.error("Error: main module must be a entry!");
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        }
-        LOG.error("Error: main is not a module in this app!");
-        return false;
-    }
-
-    private static boolean checkAtomicServiceTypeIsValid(List<HapVerifyInfo> hapVerifyInfoList)
-            throws BundleException {
-        if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkAtomicServiceTypeIsValid failed, hapVerifyInfoList is empty!");
-            throw new BundleException("Error: checkAtomicServiceTypeIsValid failed, hapVerifyInfoList is empty!");
-        }
-        boolean split = hapVerifyInfoList.get(0).isSplit();
-        if (!split) {
-            return true;
-        }
-        String main = hapVerifyInfoList.get(0).getMain();
-        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            if (main.equals(hapVerifyInfo.getModuleName())) {
-                hapVerifyInfo.setAtomicServiceType(MAIN);
-            } else {
-                hapVerifyInfo.setAtomicServiceType(NORMAL);
-            }
-        }
-        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            if (hapVerifyInfo.getAtomicServiceType().equals(MAIN)) {
-                if (!hapVerifyInfo.getModuleType().equals(ENTRY)) {
-                    LOG.error("Error: main module must be a entry!");
-                    return false;
-                }
-            } else {
-                if (hapVerifyInfo.getModuleType().equals(ENTRY)) {
-                    LOG.error("Error: entry module must be a main!");
-                    return false;
-                }
+        long fileSize = 0L;
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            fileSize += hapVerifyInfo.getFileLength();
+            double fileSizeMB = new BigDecimal((float) fileSize
+                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if (fileSize > sumLimit * FILE_LENGTH_1M) {
+                LOG.error("The total file size is " + fileSizeMB + "MB, greater than " + sumLimit + "MB.");
+                return false;
             }
         }
         return true;
@@ -1229,8 +1132,8 @@ class HapVerify {
     private static boolean checkAtomicServicePreloadsIsValid(List<HapVerifyInfo> hapVerifyInfoList)
             throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkAtomicServicePreloadsIsValid failed, hapVerifyInfoList is empty!");
-            throw new BundleException("Error: checkAtomicServicePreloadsIsValid failed, hapVerifyInfoList is empty!");
+            LOG.error("checkAtomicServicePreloadsIsValid failed, hapVerifyInfoList is empty.");
+            throw new BundleException("checkAtomicServicePreloadsIsValid failed, hapVerifyInfoList is empty.");
         }
         List<String> moduleNames = new ArrayList<>();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
@@ -1238,22 +1141,29 @@ class HapVerify {
         }
         // check preload module is existed and not self
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            List<String> preloadModuleName = new ArrayList<>();
             List<PreloadItem> preloadItems = hapVerifyInfo.getPreloadItems();
             for (PreloadItem preloadItem : preloadItems) {
                 String moduleName = preloadItem.getModuleName();
+                if (preloadModuleName.contains(moduleName)) {
+                    LOG.error("preloads config a duplicate module " + moduleName +
+                            " in " + hapVerifyInfo.getModuleName() + ".");
+                    return false;
+                }
+                preloadModuleName.add(moduleName);
                 if (!moduleNames.contains(moduleName)) {
-                    LOG.error("Error: preloads config a invalid module " + moduleName +
-                            " in " + hapVerifyInfo.getModuleName());
+                    LOG.error("preloads config a invalid module " + moduleName +
+                            " in " + hapVerifyInfo.getModuleName() + ".");
                     return false;
                 }
                 if (moduleName.equals(hapVerifyInfo.getModuleName())) {
-                    LOG.error("Error: can not preload self, " + hapVerifyInfo.getModuleName() + " preload self!");
+                    LOG.error("can not preload self, " + hapVerifyInfo.getModuleName() + " preload self.");
                     return false;
                 }
             }
         }
         // check feature preload is valid
-        HashMap<String, String> moduleNameWithType = new HashMap<>();
+        Map<String, String> moduleNameWithType = new HashMap<>();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
             moduleNameWithType.put(hapVerifyInfo.getModuleName(), hapVerifyInfo.getModuleType());
         }
@@ -1263,7 +1173,9 @@ class HapVerify {
                 String moduleName = preloadItem.getModuleName();
                 if (moduleNameWithType.get(moduleName).equals(ENTRY)
                         || moduleNameWithType.get(moduleName).equals(HAR)) {
-                    LOG.error("Error: feature or shared can not preload entry or har");
+                    LOG.error("module can not preload entry or har, "
+                            + hapVerifyInfo.getModuleName() + " preloads a "
+                            + moduleNameWithType.get(moduleName) + " module.");
                     return false;
                 }
             }
@@ -1274,52 +1186,48 @@ class HapVerify {
 
     private static boolean checkFileSizeIsValid(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkFileSizeIsValid failed, hapVerifyInfoList is empty!");
-            throw new BundleException("Error: checkFileSizeIsValid failed, hapVerifyInfoList is empty!");
+            LOG.error("checkFileSizeIsValid failed, hapVerifyInfoList is empty.");
+            throw new BundleException("checkFileSizeIsValid failed, hapVerifyInfoList is empty.");
         }
-        boolean split = hapVerifyInfoList.get(0).isSplit();
-        if (split && !checkFileSizeWhenSplit(hapVerifyInfoList)) {
-            LOG.error("Error: file size is invalid when split is true!");
-            return false;
-        }
-        if (!split && !checkFileSizeWhenNotSplit(hapVerifyInfoList)) {
-            LOG.error("Error: file size is invalid when split is false!");
+        if (!checkFileSize(hapVerifyInfoList)) {
+            LOG.error("checkFileSize failed.");
             return false;
         }
         return true;
     }
 
-    private static boolean checkFileSizeWhenSplit(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+    private static boolean checkFileSize(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
-            LOG.error("Error: checkFileSizeWhenSplit failed, hapVerifyInfoList is empty!");
-            throw new BundleException("Error: checkFileSizeWhenSplit failed, hapVerifyInfoList is empty!");
+            LOG.error("checkFileSizeWhenSplit failed, hapVerifyInfoList is empty.");
+            throw new BundleException("checkFileSizeWhenSplit failed, hapVerifyInfoList is empty.");
         }
         // check single file length
+        int entryLimit = hapVerifyInfoList.get(0).getEntrySizeLimit();
+        int notEntryLimit = hapVerifyInfoList.get(0).getNotEntrySizeLimit();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            if (hapVerifyInfo.getFileLength() > ATOMIC_SERVICE_MODULE_SIZE * FILE_LENGTH_1M) {
-                LOG.error("Error: input module " + hapVerifyInfo.getModuleName() +
-                        " file size is bigger than 2M!");
+            double fileSize = new BigDecimal((float) hapVerifyInfo.getFileLength()
+                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if (hapVerifyInfo.getModuleType().equals(ENTRY) &&
+                    (hapVerifyInfo.getFileLength() > entryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + "'s size is " +
+                        fileSize + "MB, which is overlarge than " + entryLimit + "MB.");
+                return false;
+            }
+            if (!hapVerifyInfo.getModuleType().equals(ENTRY) &&
+                    (hapVerifyInfo.getFileLength() > notEntryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + "'s size is " +
+                        fileSize + "MB, which is overlarge than " + notEntryLimit + "MB.");
                 return false;
             }
         }
-        // check final app file length
-        long appLength = 0L;
-        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            appLength += hapVerifyInfo.getFileLength();
-            if (appLength > ATOMIC_SERVICE_APP_LIMIT_SIZE * FILE_LENGTH_1M) {
-                LOG.error("Error: The sum of all file size is bigger than 10M!");
+
+        Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
+        for (String device : deviceInfoMap.keySet()) {
+            List<HapVerifyInfo>hapVerifyInfoList1 = deviceInfoMap.get(device);
+            if (!checkAtomicServiceModuleSize(hapVerifyInfoList1)) {
+                LOG.error("checkAtomicServiceModuleSize failed on device " + device + ".");
                 return false;
             }
-        }
-        try {
-            boolean result = checkAtomicServiceModuleSize(hapVerifyInfoList);
-            if (!result) {
-                LOG.error("checkAtomicServiceModuleSize failed!");
-                return false;
-            }
-        } catch (BundleException e) {
-            LOG.error("checkAtomicServiceModuleSize failed!");
-            return false;
         }
         return true;
     }
@@ -1332,8 +1240,7 @@ class HapVerify {
         for (String dependency : dependencyItems) {
             HapVerifyInfo dependencyHapVerifyInfo = findAtomicServiceHapVerifyInfo(dependency, hapVerifyInfoList);
             if (dependencyHapVerifyInfo == null) {
-                LOG.error("Error: can not find module by module name!");
-                throw new BundleException("Error: can not find module by module name!");
+                continue;
             }
             List<String> childDependencies = getModuleDependency(dependencyHapVerifyInfo, hapVerifyInfoList);
             for (String childDependency : childDependencies) {
@@ -1353,17 +1260,5 @@ class HapVerify {
             }
         }
         return null;
-    }
-
-    private static boolean checkFileSizeWhenNotSplit(List<HapVerifyInfo> hapVerifyInfoList) {
-        if (hapVerifyInfoList.size() != ONE) {
-            LOG.error("Error: must input one module when not split atomicService!");
-            return false;
-        }
-        if (hapVerifyInfoList.get(0).getFileLength() > ATOMIC_SERVICE_APP_LIMIT_SIZE * FILE_LENGTH_1M) {
-            LOG.error("Error: input module is bigger than 10M when split is false!");
-            return false;
-        }
-        return true;
     }
 }

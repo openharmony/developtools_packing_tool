@@ -28,6 +28,10 @@ class VerifyCollection {
      */
     public String bundleName = "";
     /**
+     * Indicates the type of bundle
+     */
+    private String bundleType = "app";
+    /**
      * Indicates the vendor of app.
      */
     public String vendor = "";
@@ -55,17 +59,6 @@ class VerifyCollection {
      * Indicates the apiReleaseType of app.
      */
     public String releaseType = "";
-
-    /**
-     * Indicates the split of atomicService in app.
-     */
-    private boolean split = true;
-
-    /**
-     * Indicates the main of atomicService in app.
-     */
-    private String main = "";
-
     /**
      * Indicates the moduleNames of app.
      */
@@ -75,19 +68,11 @@ class VerifyCollection {
      */
     List<String> packageNames = new ArrayList<>();
 
-    public String getMain() {
-        return main;
+    public void setBundleType(String bundleType) {
+        this.bundleType = bundleType;
     }
 
-    public void setMain(String main) {
-        this.main = main;
-    }
-
-    public boolean isSplit() {
-        return split;
-    }
-
-    public void setSplit(boolean split) {
-        this.split = split;
+    public String getBundleType() {
+        return bundleType;
     }
 }
