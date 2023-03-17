@@ -700,7 +700,7 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private static String disposeApp(Utility utility, List<String> seletedHaps,
-                                   String tempDir) throws BundleException {
+        String tempDir) throws BundleException {
         // dispose app conflict
         if (utility.getFormattedAppList().isEmpty()) {
             return "";
@@ -759,7 +759,7 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private static void copyHapAndHspFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
-                                       String tempDir) throws BundleException, IOException {
+        String tempDir) throws BundleException, IOException {
         ZipInputStream zipInput = null;
         ZipFile zipFile = null;
         OutputStream outputStream = null;
@@ -768,7 +768,7 @@ public class Compressor {
         try {
             zipInput = new ZipInputStream(new FileInputStream(appPath));
             zipFile = new ZipFile(appPath);
-            while((zipEntry = zipInput.getNextEntry()) != null) {
+            while ((zipEntry = zipInput.getNextEntry()) != null) {
                 File file = null;
                 if (!zipEntry.getName().endsWith(HAP_SUFFIX) && !zipEntry.getName().endsWith(HSP_SUFFIX)) {
                     continue;
@@ -787,7 +787,7 @@ public class Compressor {
                 outputStream = new FileOutputStream(file);
                 inputStream = zipFile.getInputStream(zipEntry);
                 int len;
-                while((len = inputStream.read()) != -1) {
+                while ((len = inputStream.read()) != -1) {
                     outputStream.write(len);
                 }
                 outputStream.close();
