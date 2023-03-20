@@ -76,6 +76,9 @@ public class CommandParser {
     private static final String CMD_HQF_PATH = "--hqf-path";
     private static final String CMD_AN_PATH = "--an-path";
     private static final String CMD_AP_PATH = "--ap-path";
+    private static final String MAIN_MODULE_LIMIT = "--main-module-limit";
+    private static final String NORMAL_MODULE_LIMIT = "--normal-module-limit";
+    private static final String TOTAL_LIMIT = "--total-limit";
     private static final Log LOG = new Log(CommandParser.class.toString());
 
     /**
@@ -261,6 +264,18 @@ public class CommandParser {
             }
             case CMD_HSP_LIST: {
                 utility.setHspList(value);
+                return true;
+            }
+            case MAIN_MODULE_LIMIT: {
+                utility.setMainModuleLimit(value);
+                return true;
+            }
+            case NORMAL_MODULE_LIMIT: {
+                utility.setNormalModuleLimit(value);
+                return true;
+            }
+            case TOTAL_LIMIT: {
+                utility.setTotalLimit(value);
                 return true;
             }
             default : {

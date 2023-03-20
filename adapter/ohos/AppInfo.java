@@ -31,6 +31,11 @@ public class AppInfo {
     public String bundleName = "";
 
     /**
+     * Indicates the type of bundle.
+     */
+    public String bundleType = "app";
+
+    /**
      * Indicates the vendor of app AppInfo.
      */
     public String vendor = "";
@@ -166,9 +171,4 @@ public class AppInfo {
         this.shellVersionCode = versionCode;
         this.shellVersionName = versionName;
     }
-
-    /**
-     * Indicates the atomic service of app AppJson.
-     */
-    public AppAtomicService appAtomicService = new AppAtomicService();
 }
