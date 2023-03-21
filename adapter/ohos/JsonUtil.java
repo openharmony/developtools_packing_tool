@@ -346,7 +346,7 @@ public class JsonUtil {
         moduleAppInfo.icon = parseIconById(appJson, data);
         moduleAppInfo.label = parseResourceByKey(appJson, data, "label", "labelId");
         moduleAppInfo.description = parseResourceByKey(appJson, data, "description", "descriptionId");
-        moduleAppInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
+        moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
 
         if (appJson.containsKey("vendor")) {
             moduleAppInfo.vendor = getJsonString(appJson, "vendor");
