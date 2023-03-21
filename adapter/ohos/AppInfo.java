@@ -148,7 +148,7 @@ public class AppInfo {
     /**
      * Get shell bundle type.
      *
-     * @return shell bundle type 
+     * @return shell bundle type
      */
     public String getBundleType() {
         return bundleType;
