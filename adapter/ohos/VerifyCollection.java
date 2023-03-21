@@ -27,10 +27,7 @@ class VerifyCollection {
      * Indicates the bundleName of app.
      */
     public String bundleName = "";
-    /**
-     * Indicates the type of bundle
-     */
-    private String bundleType = "app";
+
     /**
      * Indicates the vendor of app.
      */
@@ -78,6 +75,12 @@ class VerifyCollection {
      * Indicates whether the app type is Shared
      */
     private boolean sharedApp = false;
+
+    /**
+     * Indicates the type of bundle
+     */
+    private String bundleType = "app";
+
     /**
      * Indicates the moduleNames of app.
      */
