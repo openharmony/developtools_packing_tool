@@ -27,10 +27,7 @@ class VerifyCollection {
      * Indicates the bundleName of app.
      */
     public String bundleName = "";
-    /**
-     * Indicates the type of bundle
-     */
-    private String bundleType = "app";
+
     /**
      * Indicates the vendor of app.
      */
@@ -59,6 +56,12 @@ class VerifyCollection {
      * Indicates the apiReleaseType of app.
      */
     public String releaseType = "";
+
+    /**
+     * Indicates the type of bundle
+     */
+    private String bundleType = "app";
+
     /**
      * Indicates the moduleNames of app.
      */

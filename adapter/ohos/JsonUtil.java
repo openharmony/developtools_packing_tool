@@ -295,7 +295,7 @@ public class JsonUtil {
         appInfo.bundleName = getJsonString(appJson, "bundleName");
         appInfo.vendor = getJsonString(appJson, "vendor");
         appInfo.relatedBundleName = getJsonString(appJson, "relatedBundleName");
-        appInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
+        appInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
         if (appJson.containsKey(VERSION)) {
             JSONObject version = appJson.getJSONObject(VERSION);
             appInfo.versionName = getJsonString(version, "name");
