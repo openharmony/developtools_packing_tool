@@ -138,9 +138,9 @@ public class AppInfo {
     }
 
     /**
-     * Get shell bundle type.
+     * Get bundle type.
      *
-     * @return shell bundle type 
+     * @return bundle type
      */
     public String getBundleType() {
         return bundleType;
@@ -182,7 +182,9 @@ public class AppInfo {
     }
 
     /**
-     * Set default bundle type
+     * Set bundle type
+     *
+     * @param type bundle type
      */
     public void setBundleType(String type) {
         bundleType = type;
