@@ -31,11 +31,6 @@ public class AppInfo {
     public String bundleName = "";
 
     /**
-     * Indicates the type of bundle.
-     */
-    public String bundleType = "app";
-
-    /**
      * Indicates the vendor of app AppInfo.
      */
     public String vendor = "";
@@ -109,6 +104,11 @@ public class AppInfo {
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
     public boolean distributedNotificationEnabled = false;
+    
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
 
     /**
      * Get shell version code.
@@ -135,6 +135,15 @@ public class AppInfo {
      */
     public String getShellVersionName() {
         return shellVersionName;
+    }
+
+    /**
+     * Get bundle type.
+     *
+     * @return bundle type
+     */
+    public String getBundleType() {
+        return bundleType;
     }
 
     /**
@@ -170,5 +179,14 @@ public class AppInfo {
     public void setDefaultShellVersion() {
         this.shellVersionCode = versionCode;
         this.shellVersionName = versionName;
+    }
+
+    /**
+     * Set bundle type
+     *
+     * @param type bundle type
+     */
+    public void setBundleType(String type) {
+        bundleType = type;
     }
 }

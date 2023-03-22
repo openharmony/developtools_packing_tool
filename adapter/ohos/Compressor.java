@@ -52,12 +52,6 @@ import java.util.zip.ZipOutputStream;
  *
  */
 public class Compressor {
-    private ZipOutputStream zipOut = null;
-    private boolean mIsContain2x2EntryCard = true;
-    private List<String> list = new ArrayList<String>();
-    private List<String> formNamesList = new ArrayList<String>();
-    private List<String> fileNameList = new ArrayList<String>();
-    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
     private static final String JSON_SUFFIX = ".json";
     private static final String INFO_SUFFIX = ".info";
     private static final String HAP_SUFFIX = ".hap";
@@ -143,6 +137,13 @@ public class Compressor {
     private static int entryModuleSizeLimit = 2;
     private static int notEntryModuleSizeLimit = 2;
     private static int sumModuleSizeLimit = 10;
+
+    private ZipOutputStream zipOut = null;
+    private boolean mIsContain2x2EntryCard = true;
+    private List<String> list = new ArrayList<String>();
+    private List<String> formNamesList = new ArrayList<String>();
+    private List<String> fileNameList = new ArrayList<String>();
+    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
 
     public static int getEntryModuleSizeLimit() {
         return entryModuleSizeLimit;

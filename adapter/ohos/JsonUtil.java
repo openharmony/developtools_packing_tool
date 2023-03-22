@@ -295,7 +295,7 @@ public class JsonUtil {
         appInfo.bundleName = getJsonString(appJson, "bundleName");
         appInfo.vendor = getJsonString(appJson, "vendor");
         appInfo.relatedBundleName = getJsonString(appJson, "relatedBundleName");
-        appInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
+        appInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
         if (appJson.containsKey(VERSION)) {
             JSONObject version = appJson.getJSONObject(VERSION);
             appInfo.versionName = getJsonString(version, "name");
@@ -346,7 +346,7 @@ public class JsonUtil {
         moduleAppInfo.icon = parseIconById(appJson, data);
         moduleAppInfo.label = parseResourceByKey(appJson, data, "label", "labelId");
         moduleAppInfo.description = parseResourceByKey(appJson, data, "description", "descriptionId");
-        moduleAppInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
+        moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
 
         if (appJson.containsKey("vendor")) {
             moduleAppInfo.vendor = getJsonString(appJson, "vendor");
