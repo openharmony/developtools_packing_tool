@@ -137,7 +137,7 @@ class ModuleAppInfo {
 
     /**
      * Set bundle type
-     * 
+     *
      * @param type bundle type
      */
     public void setBundleType(String type) {
