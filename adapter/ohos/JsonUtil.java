@@ -430,7 +430,7 @@ public class JsonUtil {
         moduleAppInfo.distributedNotificationEnabled =
                 getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
         moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
-        moduleAppInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
+        moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
 
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);

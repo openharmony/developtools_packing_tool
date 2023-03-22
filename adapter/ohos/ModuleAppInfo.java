@@ -33,11 +33,6 @@ class ModuleAppInfo {
     public String bundleName = "";
 
     /**
-     * Indicates the type of bundle.
-     */
-    public String bundleType = "app";
-
-    /**
      * Indicates the debug of app AppJson.
      */
     public boolean debug = false;
@@ -56,6 +51,11 @@ class ModuleAppInfo {
      * Indicates the labels of app AppJson, for multilingual.
      */
     private HashMap<String, String> labels = new HashMap<>();
+
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
 
     /**
      * Indicates the description of app AppJson.
@@ -135,11 +135,29 @@ class ModuleAppInfo {
         this.labels = labels;
     }
 
+    /**
+     * Set bundle type
+     *
+     * @param type bundle type
+     */
+    public void setBundleType(String type) {
+        bundleType = type;
+    }
+
     public HashMap<String, String> getDescriptions() {
         return descriptions;
     }
 
     public HashMap<String, String> getLabels() {
         return labels;
+    }
+
+    /**
+     * Get bundle type.
+     *
+     * @return bundle type
+     */
+    public String getBundleType() {
+        return bundleType;
     }
 }
