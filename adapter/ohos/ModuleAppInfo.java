@@ -32,10 +32,7 @@ class ModuleAppInfo {
      * Indicates the bundleName of app AppJson.
      */
     public String bundleName = "";
-    /**
-     * Indicates the type of bundle.
-     */
-    public String bundleType = "app";
+
     /**
      * Indicates the debug of app AppJson.
      */
@@ -96,8 +93,32 @@ class ModuleAppInfo {
      * Indicates the appNameEn of app AppJson.
      */
     public String appNameEN = "";
+
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
+
     /**
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
+
+    /**
+     * Set bundle type
+     *
+     * @param type bundle type
+     */
+    public void setBundleType(String type) {
+        bundleType = type;
+    }
+
+    /**
+     * Get bundle type.
+     *
+     * @return bundle type
+     */
+    public String getBundleType() {
+        return bundleType;
+    }
 }
