@@ -361,7 +361,7 @@ public class JsonUtil {
             throw new BundleException("Parse app info failed, appJson is null.");
         }
         appInfo.bundleName = getJsonString(appJson, "bundleName");
-        appInfo.bundleType = getJsonString(appJson, BUNDLE_TYPE, APP);
+        appInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
         appInfo.vendor = getJsonString(appJson, "vendor");
         appInfo.relatedBundleName = getJsonString(appJson, "relatedBundleName");
         if (appJson.containsKey(VERSION)) {

@@ -93,7 +93,7 @@ class ModuleAdaption {
         appInfo.distributedNotificationEnabled = moduleAppInfo.distributedNotificationEnabled;
         appInfo.appName = moduleAppInfo.appName;
         appInfo.appNameEN = moduleAppInfo.appNameEN;
-        appInfo.bundleType = moduleAppInfo.bundleType;
+        appInfo.setBundleType(moduleAppInfo.bundleType);
         return appInfo;
     }
 
