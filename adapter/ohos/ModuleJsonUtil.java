@@ -1327,8 +1327,10 @@ class ModuleJsonUtil {
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                LOG.error("bundleType must be atomicService when installtionFree is true.");
-                throw new BundleException("bundleType must be atomicService when installtionFree is true.");
+                String errMessage = "The app.json5 file configuration does not match the installationFree:" +
+                        " true settings. Add the bundleType field to the app.json5 file and set it atomicService.";
+                LOG.error(errMessage);
+                throw new BundleException(errMessage);
             }
             return APP;
         } else {
@@ -1654,7 +1656,9 @@ class ModuleJsonUtil {
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                LOG.error("bundleType must be app when installtionFree is true.");
+                String errMessage = "The app.json5 file configuration does not match the installationFree:" +
+                        " true settings. Add the bundleType field to the app.json5 file and set it atomicService.";
+                LOG.error(errMessage);
                 return false;
             }
             return true;
