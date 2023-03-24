@@ -36,6 +36,7 @@ class ModuleJsonUtil {
     private static final String MIN_API_VERSION = "minAPIVersion";
     private static final String TARGET_API_VERSION = "targetAPIVersion";
     private static final String API_RELEASE_TYPE = "apiReleaseType";
+    private static final String DEBUG = "debug";
     private static final String COMPATIBLE = "compatible";
     private static final String RELEASE_TYPE = "releaseType";
     private static final String TARGET = "target";
@@ -85,6 +86,8 @@ class ModuleJsonUtil {
     private static final String TARGET_MODULE_NAME = "targetModuleName";
     private static final String TARGET_PRIORITY = "targetPriority";
     private static final String TARGET_BUNDLE_NAME = "targetBundleName";
+    private static final String DEVICE_CONFIG = "deviceConfig";
+    private static final String DEFAULT = "default";
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -1611,7 +1614,7 @@ class ModuleJsonUtil {
     }
 
     /**
-     * get asanEnabled in module.json
+     * get apiReleaseType in module.json
      *
      * @param jsonString is the file content of module.json
      * @return the result
@@ -1630,6 +1633,54 @@ class ModuleJsonUtil {
             throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
         }
         return getJsonString(appObj, API_RELEASE_TYPE);
+    }
+
+    /**
+     * get debug in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean getDebug(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            LOG.error("parse failed, input module.json is invalid, module.json has no app.");
+            throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
+        }
+        return getJsonBooleanValue(appObj, DEBUG, false);
+    }
+
+    /**
+     * get debug in config.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean getFADebug(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
+            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
+        }
+        JSONObject DeviceConfigObj = jsonObject.getJSONObject(DEVICE_CONFIG);
+        if (DeviceConfigObj == null) {
+            return false;
+        }
+        JSONObject DefaultObj = DeviceConfigObj.getJSONObject(DEFAULT);
+        if (DefaultObj == null) {
+            return false;
+        }
+
+        return getJsonBooleanValue(DefaultObj, DEBUG, false);
     }
 
     /**
