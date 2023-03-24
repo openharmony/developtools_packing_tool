@@ -23,10 +23,6 @@ import java.util.Map;
  *
  */
 class ModuleAppInfo {
-    private final Integer DEFAULT_VERSION_CODE = -1;
-    private final String RELEASE = "Release";
-    private final String UNSPECIFIED = "unspecified";
-
     /**
      * Indicates the bundleName of app AppJson.
      */
@@ -48,24 +44,9 @@ class ModuleAppInfo {
     public String label = "";
 
     /**
-     * Indicates the labels of app AppJson, for multilingual.
-     */
-    private HashMap<String, String> labels = new HashMap<>();
-
-    /**
-     * Indicates the type of bundle.
-     */
-    private String bundleType = "app";
-
-    /**
      * Indicates the description of app AppJson.
      */
     public String description = "";
-
-    /**
-     * Indicates the descriptions of app AppJson, for multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the vendor of app AppJson.
@@ -126,6 +107,25 @@ class ModuleAppInfo {
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
+
+    private final Integer DEFAULT_VERSION_CODE = -1;
+    private final String RELEASE = "Release";
+    private final String UNSPECIFIED = "unspecified";
+
+    /**
+     * Indicates the descriptions of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    /**
+     * Indicates the labels of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
+
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
