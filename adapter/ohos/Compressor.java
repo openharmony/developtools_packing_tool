@@ -349,8 +349,8 @@ public class Compressor {
 
     private static boolean checkStageAsanEnabledValid(String jsonString) throws BundleException {
         boolean asanEnabled = ModuleJsonUtil.getStageAsanEnabled(jsonString);
-        String apiReleaseType = ModuleJsonUtil.getStageApiReleaseType(jsonString);
-        if (asanEnabled && apiReleaseType.contains(RELEASE)) {
+        boolean debug = ModuleJsonUtil.getDebug(jsonString);
+        if (asanEnabled && !debug) {
             LOG.error("asanEnabled is not supported for Release.");
             return false;
         }
@@ -428,8 +428,8 @@ public class Compressor {
 
     private static boolean checkFAAsanEnabledValid(String jsonString) throws BundleException {
         boolean asanEnabled = ModuleJsonUtil.getFAAsanEnabled(jsonString);
-        String releaseType = ModuleJsonUtil.getFAReleaseType(jsonString);
-        if (asanEnabled && releaseType.contains(RELEASE)) {
+        boolean debug = ModuleJsonUtil.getFADebug(jsonString);
+        if (asanEnabled && !debug) {
             LOG.error("asanEnabled is not supported for Release.");
             return false;
         }
