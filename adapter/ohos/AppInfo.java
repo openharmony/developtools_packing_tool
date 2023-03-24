@@ -104,7 +104,7 @@ public class AppInfo {
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
     public boolean distributedNotificationEnabled = false;
-    
+
     /**
      * Indicates the type of bundle.
      */
