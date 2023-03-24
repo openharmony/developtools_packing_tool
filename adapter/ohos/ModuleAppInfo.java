@@ -95,14 +95,14 @@ class ModuleAppInfo {
     public String appNameEN = "";
 
     /**
-     * Indicates the type of bundle.
-     */
-    private String bundleType = "app";
-
-    /**
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
+
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
 
     /**
      * Set bundle type
