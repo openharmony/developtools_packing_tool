@@ -58,11 +58,6 @@ class VerifyCollection {
     public String releaseType = "";
 
     /**
-     * Indicates the type of bundle
-     */
-    private String bundleType = "app";
-
-    /**
      * Indicates the moduleNames of app.
      */
     List<String> moduleNames = new ArrayList<>();
@@ -70,6 +65,11 @@ class VerifyCollection {
      * Indicates the packageNames of app.
      */
     List<String> packageNames = new ArrayList<>();
+
+    /**
+     * Indicates the type of bundle
+     */
+    private String bundleType = "app";
 
     public void setBundleType(String bundleType) {
         this.bundleType = bundleType;
