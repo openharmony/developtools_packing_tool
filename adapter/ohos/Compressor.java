@@ -857,6 +857,9 @@ public class Compressor {
                     selectedHaps.add(file.getName());
                     selectedHapsInApp.add(file.getName());
                 }
+                if (file == null || !file.exists()) {
+                    throw new BundleException("Compressor::copyHapFromApp file is not exists");
+                }
                 outputStream = new FileOutputStream(file);
                 inputStream = zipFile.getInputStream(zipEntry);
                 int len;

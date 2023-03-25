@@ -105,15 +105,15 @@ class ModuleJsonUtil {
         if (jsonObject.containsKey(APP)) {
             JSONObject appObj = jsonObject.getJSONObject(APP);
             if (appObj.containsKey(VERSIONCODE) && appObj.containsKey(VERSIONNAME)) {
-                version.versionCode = appObj.getIntValue(VERSIONCODE);
-                version.versionName = appObj.getString(VERSIONNAME);
+                version.versionCode = getJsonIntValue(appObj, VERSIONCODE);
+                version.versionName = getJsonString(appObj, VERSIONNAME);
             } else {
                 String errMsg = "ModuleJsonUtil:parseStageVersion json file do not contain version.";
                 LOG.error(errMsg);
                 throw new BundleException(errMsg);
             }
             if (appObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
-                version.minCompatibleVersionCode = appObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE);
+                version.minCompatibleVersionCode = getJsonIntValue(appObj, MIN_COMPATIBLE_VERSION_CODE);
             } else {
                 version.minCompatibleVersionCode = version.versionCode;
             }
@@ -154,15 +154,15 @@ class ModuleJsonUtil {
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
         }
         if (versionObj.containsKey(CODE) && versionObj.containsKey(NAME)) {
-            version.versionName = versionObj.getString(NAME);
-            version.versionCode = versionObj.getIntValue(CODE);
+            version.versionName = getJsonString(versionObj, NAME);
+            version.versionCode = getJsonIntValue(versionObj, CODE);
         } else {
             LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
             throw new BundleException(
                 "ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
         }
         if (versionObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
-            version.minCompatibleVersionCode = versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE);
+            version.minCompatibleVersionCode = getJsonIntValue(versionObj, MIN_COMPATIBLE_VERSION_CODE);
         } else {
             version.minCompatibleVersionCode = version.versionCode;
         }
@@ -207,13 +207,13 @@ class ModuleJsonUtil {
         }
         ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         if (appObj.containsKey(MIN_API_VERSION)) {
-            moduleApiVersion.setCompatibleApiVersion(appObj.getIntValue(MIN_API_VERSION));
+            moduleApiVersion.setCompatibleApiVersion(getJsonIntValue(appObj, MIN_API_VERSION));
         }
         if (appObj.containsKey(TARGET_API_VERSION)) {
-            moduleApiVersion.setTargetApiVersion(appObj.getIntValue(TARGET_API_VERSION));
+            moduleApiVersion.setTargetApiVersion(getJsonIntValue(appObj, TARGET_API_VERSION));
         }
         if (appObj.containsKey(API_RELEASE_TYPE)) {
-            moduleApiVersion.setReleaseType(appObj.getString(API_RELEASE_TYPE));
+            moduleApiVersion.setReleaseType(getJsonString(appObj, API_RELEASE_TYPE));
         }
         return moduleApiVersion;
     }
@@ -244,13 +244,13 @@ class ModuleJsonUtil {
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
         ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         if (apiVersionObj.containsKey(COMPATIBLE)) {
-            moduleApiVersion.setCompatibleApiVersion(apiVersionObj.getIntValue(COMPATIBLE));
+            moduleApiVersion.setCompatibleApiVersion(getJsonIntValue(apiVersionObj, COMPATIBLE));
         }
         if (apiVersionObj.containsKey(RELEASE_TYPE)) {
-            moduleApiVersion.setReleaseType(apiVersionObj.getString(RELEASE_TYPE));
+            moduleApiVersion.setReleaseType(getJsonString(apiVersionObj, RELEASE_TYPE));
         }
         if (apiVersionObj.containsKey(TARGET)) {
-            moduleApiVersion.setTargetApiVersion(apiVersionObj.getIntValue(TARGET));
+            moduleApiVersion.setTargetApiVersion(getJsonIntValue(apiVersionObj, TARGET));
         }
         return moduleApiVersion;
     }
@@ -273,7 +273,7 @@ class ModuleJsonUtil {
                 throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module.");
             }
             if (moduleObj.containsKey(NAME)) {
-                moduleName = moduleObj.getString(NAME);
+                moduleName = getJsonString(moduleObj, NAME);
             } else {
                 LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
                 throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
@@ -311,7 +311,7 @@ class ModuleJsonUtil {
                 LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
                 throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
             }
-            moduleName = distroObj.getString(MODULE_NAME);
+            moduleName = getJsonString(distroObj, MODULE_NAME);
         } catch (BundleException | JSONException e) {
             LOG.error("ModuleJsonUtil:parseFaModuleName failed.");
             throw new BundleException("ModuleJsonUtil:parseFaModuleName failed.");
@@ -337,7 +337,7 @@ class ModuleJsonUtil {
                 throw new BundleException("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain module.");
             }
             if (moduleObj.containsKey(PACKAGE)) {
-                packageStr = moduleObj.getString(PACKAGE);
+                packageStr = getJsonString(moduleObj, PACKAGE);
             } else {
                 LOG.error("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain package.");
                 throw new BundleException("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain package.");
@@ -372,7 +372,7 @@ class ModuleJsonUtil {
         }
         String bundleName = "";
         if (appObject.containsKey(BUNDLE_NAME)) {
-            bundleName = appObject.getString(BUNDLE_NAME);
+            bundleName = getJsonString(appObject, BUNDLE_NAME);
         } else {
             LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain bundleNames.");
             throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain bundleNames.");
@@ -403,7 +403,7 @@ class ModuleJsonUtil {
         }
         String vendor = "";
         if (appObject.containsKey(VENDOR)) {
-            vendor = appObject.getString(VENDOR);
+            vendor = getJsonString(appObject, VENDOR);
         } else {
             return vendor;
         }
@@ -482,8 +482,8 @@ class ModuleJsonUtil {
             return false;
         }
         // check bundleName
-        String finalBundleName = finalAppObj.getString(BUNDLE_NAME);
-        String srcBundleName = srcAppObj.getString(BUNDLE_NAME);
+        String finalBundleName = getJsonString(finalAppObj, BUNDLE_NAME);
+        String srcBundleName = getJsonString(srcAppObj, BUNDLE_NAME);
         if (!finalBundleName.equals(srcBundleName)) {
             LOG.error("ModuleJsonUtil:verifyAppInPackInfo bundleName is different.");
             return false;
@@ -500,14 +500,14 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil:verifyAppInPackInfo version object is empty.");
             return false;
         }
-        String finalVersionName = finalVersionObj.getString(NAME);
-        String srcVersionName = srcVersionObj.getString(NAME);
+        String finalVersionName = getJsonString(finalVersionObj, NAME);
+        String srcVersionName = getJsonString(srcVersionObj, NAME);
         if (!finalVersionName.equals(srcVersionName)) {
             LOG.error("ModuleJsonUtil:verifyAppInPackInfo versionName is different.");
             return false;
         }
-        int finalVersionCode = finalVersionObj.getIntValue(CODE);
-        int srcVersionCode = srcVersionObj.getIntValue(CODE);
+        int finalVersionCode = getJsonIntValue(finalVersionObj, CODE);
+        int srcVersionCode = getJsonIntValue(srcVersionObj, CODE);
         if (finalVersionCode != srcVersionCode) {
             LOG.error("ModuleJsonUtil:verifyAppInPackInfo versionCode is different.");
             return false;
@@ -594,7 +594,7 @@ class ModuleJsonUtil {
         List<String> packageNames = new ArrayList<>();
         for (int i = 0; i < finalPackageObs.size(); ++i) {
             JSONObject packageObj = finalPackageObs.getJSONObject(i);
-            String packageName = packageObj.getString(NAME);
+            String packageName = getJsonString(packageObj, NAME);
             if (packageNames.contains(packageName)) {
                 LOG.error("ModuleJsonUtil:verifyPackageName duplicated package name.");
                 return false;
@@ -604,7 +604,7 @@ class ModuleJsonUtil {
         }
         for (int i = 0; i < srcPackageObs.size(); ++i) {
             JSONObject packageObj = srcPackageObs.getJSONObject(i);
-            String packageName = packageObj.getString(NAME);
+            String packageName = getJsonString(packageObj, NAME);
             if (packageNames.contains(packageName)) {
                 LOG.error("ModuleJsonUtil:verifyPackageName duplicated package name.");
                 return false;
@@ -637,7 +637,7 @@ class ModuleJsonUtil {
                 LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
                 throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
             }
-            moduleName = distroObj.getString(MODULE_NAME);
+            moduleName = getJsonString(distroObj, MODULE_NAME);
         } catch (BundleException e) {
             LOG.error("ModuleJsonUtil:parseFaModuleName failed!.");
             throw new BundleException("ModuleJsonUtil:parseFaModuleName failed.");
@@ -759,7 +759,7 @@ class ModuleJsonUtil {
         for (int index = 0; index < srcModules.size(); ++index) {
             JSONObject moduleObj = srcModules.getJSONObject(index);
             JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
-            if (distroObj.getString(MODULE_NAME).equals(moduleName)) {
+            if (getJsonString(distroObj, MODULE_NAME).equals(moduleName)) {
                 finalModules.add(moduleObj);
                 findModule = true;
                 break;
@@ -783,7 +783,7 @@ class ModuleJsonUtil {
         boolean findPackage = false;
         for (int index = 0; index < srcPackages.size(); ++index) {
             JSONObject srcPackageObj = srcPackages.getJSONObject(index);
-            if (srcPackageObj.getString(NAME).equals(packageName)) {
+            if (getJsonString(srcPackageObj, NAME).equals(packageName)) {
                 finalPackages.add(srcPackageObj);
                 findPackage = true;
                 break;
@@ -827,7 +827,7 @@ class ModuleJsonUtil {
             LOG.error(errMSg);
             throw new BundleException(errMSg);
         }
-        String moduleType = distroObj.getString(MODULE_TYPE);
+        String moduleType = getJsonString(distroObj, MODULE_TYPE);
         if (ENTRY.equals(moduleType)) {
             deviceTypes = getDeviceTypeFromFAModule(moduleObj);
         }
@@ -857,7 +857,7 @@ class ModuleJsonUtil {
             throw new BundleException(errMSg);
         }
         List<String> deviceTypes = new ArrayList<>();
-        String type = moduleObj.getString(TYPE);
+        String type = getJsonString(moduleObj, TYPE);
         if (type != null && type.equals(ENTRY)) {
             deviceTypes = getDeviceTypesFromStageModule(moduleObj);
         }
@@ -1297,12 +1297,12 @@ class ModuleJsonUtil {
             JSONObject object = dependencyObjList.getJSONObject(i);
             DependencyItem item = new DependencyItem();
             if (object.containsKey(BUNDLE_NAME)) {
-                item.setBundleName(object.getString(BUNDLE_NAME));
+                item.setBundleName(getJsonString(object, BUNDLE_NAME));
             } else {
                 item.setBundleName(bundleName);
             }
             if (object.containsKey(MODULE_NAME)) {
-                item.setModuleName(object.getString(MODULE_NAME));
+                item.setModuleName(getJsonString(object, MODULE_NAME));
             }
             dependencyItemList.add(item);
         }
@@ -1467,19 +1467,19 @@ class ModuleJsonUtil {
         }
         HQFInfo hqfVerifyInfo = new HQFInfo();
         if (appObj.containsKey(BUNDLE_NAME)) {
-            hqfVerifyInfo.setBundleName(appObj.getString(BUNDLE_NAME));
+            hqfVerifyInfo.setBundleName(getJsonString(appObj, BUNDLE_NAME));
         }
         if (appObj.containsKey(VERSIONCODE)) {
-            hqfVerifyInfo.setVersionCode(appObj.getIntValue(VERSIONCODE));
+            hqfVerifyInfo.setVersionCode(getJsonIntValue(appObj, VERSIONCODE));
         }
         if (appObj.containsKey(VERSIONNAME)) {
-            hqfVerifyInfo.setVersionName(appObj.getString(VERSIONNAME));
+            hqfVerifyInfo.setVersionName(getJsonString(appObj, VERSIONNAME));
         }
         if (appObj.containsKey(PATCH_VERSION_CODE)) {
-            hqfVerifyInfo.setPatchVersionCode(appObj.getIntValue(PATCH_VERSION_CODE));
+            hqfVerifyInfo.setPatchVersionCode(getJsonIntValue(appObj, PATCH_VERSION_CODE));
         }
         if (appObj.containsKey(PATCH_VERSION_NAME)) {
-            hqfVerifyInfo.setPatchVersionName(appObj.getString(PATCH_VERSION_NAME));
+            hqfVerifyInfo.setPatchVersionName(getJsonString(appObj, PATCH_VERSION_NAME));
         }
         JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
         if (moduleObj == null) {
@@ -1487,16 +1487,16 @@ class ModuleJsonUtil {
             throw new BundleException("Error: parse failed, input patch.json is invalid, patch.json has no module.");
         }
         if (moduleObj.containsKey(NAME)) {
-            hqfVerifyInfo.setModuleName(moduleObj.getString(NAME));
+            hqfVerifyInfo.setModuleName(getJsonString(moduleObj, NAME));
         }
         if (moduleObj.containsKey(TYPE)) {
-            hqfVerifyInfo.setType(moduleObj.getString(TYPE));
+            hqfVerifyInfo.setType(getJsonString(moduleObj, TYPE));
         }
         if (moduleObj.containsKey(DEVICE_TYPES)) {
             hqfVerifyInfo.setDeviceTypes(JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class));
         }
         if (moduleObj.containsKey(ORIGINAL_MODULE_HASH)) {
-            hqfVerifyInfo.setOriginalModuleHash(moduleObj.getString(ORIGINAL_MODULE_HASH));
+            hqfVerifyInfo.setOriginalModuleHash(getJsonString(moduleObj, ORIGINAL_MODULE_HASH));
         }
         return hqfVerifyInfo;
     }
@@ -1752,6 +1752,21 @@ class ModuleJsonUtil {
         boolean value = defaultValue;
         if (jsonObject != null && jsonObject.containsKey(key)) {
             value = jsonObject.getBooleanValue(key);
+        }
+        return value;
+    }
+
+    /**
+     * get the int from JSONObject by the key.
+     *
+     * @param jsonObject uncompress json object
+     * @param key value key
+     * @return the result
+     */
+    private static int getJsonIntValue(JSONObject jsonObject, String key) {
+        int value = 0;
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.getIntValue(key);
         }
         return value;
     }
