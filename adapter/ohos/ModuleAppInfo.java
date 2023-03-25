@@ -48,24 +48,9 @@ class ModuleAppInfo {
     public String label = "";
 
     /**
-     * Indicates the labels of app AppJson, for multilingual.
-     */
-    private HashMap<String, String> labels = new HashMap<>();
-
-    /**
-     * Indicates the type of bundle.
-     */
-    private String bundleType = "app";
-
-    /**
      * Indicates the description of app AppJson.
      */
     public String description = "";
-
-    /**
-     * Indicates the descriptions of app AppJson, for multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the vendor of app AppJson.
@@ -126,6 +111,21 @@ class ModuleAppInfo {
      * Indicates the deviceType of app AppJson.
      */
     public Map<String, ModuleDeviceType> deviceTypes = new HashMap<>();
+
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
+
+    /**
+     * Indicates the descriptions of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    /**
+     * Indicates the labels of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;

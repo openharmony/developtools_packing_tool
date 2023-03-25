@@ -62,6 +62,15 @@ class VerifyCollection {
     public int targetPriority = 0;
 
     /**
+     * Indicates the moduleNames of app.
+     */
+    List<String> moduleNames = new ArrayList<>();
+    /**
+     * Indicates the packageNames of app.
+     */
+    List<String> packageNames = new ArrayList<>();
+
+    /**
      * Indicates the split of atomicService in app.
      */
     private boolean split = true;
@@ -80,15 +89,6 @@ class VerifyCollection {
      * Indicates the type of bundle
      */
     private String bundleType = "app";
-
-    /**
-     * Indicates the moduleNames of app.
-     */
-    List<String> moduleNames = new ArrayList<>();
-    /**
-     * Indicates the packageNames of app.
-     */
-    List<String> packageNames = new ArrayList<>();
 
     public String getMain() {
         return main;
