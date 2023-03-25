@@ -1578,7 +1578,7 @@ public class JsonUtil {
             moduleFormInfo.scheduledUpdateTime = getJsonString(formObj, "scheduledUpdateTime");
         }
         if (formObj.containsKey("updateDuration")) {
-            moduleFormInfo.updateDuration = formObj.getIntValue("updateDuration");
+            moduleFormInfo.updateDuration = getJsonIntValue(formObj, "updateDuration");
         }
         if (formObj.containsKey("formConfigAbility")) {
             moduleFormInfo.formConfigAbility = getJsonString(formObj, "formConfigAbility");
@@ -1941,7 +1941,7 @@ public class JsonUtil {
             hqfVerifyInfo.setBundleName(appObj.getString(BUNDLENAME));
         }
         if (appObj.containsKey(VERSIONCODE)) {
-            hqfVerifyInfo.setVersionCode(appObj.getIntValue(VERSIONCODE));
+            hqfVerifyInfo.setVersionCode(getJsonIntValue(appObj, VERSIONCODE));
         }
         if (appObj.containsKey(VERSIONNAME)) {
             hqfVerifyInfo.setVersionName(appObj.getString(VERSIONNAME));
@@ -1976,6 +1976,21 @@ public class JsonUtil {
         boolean value = defaultValue;
         if (jsonObject != null && jsonObject.containsKey(key)) {
             value = jsonObject.getBooleanValue(key);
+        }
+        return value;
+    }
+
+    /**
+     * get the int from JSONObject by the key.
+     *
+     * @param jsonObject uncompress json object
+     * @param key value key
+     * @return the result
+     */
+    private static int getJsonIntValue(JSONObject jsonObject, String key) {
+        int value = 0;
+        if (jsonObject != null && jsonObject.containsKey(key)) {
+            value = jsonObject.getIntValue(key);
         }
         return value;
     }
