@@ -124,7 +124,8 @@
                 "compressNativeLibs",
                 "atomicService",
                 "targetModuleName",
-                "targetPriority"
+                "targetPriority",
+                "proxyDatas"
               ]
             },
             "required": [
@@ -170,7 +171,8 @@
                 "compressNativeLibs",
                 "atomicService",
                 "targetModuleName",
-                "targetPriority"
+                "targetPriority",
+                "proxyDatas"
               ]
             },
             "required": [
@@ -1220,6 +1222,63 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "proxyDatas": {
+          "description": "Indicates all the proxy data of the module.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "uri"
+            ],
+            "propertyNames": {
+              "enum": [
+                "uri",
+                "requiredReadPermission",
+                "requiredWritePermission",
+                "metadata"
+              ]
+            },
+            "properties": {
+              "uri": {
+                "description": "Indicates the uri of the data proxy.",
+                "type": "string",
+                "maxLength": 255
+              },
+              "requiredReadPermission": {
+                "description": "Indicates the permission required to read data.",
+                "type": "string",
+                "maxLength": 255
+              },
+              "requiredWritePermission": {
+                "description": "Indicates the permission required to write data.",
+                "type": "string",
+                "maxLength": 255
+              },
+              "metadata": {
+                "description": "Indicates the metadata of the proxy.",
+                "type": "object",
+                "propertyNames": {
+                  "enum": [
+                    "name",
+                    "resource"
+                  ]
+                },
+                "properties": {
+                  "name": {
+                    "description": "Indicates the key of a data element. The value is a string with a maximum of 255 bytes.",
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "resource": {
+                    "description": "Indicates the resource of a data element.",
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
