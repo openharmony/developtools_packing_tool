@@ -120,6 +120,7 @@ public class Compressor {
     private static final String RELEASE = "Release";
     private static final String AP_PATH_NAME = "ap/";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String TYPE_SHARED = "shared";
 
 
     // set timestamp to get fixed MD5
@@ -343,6 +344,10 @@ public class Compressor {
         if (!checkStageAtomicService(jsonString)) {
             LOG.error("Error: checkStageAtomicService failed!");
             return false;
+        }
+        String moduleType = ModuleJsonUtil.parseStageIsEntry(jsonString);
+        if (TYPE_SHARED.equals(moduleType)) {
+            LOG.warning("Compress mode is hap, but module type is shared.");
         }
         return true;
     }
