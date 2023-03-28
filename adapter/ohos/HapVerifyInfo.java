@@ -111,10 +111,6 @@ class HapVerifyInfo {
 
     private String bundleType = "app";
 
-    private boolean sharedHsp = false;
-
-    private String compatiblePolicy = "";
-
     private String targetBundleName = "";
 
     private int targetPriority = 0;
@@ -436,21 +432,6 @@ class HapVerifyInfo {
 
     public void setFileLength(long fileLength) {
         this.fileLength = fileLength;
-    }
-
-    public boolean isSharedHsp() {
-        return sharedHsp;
-    }
-
-    public void setSharedHsp(boolean sharedHsp) {
-        this.sharedHsp = sharedHsp;
-    }
-
-    public String getCompatiblePolicy() {
-        return compatiblePolicy;
-    }
-    public void setCompatiblePolicy(String compatiblePolicy) {
-        this.compatiblePolicy = compatiblePolicy;
     }
 
     public void setEntrySizeLimit(int limit) {

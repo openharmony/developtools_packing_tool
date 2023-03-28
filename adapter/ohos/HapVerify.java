@@ -342,7 +342,7 @@ class HapVerify {
             }
         }
         if (hapVerifyInfos.isEmpty()
-                || (entryHapVerifyInfos.isEmpty() && !hapVerifyInfos.get(0).isSharedHsp())) {
+                || (entryHapVerifyInfos.isEmpty() && (!SHARED_LIBRARY.equals(hapVerifyInfos.get(0).getBundleType())))) {
             LOG.warning("Warning: has no entry module.");
         }
 
