@@ -316,7 +316,8 @@ public class Compressor {
             if (TYPE_SHARED.equals(moduleType)) {
                 LOG.warning("Compress mode is hap, but module type is shared.");
             }
-            if (ModuleJsonUtil.parseSharedApp(jsonString)) {
+            String bundleType = ModuleJsonUtil.parseStageBundleType(jsonString);
+            if (TYPE_SHARED.equals(bundleType)) {
                 LOG.warning("Compress mode is hap, but app type is shared.");
             }
             compressHapModeForModule(utility);
@@ -2066,7 +2067,8 @@ public class Compressor {
             return checkSharedAppIsValid(hapVerifyInfos);
         } else {
             for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
-                if (hapVerifyInfo.isSharedHsp()) {
+                String bundleType = hapVerifyInfo.getBundleType();
+                if (TYPE_SHARED.equals(bundleType)) {
                     LOG.error("Compressor::checkHapIsValid shared app should not be included in --hsp-path.");
                     return false;
                 }
@@ -2299,7 +2301,8 @@ public class Compressor {
             LOG.error("Shared hsp cannot depend on other modules.");
             return false;
         }
-        if (!sharedHspInfo.isSharedHsp()) {
+        String bundleType = sharedHspInfo.getBundleType();
+        if (TYPE_SHARED.equals(bundleType)) {
             LOG.error("The input hsp is invalid for shared app.");
             return false;
         }

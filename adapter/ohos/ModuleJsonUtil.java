@@ -81,7 +81,6 @@ class ModuleJsonUtil {
     private static final String MAIN = "main";
     private static final String PRELOADS = "preloads";
     private static final String SHARED = "shared";
-    private static final String COMPATIBLE_POLICY = "compatiblePolicy";
     private static final String REQUEST_PERMISSIONS = "requestPermissions";
     private static final String TARGET_MODULE_NAME = "targetModuleName";
     private static final String TARGET_PRIORITY = "targetPriority";
@@ -929,8 +928,6 @@ class ModuleJsonUtil {
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setBundleType(parseStageBundleType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPreloadItems(parseAtomicServicePreloads(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setSharedHsp(parseSharedApp(hapVerifyInfo.getProfileStr()));
-        hapVerifyInfo.setCompatiblePolicy(parseCompatiblePolicy(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetBundleName(parseTargetBundleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetPriority(parseTargetPriority(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
@@ -1296,6 +1293,15 @@ class ModuleJsonUtil {
             LOG.error("parse failed, input module.json is invalid, module.json has no module.");
             throw new BundleException("parse failed, input module.json is invalid, module.json has no module.");
         }
+        if (!moduleObj.containsKey(TYPE)) {
+            LOG.error("parse failed, input module.json is invalid, module.json has no type.");
+            throw new BundleException("parse failed, input module.json is invalid, module.json has no type.");
+        }
+        boolean isShared = false;
+        String type = moduleObj.getString(TYPE);
+        if (type != null && SHARED.equals(type)) {
+            isShared = true;
+        }
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
@@ -1319,6 +1325,12 @@ class ModuleJsonUtil {
                     throw new BundleException("installationFree must be true when bundleType is atomicService.");
                 }
                 return ATOMIC_SERVICE;
+            } else if (SHARED.equals(bundleType)) {
+                if (!isShared) {
+                    LOG.error("type must be shared when bundleType is shared.");
+                    throw new BundleException("type must be shared when bundleType is shared.");
+                }
+                return SHARED;
             } else {
                 LOG.error("bundleType is invalid in app.json.");
                 throw new BundleException("bundleType is invalid in app.json.");
@@ -1371,21 +1383,6 @@ class ModuleJsonUtil {
             throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain app.");
         }
         return appObj;
-    }
-
-    static boolean parseSharedApp(String jsonString) throws BundleException {
-        JSONObject appObj = getAppObj(jsonString);
-        JSONObject sharedObj = appObj.getJSONObject(SHARED);
-        return sharedObj != null;
-    }
-
-    static String parseCompatiblePolicy(String jsonString) throws BundleException {
-        JSONObject appObj = getAppObj(jsonString);
-        JSONObject sharedObj = appObj.getJSONObject(SHARED);
-        if (sharedObj != null && sharedObj.containsKey(COMPATIBLE_POLICY)) {
-            return sharedObj.getString(COMPATIBLE_POLICY);
-        }
-        return EMPTY_STRING;
     }
 
     static String parseTargetBundleName(String jsonString) throws BundleException {
@@ -1960,6 +1957,11 @@ class ModuleJsonUtil {
         } else if (bundleType.equals(ATOMIC_SERVICE)) {
             if (!installationFree) {
                 LOG.error("installationFree must be true when bundleType is atomicService.");
+                return false;
+            }
+        } else if (SHARED.equals(bundleType)) {
+            if (installationFree) {
+                LOG.error("installationFree must be false when bundleType is shared.");
                 return false;
             }
         } else {
