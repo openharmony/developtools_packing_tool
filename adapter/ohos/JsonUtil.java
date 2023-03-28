@@ -1969,9 +1969,9 @@ public class JsonUtil {
             if (moduleObj.containsKey(ORIGINAL_MODULE_HASH)) {
                 hqfVerifyInfo.setOriginalModuleHash(moduleObj.getString(ORIGINAL_MODULE_HASH));
             }
-        } catch(Exception e) {
-            LOG.error("parsePatch exception");
-            throw new BundleException("parsePatch exception");
+        } catch (JSONException e) {
+            LOG.error("parsePatch JSONException");
+            throw new BundleException("parsePatch JSONException");
         }
         return hqfVerifyInfo;
     }
