@@ -234,6 +234,7 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | 字段                           | 类型    | 描述                                   | 备注          |
 | ------------------------------ | ------- | -------------------------------------- | ------------- |
 | bundleName                     | String  | 标识app的包名称                        | NA            |
+| bundleType                     | String  | 标识bundle的类型，取值：<br/>- app：普通应用<br/>- atomicService：原子化服务 | NA        |
 | vendor                         | String  | 标识app的供应商信息                    | NA            |
 | releatedBundleName             | String  | 标识app相关bundle的包名                | NA            |
 | versionName                    | String  | 标识app中的versionName信息             | NA            |
@@ -260,6 +261,7 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 
 | 字段               | 类型                                           | 描述                                      | 备注                                                    |
 | ------------------ | ---------------------------------------------- | ----------------------------------------- | ------------------------------------------------------- |
+| isStageModule      | boolean                              | 标识hap包是否是stage模型<br/>- true：stage模型<br/>- false：FA模型 | NA                               |
 | packageStr         | String                                         | 标识hap包的包信息                         | FA模型特有                                              |
 | name               | String                                         | 标识当前module的名字                      | NA                                                      |
 | description        | String                                         | 标识hap包的描述信息                       | FA模型特有                                              |
@@ -280,6 +282,7 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | pages              | List\<String>                                  | 列举JS Component中每个页面信息            | stage模型新增                                           |
 | extensionAbilities | List\<ExtensionAbilityInfo>                    | 描述extensionAbility的配置信息            | stage模型新增                                           |
 | abilityFormInfos   | List\<AbilityFormInfo>                         | 描述卡片的信息                            | NA                                                      |
+| dependencies       | List\<DependencyItem>                | 描述模块的依赖共享库列表                         | NA                                         |
 
 ### 4.6 AbilityInfo结构体信息
 
@@ -489,6 +492,13 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | data       | List\<String> | 当前静态公共时间需要携带的额外数据数组 | Stage模型从staticSubscriber类型的Extension中获取 |
 | type       | List\<String> | 配置当前静态公共时间的类别数组         | Stage模型从staticSubscriber类型的Extension中获取 |
 | events     | List\<String> | 标识能够接收的意图的event值的集合      | Stage模型从staticSubscriber类型的Extension中获取 |
+
+### 4.26 DependencyItem结构体信息
+
+| 字段           | 类型   | 描述             | 备注 |
+|--------------| ------ |----------------| ---- |
+| bundleName   | String | 共享包的bundleName | NA   |
+| moduleName   | String | 共享包的moduleName | NA   |
 
 
 
