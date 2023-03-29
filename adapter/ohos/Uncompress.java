@@ -773,8 +773,17 @@ public class Uncompress {
         ProfileInfo profileInfo = JsonUtil.parseProfileInfo(hapZipInfo.getHarmonyProfileJsonStr(),
             hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr(), hapZipInfo.getHapFileName());
         profileInfo.hapName = hapZipInfo.getHapFileName();
+        profileInfo.appInfo.setBundleType(getFABundleType(profileInfo));
         uncomperssResult.addProfileInfoStr(hapZipInfo.getHarmonyProfileJsonStr());
         uncomperssResult.addProfileInfo(profileInfo);
+    }
+
+    private static String getFABundleType(ProfileInfo profileInfo) {
+        String bundleType = "app";
+        if (profileInfo.hapInfo.distro.installationFree == 1) {
+            bundleType = "atomicService";
+        }
+        return bundleType;
     }
 
     private static HapZipInfo unZipHapFileFromInputStream(InputStream input) throws BundleException, IOException {
