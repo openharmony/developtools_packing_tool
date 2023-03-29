@@ -55,6 +55,15 @@ class ModuleInfo {
      */
     public String mainElement = "";
     /**
+     * Indicates hap is stage or FA.
+     */
+    public boolean isStageModule = false;
+
+    /**
+     * Indicates dependencies config.
+     */
+    public List<DependencyItem> dependenies = new ArrayList<>();
+    /**
      * Indicates the devicesTypes of ModuleInfo.
      */
     public List<String> deviceTypes = new ArrayList<String>();

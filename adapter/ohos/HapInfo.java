@@ -24,6 +24,10 @@ import java.util.List;
  */
 public class HapInfo {
     /**
+     * Indicates hap is stage or FA.
+     */
+    public boolean isStageModule = false;
+    /**
      * Indicates the package of HapInfo.
      */
     public String packageStr = "";
@@ -151,6 +155,11 @@ public class HapInfo {
      * Indicates the module atomic service of ModuleInfo.
      */
     public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    /**
+     * Indicates the dependency config.
+     */
+    public List<DependencyItem> dependencies = new ArrayList<>();
 
     /**
      * get the customize Data value defined in this module.
