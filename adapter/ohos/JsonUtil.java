@@ -1955,7 +1955,8 @@ public class JsonUtil {
             JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
             if (moduleObj == null) {
                 LOG.error("Error: parse failed, input patch.json is invalid, patch.json has no module!");
-                throw new BundleException("Error: parse failed, input patch.json is invalid, patch.json has no module!");
+                throw new BundleException("Error: parse failed, input patch.json is invalid,"
+                    + " patch.json has no module!");
             }
             if (moduleObj.containsKey(NAME)) {
                 hqfVerifyInfo.setModuleName(moduleObj.getString(NAME));
@@ -1964,7 +1965,8 @@ public class JsonUtil {
                 hqfVerifyInfo.setType(moduleObj.getString(TYPE));
             }
             if (moduleObj.containsKey(DEVICE_TYPES)) {
-                hqfVerifyInfo.setDeviceTypes(JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class));
+                hqfVerifyInfo.setDeviceTypes(JSONObject.parseArray(getJsonString(moduleObj,
+                    DEVICE_TYPES), String.class));
             }
             if (moduleObj.containsKey(ORIGINAL_MODULE_HASH)) {
                 hqfVerifyInfo.setOriginalModuleHash(moduleObj.getString(ORIGINAL_MODULE_HASH));
