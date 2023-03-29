@@ -81,6 +81,9 @@ public class JsonUtil {
     private static final String MAIN = "main";
     private static final String PRELOADS = "preloads";
     private static final String MODULE_NAME = "moduleName";
+    private static final String DEPENDENCY_BUNDLE_NAME = "bundleName";
+    private static final String DEPENDENCY_MODULE_NAME = "moduleName";
+    private static final String DEPENDENCIES = "dependencies";
 
 
     /**
@@ -918,6 +921,13 @@ public class JsonUtil {
                     moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);
         }
 
+        moduleProfileInfo.moduleInfo.isStageModule = true;
+        if (jsonObject.containsKey("app") && jsonObject.containsKey("module")) {
+            JSONObject appJson = jsonObject.getJSONObject("app");
+            JSONObject moduleJson = jsonObject.getJSONObject("module");
+            moduleProfileInfo.moduleInfo.dependenies.addAll(parseDenpendencies(appJson, moduleJson));
+        }
+
         // parse appName
         for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
             for (SkillInfo skill : abilityInfo.skills) {
@@ -931,6 +941,35 @@ public class JsonUtil {
 
         return moduleProfileInfo;
     }
+
+    private static List<DependencyItem> parseDenpendencies(JSONObject appJson, JSONObject moduleJson)
+            throws BundleException {
+        if (appJson == null || moduleJson == null) {
+            LOG.error("JsonUtil::parseModuleHapInfo exception: moduleJson or appJson is null.");
+            throw new BundleException("Parse module hap info failed, moduleJson or appJson is null.");
+        }
+        String bundleName = getJsonString(appJson, BUNDLENAME);
+        List<DependencyItem> dependencyItemList = new ArrayList<>();
+        if (!moduleJson.containsKey(DEPENDENCIES)) {
+            return dependencyItemList;
+        }
+        JSONArray dependencyObjList = moduleJson.getJSONArray(DEPENDENCIES);
+        for (int i = 0; i < dependencyObjList.size(); ++i) {
+            JSONObject object = dependencyObjList.getJSONObject(i);
+            DependencyItem item = new DependencyItem();
+            if (object.containsKey(DEPENDENCY_BUNDLE_NAME)) {
+                item.setBundleName(object.getString(DEPENDENCY_BUNDLE_NAME));
+            } else {
+                item.setBundleName(bundleName);
+            }
+            if (object.containsKey(DEPENDENCY_MODULE_NAME)) {
+                item.setModuleName(object.getString(DEPENDENCY_MODULE_NAME));
+            }
+            dependencyItemList.add(item);
+        }
+        return dependencyItemList;
+    }
+
 
     /**
      * parse module hap info
