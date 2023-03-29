@@ -39,7 +39,9 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "installationFree",
-                "atomicService"
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -122,9 +124,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService",
-                "targetModuleName",
-                "targetPriority"
+                "atomicService"
               ]
             },
             "required": [
@@ -168,9 +168,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService",
-                "targetModuleName",
-                "targetPriority"
+                "atomicService"
               ]
             },
             "required": [

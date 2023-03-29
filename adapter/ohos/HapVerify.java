@@ -90,7 +90,7 @@ class HapVerify {
         }
         // check targetModuleName
         if (!checkTargetModuleNameIsExisted(hapVerifyInfos)) {
-            LOG.error("Ability name is duplicated.");
+            LOG.error("target module is not found.");
             return false;
         }
         return true;
@@ -300,13 +300,18 @@ class HapVerify {
         List<String> targetModuleList = new ArrayList<>();
         List<String> moduleList = new ArrayList<>();
         for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+            if (!hapInfo.getTargetBundleName().isEmpty()) {
+                return true;
+            }
             if (!hapInfo.getTargetModuleName().isEmpty()) {
                 internalOverlayHap.add(hapInfo);
                 targetModuleList.add(hapInfo.getTargetModuleName());
                 continue;
             }
             nonOverlayHap.add(hapInfo);
-            moduleList.add(hapInfo.getModuleName());
+            if (!SHARED_LIBRARY.equals(hapInfo.getModuleType())) {
+                moduleList.add(hapInfo.getModuleName());
+            }
         }
         if (internalOverlayHap.isEmpty()) {
             return true;
@@ -319,6 +324,8 @@ class HapVerify {
             LOG.error("target modules are needed to pack with overlay module.");
             return false;
         }
+
+
         return true;
     }
 

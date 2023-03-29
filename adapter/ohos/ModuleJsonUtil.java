@@ -1681,26 +1681,6 @@ class ModuleJsonUtil {
     }
 
     /**
-     * is existed abilities in module.json
-     *
-     * @param jsonString is the file content of module.json
-     * @return the result
-     */
-    public static boolean isExistedStageAbilities(String jsonString) throws BundleException {
-        return isExistedProperty(jsonString, MODULE, ABILITIES);
-    }
-
-    /**
-     * is existed extensionAbilities in module.json
-     *
-     * @param jsonString is the file content of module.json
-     * @return the result
-     */
-    public static boolean isExistedStageExtensionAbilities(String jsonString) throws BundleException {
-        return isExistedProperty(jsonString, MODULE, EXTENSION_ABILITIES);
-    }
-
-    /**
      * is existed requestPermission in module.json
      *
      * @param jsonString is the file content of module.json
