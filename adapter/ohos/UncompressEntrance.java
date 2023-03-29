@@ -88,6 +88,7 @@ public class UncompressEntrance {
     private static final String APPQF_SUFFIX = ".appqf";
     private static final String APP_SUFFIX = ".app";
     private static final String HAP_SUFFIX = ".hap";
+    private static final String HSP_SUFFIX = ".hsp";
 
     private static final int EXIT_STATUS_NORMAL = 0;
     private static final int EXIT_STATUS_EXCEPTION = 1;
@@ -366,7 +367,8 @@ public class UncompressEntrance {
 
         Utility utility = new Utility();
         utility.setHapPath(hapPath);
-        if (!UncompressVerify.isPathValid(utility.getHapPath(), true, HAP_SUFFIX)) {
+        if (!UncompressVerify.isPathValid(utility.getHapPath(), true, HAP_SUFFIX) &&
+                !UncompressVerify.isPathValid(utility.getHapPath(), true, HSP_SUFFIX)) {
             LOG.error("UncompressEntrance::parseHap must input a hap file!");
             compressResult.setResult(false);
             compressResult.setMessage("ParseHap hapPath is invalid");

@@ -19,7 +19,7 @@ package ohos;
  * collection of dependency items
  * those members will be verified in hapVerify.
  */
-class DependencyItem {
+public class DependencyItem {
     /**
      * Indicates the bundle name of dependent bundle.
      */
