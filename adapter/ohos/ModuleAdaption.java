@@ -160,6 +160,8 @@ class ModuleAdaption {
         hapInfo.commonEvents = moduleInfo.commonEvents;
         hapInfo.definePermissions = moduleInfo.definePermissions;
         hapInfo.moduleAtomicService = moduleInfo.moduleAtomicService;
+        hapInfo.isStageModule = moduleInfo.isStageModule;
+        hapInfo.dependencies = moduleInfo.dependenies;
         return hapInfo;
     }
 

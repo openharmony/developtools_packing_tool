@@ -25,6 +25,10 @@ import java.util.List;
  */
 public class HapInfo {
     /**
+     * Indicates hap is stage or FA.
+     */
+    public boolean isStageModule = false;
+    /**
      * Indicates the package of HapInfo.
      */
     public String packageStr = "";
@@ -91,6 +95,11 @@ public class HapInfo {
      * Indicates the metaData of HapInfo.
      */
     public MetaData metaData = new MetaData();
+
+    /**
+     * Indicates the dependency config.
+     */
+    public List<DependencyItem> dependencies = new ArrayList<>();
 
     /**
      * Indicates the HapInfo is Js app.

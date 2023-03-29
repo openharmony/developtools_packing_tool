@@ -29,6 +29,15 @@ class ModuleInfo {
     private final String HML = "hml";
 
     /**
+     * Indicates hap is stage or FA.
+     */
+    public boolean isStageModule = false;
+
+    /**
+     * Indicates dependencies config.
+     */
+    public List<DependencyItem> dependenies = new ArrayList<>();
+    /**
      * Indicates the hap name of ModuleInfo.
      */
     public String hapName = "";
