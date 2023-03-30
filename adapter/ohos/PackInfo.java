@@ -47,9 +47,4 @@ public class PackInfo {
      * Indicates the deliveryWithInstall of PackInfo.
      */
     public boolean deliveryWithInstall = false;
-
-    /**
-     * Indicates the deliveryWithInstall of PackInfo.
-     */
-    public boolean installationFree = false;
 }
