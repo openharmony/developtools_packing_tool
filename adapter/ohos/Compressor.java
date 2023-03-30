@@ -120,7 +120,7 @@ public class Compressor {
     private static int entryModuleSizeLimit = 2;
     private static int notEntryModuleSizeLimit = 2;
     private static int sumModuleSizeLimit = 10;
-
+    private static boolean isOverlay = false;
     private ZipOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private List<String> list = new ArrayList<String>();
@@ -293,12 +293,17 @@ public class Compressor {
             String jsonString = optional.get();
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("checkStageAtomicService failed.");
-                throw new BundleException("checkStageHsp failed.");
+                throw new BundleException("checkStageAtomicService failed.");
+            }
+            // check whether is an overlay hsp or not
+            if (!checkStageOverlayCfg(jsonString)) {
+                LOG.error("checkStageOverlayCfg failed.");
+                throw new BundleException("checkStageOverlayCfg failed.");
             }
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
             if (!TYPE_SHARED.equals(moduleType)) {
                 LOG.error("module type must be shared.");
-                throw new BundleException("checkStageHsp failed.");
+                throw new BundleException("compressHsp failed.");
             }
         }
         compressHSPMode(utility);
@@ -341,10 +346,6 @@ public class Compressor {
             LOG.error("checkStageAtomicService failed.");
             return false;
         }
-        if (!checkStageOverlayCfg(jsonString)) {
-            LOG.error("checkStageOverlayCfg failed.");
-            return false;
-        }
         return true;
     }
 
@@ -382,12 +383,9 @@ public class Compressor {
         // check module
         String targetModuleName = ModuleJsonUtil.getStageTargetModuleName(jsonString);
         if (!targetModuleName.isEmpty()) {
-            // check targetModuleName and abilities, extensionAbilities, requestPermission
-            if (ModuleJsonUtil.isExistedStageAbilities(jsonString) ||
-                ModuleJsonUtil.isExistedStageExtensionAbilities(jsonString) ||
-                ModuleJsonUtil.isExistedStageRequestPermissions(jsonString)) {
-                LOG.error("targetModuleName cannot be existed with abilities, extensionAbilities or" +
-                    "requestPermission simultaneously.");
+            // check targetModuleName and requestPermission
+            if (ModuleJsonUtil.isExistedStageRequestPermissions(jsonString)) {
+                LOG.error("targetModuleName cannot be existed with requestPermissions.");
                 return false;
             }
             // check targetModuleName and name
@@ -397,7 +395,7 @@ public class Compressor {
             }
         } else {
             if (ModuleJsonUtil.isExistedStageModuleTargetPriority(jsonString)) {
-                LOG.error("targetPriority cannot be existed without the targetModuleName in app.json.");
+                LOG.error("targetPriority cannot be existed without the targetModuleName in module.json.");
                 return false;
             }
         }
@@ -414,7 +412,7 @@ public class Compressor {
             }
         } else {
             if (ModuleJsonUtil.isExistedStageAppTargetPriority(jsonString)) {
-                LOG.error("targetPriority cannot be existed without the targetBundleName in module.json.");
+                LOG.error("targetPriority cannot be existed without the targetBundleName in app.json.");
                 return false;
             }
         }
@@ -2063,7 +2061,13 @@ public class Compressor {
             }
         }
         if (isSharedApp) {
-            return checkSharedAppIsValid(hapVerifyInfos);
+            boolean res = checkSharedAppIsValid(hapVerifyInfos);
+            if (!res) {
+                return false;
+            }
+            if (!isOverlay) {
+                return true;
+            }
         } else {
             for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
                 if (hapVerifyInfo.isSharedHsp()) {
@@ -2291,7 +2295,19 @@ public class Compressor {
     }
 
     private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) {
-        if (hapVerifyInfos.isEmpty() || !ONE.equals(hapVerifyInfos.size())) {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("no module included");
+            return false;
+        }
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            if (!hapVerifyInfo.getTargetBundleName().isEmpty()) {
+                isOverlay = true;
+                return true;
+            }
+        }
+
+        if (!ONE.equals(hapVerifyInfos.size())) {
+            LOG.error("Shared app only can contain one module.");
             return false;
         }
         HapVerifyInfo sharedHspInfo = hapVerifyInfos.get(0);
