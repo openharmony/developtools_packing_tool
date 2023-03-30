@@ -858,6 +858,9 @@ public class Compressor {
                             + zipEntry.getName());
                 } else {
                     // copy selectedHap to tempDir
+                    if (tempDir == null || "".equals(tempDir)) {
+                        throw new BundleException("Compressor::copyHapFromApp tempDir is empty");
+                    }
                     file = new File(tempDir + File.separator + zipEntry.getName());
                     selectedHaps.add(file.getName());
                     selectedHapsInApp.add(file.getName());
