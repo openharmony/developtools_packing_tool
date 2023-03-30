@@ -858,12 +858,15 @@ public class Compressor {
                             + zipEntry.getName());
                 } else {
                     // copy selectedHap to tempDir
+                    if (tempDir == null || EMPTY_STRING.equals(tempDir)) {
+                        throw new BundleException("Compressor::copyHapFromApp tempDir is empty.");
+                    }
                     file = new File(tempDir + File.separator + zipEntry.getName());
                     selectedHaps.add(file.getName());
                     selectedHapsInApp.add(file.getName());
                 }
                 if (file == null || !file.exists()) {
-                    throw new BundleException("Compressor::copyHapFromApp file is not exists");
+                    throw new BundleException("Compressor::copyHapFromApp file is not exists.");
                 }
                 outputStream = new FileOutputStream(file);
                 inputStream = zipFile.getInputStream(zipEntry);
