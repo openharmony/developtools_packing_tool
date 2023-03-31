@@ -98,6 +98,7 @@ declare -a unpack_class=(
             "APPQFResult.java"
             "ModuleAtomicService.java"
             "PreloadItem.java"
+            "DependencyItem.java"
             )
 unpack_class_length=${#unpack_class[@]}
 for ((i=0; i<${unpack_class_length};++i))

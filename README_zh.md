@@ -231,55 +231,58 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 
 ### 4.4 AppInfo结构体信息
 
-| 字段                           | 类型    | 描述                                   | 备注          |
-| ------------------------------ | ------- | -------------------------------------- | ------------- |
-| bundleName                     | String  | 标识app的包名称                        | NA            |
-| vendor                         | String  | 标识app的供应商信息                    | NA            |
-| releatedBundleName             | String  | 标识app相关bundle的包名                | NA            |
-| versionName                    | String  | 标识app中的versionName信息             | NA            |
-| versionCode                    | String  | 标识app中的versionCode信息             | NA            |
-| targetApiVersion               | int     | 标识应用运行需要的API目标版本          | NA            |
-| compatibleApiVersion           | int     | 标识应用兼容的API版本                  | NA            |
-| appName                        | String  | 标识显示在桌面上的ability的label       | NA            |
-| releaseType                    | String  | 标识应用运行需要的API目标版本的类型    | NA            |
-| shellVersionCode               | String  | 标识HarmonyOS中的API版本               | NA            |
-| shellVersionName               | String  | 标识HarmonyOS中的API版本名称           | NA            |
-| multiFrameworkBundle           | String  | 标识双框架下app的bundleName            | NA            |
-| debug                          | boolean | 标识应用是否可调试                     | NA            |
-| icon                           | String  | 标识应用的图标路径                     | NA            |
-| label                          | String  | 标识应用的label                        | NA            |
-| description                    | String  | 标识App的描述信息                      | stage模型新增 |
-| minCompatibleVersionCode       | int     | 标识该app pack能够兼容的最低历史版本号 | NA            |
-| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知           | stage模型新增 |
-| jointUserid                    | String  | 标签标识一个用的共享userid             | FA模型特有    |
-| process                        | String  | 标识应用的进程名                       | FA模型特有    |
-| directLaunch                   | String  | 标识应用是否支持未解锁直接启动模式     | NA            |
-| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知           | stage模型特有 |
+| 字段                             | 类型    | 描述                                                       | 备注        |
+|--------------------------------| ------- |----------------------------------------------------------|-----------|
+| bundleName                     | String  | 标识app的包名称                                                | NA        |
+| bundleType                     | String  | 标识bundle的类型，取值：<br/>- app：普通应用<br/>- atomicService：原子化服务 | NA        |
+| vendor                         | String  | 标识app的供应商信息                                              | NA        |
+| releatedBundleName             | String  | 标识app相关bundle的包名                                         | NA        |
+| versionName                    | String  | 标识app中的versionName信息                                     | NA        |
+| versionCode                    | String  | 标识app中的versionCode信息                                     | NA        |
+| targetApiVersion               | int     | 标识应用运行需要的API目标版本                                         | NA        |
+| compatibleApiVersion           | int     | 标识应用兼容的API版本                                             | NA        |
+| appName                        | String  | 标识显示在桌面上的ability的label                                   | NA        |
+| releaseType                    | String  | 标识应用运行需要的API目标版本的类型                                      | NA        |
+| shellVersionCode               | String  | 标识HarmonyOS中的API版本                                       | NA        |
+| shellVersionName               | String  | 标识HarmonyOS中的API版本名称                                     | NA        |
+| multiFrameworkBundle           | String  | 标识双框架下app的bundleName                                     | NA        |
+| debug                          | boolean | 标识应用是否可调试                                                | NA        |
+| icon                           | String  | 标识应用的图标路径                                                | NA        |
+| label                          | String  | 标识应用的label                                               | NA        |
+| description                    | String  | 标识App的描述信息                                               | stage模型新增 |
+| minCompatibleVersionCode       | int     | 标识该app pack能够兼容的最低历史版本号                                  | NA        |
+| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                           | stage模型新增 |
+| jointUserid                    | String  | 标签标识一个用的共享userid                                         | FA模型特有    |
+| process                        | String  | 标识应用的进程名                                                 | FA模型特有    |
+| directLaunch                   | String  | 标识应用是否支持未解锁直接启动模式                                        | NA        |
+| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                           | stage模型特有 |
 
 ### 4.5 HapInfo结构体信息
 
-| 字段               | 类型                                           | 描述                                      | 备注                                                    |
-| ------------------ | ---------------------------------------------- | ----------------------------------------- | ------------------------------------------------------- |
-| packageStr         | String                                         | 标识hap包的包信息                         | FA模型特有                                              |
-| name               | String                                         | 标识当前module的名字                      | NA                                                      |
-| description        | String                                         | 标识hap包的描述信息                       | FA模型特有                                              |
-| supporteModes      | List\<String>                                  | 标识hap包的支持的模式                     | NA                                                      |
-| abilities          | AbilityInfo的数组                              | 标识hap包ability信息                      | NA                                                      |
-| distro             | Distro结构体                                   | 标识hap包的distro信息                     | NA                                                      |
-| deviceType         | List\<String>                                  | 标识hap可以运行在哪类设备上               | 对应stage模型中的deviceTypes                            |
-| metadata           | MetaData结构体（见下述metaData）               | 标识Hap的自定义元信息                     | NA                                                      |
-| isJs               | boolean                                        | 标识该应用是否是js应用                    | FA模型特有                                              |
-| reqPermissions     | ReqPermission结构体数组（见下述ReqPermission） | 标识应用申请的权限的集合                  | 对应stage模型的requestPermissions                       |
-| commonEvents       | CommonEvent结构体（见下述CommentEvent）        | 标识静态事件                              | NA                                                      |
-| shortcuts          | Shortcut结构体数组（见下述Shortcut）           | 标识应用的shortcuts信息                   | NA                                                      |
-| distrofilter       | Distrofilter结构体                             | 标识应用市场按设备形态分发的信息          | NA                                                      |
-| srcEntrance        | String                                         | 标识hap所对应的入口js代码路径             | stage模型新增                                           |
-| process            | String                                         | 标识hap的进程名                           | stage模型新增                                           |
-| mainElement        | String                                         | 标识hap的入口ability名称或者extension名称 | stage模型新增，FA模型将mainAbility的值赋值给mainElement |
-| unSyntax           | String                                         | 定义该JS Component的语法类型              | stage模型新增                                           |
-| pages              | List\<String>                                  | 列举JS Component中每个页面信息            | stage模型新增                                           |
-| extensionAbilities | List\<ExtensionAbilityInfo>                    | 描述extensionAbility的配置信息            | stage模型新增                                           |
-| abilityFormInfos   | List\<AbilityFormInfo>                         | 描述卡片的信息                            | NA                                                      |
+| 字段                 | 类型                                   | 描述                                                   | 备注                                         |
+|--------------------|--------------------------------------|------------------------------------------------------|--------------------------------------------|
+| isStageModule      | boolean                              | 标识hap包是否是stage模型<br/>- true：stage模型<br/>- false：FA模型 | NA                               |
+| packageStr         | String                               | 标识hap包的包信息                                           | FA模型特有                                     |
+| name               | String                               | 标识当前module的名字                                        | NA                                         |
+| description        | String                               | 标识hap包的描述信息                                          | FA模型特有                                     |
+| supporteModes      | List\<String>                        | 标识hap包的支持的模式                                         | NA                                         |
+| abilities          | AbilityInfo的数组                       | 标识hap包ability信息                                      | NA                                         |
+| distro             | Distro结构体                            | 标识hap包的distro信息                                      | NA                                         |
+| deviceType         | List\<String>                        | 标识hap可以运行在哪类设备上                                      | 对应stage模型中的deviceTypes                     |
+| metadata           | MetaData结构体（见下述metaData）             | 标识Hap的自定义元信息                                         | NA                                         |
+| isJs               | boolean                              | 标识该应用是否是js应用                                         | FA模型特有                                     |
+| reqPermissions     | ReqPermission结构体数组（见下述ReqPermission） | 标识应用申请的权限的集合                                         | 对应stage模型的requestPermissions               |
+| commonEvents       | CommonEvent结构体（见下述CommentEvent）      | 标识静态事件                                               | NA                                         |
+| shortcuts          | Shortcut结构体数组（见下述Shortcut）           | 标识应用的shortcuts信息                                     | NA                                         |
+| distrofilter       | Distrofilter结构体                      | 标识应用市场按设备形态分发的信息                                     | NA                                         |
+| srcEntrance        | String                               | 标识hap所对应的入口js代码路径                                    | stage模型新增                                  |
+| process            | String                               | 标识hap的进程名                                            | stage模型新增                                  |
+| mainElement        | String                               | 标识hap的入口ability名称或者extension名称                       | stage模型新增，FA模型将mainAbility的值赋值给mainElement |
+| unSyntax           | String                               | 定义该JS Component的语法类型                                 | stage模型新增                                  |
+| pages              | List\<String>                        | 列举JS Component中每个页面信息                                | stage模型新增                                  |
+| extensionAbilities | List\<ExtensionAbilityInfo>          | 描述extensionAbility的配置信息                              | stage模型新增                                  |
+| abilityFormInfos   | List\<AbilityFormInfo>               | 描述卡片的信息                                              | NA                                         |
+| dependencies       | List\<DependencyItem>                | 描述模块的依赖共享库列表                                       | NA                                         |
 
 ### 4.6 AbilityInfo结构体信息
 
@@ -490,6 +493,12 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | type       | List\<String> | 配置当前静态公共时间的类别数组         | Stage模型从staticSubscriber类型的Extension中获取 |
 | events     | List\<String> | 标识能够接收的意图的event值的集合      | Stage模型从staticSubscriber类型的Extension中获取 |
 
+### 4.26 DependencyItem结构体信息
+
+| 字段           | 类型   | 描述             | 备注 |
+|--------------| ------ |----------------| ---- |
+| bundleName   | String | 共享包的bundleName | NA   |
+| moduleName   | String | 共享包的moduleName | NA   |
 
 
 
