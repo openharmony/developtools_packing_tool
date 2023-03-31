@@ -39,7 +39,9 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "installationFree",
-                "atomicService"
+                "atomicService",
+                "targetModuleName",
+                "targetPriority"
               ]
             },
             "required": [
@@ -123,8 +125,6 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "atomicService",
-                "targetModuleName",
-                "targetPriority",
                 "proxyDatas"
               ]
             },
@@ -170,8 +170,6 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "atomicService",
-                "targetModuleName",
-                "targetPriority",
                 "proxyDatas"
               ]
             },
@@ -1243,6 +1241,7 @@
               "uri": {
                 "description": "Indicates the uri of the data proxy.",
                 "type": "string",
+                "pattern": "^datashareproxy: \\/\\/",
                 "maxLength": 255
               },
               "requiredReadPermission": {
@@ -1273,6 +1272,7 @@
                   "resource": {
                     "description": "Indicates the resource of a data element.",
                     "type": "string",
+                    "pattern": "^[$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
                     "maxLength": 255
                   }
                 }
