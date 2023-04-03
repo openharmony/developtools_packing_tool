@@ -157,8 +157,8 @@ class ModuleAdaption {
         hapInfo.commonEvents = moduleInfo.commonEvents;
         hapInfo.definePermissions = moduleInfo.definePermissions;
         hapInfo.moduleAtomicService = moduleInfo.moduleAtomicService;
-        hapInfo.appModel = moduleInfo.appModel;
-        hapInfo.dependencies = moduleInfo.dependenies;
+        hapInfo.setAppModel(moduleInfo.getAppModel());
+        hapInfo.setDependencies(moduleInfo.getDependenies());
         return hapInfo;
     }
 
