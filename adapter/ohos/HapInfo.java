@@ -26,7 +26,7 @@ public class HapInfo {
     /**
      * Indicates hap is stage or FA.
      */
-    public AppModel appModel = AppModel.FA;
+    private AppModel appModel = AppModel.FA;
     /**
      * Indicates the package of HapInfo.
      */
@@ -159,7 +159,15 @@ public class HapInfo {
     /**
      * Indicates the dependency config.
      */
-    public List<DependencyItem> dependencies = new ArrayList<>();
+    private List<DependencyItem> dependencies = new ArrayList<>();
+
+    public void setAppModel(AppModel appModel) {
+        this.appModel = appModel;
+    }
+
+    public void setDependencies(List<DependencyItem> dependencies) {
+        this.dependencies = dependencies;
+    }
 
     /**
      * get the customize Data value defined in this module.

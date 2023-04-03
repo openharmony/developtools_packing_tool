@@ -921,11 +921,11 @@ public class JsonUtil {
                     moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);
         }
 
-        moduleProfileInfo.moduleInfo.appModel = AppModel.STAGE;
+        moduleProfileInfo.moduleInfo.setAppModel(AppModel.STAGE);
         if (jsonObject.containsKey("app") && jsonObject.containsKey("module")) {
             JSONObject appJson = jsonObject.getJSONObject("app");
             JSONObject moduleJson = jsonObject.getJSONObject("module");
-            moduleProfileInfo.moduleInfo.dependenies.addAll(parseDenpendencies(appJson, moduleJson));
+            moduleProfileInfo.moduleInfo.getDependenies().addAll(parseDenpendencies(appJson, moduleJson));
         }
 
         // parse appName
