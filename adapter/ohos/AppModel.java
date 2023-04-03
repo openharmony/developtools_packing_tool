@@ -16,7 +16,7 @@
 package ohos;
 
 /**
- * app模型枚举
+ * app model enum
  *
  * @since 1.0
  */
