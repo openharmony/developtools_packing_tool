@@ -57,12 +57,12 @@ class ModuleInfo {
     /**
      * Indicates hap is stage or FA.
      */
-    public AppModel appModel = AppModel.FA;
+    private AppModel appModel = AppModel.FA;
 
     /**
      * Indicates dependencies config.
      */
-    public List<DependencyItem> dependenies = new ArrayList<>();
+    private List<DependencyItem> dependenies = new ArrayList<>();
     /**
      * Indicates the devicesTypes of ModuleInfo.
      */
@@ -127,4 +127,20 @@ class ModuleInfo {
      * Indicates the module atomic service of ModuleInfo.
      */
     public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    public AppModel getAppModel() {
+        return appModel;
+    }
+
+    public void setAppModel(AppModel appModel) {
+        this.appModel = appModel;
+    }
+
+    public List<DependencyItem> getDependenies() {
+        return dependenies;
+    }
+
+    public void setDependenies(List<DependencyItem> dependenies) {
+        this.dependenies = dependenies;
+    }
 }
