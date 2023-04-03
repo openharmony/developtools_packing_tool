@@ -313,6 +313,11 @@ public class Compressor {
                 LOG.error("Error: checkStageAtomicService failed!");
                 throw new BundleException("Error: checkStageHap failed!");
             }
+            String moduleType = ModuleJsonUtil.parseStageIsEntry(jsonString);
+            if (!TYPE_SHARED.equals(moduleType)) {
+                LOG.error("module type must be shared.");
+                throw new BundleException("compressHsp failed.");
+            }
         }
         compressHSPMode(utility);
     }
