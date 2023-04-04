@@ -55,15 +55,6 @@ class ModuleInfo {
      */
     public String mainElement = "";
     /**
-     * Indicates hap is stage or FA.
-     */
-    private AppModel appModel = AppModel.FA;
-
-    /**
-     * Indicates dependencies config.
-     */
-    private List<DependencyItem> dependenies = new ArrayList<>();
-    /**
      * Indicates the devicesTypes of ModuleInfo.
      */
     public List<String> deviceTypes = new ArrayList<String>();
@@ -116,6 +107,10 @@ class ModuleInfo {
      */
     public List<CommonEvent> commonEvents = new ArrayList<CommonEvent>();
     /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+    /**
      * Indicates the common events of ModuleInfo.
      */
     List<AbilityFormInfo> abilityFormInfos = new ArrayList<>();
@@ -124,9 +119,14 @@ class ModuleInfo {
      */
     List<DefinePermission> definePermissions = new ArrayList<>();
     /**
-     * Indicates the module atomic service of ModuleInfo.
+     * Indicates hap is stage or FA.
      */
-    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+    private AppModel appModel = AppModel.FA;
+
+    /**
+     * Indicates dependencies config.
+     */
+    private List<DependencyItem> dependenies = new ArrayList<>();
 
     public AppModel getAppModel() {
         return appModel;
