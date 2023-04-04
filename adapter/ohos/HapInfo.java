@@ -24,10 +24,6 @@ import java.util.List;
  */
 public class HapInfo {
     /**
-     * Indicates hap is stage or FA.
-     */
-    private AppModel appModel = AppModel.FA;
-    /**
      * Indicates the package of HapInfo.
      */
     public String packageStr = "";
@@ -160,6 +156,11 @@ public class HapInfo {
      * Indicates the dependency config.
      */
     private List<DependencyItem> dependencies = new ArrayList<>();
+
+    /**
+     * Indicates hap is stage or FA.
+     */
+    private AppModel appModel = AppModel.FA;
 
     public void setAppModel(AppModel appModel) {
         this.appModel = appModel;
