@@ -805,7 +805,8 @@
                   "enterpriseAdmin",
                   "thumbnail",
                   "preview",
-                  "print"
+                  "print",
+                  "push"
                 ]
               },
               "permissions": {
