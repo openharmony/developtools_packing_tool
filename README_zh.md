@@ -89,7 +89,7 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --out-path [option
 | --certificate-path | 否         | NA            | 证书路径。                                                   |
 | --force            | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
 
-#### 1.3.3 打包app是hap的合法性校验
+#### 1.3.3 打包app时hap的合法性校验
 
 在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode和versionName，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
 
@@ -145,10 +145,10 @@ java -jar app_unpacking_tool.jar --mode <options> --har-path <option> --out-path
 #### 2.2.2 参数含义及规范
 
 | 指令       | 是否必选项 | 选项          | 描述                                                        |
-| ---------- | ---------- | ------------- | ----------------------------------------------------------- |
-| --mode     | 是         | hap           | 拆包类型。                                                  |
-| --har-path | 是         | NA            | har包路径。                                                 |
-| --out-path | 是         | NA            | 拆包目标文件路径。                                          |
+| ---------- | ---------- |-------------| ----------------------------------------------------------- |
+| --mode     | 是         | har         | 拆包类型。                                                  |
+| --har-path | 是         | NA          | har包路径。                                                 |
+| --out-path | 是         | NA          | 拆包目标文件路径。                                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 2.3 app包模式拆包指令
@@ -162,10 +162,10 @@ java -jar app_unpacking_tool.jar --mode <options> --app-path <option> --out-path
 #### 2.3.2 参数含义及规范
 
 | 指令       | 是否必选项 | 选项          | 描述                                                        |
-| ---------- | ---------- | ------------- | ----------------------------------------------------------- |
-| --mode     | 是         | hap           | 拆包类型。                                                  |
-| --app-path | 是         | NA            | app包路径。                                                 |
-| --out-path | 是         | NA            | 拆包目标文件路径。                                          |
+| ---------- | ---------- |-------------| ----------------------------------------------------------- |
+| --mode     | 是         | app         | 拆包类型。                                                  |
+| --app-path | 是         | NA          | app包路径。                                                 |
+| --out-path | 是         | NA          | 拆包目标文件路径。                                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 2.4 从hap包中获取rpcid文件
