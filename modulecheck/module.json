@@ -806,7 +806,8 @@
                   "thumbnail",
                   "preview",
                   "print",
-                  "push"
+                  "push",
+                  "driver"
                 ]
               },
               "permissions": {
