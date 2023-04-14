@@ -457,4 +457,12 @@ class HapVerifyInfo {
     public int getSumSizeLimit() {
         return sumSizeLimit;
     }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 }
