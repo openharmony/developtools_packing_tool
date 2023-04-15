@@ -108,7 +108,8 @@
           "wearable",
           "car",
           "targetBundleName",
-          "targetPriority"
+          "targetPriority",
+          "generateBuildHash"
         ]
       },
       "properties": {
@@ -277,6 +278,11 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
         }
       }
     }

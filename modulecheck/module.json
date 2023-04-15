@@ -41,7 +41,9 @@
                 "installationFree",
                 "atomicService",
                 "targetModuleName",
-                "targetPriority"
+                "targetPriority",
+                "generateBuildHash",
+                "buildHash"
               ]
             },
             "required": [
@@ -124,7 +126,9 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService"
+                "atomicService",
+                "generateBuildHash",
+                "buildHash"
               ]
             },
             "required": [
@@ -168,7 +172,9 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
-                "atomicService"
+                "atomicService",
+                "generateBuildHash",
+                "buildHash"
               ]
             },
             "required": [
@@ -1220,6 +1226,16 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
+        },
+        "buildHash": {
+          "description": "Describes the hash value of hap or hsp.",
+          "type": "string",
+          "maxLength": 255
         }
       }
     }
