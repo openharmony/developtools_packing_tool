@@ -2318,7 +2318,7 @@ public class Compressor {
             return false;
         }
         String bundleType = sharedHspInfo.getBundleType();
-        if (TYPE_SHARED.equals(bundleType)) {
+        if (!TYPE_SHARED.equals(bundleType)) {
             LOG.error("The input hsp is invalid for shared app.");
             return false;
         }
