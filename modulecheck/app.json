@@ -83,7 +83,6 @@
           "bundleName",
           "debug",
           "bundleType",
-          "shared",
           "icon",
           "label",
           "description",
@@ -125,26 +124,9 @@
           "type":"string",
           "enum": [
             "app",
-            "atomicService"
+            "atomicService",
+            "shared"
           ]
-        },
-        "shared": {
-          "description": "Indicates the application is a shared bundle.",
-          "type":"object",
-          "propertyNames": {
-            "enum": [
-              "compatiblePolicy"
-            ]
-          },
-          "properties": {
-            "compatiblePolicy": {
-              "description": "Indicates the shared bundle compatible policy",
-              "type":"string",
-              "enum": [
-                "backwardCompatibility"
-              ]
-            }
-          }
         },
         "debug": {
           "description": "Identify whether the application can be debugged.",

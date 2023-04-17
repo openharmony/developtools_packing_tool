@@ -807,7 +807,9 @@
                   "enterpriseAdmin",
                   "thumbnail",
                   "preview",
-                  "print"
+                  "print",
+                  "push",
+                  "driver"
                 ]
               },
               "permissions": {
