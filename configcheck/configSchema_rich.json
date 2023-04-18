@@ -1011,8 +1011,7 @@
           "uiSyntax",
           "testRunner",
           "libIsolation",
-          "generateBuildHash",
-          "buildHash"
+          "generateBuildHash"
         ]
       },
       "properties": {
@@ -3132,11 +3131,6 @@
           "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
           "type": "boolean",
           "default": false
-        },
-        "buildHash": {
-          "description": "Describes the hash value of hap or hsp.",
-          "type": "string",
-          "maxLength": 255
         }
       },
       "allOf": [
@@ -3180,8 +3174,7 @@
                 "entryTheme",
                 "testRunner",
                 "libIsolation",
-                "generateBuildHash",
-                "buildHash"
+                "generateBuildHash"
               ]
             }
           }
@@ -3228,8 +3221,7 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "generateBuildHash",
-                "buildHash"
+                "generateBuildHash"
               ]
             }
           }

@@ -93,6 +93,8 @@ public class Utility {
     private String mainModuleLimit = "";
     private String normalModuleLimit = "";
     private String totalLimit = "";
+    private boolean generateBuildHash = false;
+    private boolean buildHashFinish = false;
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -763,4 +765,12 @@ public class Utility {
     public void setHspList(String hspList) {
         this.hspList = hspList;
     }
+
+    public void setGenerateBuildHash(boolean generateBuildHash) { this.generateBuildHash = generateBuildHash; }
+
+    public boolean getGenerateBuildHash() { return generateBuildHash; }
+
+    public void setBuildHashFinish(boolean buildHashFinish) { this.buildHashFinish = buildHashFinish; }
+
+    public boolean isBuildHashFinish() { return buildHashFinish; }
 }

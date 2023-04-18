@@ -15,21 +15,16 @@
 
 package ohos;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
+import java.io.*;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -104,6 +99,11 @@ public class Compressor {
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
     private static final String TYPE_SHARED = "shared";
+    private static final String APP = "app";
+    private static final String MODULE = "module";
+    private static final String GENERATE_BUILD_HASH = "generateBuildHash";
+    private static final String BUILD_HASH = "buildHash";
+    private static final String TEMP_DIR = "temp";
     private static final Integer ONE = 1;
     private static final String ATOMIC_SERVICE = "atomicService";
 
@@ -243,6 +243,8 @@ public class Compressor {
         } catch (BundleException ignored) {
             compressResult = false;
             LOG.error("Compressor::compressProcess Bundle exception.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             closeZipOutputStream();
             Utility.closeStream(zipOut);
@@ -259,7 +261,7 @@ public class Compressor {
         return compressResult;
     }
 
-    private void compressExcute(Utility utility) throws BundleException {
+    private void compressExcute(Utility utility) throws Exception {
         switch (utility.getMode()) {
             case Utility.MODE_HAP:
                 compressHap(utility);
@@ -287,7 +289,7 @@ public class Compressor {
         }
     }
 
-    private void compressHsp(Utility utility) throws BundleException {
+    private void compressHsp(Utility utility) throws Exception {
         if (isModuleJSON(utility.getJsonPath())) {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
@@ -307,9 +309,12 @@ public class Compressor {
             }
         }
         compressHSPMode(utility);
+        buildHash(utility);
     }
 
-    private void compressHap(Utility utility) throws BundleException {
+    private void compressHap(Utility utility) throws Exception {
+        removeGenerateBuildHash(utility);
+        System.out.println(utility.getGenerateBuildHash());
         if (isModuleJSON(utility.getJsonPath())) {
             if (!checkStageHap(utility)) {
                 LOG.error("checkStageHap failed.");
@@ -326,13 +331,115 @@ public class Compressor {
                 LOG.warning("Compress mode is hap, but app type is shared.");
             }
             compressHapModeForModule(utility);
+            buildHash(utility);
         } else {
             if (!checkFAHap(utility)) {
                 LOG.error("checkFAHap failed.");
                 throw new BundleException("checkStageHap failed.");
             }
             compressHapMode(utility);
+            buildHash(utility);
         }
+    }
+
+    private static void removeGenerateBuildHash(Utility utility) throws Exception {
+        String jsonPath = utility.getJsonPath();
+        File file = new File(jsonPath);
+        if (!file.exists()) {
+            System.exit(1);
+        }
+        try {
+            InputStream json = new FileInputStream(file);
+            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
+            if (!jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
+                LOG.error("json file is invalid.");
+                throw new BundleException("json file is invalid.");
+            }
+            JSONObject appJson = jsonObject.getJSONObject(APP);
+            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+            if (appJson.containsKey(GENERATE_BUILD_HASH) && appJson.getBoolean(GENERATE_BUILD_HASH)) {
+                utility.setGenerateBuildHash(true);
+            } else {
+                if (moduleJson.containsKey(GENERATE_BUILD_HASH) && moduleJson.getBoolean(GENERATE_BUILD_HASH)) {
+                    utility.setGenerateBuildHash(true);
+                }
+            }
+            // appJson.remove(GENERATE_BUILD_HASH);
+            // moduleJson.remove(GENERATE_BUILD_HASH);
+
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(jsonPath));
+            bw.write(pretty);
+            bw.flush();
+            bw.close();
+            json.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(utility.getGenerateBuildHash());
+    }
+
+    private static void buildHash(Utility utility) throws Exception {
+        // check whether a hash value needs to be generated
+        if (!utility.getGenerateBuildHash()) {
+            return;
+        }
+        String filePath = utility.getOutPath();
+        String hash = getSHA256ForHapOrHsp(filePath);
+
+        putBuildHash(utility, hash);
+    }
+
+    public static byte[] checkSum(String filename) throws Exception {
+        InputStream fis = new FileInputStream(filename);
+        byte[] buffer = new byte[1024];
+        MessageDigest complete = MessageDigest.getInstance("SHA-256");
+        int numRead;
+        do {
+            numRead = fis.read(buffer);
+            if (numRead > 0) {
+                complete.update(buffer, 0, numRead);
+            }
+        } while (numRead != -1);
+        fis.close();
+        return complete.digest();
+    }
+
+    public static String getSHA256ForHapOrHsp(String filePath) throws Exception {
+        byte[] b = checkSum(filePath);
+        StringBuilder temp = new StringBuilder();
+        for (int i = 0; i < b.length; i++) {
+            temp.append(Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return temp.toString();
+    }
+
+    private static void putBuildHash(Utility utility, String hash) {
+        if (utility.isBuildHashFinish()) {
+            return;
+        }
+        String jsonPath = utility.getJsonPath();
+        File file = new File(jsonPath);
+        if (!file.exists()) {
+            System.exit(1);
+        }
+        try {
+            InputStream json = new FileInputStream(file);
+            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
+            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+            moduleJson.put(BUILD_HASH,hash);
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(jsonPath));
+            bw.write(pretty);
+            bw.flush();
+            bw.close();
+            json.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        utility.setBuildHashFinish(true);
     }
 
     private static boolean checkStageHap(Utility utility) throws BundleException {
@@ -1570,6 +1677,7 @@ public class Compressor {
         FileInputStream fileInputStream = null;
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
+            System.out.println(entryName);
             ZipEntry zipEntry = new ZipEntry(entryName);
             String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
             if (CONFIG_JSON.equals(srcName) || MODULE_JSON.equals(srcName)) {
