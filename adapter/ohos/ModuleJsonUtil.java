@@ -932,6 +932,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setTargetPriority(parseTargetPriority(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModulePriority(parseTargetModulePriority(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDebug(getDebug(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1698,12 +1699,12 @@ class ModuleJsonUtil {
             LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
             throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
         }
-        JSONObject appObj = jsonObject.getJSONObject(MODULE);
-        if (appObj == null) {
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
             LOG.error("parse failed, input module.json is invalid, module.json has no app.");
             throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
         }
-        return getJsonString(appObj, TARGET_MODULE_NAME);
+        return getJsonString(moduleObj, TARGET_MODULE_NAME);
     }
 
     /**
@@ -1717,7 +1718,7 @@ class ModuleJsonUtil {
         try {
             jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            LOG.error("arse JOSNObject failed in getStageTargetModuleName.");
+            LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
             throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
         }
         JSONObject appObj = jsonObject.getJSONObject(APP);
