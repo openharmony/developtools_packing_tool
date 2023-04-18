@@ -1010,7 +1010,9 @@
           "distroFilter",
           "uiSyntax",
           "testRunner",
-          "libIsolation"
+          "libIsolation",
+          "generateBuildHash",
+          "buildHash"
         ]
       },
       "properties": {
@@ -3125,6 +3127,16 @@
         "libIsolation": {
           "description": "Indicates whether to isolate the shared libraries in this module.",
           "type": "boolean"
+        },
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
+        },
+        "buildHash": {
+          "description": "Describes the hash value of hap or hsp.",
+          "type": "string",
+          "maxLength": 255
         }
       },
       "allOf": [
@@ -3167,7 +3179,9 @@
                 "resizeable",
                 "entryTheme",
                 "testRunner",
-                "libIsolation"
+                "libIsolation",
+                "generateBuildHash",
+                "buildHash"
               ]
             }
           }
@@ -3213,7 +3227,9 @@
                 "distroFilter",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "generateBuildHash",
+                "buildHash"
               ]
             }
           }
