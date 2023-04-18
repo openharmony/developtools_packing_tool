@@ -62,6 +62,11 @@ class VerifyCollection {
     public int targetPriority = 0;
 
     /**
+     * Indicates the debug value of app
+     */
+    public boolean debug = false;
+
+    /**
      * Indicates the moduleNames of app.
      */
     List<String> moduleNames = new ArrayList<>();
