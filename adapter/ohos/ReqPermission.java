@@ -33,14 +33,14 @@ public class ReqPermission {
     public String reason = "";
 
     /**
-     * Indicates the reasons of ReqPermission, for Multilingual.
-     */
-    private HashMap<String, String> reasons = new HashMap<>();
-
-    /**
      * Indicates the usedScene of ReqPermission.
      */
     public UsedScene usedScene = null;
+
+    /**
+     * Indicates the reasons of ReqPermission, for Multilingual.
+     */
+    private HashMap<String, String> reasons = new HashMap<>();
 
     public void setReasons(HashMap<String, String> reasons) {
         this.reasons = reasons;

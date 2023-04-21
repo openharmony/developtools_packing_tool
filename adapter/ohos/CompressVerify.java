@@ -721,7 +721,7 @@ public class CompressVerify {
             return false;
         }
         List<String> tmpHspPathList = new ArrayList<>();
-        if(compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)) {
+        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)) {
             utility.setIsSharedApp(true);
             return true;
         }

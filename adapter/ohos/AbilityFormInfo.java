@@ -91,10 +91,6 @@ public class AbilityFormInfo {
      */
     private HashMap<String, String> descriptions = new HashMap<>();
 
-    public HashMap<String, String> getDescriptions() {
-        return descriptions;
-    }
-
     /**
      * Indicates the src of ability form the attribute is corresponding to the UI code of the form.
      */
@@ -129,6 +125,14 @@ public class AbilityFormInfo {
      * Indicates the providerAbility of ability form.
      */
     public String providerAbility = "";
+
+    /**
+     * get the Descriptions.
+     * @return descriptions
+     */
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
 
     /**
      * get the customize Data value defined in this ability form.
