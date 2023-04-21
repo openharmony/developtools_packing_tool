@@ -126,10 +126,6 @@ public class AbilityFormInfo {
      */
     public String providerAbility = "";
 
-    /**
-     * get the Descriptions.
-     * @return descriptions
-     */
     public HashMap<String, String> getDescriptions() {
         return descriptions;
     }
