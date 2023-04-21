@@ -28,6 +28,7 @@ public class HapInfo {
      * Indicates hap is stage or FA.
      */
     public AppModel appModel = AppModel.FA;
+
     /**
      * Indicates the package of HapInfo.
      */
@@ -42,11 +43,6 @@ public class HapInfo {
      * Indicates the description of HapInfo.
      */
     public String description = "";
-
-    /**
-     * Indicates the descriptions of HapInfo.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the supportedModes of HapInfo.
@@ -166,6 +162,11 @@ public class HapInfo {
      * Indicates the form of module ModuleJson.
      */
     public List<AbilityFormInfo> formInfos = new ArrayList<>();
+
+    /**
+     * Indicates the descriptions of HapInfo.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
