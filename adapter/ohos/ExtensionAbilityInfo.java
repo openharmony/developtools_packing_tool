@@ -91,18 +91,10 @@ public class ExtensionAbilityInfo {
      */
     public String uri = "";
 
-    /**
-     * get the Labels.
-     * @return labels
-     */
     public HashMap<String, String> getLabels() {
         return labels;
     }
 
-    /**
-     * get the Descriptions.
-     * @return descriptions
-     */
     public HashMap<String, String> getDescriptions() {
         return descriptions;
     }
