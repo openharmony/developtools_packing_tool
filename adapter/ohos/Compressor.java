@@ -116,11 +116,11 @@ public class Compressor {
 
     // set buffer size of each read
     private static final int BUFFER_SIZE = 10 * 1024;
-    private static final Log LOG = new Log(Compressor.class.toString());
     private static int entryModuleSizeLimit = 2;
     private static int notEntryModuleSizeLimit = 2;
     private static int sumModuleSizeLimit = 10;
     private static boolean isOverlay = false;
+    private static final Log LOG = new Log(Compressor.class.toString());
     private ZipOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private List<String> list = new ArrayList<String>();

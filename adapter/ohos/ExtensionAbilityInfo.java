@@ -45,10 +45,6 @@ public class ExtensionAbilityInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
-    public HashMap<String, String> getLabels() {
-        return labels;
-    }
-
     /**
      * Indicates the description of module ModuleJson.
      */
@@ -58,10 +54,6 @@ public class ExtensionAbilityInfo {
      * Indicates the descriptions of module ModuleJson.
      */
     private HashMap<String, String> descriptions = new HashMap<>();
-
-    public HashMap<String, String> getDescriptions() {
-        return descriptions;
-    }
 
     /**
      * Indicates the type of module ModuleJson.
@@ -98,6 +90,14 @@ public class ExtensionAbilityInfo {
      * Indicates the uri of module ModuleJson.
      */
     public String uri = "";
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;

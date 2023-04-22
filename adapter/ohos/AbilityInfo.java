@@ -35,11 +35,6 @@ public class AbilityInfo {
     public String description = "";
 
     /**
-     * Indicates the descriptions of ability, for Multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
-
-    /**
      * Indicates the description resource of ability.
      */
     public String descriptionRes = "";
@@ -58,11 +53,6 @@ public class AbilityInfo {
      * Indicates the label of ability.
      */
     public String label = "";
-
-    /**
-     * Indicates the labels of ability, for Multilingual.
-     */
-    private HashMap<String, String> labels = new HashMap<>();
 
     /**
      * Indicates the label resource of ability.
@@ -95,29 +85,9 @@ public class AbilityInfo {
     public String launchType = "";
 
     /**
-     * Indicates the metaData of ability.
-     */
-    public MetaData metaData = new MetaData();
-
-    /**
      * Indicates the orientation of ability.
      */
     public String orientation = "";
-
-    /**
-     * Indicates the permissions of ability.
-     */
-    public List<String> permissions = new ArrayList<String>();
-
-    /**
-     * Indicates the skills of ability.
-     */
-    public List<SkillInfo> skills = new ArrayList<SkillInfo>();
-
-    /**
-     * Indicates the backgroundModes of ability.
-     */
-    public List<String> backgroundModes = new ArrayList<String>();
 
     /**
      * Indicates the visible of ability.
@@ -150,11 +120,6 @@ public class AbilityInfo {
     public String uriPermissionPath = "";
 
     /**
-     * Indicates the configChanges of ability.
-     */
-    public List<String> configChanges = new ArrayList<String>();
-
-    /**
      * Indicates the directLaunch of ability.
      */
     public boolean directLaunch = false;
@@ -180,11 +145,6 @@ public class AbilityInfo {
     public boolean supportPipMode = false;
 
     /**
-     * Indicates the forms of ability.
-     */
-    public List<AbilityFormInfo> formInfos = new ArrayList<AbilityFormInfo>();
-
-    /**
      * Indicates the srcLanguage of ability.
      */
     public String srcLanguage = "js";
@@ -204,6 +164,46 @@ public class AbilityInfo {
      * Indicates the continuable of module ModuleJson.
      */
     public boolean continuable = false;
+
+    /**
+     * Indicates the metaData of ability.
+     */
+    public MetaData metaData = new MetaData();
+
+    /**
+     * Indicates the configChanges of ability.
+     */
+    public List<String> configChanges = new ArrayList<String>();
+
+    /**
+     * Indicates the forms of ability.
+     */
+    public List<AbilityFormInfo> formInfos = new ArrayList<AbilityFormInfo>();
+
+    /**
+     * Indicates the permissions of ability.
+     */
+    public List<String> permissions = new ArrayList<String>();
+
+    /**
+     * Indicates the skills of ability.
+     */
+    public List<SkillInfo> skills = new ArrayList<SkillInfo>();
+
+    /**
+     * Indicates the backgroundModes of ability.
+     */
+    public List<String> backgroundModes = new ArrayList<String>();
+
+    /**
+     * Indicates the labels of ability, for Multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
+
+    /**
+     * Indicates the descriptions of ability, for Multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * get the customize Data value defined in this ability.
