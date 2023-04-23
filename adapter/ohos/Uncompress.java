@@ -76,7 +76,6 @@ public class Uncompress {
     private static final String HQF_SUFFIX = ".hqf";
     private static final String PATCH_JSON = "patch.json";
     private static final String HAP_PREFIX = "HAP";
-    private static final String TEMP = "temp";
     private static final Log LOG = new Log(Uncompress.class.toString());
 
     /**
@@ -182,7 +181,7 @@ public class Uncompress {
             if (UncompressEntrance.PARSE_MODE_HAPLIST.equals(parseMode)) {
                 compressResult = uncompress(utility.getDeviceType(), srcPath, PACK_INFO);
             } else if (UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode)) {
-                compressResult = uncompressHapFromAppPath(srcPath, utility);
+                compressResult = uncompressHapAndHspFromAppPath(srcPath, utility);
             } else if (UncompressEntrance.PARSE_MODE_ALL.equals(parseMode)) {
                 compressResult = uncompressAllAppByPath(srcPath);
             } else {
@@ -200,10 +199,12 @@ public class Uncompress {
         return compressResult;
     }
 
-    private static UncompressResult uncompressHapFromAppPath(String srcPath, Utility utility) throws BundleException {
+    private static UncompressResult uncompressHapAndHspFromAppPath(
+            String srcPath, Utility utility) throws BundleException {
         UncompressResult result = new UncompressResult();
         String hapName = utility.getHapName();
-        if (!hapName.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+        if (!hapName.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)
+                && !hapName.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
             hapName += HAP_SUFFIX;
         }
         ZipFile appFile = null;
@@ -253,7 +254,8 @@ public class Uncompress {
                     result.setPackInfoStr(packInfo);
                     result.setPackInfos(packInfos);
                 }
-                if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)
+                        || entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
                     UncompressResult hapInfo = uncompressHapByStream("", stream, entry.getName());
                     if (hapInfo.getProfileInfos() != null && hapInfo.getProfileInfos().size() > 0) {
                         result.addProfileInfo(hapInfo.getProfileInfos().get(0));
@@ -1175,8 +1177,7 @@ public class Uncompress {
                 if (profileInfos.get(j) == null || profileInfos.get(j).hapName.isEmpty()) {
                     return errorResult;
                 }
-                if (profileInfos.get(j).hapName.replace(HAP_SUFFIXI, "")
-                        .equals(packInfos.get(i).name.replace(HAP_SUFFIXI, ""))) {
+                if (comparePackAndProfile(packInfos.get(i), profileInfos.get(j))) {
                     isHave = true;
                     break;
                 }
@@ -1729,5 +1730,15 @@ public class Uncompress {
             hqfInfoList.add(JsonUtil.parsePatch(patchJson));
         }
         return hqfInfoList;
+    }
+
+    private static boolean comparePackAndProfile(PackInfo packInfo, ProfileInfo profileInfo) {
+        if (profileInfo.hapName.replace(HAP_SUFFIXI, "").equals(packInfo.name.replace(HAP_SUFFIXI, ""))) {
+            return true;
+        }
+        if (profileInfo.hapName.replace(HSP_SUFFIX, "").equals(packInfo.name.replace(HSP_SUFFIX, ""))) {
+            return true;
+        }
+        return false;
     }
 }
