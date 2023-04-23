@@ -157,6 +157,10 @@ public class HapInfo {
      */
     private List<DependencyItem> dependencies = new ArrayList<>();
 
+    public AppModel getAppModel() {
+        return appModel;
+    }
+
     /**
      * Indicates hap is stage or FA.
      */
@@ -168,6 +172,10 @@ public class HapInfo {
 
     public void setDependencies(List<DependencyItem> dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public List<DependencyItem> getDependencies() {
+        return dependencies;
     }
 
     /**
