@@ -309,7 +309,8 @@ public class Uncompress {
     private static UncompressResult uncompressHapFromAppStream(String deviceType, InputStream stream, String fileName)
             throws BundleException {
         String hapFile = fileName;
-        if (!fileName.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+        if (!fileName.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)
+                && !fileName.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
             hapFile += HAP_SUFFIX;
         }
         UncompressResult result = new UncompressResult();
@@ -347,7 +348,8 @@ public class Uncompress {
                     result.setPackInfoStr(packInfo);
                     result.setPackInfos(packInfos);
                 }
-                if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                if (entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)
+                        || entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
                     UncompressResult hapResult = uncompressHapByStream("", zipInputStream, entry.getName());
                     if (hapResult.getProfileInfos() != null && hapResult.getProfileInfos().size() > 0) {
                         result.addProfileInfo(hapResult.getProfileInfos().get(0));
@@ -520,7 +522,8 @@ public class Uncompress {
         String hapNames = "";
         try {
             zipFile = new ZipFile(new File(srcPath));
-            if (utility != null && !utility.getDeviceType().isEmpty() && HAP_SUFFIX.equals(suffix)) {
+            if (utility != null && !utility.getDeviceType().isEmpty()
+                    && (HAP_SUFFIX.equals(suffix) || HSP_SUFFIX.equals(suffix))) {
                 List<PackInfo> packInfos = uncompress(utility.getDeviceType(), srcPath, PACK_INFO).getPackInfos();
                 for (PackInfo packinfo : packInfos) {
                     hapNames += packinfo.name + ",";
