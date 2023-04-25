@@ -100,10 +100,6 @@ public class ExtensionAbilityInfo {
         return labels;
     }
 
-    /**
-     * get the Descriptions.
-     * @return descriptions
-     */
     public HashMap<String, String> getDescriptions() {
         return descriptions;
     }
