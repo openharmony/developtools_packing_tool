@@ -87,11 +87,6 @@ public class AbilityFormInfo {
     public String description = "";
 
     /**
-     * Indicates the descriptions of ability form,for Multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
-
-    /**
      * Indicates the src of ability form the attribute is corresponding to the UI code of the form.
      */
     public String src = "";
@@ -129,6 +124,11 @@ public class AbilityFormInfo {
     public HashMap<String, String> getDescriptions() {
         return descriptions;
     }
+
+    /**
+     * Indicates the descriptions of ability form,for Multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * get the customize Data value defined in this ability form.
