@@ -92,10 +92,6 @@ public class ExtensionAbilityInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
-    /**
-     * get the Labels.
-     * @return labels
-     */
     public HashMap<String, String> getLabels() {
         return labels;
     }
