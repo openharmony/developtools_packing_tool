@@ -1900,6 +1900,7 @@ class ModuleJsonUtil {
     /**
      * check module atomic installation free is valid
      * @param jsonString is the file content of config.json
+     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
      */
     public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
