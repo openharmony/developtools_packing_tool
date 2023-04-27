@@ -1215,9 +1215,10 @@ public class Compressor {
                     }
                     String moduleName = temp[temp.length - 4];
                     if (!isModelName(moduleName)) {
-                        LOG.error("Compressor::compressProcess compress pack.res failed, moduleName "
-                            + moduleName + " is error, please check it in config.json.");
-                        throw new BundleException("Compress pack.res failed, moduleName Error.");
+                        String errMessage = "Compressor::compressProcess compress pack.res failed, " +
+                                "please check the related configurations in module " + moduleName + ".";
+                        LOG.error(errMessage);
+                        throw new BundleException(errMessage);
                     }
                     String fileLanguageCountryName = temp[temp.length - 3];
                     if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
