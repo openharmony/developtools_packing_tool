@@ -129,7 +129,8 @@
                 "atomicService",
                 "generateBuildHash",
                 "buildHash",
-                "proxyDatas"
+                "proxyDatas",
+                "isolationMode"
               ]
             },
             "required": [
@@ -176,7 +177,8 @@
                 "atomicService",
                 "generateBuildHash",
                 "buildHash",
-                "proxyDatas"
+                "proxyDatas",
+                "isolationMode"
               ]
             },
             "required": [
@@ -1297,6 +1299,17 @@
               }
             }
           }
+        },
+        "isolationMode": {
+          "description": "Indicates the module process isolation mode.",
+          "type": "string",
+          "enum": [
+            "isolationOnly",
+            "nonisolationOnly",
+            "isolationFirst",
+            "nonisolationFirst"
+          ],
+          "default": "nonisolationFirst"
         }
       }
     }
