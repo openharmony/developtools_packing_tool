@@ -119,6 +119,7 @@ class HapVerify {
         verifyCollection.releaseType = hapVerifyInfos.get(0).getApiVersion().getReleaseType();
         verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
+        verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
@@ -163,6 +164,10 @@ class HapVerify {
             }
             if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
                 LOG.error("targetPriority is different.");
+                return false;
+            }
+            if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
+                LOG.error("debug is different");
                 return false;
             }
         }
@@ -349,7 +354,7 @@ class HapVerify {
             }
         }
         if (hapVerifyInfos.isEmpty()
-                || (entryHapVerifyInfos.isEmpty() && !hapVerifyInfos.get(0).isSharedHsp())) {
+                || (entryHapVerifyInfos.isEmpty() && (!SHARED_LIBRARY.equals(hapVerifyInfos.get(0).getBundleType())))) {
             LOG.warning("Warning: has no entry module.");
         }
 
