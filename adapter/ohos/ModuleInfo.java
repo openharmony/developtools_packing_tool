@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +31,7 @@ class ModuleInfo {
     /**
      * Indicates hap is stage or FA.
      */
-    public boolean isStageModule = false;
+    public AppModel appModel = AppModel.FA;
 
     /**
      * Indicates dependencies config.
@@ -60,11 +60,6 @@ class ModuleInfo {
      * Indicates the description of ModuleInfo.
      */
     public String description = "";
-
-    /**
-     * Indicates the descriptions of ModuleInfo, for Multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the process of ModuleInfo.
@@ -142,6 +137,11 @@ class ModuleInfo {
     public List<CommonEvent> commonEvents = new ArrayList<CommonEvent>();
 
     /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    /**
      * Indicates the common events of ModuleInfo.
      */
     List<AbilityFormInfo> abilityFormInfos = new ArrayList<>();
@@ -152,9 +152,9 @@ class ModuleInfo {
     List<DefinePermission> definePermissions = new ArrayList<>();
 
     /**
-     * Indicates the module atomic service of ModuleInfo.
+     * Indicates the descriptions of ModuleInfo, for Multilingual.
      */
-    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;

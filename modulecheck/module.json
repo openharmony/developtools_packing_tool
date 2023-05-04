@@ -41,7 +41,9 @@
                 "installationFree",
                 "atomicService",
                 "targetModuleName",
-                "targetPriority"
+                "targetPriority",
+                "generateBuildHash",
+                "buildHash"
               ]
             },
             "required": [
@@ -125,6 +127,8 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "atomicService",
+                "generateBuildHash",
+                "buildHash",
                 "proxyDatas"
               ]
             },
@@ -170,6 +174,8 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "atomicService",
+                "generateBuildHash",
+                "buildHash",
                 "proxyDatas"
               ]
             },
@@ -807,7 +813,9 @@
                   "enterpriseAdmin",
                   "thumbnail",
                   "preview",
-                  "print"
+                  "print",
+                  "push",
+                  "driver"
                 ]
               },
               "permissions": {
@@ -1221,6 +1229,16 @@
           "minimum": 1,
           "maximum": 100
         },
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
+        },
+        "buildHash": {
+          "description": "Describes the hash value of hap or hsp.",
+          "type": "string",
+          "maxLength": 255
+        },
         "proxyDatas": {
           "description": "Indicates all the proxy data of the module.",
           "type": "array",
@@ -1241,16 +1259,16 @@
               "uri": {
                 "description": "Indicates the uri of the data proxy.",
                 "type": "string",
-                "pattern": "^datashareproxy: \\/\\/",
+                "pattern": "^datashareproxy:",
                 "maxLength": 255
               },
               "requiredReadPermission": {
-                "description": "Indicates the permission required to read data.",
+                "description": "Indicates the permission required to read data from the proxy.",
                 "type": "string",
                 "maxLength": 255
               },
               "requiredWritePermission": {
-                "description": "Indicates the permission required to write data.",
+                "description": "Indicates the permission required to write data to the proxy.",
                 "type": "string",
                 "maxLength": 255
               },

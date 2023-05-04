@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +27,8 @@ public class HapInfo {
     /**
      * Indicates hap is stage or FA.
      */
-    public boolean isStageModule = false;
+    public AppModel appModel = AppModel.FA;
+
     /**
      * Indicates the package of HapInfo.
      */
@@ -42,11 +43,6 @@ public class HapInfo {
      * Indicates the description of HapInfo.
      */
     public String description = "";
-
-    /**
-     * Indicates the descriptions of HapInfo.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the supportedModes of HapInfo.
@@ -166,6 +162,11 @@ public class HapInfo {
      * Indicates the form of module ModuleJson.
      */
     public List<AbilityFormInfo> formInfos = new ArrayList<>();
+
+    /**
+     * Indicates the descriptions of HapInfo.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;

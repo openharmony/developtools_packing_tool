@@ -83,7 +83,6 @@
           "bundleName",
           "debug",
           "bundleType",
-          "shared",
           "icon",
           "label",
           "description",
@@ -109,7 +108,8 @@
           "wearable",
           "car",
           "targetBundleName",
-          "targetPriority"
+          "targetPriority",
+          "generateBuildHash"
         ]
       },
       "properties": {
@@ -125,26 +125,9 @@
           "type":"string",
           "enum": [
             "app",
-            "atomicService"
+            "atomicService",
+            "shared"
           ]
-        },
-        "shared": {
-          "description": "Indicates the application is a shared bundle.",
-          "type":"object",
-          "propertyNames": {
-            "enum": [
-              "compatiblePolicy"
-            ]
-          },
-          "properties": {
-            "compatiblePolicy": {
-              "description": "Indicates the shared bundle compatible policy",
-              "type":"string",
-              "enum": [
-                "backwardCompatibility"
-              ]
-            }
-          }
         },
         "debug": {
           "description": "Identify whether the application can be debugged.",
@@ -295,6 +278,11 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
         }
       }
     }

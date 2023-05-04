@@ -89,7 +89,7 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --out-path [option
 | --certificate-path | 否         | NA            | 证书路径。                                                   |
 | --force            | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
 
-#### 1.3.3 打包app是hap的合法性校验
+#### 1.3.3 打包app时hap的合法性校验
 
 在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode和versionName，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
 
@@ -145,10 +145,10 @@ java -jar app_unpacking_tool.jar --mode <options> --har-path <option> --out-path
 #### 2.2.2 参数含义及规范
 
 | 指令       | 是否必选项 | 选项          | 描述                                                        |
-| ---------- | ---------- | ------------- | ----------------------------------------------------------- |
-| --mode     | 是         | hap           | 拆包类型。                                                  |
-| --har-path | 是         | NA            | har包路径。                                                 |
-| --out-path | 是         | NA            | 拆包目标文件路径。                                          |
+| ---------- | ---------- |-------------| ----------------------------------------------------------- |
+| --mode     | 是         | har         | 拆包类型。                                                  |
+| --har-path | 是         | NA          | har包路径。                                                 |
+| --out-path | 是         | NA          | 拆包目标文件路径。                                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 2.3 app包模式拆包指令
@@ -162,10 +162,10 @@ java -jar app_unpacking_tool.jar --mode <options> --app-path <option> --out-path
 #### 2.3.2 参数含义及规范
 
 | 指令       | 是否必选项 | 选项          | 描述                                                        |
-| ---------- | ---------- | ------------- | ----------------------------------------------------------- |
-| --mode     | 是         | hap           | 拆包类型。                                                  |
-| --app-path | 是         | NA            | app包路径。                                                 |
-| --out-path | 是         | NA            | 拆包目标文件路径。                                          |
+| ---------- | ---------- |-------------| ----------------------------------------------------------- |
+| --mode     | 是         | app         | 拆包类型。                                                  |
+| --app-path | 是         | NA          | app包路径。                                                 |
+| --out-path | 是         | NA          | 拆包目标文件路径。                                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 2.4 从hap包中获取rpcid文件
@@ -259,35 +259,34 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 
 ### 4.5 HapInfo结构体信息
 
-| 字段                 | 类型                                   | 描述                                                   | 备注                                         |
-|--------------------|--------------------------------------|------------------------------------------------------|--------------------------------------------|
-| isStageModule      | boolean                              | 标识hap包是否是stage模型<br/>- true：stage模型<br/>- false：FA模型 | NA                               |
-| packageStr         | String                               | 标识hap包的包信息                                           | FA模型特有                                     |
-| name               | String                               | 标识当前module的名字                                        | NA                                         |
-| description        | String                               | 标识hap包的描述信息                                          | FA模型特有                                     |
-| supporteModes      | List\<String>                        | 标识hap包的支持的模式                                         | NA                                         |
-| abilities          | AbilityInfo的数组                       | 标识hap包ability信息                                      | NA                                         |
-| distro             | Distro结构体                            | 标识hap包的distro信息                                      | NA                                         |
-| deviceType         | List\<String>                        | 标识hap可以运行在哪类设备上                                      | 对应stage模型中的deviceTypes                     |
-| metadata           | MetaData结构体（见下述metaData）             | 标识Hap的自定义元信息                                         | NA                                         |
-| isJs               | boolean                              | 标识该应用是否是js应用                                         | FA模型特有                                     |
-| reqPermissions     | ReqPermission结构体数组（见下述ReqPermission） | 标识应用申请的权限的集合                                         | 对应stage模型的requestPermissions               |
-| commonEvents       | CommonEvent结构体（见下述CommentEvent）      | 标识静态事件                                               | NA                                         |
-| shortcuts          | Shortcut结构体数组（见下述Shortcut）           | 标识应用的shortcuts信息                                     | NA                                         |
-| distrofilter       | Distrofilter结构体                      | 标识应用市场按设备形态分发的信息                                     | NA                                         |
-| srcEntrance        | String                               | 标识hap所对应的入口js代码路径                                    | stage模型新增                                  |
-| process            | String                               | 标识hap的进程名                                            | stage模型新增                                  |
-| mainElement        | String                               | 标识hap的入口ability名称或者extension名称                       | stage模型新增，FA模型将mainAbility的值赋值给mainElement |
-| unSyntax           | String                               | 定义该JS Component的语法类型                                 | stage模型新增                                  |
-| pages              | List\<String>                        | 列举JS Component中每个页面信息                                | stage模型新增                                  |
-| extensionAbilities | List\<ExtensionAbilityInfo>          | 描述extensionAbility的配置信息                              | stage模型新增                                  |
-| abilityFormInfos   | List\<AbilityFormInfo>               | 描述卡片的信息                                              | NA                                         |
-| dependencies       | List\<DependencyItem>                | 描述模块的依赖共享库列表                                       | NA                                         |
+| 字段                 | 类型                                   | 描述                                          | 备注                                         |
+|--------------------|--------------------------------------|---------------------------------------------|--------------------------------------------|
+| appModel           | AppModel枚举值                       | 标识应用的框架模型<br/>- FA：FA模型<br/>- STAGE：Stage模型 | NA                               |
+| packageStr         | String                               | 标识hap包的包信息                                  | FA模型特有                                     |
+| name               | String                               | 标识当前module的名字                               | NA                                         |
+| description        | String                               | 标识hap包的描述信息                                 | FA模型特有                                     |
+| supporteModes      | List\<String>                        | 标识hap包的支持的模式                                | NA                                         |
+| abilities          | AbilityInfo的数组                       | 标识hap包ability信息                             | NA                                         |
+| distro             | Distro结构体                            | 标识hap包的distro信息                             | NA                                         |
+| deviceType         | List\<String>                        | 标识hap可以运行在哪类设备上                             | 对应stage模型中的deviceTypes                     |
+| metadata           | MetaData结构体（见下述metaData）             | 标识Hap的自定义元信息                                | NA                                         |
+| isJs               | boolean                              | 标识该应用是否是js应用                                | FA模型特有                                     |
+| reqPermissions     | ReqPermission结构体数组（见下述ReqPermission） | 标识应用申请的权限的集合                                | 对应stage模型的requestPermissions               |
+| commonEvents       | CommonEvent结构体（见下述CommentEvent）      | 标识静态事件                                      | NA                                         |
+| shortcuts          | Shortcut结构体数组（见下述Shortcut）           | 标识应用的shortcuts信息                            | NA                                         |
+| distrofilter       | Distrofilter结构体                      | 标识应用市场按设备形态分发的信息                            | NA                                         |
+| srcEntrance        | String                               | 标识hap所对应的入口js代码路径                           | stage模型新增                                  |
+| process            | String                               | 标识应用的进程名                                    | stage模型新增                                  |
+| mainElement        | String                               | 标识hap的入口ability名称或者extension名称              | stage模型新增，FA模型将mainAbility的值赋值给mainElement |
+| pages              | List\<String>                        | 列举JS Component中每个页面信息                       | stage模型新增                                  |
+| extensionAbilities | List\<ExtensionAbilityInfo>          | 描述extensionAbility的配置信息                     | stage模型新增                                  |
+| abilityFormInfos   | List\<AbilityFormInfo>               | 描述卡片的信息                                     | NA                                         |
+| dependencies       | List\<DependencyItem>                | 描述模块的依赖共享库列表                                | NA                                         |
 
 ### 4.6 AbilityInfo结构体信息
 
-| 字段              | 类型                             | 描述                                              | 备注                            |
-| ----------------- | -------------------------------- | ------------------------------------------------- | ------------------------------- |
+| 字段                | 类型                             | 描述                                              | 备注                            |
+|-------------------| -------------------------------- | ------------------------------------------------- | ------------------------------- |
 | name              | String                           | 标识当前ability的逻辑名                           | NA                              |
 | description       | String                           | 标识ability的描述                                 | NA                              |
 | icon              | String                           | 标识ability图标                                   | NA                              |
