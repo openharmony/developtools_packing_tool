@@ -15,6 +15,11 @@
 
 package ohos;
 
+/**
+ *
+ * AppModel info
+ *
+ */
 public enum AppModel {
     FA,
     STAGE

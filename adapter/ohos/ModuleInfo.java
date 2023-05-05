@@ -62,11 +62,6 @@ class ModuleInfo {
     public String description = "";
 
     /**
-     * Indicates the descriptions of ModuleInfo, for Multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
-
-    /**
      * Indicates the process of ModuleInfo.
      */
     public String process = "";
@@ -142,6 +137,11 @@ class ModuleInfo {
     public List<CommonEvent> commonEvents = new ArrayList<CommonEvent>();
 
     /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    /**
      * Indicates the common events of ModuleInfo.
      */
     List<AbilityFormInfo> abilityFormInfos = new ArrayList<>();
@@ -152,9 +152,9 @@ class ModuleInfo {
     List<DefinePermission> definePermissions = new ArrayList<>();
 
     /**
-     * Indicates the module atomic service of ModuleInfo.
+     * Indicates the descriptions of ModuleInfo, for Multilingual.
      */
-    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;

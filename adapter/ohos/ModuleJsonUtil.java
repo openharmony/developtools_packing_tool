@@ -932,6 +932,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setTargetPriority(parseTargetPriority(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModulePriority(parseTargetModulePriority(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDebug(getDebug(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1672,16 +1673,16 @@ class ModuleJsonUtil {
             LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
             throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
         }
-        JSONObject DeviceConfigObj = jsonObject.getJSONObject(DEVICE_CONFIG);
-        if (DeviceConfigObj == null) {
+        JSONObject deviceConfigObj = jsonObject.getJSONObject(DEVICE_CONFIG);
+        if (deviceConfigObj == null) {
             return false;
         }
-        JSONObject DefaultObj = DeviceConfigObj.getJSONObject(DEFAULT);
-        if (DefaultObj == null) {
+        JSONObject defaultObj = deviceConfigObj.getJSONObject(DEFAULT);
+        if (defaultObj == null) {
             return false;
         }
 
-        return getJsonBooleanValue(DefaultObj, DEBUG, false);
+        return getJsonBooleanValue(defaultObj, DEBUG, false);
     }
 
     /**
@@ -1698,12 +1699,12 @@ class ModuleJsonUtil {
             LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
             throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
         }
-        JSONObject appObj = jsonObject.getJSONObject(MODULE);
-        if (appObj == null) {
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
             LOG.error("parse failed, input module.json is invalid, module.json has no app.");
             throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
         }
-        return getJsonString(appObj, TARGET_MODULE_NAME);
+        return getJsonString(moduleObj, TARGET_MODULE_NAME);
     }
 
     /**
@@ -1717,7 +1718,7 @@ class ModuleJsonUtil {
         try {
             jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            LOG.error("arse JOSNObject failed in getStageTargetModuleName.");
+            LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
             throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
         }
         JSONObject appObj = jsonObject.getJSONObject(APP);
@@ -1830,6 +1831,7 @@ class ModuleJsonUtil {
     /**
      * check module atomic service is valid
      * @param jsonString is the file content of config.json
+     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
      */
     public static boolean isModuleAtomicServiceValid(String jsonString) throws BundleException {
@@ -1898,6 +1900,7 @@ class ModuleJsonUtil {
     /**
      * check module atomic installation free is valid
      * @param jsonString is the file content of config.json
+     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
      */
     public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
