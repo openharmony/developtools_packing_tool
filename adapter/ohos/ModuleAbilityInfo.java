@@ -45,11 +45,6 @@ class ModuleAbilityInfo {
     public String description = "";
 
     /**
-     * Indicates the descriptions of module ModuleJson, for Multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
-
-    /**
      * Indicates the icon of module ModuleJson.
      */
     public String icon = "";
@@ -58,11 +53,6 @@ class ModuleAbilityInfo {
      * Indicates the label of module ModuleJson.
      */
     public String label = "";
-
-    /**
-     * Indicates the labels of module ModuleJson, for Multilingual.
-     */
-    private HashMap<String, String> labels = new HashMap<>();
 
     /**
      * Indicates the permissions of module ModuleJson.
@@ -93,6 +83,16 @@ class ModuleAbilityInfo {
      * Indicates the backgroundModes of module ModuleJson.
      */
     public List<String> backgroundModes = new ArrayList<String>();
+
+    /**
+     * Indicates the descriptions of module ModuleJson, for Multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    /**
+     * Indicates the labels of module ModuleJson, for Multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
 
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;

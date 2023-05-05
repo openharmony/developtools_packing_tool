@@ -766,11 +766,19 @@ public class Utility {
         this.hspList = hspList;
     }
 
-    public void setGenerateBuildHash(boolean generateBuildHash) { this.generateBuildHash = generateBuildHash; }
+    public void setGenerateBuildHash(boolean generateBuildHash) {
+        this.generateBuildHash = generateBuildHash;
+    }
 
-    public boolean getGenerateBuildHash() { return generateBuildHash; }
+    public boolean getGenerateBuildHash() {
+        return generateBuildHash;
+    }
 
-    public void setBuildHashFinish(boolean buildHashFinish) { this.buildHashFinish = buildHashFinish; }
+    public void setBuildHashFinish(boolean buildHashFinish) {
+        this.buildHashFinish = buildHashFinish;
+    }
 
-    public boolean isBuildHashFinish() { return buildHashFinish; }
+    public boolean isBuildHashFinish() {
+        return buildHashFinish;
+    }
 }

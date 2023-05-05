@@ -35,11 +35,6 @@ public class DefPermission {
     public String grantMode = "";
 
     /**
-     * Indicates the availableScope of DefPermission.
-     */
-    public List<String> availableScope = new ArrayList<>();
-
-    /**
      * Indicates the group of DefPermission.
      */
     public String group = "";
@@ -53,6 +48,11 @@ public class DefPermission {
      * Indicates the description of DefPermission.
      */
     public String description = "";
+
+    /**
+     * Indicates the availableScope of DefPermission.
+     */
+    public List<String> availableScope = new ArrayList<>();
 
     private HashMap<String, String> labels = new HashMap<>();
 
