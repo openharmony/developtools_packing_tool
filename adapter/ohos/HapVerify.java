@@ -15,6 +15,7 @@
 
 package ohos;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,8 +38,11 @@ class HapVerify {
     private static final String ENTRY = "entry";
     private static final String FEATURE = "feature";
     private static final String SHARED_LIBRARY = "shared";
+    private static final String HAR = "har";
     private static final String REFERENCE_LINK =
             "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
+    private static final String ATOMIC_SERVICE = "atomicService";
+    private static final long FILE_LENGTH_1M = 1024 * 1024L;
 
     /**
      * check hap is verify.
@@ -49,12 +53,12 @@ class HapVerify {
      */
     public static boolean checkHapIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
-            LOG.error("HapVerify::checkHapIsValid hapVerifyInfos is empty!");
+            LOG.error("HapVerify::checkHapIsValid hapVerifyInfos is empty");
             return false;
         }
         // check app variable is same
         if (!checkAppFieldsIsSame(hapVerifyInfos)) {
-            LOG.error("Error: some app variable is different!");
+            LOG.error("some app variable is different.");
             return false;
         }
         // check moduleName is valid
@@ -63,7 +67,7 @@ class HapVerify {
         }
         // check package is valid
         if (!checkPackageNameIsValid(hapVerifyInfos)) {
-            LOG.error("Error: packageName duplicated!");
+            LOG.error("packageName duplicated.");
             return false;
         }
         // check entry is valid
@@ -72,12 +76,22 @@ class HapVerify {
         }
         // check dependency is valid
         if (!checkDependencyIsValid(hapVerifyInfos)) {
-            LOG.error("Error: module dependency is invalid!");
+            LOG.error("module dependency is invalid.");
+            return false;
+        }
+        // check atomic service is valid
+        if (!checkAtomicServiceIsValid(hapVerifyInfos)) {
+            LOG.error("checkAtomicServiceIsValid failed.");
             return false;
         }
         // check ability is valid
         if (!checkAbilityNameIsValid(hapVerifyInfos)) {
-            LOG.info("Ability name is duplicated!");
+            LOG.info("Ability name is duplicated.");
+        }
+        // check targetModuleName
+        if (!checkTargetModuleNameIsExisted(hapVerifyInfos)) {
+            LOG.error("target module is not found.");
+            return false;
         }
         return true;
     }
@@ -90,11 +104,12 @@ class HapVerify {
      */
     private static boolean checkAppFieldsIsSame(List<HapVerifyInfo> hapVerifyInfos) {
         if (hapVerifyInfos.isEmpty()) {
-            LOG.error("HapVerify::checkAppVariableIsSame failed, hapVerifyInfos is empty");
+            LOG.error("HapVerify::checkAppVariableIsSame failed, hapVerifyInfos is empty.");
             return false;
         }
         VerifyCollection verifyCollection = new VerifyCollection();
         verifyCollection.bundleName = hapVerifyInfos.get(0).getBundleName();
+        verifyCollection.setBundleType(hapVerifyInfos.get(0).getBundleType());
         verifyCollection.vendor = hapVerifyInfos.get(0).getVendor();
         verifyCollection.versionCode = hapVerifyInfos.get(0).getVersion().versionCode;
         verifyCollection.versionName = hapVerifyInfos.get(0).getVersion().versionName;
@@ -102,38 +117,57 @@ class HapVerify {
         verifyCollection.compatibleApiVersion = hapVerifyInfos.get(0).getApiVersion().getCompatibleApiVersion();
         verifyCollection.targetApiVersion = hapVerifyInfos.get(0).getApiVersion().getTargetApiVersion();
         verifyCollection.releaseType = hapVerifyInfos.get(0).getApiVersion().getReleaseType();
+        verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
+        verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
+        verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
-                LOG.error("Error: input module bundleName is different!");
+                LOG.error("input module bundleName is different.");
+                return false;
+            }
+            if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
+                LOG.error("input module bundleType is different.");
                 return false;
             }
             if (hapVerifyInfo.getVendor().isEmpty() || !verifyCollection.vendor.equals(hapVerifyInfo.getVendor())) {
-                LOG.error("Error: input module vendor is different!");
+                LOG.error("input module vendor is different.");
                 return false;
             }
             if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
-                LOG.error("Error: input module versionCode is different!");
+                LOG.error("input module versionCode is different.");
                 return false;
             }
             if (!verifyCollection.versionName.equals(hapVerifyInfo.getVersion().versionName)) {
-                LOG.error("Error: input module versionName is different!");
+                LOG.error("input module versionName is different.");
                 return false;
             }
             if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
-                LOG.error("Error: input module minCompatibleVersionCode is different!");
+                LOG.error("input module minCompatibleVersionCode is different.");
                 return false;
             }
             if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
-                LOG.error("Error: input module minApiVersion is different!");
+                LOG.error("input module minApiVersion is different.");
                 return false;
             }
             if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
-                LOG.error("Error: input module targetApiVersion is different!");
+                LOG.error("input module targetApiVersion is different.");
                 return false;
             }
             if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
-                LOG.error("Error: input module releaseType is different!");
+                LOG.error("input module releaseType is different.");
+                return false;
+            }
+            if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
+                LOG.error("targetBundleName is different.");
+                return false;
+            }
+            if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
+                LOG.error("targetPriority is different.");
+                return false;
+            }
+            if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
+                LOG.error("debug is different");
                 return false;
             }
         }
@@ -150,29 +184,29 @@ class HapVerify {
     private static boolean checkModuleNameIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         for (int i = 0; i < hapVerifyInfos.size() - 1; ++i) {
             if (hapVerifyInfos.get(i).getModuleName().isEmpty()) {
-                LOG.error("HapVerify::checkModuleNameIsValid should not be empty!");
-                throw new BundleException("HapVerify::checkModuleNameIsValid should not be empty!");
+                LOG.error("HapVerify::checkModuleNameIsValid should not be empty.");
+                throw new BundleException("HapVerify::checkModuleNameIsValid should not be empty.");
             }
             for (int j = i + 1; j < hapVerifyInfos.size(); ++j) {
                 if (hapVerifyInfos.get(i).getModuleName().equals(hapVerifyInfos.get(j).getModuleName()) &&
                     !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
-                    LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " " +
-                        hapVerifyInfos.get(j).getModuleName() + " module name duplicated, " +
-                            "please check deviceType or distroFilter of the module!");
-                    LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
-                        + hapVerifyInfos.get(i).getDeviceType());
-                    LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
-                        + hapVerifyInfos.get(j).getDeviceType());
+                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                        hapVerifyInfos.get(j).getModuleName() + ") have the same moduleName, " +
+                            "please check deviceType or distroFilter of the module.");
+                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                        + hapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                        + hapVerifyInfos.get(j).getDeviceType() + ".");
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has " +
-                            hapVerifyInfos.get(i).getDistroFilter().dump());
+                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : "
+                                + hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has " +
-                            hapVerifyInfos.get(i).getDistroFilter().dump());
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is "
+                                + hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
-                    LOG.error("Solution: Make sure the module name is valid and do not duplicated!");
-                    LOG.error("Reference: " + REFERENCE_LINK);
+                    LOG.error("Solution: Make sure the module name is valid and unique.");
+                    LOG.error("Reference: " + REFERENCE_LINK + ".");
                     return false;
                 }
             }
@@ -195,22 +229,23 @@ class HapVerify {
             for (int j = i + 1; j < hapVerifyInfos.size(); ++j) {
                 if (hapVerifyInfos.get(i).getPackageName().equals(hapVerifyInfos.get(j).getPackageName()) &&
                         !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
-                    LOG.error("Error: " + hapVerifyInfos.get(i).getPackageName() +
-                        " " + hapVerifyInfos.get(j).getPackageName() + " packageName duplicated!");
-                    LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType " +
-                        hapVerifyInfos.get(i).getDeviceType());
-                    LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
-                        hapVerifyInfos.get(j).getDeviceType());
+                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            hapVerifyInfos.get(j).getModuleName() + ") have the same packageName, " +
+                            "please check deviceType or distroFilter of the module.");
+                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                            + hapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                            + hapVerifyInfos.get(j).getDeviceType() + ".");
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Error: " + hapVerifyInfos.get(i).getModuleName() + " "
-                            + hapVerifyInfos.get(i).getDistroFilter().dump());
+                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
+                                hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error("Error: " + hapVerifyInfos.get(j).getModuleName() + " "
-                            + hapVerifyInfos.get(i).getDistroFilter().dump());
+                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
+                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
-                    LOG.error("Solution: Make sure package name is valid and do not duplicated!");
-                    LOG.error("Reference: " + REFERENCE_LINK);
+                    LOG.error("Solution: Make sure package name is valid and unique.");
+                    LOG.error("Reference: " + REFERENCE_LINK + ".");
                     return false;
                 }
             }
@@ -229,8 +264,8 @@ class HapVerify {
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             long noDuplicatedCount = hapVerifyInfo.getAbilityNames().stream().distinct().count();
             if (noDuplicatedCount != hapVerifyInfo.getAbilityNames().size()) {
-                LOG.warning("Warning: " +
-                        hapVerifyInfo.getModuleName() + " ability duplicated, please rename ability name!");
+                LOG.warning(
+                        hapVerifyInfo.getModuleName() + " ability duplicated, please rename ability name.");
                 return false;
             }
         }
@@ -242,18 +277,60 @@ class HapVerify {
                 if (!Collections.disjoint(hapVerifyInfos.get(i).getAbilityNames(),
                         hapVerifyInfos.get(j).getAbilityNames()) &&
                         !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
-                    LOG.warning("Warning: " + hapVerifyInfos.get(i).getModuleName() +
-                            " " + hapVerifyInfos.get(j).getModuleName() + " ability duplicated!");
-                    LOG.warning("Warning: " + hapVerifyInfos.get(i).getModuleName() + " has ability "
-                        + hapVerifyInfos.get(i).getAbilityNames());
-                    LOG.warning("Warning: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
-                        + hapVerifyInfos.get(j).getAbilityNames());
-                    LOG.warning("Solution: Make sure ability name is valid and do not duplicated!");
-                    LOG.error("Reference: " + REFERENCE_LINK);
+                    LOG.warning("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            hapVerifyInfos.get(j).getModuleName() + ") have the same ability name.");
+                    LOG.warning("Module: " + hapVerifyInfos.get(i).getModuleName() + " has ability "
+                        + hapVerifyInfos.get(i).getAbilityNames() + ".");
+                    LOG.warning("Module: " + hapVerifyInfos.get(j).getModuleName() + " has ability "
+                        + hapVerifyInfos.get(j).getAbilityNames() + ".");
+                    LOG.warning("Solution: Make sure ability name is valid and unique.");
+                    LOG.warning("Reference: " + REFERENCE_LINK + ".");
                     return false;
                 }
             }
         }
+        return true;
+    }
+
+    /**
+     * check targetModuleName is existed.
+     *
+     * @param hapVerifyInfos is the collection of hap infos
+     * @return true if targetModuleName is erxisted
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    private static boolean checkTargetModuleNameIsExisted(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        List<HapVerifyInfo> internalOverlayHap = new ArrayList<>();
+        List<HapVerifyInfo> nonOverlayHap = new ArrayList<>();
+        List<String> targetModuleList = new ArrayList<>();
+        List<String> moduleList = new ArrayList<>();
+        for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+            if (!hapInfo.getTargetBundleName().isEmpty()) {
+                return true;
+            }
+            if (!hapInfo.getTargetModuleName().isEmpty()) {
+                internalOverlayHap.add(hapInfo);
+                targetModuleList.add(hapInfo.getTargetModuleName());
+                continue;
+            }
+            nonOverlayHap.add(hapInfo);
+            if (!SHARED_LIBRARY.equals(hapInfo.getModuleType())) {
+                moduleList.add(hapInfo.getModuleName());
+            }
+        }
+        if (internalOverlayHap.isEmpty()) {
+            return true;
+        }
+        if (nonOverlayHap.isEmpty()) {
+            LOG.error("target modules are needed to pack with overlay module.");
+            return false;
+        }
+        if (!moduleList.containsAll(targetModuleList)) {
+            LOG.error("target modules are needed to pack with overlay module.");
+            return false;
+        }
+
+
         return true;
     }
 
@@ -273,32 +350,34 @@ class HapVerify {
             } else if (FEATURE.equals(hapVerifyInfo.getModuleType())) {
                 featureHapVerifyInfos.add(hapVerifyInfo);
             } else if (!SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())) {
-                LOG.warning("Input wrong type module");
+                LOG.warning("Input wrong type module.");
             }
         }
-        if (entryHapVerifyInfos.isEmpty()) {
-            LOG.warning("Warning: has no entry module!");
+        if (hapVerifyInfos.isEmpty()
+                || (entryHapVerifyInfos.isEmpty() && (!SHARED_LIBRARY.equals(hapVerifyInfos.get(0).getBundleType())))) {
+            LOG.warning("Warning: has no entry module.");
         }
 
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
                 if (!checkDuplicatedIsValid(entryHapVerifyInfos.get(i), entryHapVerifyInfos.get(j))) {
-                    LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() +
-                            " " + entryHapVerifyInfos.get(j).getModuleName() + " entry duplicated!");
-                    LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() + " deviceType is "
-                        + entryHapVerifyInfos.get(i).getDeviceType());
-                    LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " deviceType is "
-                        + entryHapVerifyInfos.get(j).getDeviceType());
-                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Error: " + entryHapVerifyInfos.get(i).getModuleName() + " "
-                            + entryHapVerifyInfos.get(i).getDistroFilter().dump());
+                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            hapVerifyInfos.get(j).getModuleName() + ") are entry, " +
+                            "please check deviceType or distroFilter of the module.");
+                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                            + hapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                            + hapVerifyInfos.get(j).getDeviceType() + ".");
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
+                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
+                                hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
-                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error("Error: " + entryHapVerifyInfos.get(j).getModuleName() + " "
-                            + entryHapVerifyInfos.get(j).getDistroFilter().dump());
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
+                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
-                    LOG.error("Solution: Make sure entry name is valid and do not duplicated!");
-                    LOG.error("Reference: " + REFERENCE_LINK);
+                    LOG.error("Solution: Make sure entry name is valid and unique.");
+                    LOG.error("Reference: " + REFERENCE_LINK + ".");
                     return false;
                 }
             }
@@ -307,7 +386,7 @@ class HapVerify {
         Map<String, List<HapVerifyInfo>> deviceHap = classifyEntry(entryHapVerifyInfos);
         for (HapVerifyInfo hapVerifyInfo : featureHapVerifyInfos) {
             if (!checkFeature(hapVerifyInfo, deviceHap)) {
-                LOG.warning("Warning: " + hapVerifyInfo.getModuleName() + " can not be covered by entry!");
+                LOG.warning(hapVerifyInfo.getModuleName() + " can not be covered by entry.");
             }
         }
 
@@ -395,8 +474,8 @@ class HapVerify {
     private static boolean checkPolicyValueDisjoint(String policyLeft, List<String> valueLeft, String policyRight,
                                                     List<String> valueRight) throws BundleException {
         if (valueLeft == null || valueRight == null) {
-            LOG.error("HapVerify::checkPolicyValueDisjoint value should not empty!");
-            throw new BundleException("HapVerify::checkPolicyValueDisjoint value should not empty!");
+            LOG.error("HapVerify::checkPolicyValueDisjoint value should not empty.");
+            throw new BundleException("HapVerify::checkPolicyValueDisjoint value should not empty.");
         }
         if (EXCLUDE.equals(policyLeft) && INCLUDE.equals(policyRight)) {
             if (valueRight.isEmpty() || valueLeft.containsAll(valueRight)) {
@@ -413,8 +492,8 @@ class HapVerify {
         } else if (EXCLUDE.equals(policyLeft) && EXCLUDE.equals(policyRight)) {
             return false;
         } else {
-            LOG.error("HapVerify::checkPolicyValueDisjoint input policy is invalid!");
-            throw new BundleException("HapVerify::checkPolicyValueDisjoint input policy is invalid!");
+            LOG.error("HapVerify::checkPolicyValueDisjoint input policy is invalid.");
+            throw new BundleException("HapVerify::checkPolicyValueDisjoint input policy is invalid.");
         }
         return false;
     }
@@ -426,7 +505,7 @@ class HapVerify {
      * @return deviceHap that is classfied
      */
     private static Map<String, List<HapVerifyInfo>> classifyEntry(List<HapVerifyInfo> entryHapVerifyInfos) {
-        HashMap<String, List<HapVerifyInfo>> deviceHaps = new HashMap<>();
+        Map<String, List<HapVerifyInfo>> deviceHaps = new HashMap<>();
         for (HapVerifyInfo hapVerifyInfo : entryHapVerifyInfos) {
             for (String device : hapVerifyInfo.getDeviceType()) {
                 if (deviceHaps.containsKey(device)) {
@@ -453,16 +532,16 @@ class HapVerify {
         // check deviceType and distroFilter
         for (String device : featureHap.getDeviceType()) {
             if (!deviceHap.containsKey(device)) {
-                LOG.warning("Warning: device " + device + " has feature but has no entry!");
+                LOG.warning("Warning: device " + device + " has feature but has no entry.");
                 return false;
             }
             List<HapVerifyInfo> entryHaps = deviceHap.get(device);
             if (!checkFeatureDistroFilter(featureHap, entryHaps)) {
-                LOG.warning("Warning: " + featureHap.getModuleName() +
-                        " distroFilter has not covered by entry!");
+                LOG.warning(featureHap.getModuleName() +
+                        "'s distroFilter has not covered by entry.");
                 if (!EMPTY_STRING.equals(featureHap.getDistroFilter().dump())) {
-                    LOG.warning("Warning: " + featureHap.getModuleName() + " has " +
-                            featureHap.getDistroFilter().dump());
+                    LOG.warning(featureHap.getModuleName() + " has " +
+                            featureHap.getDistroFilter().dump() + ".");
                 }
                 return false;
             }
@@ -492,23 +571,23 @@ class HapVerify {
             }
         }
         if (!checkApiVersionCovered(featureHap.getDistroFilter().apiVersion, entryHaps)) {
-            LOG.warning("HapVerify::checkFeatureDistroFilter failed, apiVersion is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, apiVersion is not covered.");
             return false;
         }
         if (!checkScreenShapeCovered(featureHap.getDistroFilter().screenShape, entryHaps)) {
-            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenShape is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenShape is not covered.");
             return false;
         }
         if (!checkScreenWindowCovered(featureHap.getDistroFilter().screenWindow, entryHaps)) {
-            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenWindow is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenWindow is not covered.");
             return false;
         }
         if (!checkScreenDensityCovered(featureHap.getDistroFilter().screenDensity, entryHaps)) {
-            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenDensity is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, screenDensity is not covered.");
             return false;
         }
         if (!checkCountryCodeCovered(featureHap.getDistroFilter().countryCode, entryHaps)) {
-            LOG.warning("HapVerify::checkFeatureDistroFilter failed, countryCode is not covered!");
+            LOG.warning("HapVerify::checkFeatureDistroFilter failed, countryCode is not covered.");
             return false;
         }
         return true;
@@ -531,7 +610,7 @@ class HapVerify {
                 return true;
             }
             if (hapVerifyInfo.getDistroFilter().apiVersion.policy == null) {
-                LOG.error("HapVerify::checkApiVersionCovered input none policy!");
+                LOG.error("HapVerify::checkApiVersionCovered input none policy.");
                 return false;
             }
             if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().apiVersion.policy)) {
@@ -548,8 +627,8 @@ class HapVerify {
                 exclude = Stream.of(exclude, hapVerifyInfo.getDistroFilter().apiVersion.value).
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
-                LOG.error("HapVerify::checkApiVersionCovered input policy is invalid!");
-                throw new BundleException("HapVerify::checkApiVersionCovered input policy is invalid!");
+                LOG.error("HapVerify::checkApiVersionCovered input policy is invalid.");
+                throw new BundleException("HapVerify::checkApiVersionCovered input policy is invalid.");
             }
         }
         if (include != null) {
@@ -581,7 +660,7 @@ class HapVerify {
                 return true;
             }
             if (hapVerifyInfo.getDistroFilter().screenShape.policy == null) {
-                LOG.error("HapVerify::checkScreenShapeCovered input none policy!");
+                LOG.error("HapVerify::checkScreenShapeCovered input none policy.");
                 return false;
             }
             if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().screenShape.policy)) {
@@ -596,8 +675,8 @@ class HapVerify {
                 exclude = Stream.of(exclude, hapVerifyInfo.getDistroFilter().screenShape.value).
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
-                LOG.error("HapVerify::checkScreenShapeCovered input policy is invalid!");
-                throw new BundleException("HapVerify::checkScreenShapeCovered input policy is invalid!");
+                LOG.error("HapVerify::checkScreenShapeCovered input policy is invalid.");
+                throw new BundleException("HapVerify::checkScreenShapeCovered input policy is invalid.");
             }
         }
         if (include != null) {
@@ -628,7 +707,7 @@ class HapVerify {
                 return true;
             }
             if (hapVerifyInfo.getDistroFilter().screenWindow.policy == null) {
-                LOG.error("HapVerify::checkScreenWindowCovered input none policy!");
+                LOG.error("HapVerify::checkScreenWindowCovered input none policy.");
                 return false;
             }
             if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().screenWindow.policy)) {
@@ -643,8 +722,8 @@ class HapVerify {
                 exclude = Stream.of(exclude, hapVerifyInfo.getDistroFilter().screenWindow.value).
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
-                LOG.error("HapVerify::checkScreenWindowCovered input policy is invalid!");
-                throw new BundleException("HapVerify::checkScreenWindowCovered input policy is invalid!");
+                LOG.error("HapVerify::checkScreenWindowCovered input policy is invalid.");
+                throw new BundleException("HapVerify::checkScreenWindowCovered input policy is invalid.");
             }
         }
         if (include != null) {
@@ -675,7 +754,7 @@ class HapVerify {
                 return true;
             }
             if (hapVerifyInfo.getDistroFilter().screenDensity.policy == null) {
-                LOG.error("HapVerify::checkScreenDensityCovered input none policy!");
+                LOG.error("HapVerify::checkScreenDensityCovered input none policy.");
                 return false;
             }
             if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().screenDensity.policy)) {
@@ -690,8 +769,8 @@ class HapVerify {
                 exclude = Stream.of(exclude, hapVerifyInfo.getDistroFilter().screenDensity.value).
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
-                LOG.error("HapVerify::checkScreenDensityCovered input policy is invalid!");
-                throw new BundleException("HapVerify::checkScreenDensityCovered input policy is invalid!");
+                LOG.error("HapVerify::checkScreenDensityCovered input policy is invalid.");
+                throw new BundleException("HapVerify::checkScreenDensityCovered input policy is invalid.");
             }
         }
         if (include != null) {
@@ -722,7 +801,7 @@ class HapVerify {
                 return true;
             }
             if (hapVerifyInfo.getDistroFilter().countryCode.policy == null) {
-                LOG.error("HapVerify::checkCountryCodeCovered input none policy!");
+                LOG.error("HapVerify::checkCountryCodeCovered input none policy.");
                 return false;
             }
             if (INCLUDE.equals(hapVerifyInfo.getDistroFilter().countryCode.policy)) {
@@ -737,8 +816,8 @@ class HapVerify {
                 exclude = Stream.of(exclude, hapVerifyInfo.getDistroFilter().countryCode.value).
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
-                LOG.error("HapVerify::checkCountryCodeCovered input policy is invalid!");
-                throw new BundleException("HapVerify::checkCountryCodeCovered input policy is invalid!");
+                LOG.error("HapVerify::checkCountryCodeCovered input policy is invalid.");
+                throw new BundleException("HapVerify::checkCountryCodeCovered input policy is invalid.");
             }
         }
         if (include != null) {
@@ -777,7 +856,7 @@ class HapVerify {
     private static boolean checkPolicyValueCovered(
         String policy, List<String> value, List<String> include, List<String> exclude) {
         if (value == null || policy == null) {
-            LOG.error("checkPolicyValueCovered::failed value is null!");
+            LOG.error("checkPolicyValueCovered::failed value is null.");
             return false;
         }
         if (EXCLUDE.equals(policy)) {
@@ -838,17 +917,13 @@ class HapVerify {
      */
     private static boolean checkDependencyIsValid(List<HapVerifyInfo> allHapVerifyInfo) throws BundleException {
         if (allHapVerifyInfo.isEmpty()) {
-            LOG.error("HapVerify::checkDependencyIsValid failed, input none hap!");
-            throw new BundleException("HapVerify::checkDependencyIsValid failed, input none hap!");
+            LOG.error("HapVerify::checkDependencyIsValid failed, input none hap.");
+            throw new BundleException("HapVerify::checkDependencyIsValid failed, input none hap.");
         }
         boolean isInstallationFree = allHapVerifyInfo.get(0).isInstallationFree();
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
             if (isInstallationFree != hapVerifyInfo.isInstallationFree()) {
-                LOG.error("Error: installationFree is different in input hap!");
-                return false;
-            }
-            if (isInstallationFree && SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())) {
-                LOG.error("Error: app can not contain both atomic service and hsp!");
+                LOG.error("installationFree is different in input hap.");
                 return false;
             }
         }
@@ -882,20 +957,23 @@ class HapVerify {
             return false;
         }
         if (dependencyList.size() > depth + 1) {
-            LOG.error("Error dependency list depth exceed, dependencyList is "
-                    + getHapVerifyInfoListNames(dependencyList));
+            LOG.error("dependency list depth exceed, dependencyList is "
+                    + getHapVerifyInfoListNames(dependencyList) + ".");
             return false;
         }
         for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
-            if (!isDependencyInFileList(dependency, allHapVerifyInfo)) {
-                LOG.error("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path");
-                return false;
+            if (!dependency.getBundleName().equals(hapVerifyInfo.getBundleName())) {
+                continue;
+            }
+            if (!checkDependencyInFileList(dependency, allHapVerifyInfo)) {
+                LOG.warning("Dependent module " + dependency.getModuleName() + " missing, check the HSP-Path.");
+                continue;
             }
             List<HapVerifyInfo> layerDependencyList = getLayerDependency(
                     dependency.getModuleName(), hapVerifyInfo, allHapVerifyInfo);
             for (HapVerifyInfo item : layerDependencyList) {
                 if (FEATURE.equals(item.getModuleType()) || ENTRY.equals(item.getModuleType())) {
-                    LOG.error("HAP or HSP cannot depend on HAP" + item.getModuleName());
+                    LOG.error("HAP or HSP cannot depend on HAP" + item.getModuleName() + ".");
                     return false;
                 }
                 dependencyList.add(item);
@@ -908,7 +986,7 @@ class HapVerify {
         return true;
     }
 
-    private static boolean isDependencyInFileList(
+    private static boolean checkDependencyInFileList(
             DependencyItem dependencyItem, List<HapVerifyInfo> allHapVerifyInfo) {
         String moduleName = dependencyItem.getModuleName();
         String bundleName = dependencyItem.getBundleName();
@@ -960,8 +1038,8 @@ class HapVerify {
         for (int i = 0; i < dependencyList.size() - 1; ++i) {
             for (int j = i + 1; j < dependencyList.size(); ++j) {
                 if (isSameHapVerifyInfo(dependencyList.get(i), dependencyList.get(j))) {
-                    LOG.error("Error: circular dependency, dependencyList is "
-                            + getHapVerifyInfoListNames(dependencyList));
+                    LOG.error("circular dependency, dependencyList is "
+                            + getHapVerifyInfoListNames(dependencyList) + ".");
                     return true;
                 }
             }
@@ -995,5 +1073,249 @@ class HapVerify {
             moduleNames.add((hapVerifyInfo.getModuleName()));
         }
         return moduleNames;
+    }
+
+    private static boolean checkAtomicServiceModuleSize(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+        if (hapVerifyInfoList.isEmpty()) {
+            LOG.error("checkAtomicServiceIsValid failed, hapVerifyInfoList is empty.");
+            return false;
+        }
+        int entryLimit = hapVerifyInfoList.get(0).getEntrySizeLimit();
+        int notEntryLimit = hapVerifyInfoList.get(0).getNotEntrySizeLimit();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            List<String> dependencies = getModuleDependency(hapVerifyInfo, hapVerifyInfoList);
+            List<HapVerifyInfo> dependenciesInfos = new ArrayList<>();
+            for (String module : dependencies) {
+                HapVerifyInfo info = findAtomicServiceHapVerifyInfo(module, hapVerifyInfoList);
+                dependenciesInfos.add(info);
+            }
+            long fileSize = hapVerifyInfo.getFileLength();
+            for (HapVerifyInfo dependency : dependenciesInfos) {
+                if (dependency == null) {
+                    continue;
+                }
+                fileSize += dependency.getFileLength();
+            }
+            double file = new BigDecimal((float) fileSize
+                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if (hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize > entryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + " and it's dependencies size is " +
+                        file + "MB, which is overlarge than " + entryLimit + "MB.");
+                return false;
+            }
+            if (!hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize > notEntryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + " and it's dependencies size is " +
+                        file + "MB, which is overlarge than " + notEntryLimit + "MB.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static Map<String, List<HapVerifyInfo>> getDeviceHapVerifyInfoMap(List<HapVerifyInfo> hapVerifyInfoList)
+            throws BundleException {
+        if (hapVerifyInfoList.isEmpty()) {
+            LOG.error("getDeviceHapVerifyInfoMap failed, hapVerifyInfoList is empty.");
+            throw new BundleException("getDeviceHapVerifyInfoMap failed, hapVerifyInfoList is empty.");
+        }
+        Map<String, List<HapVerifyInfo>> deviceInfoMap = new HashMap<String, List<HapVerifyInfo>>();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            List<String> deviceTypes = hapVerifyInfo.getDeviceType();
+            for (String device : deviceTypes) {
+                if (!deviceInfoMap.containsKey(device)) {
+                    List<HapVerifyInfo> infos = new ArrayList<>();
+                    infos.add(hapVerifyInfo);
+                    deviceInfoMap.put(device, infos);
+                } else {
+                    deviceInfoMap.get(device).add(hapVerifyInfo);
+                }
+            }
+        }
+        return deviceInfoMap;
+    }
+
+    private static boolean checkAtomicServiceIsValid(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+        if (hapVerifyInfoList.isEmpty()) {
+            LOG.error("checkAtomicServiceIsValid failed, hapVerifyInfoList is empty.");
+            return false;
+        }
+        String bundleType = hapVerifyInfoList.get(0).getBundleType();
+        if (!bundleType.equals(ATOMIC_SERVICE)) {
+            return true;
+        }
+        if (!checkAtomicServiceSumLimit(hapVerifyInfoList)) {
+            LOG.error("checkAtomicServiceSumLimit failed.");
+            return false;
+        }
+        boolean isStage = hapVerifyInfoList.get(0).isStageModule();
+        if (!isStage) {
+            return true;
+        }
+        // check preloads is valid
+        Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
+        for (String device : deviceInfoMap.keySet()) {
+            List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
+            if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
+                LOG.error("checkAtomicServicePreloadsIsValid failed on device " + device + ".");
+                return false;
+            }
+        }
+        // check file size is valid
+        if (!checkFileSizeIsValid(hapVerifyInfoList)) {
+            LOG.error("checkFileSizeIsValid failed.");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkAtomicServiceSumLimit(List<HapVerifyInfo>hapVerifyInfos) {
+        int sumLimit = hapVerifyInfos.get(0).getSumSizeLimit();
+        if (!hapVerifyInfos.get(0).isStageModule()) {
+            return true;
+        }
+        long fileSize = 0L;
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            fileSize += hapVerifyInfo.getFileLength();
+            double fileSizeMB = new BigDecimal((float) fileSize
+                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if (fileSize > sumLimit * FILE_LENGTH_1M) {
+                LOG.error("The total file size is " + fileSizeMB + "MB, greater than " + sumLimit + "MB.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkAtomicServicePreloadsIsValid(List<HapVerifyInfo> hapVerifyInfoList)
+            throws BundleException {
+        if (hapVerifyInfoList.isEmpty()) {
+            LOG.error("checkAtomicServicePreloadsIsValid failed, hapVerifyInfoList is empty.");
+            throw new BundleException("checkAtomicServicePreloadsIsValid failed, hapVerifyInfoList is empty.");
+        }
+        List<String> moduleNames = new ArrayList<>();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            moduleNames.add(hapVerifyInfo.getModuleName());
+        }
+        // check preload module is existed and not self
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            List<String> preloadModuleName = new ArrayList<>();
+            List<PreloadItem> preloadItems = hapVerifyInfo.getPreloadItems();
+            for (PreloadItem preloadItem : preloadItems) {
+                String moduleName = preloadItem.getModuleName();
+                if (preloadModuleName.contains(moduleName)) {
+                    LOG.error("preloads config a duplicate module " + moduleName +
+                            " in " + hapVerifyInfo.getModuleName() + ".");
+                    return false;
+                }
+                preloadModuleName.add(moduleName);
+                if (!moduleNames.contains(moduleName)) {
+                    LOG.error("preloads config a invalid module " + moduleName +
+                            " in " + hapVerifyInfo.getModuleName() + ".");
+                    return false;
+                }
+                if (moduleName.equals(hapVerifyInfo.getModuleName())) {
+                    LOG.error("can not preload self, " + hapVerifyInfo.getModuleName() + " preload self.");
+                    return false;
+                }
+            }
+        }
+        // check feature preload is valid
+        Map<String, String> moduleNameWithType = new HashMap<>();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            moduleNameWithType.put(hapVerifyInfo.getModuleName(), hapVerifyInfo.getModuleType());
+        }
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            List<PreloadItem> preloadItems = hapVerifyInfo.getPreloadItems();
+            for (PreloadItem preloadItem : preloadItems) {
+                String moduleName = preloadItem.getModuleName();
+                if (moduleNameWithType.get(moduleName).equals(ENTRY)
+                        || moduleNameWithType.get(moduleName).equals(HAR)) {
+                    LOG.error("feature or shared can not preload entry or har, "
+                            + hapVerifyInfo.getModuleName() + " preloads a "
+                    + moduleNameWithType.get(moduleName) + " module.");
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean checkFileSizeIsValid(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+        if (hapVerifyInfoList.isEmpty()) {
+            LOG.error("checkFileSizeIsValid failed, hapVerifyInfoList is empty.");
+            throw new BundleException("checkFileSizeIsValid failed, hapVerifyInfoList is empty.");
+        }
+        if (!checkFileSize(hapVerifyInfoList)) {
+            LOG.error("checkFileSize failed.");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkFileSize(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+        if (hapVerifyInfoList.isEmpty()) {
+            LOG.error("checkFileSizeWhenSplit failed, hapVerifyInfoList is empty.");
+            throw new BundleException("checkFileSizeWhenSplit failed, hapVerifyInfoList is empty.");
+        }
+        // check single file length
+        int entryLimit = hapVerifyInfoList.get(0).getEntrySizeLimit();
+        int notEntryLimit = hapVerifyInfoList.get(0).getNotEntrySizeLimit();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            double fileSize = new BigDecimal((float) hapVerifyInfo.getFileLength()
+                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            if (hapVerifyInfo.getModuleType().equals(ENTRY) &&
+                    (hapVerifyInfo.getFileLength() > entryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + "'s size is " +
+                        fileSize + "MB, which is overlarge than " + entryLimit + "MB.");
+                return false;
+            }
+            if (!hapVerifyInfo.getModuleType().equals(ENTRY) &&
+                    (hapVerifyInfo.getFileLength() > notEntryLimit * FILE_LENGTH_1M)) {
+                LOG.error("module " + hapVerifyInfo.getModuleName() + "'s size is " +
+                        fileSize + "MB, which is overlarge than " + notEntryLimit + "MB.");
+                return false;
+            }
+        }
+
+        Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
+        for (String device : deviceInfoMap.keySet()) {
+            List<HapVerifyInfo>hapVerifyInfoList1 = deviceInfoMap.get(device);
+            if (!checkAtomicServiceModuleSize(hapVerifyInfoList1)) {
+                LOG.error("checkAtomicServiceModuleSize failed on device " + device + ".");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<String> getModuleDependency(HapVerifyInfo hapVerifyInfo,
+                                                    List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+        List<String> dependencyModules = new ArrayList<>();
+        dependencyModules.addAll(hapVerifyInfo.getDependencies());
+        List<String> dependencyItems = hapVerifyInfo.getDependencies();
+        for (String dependency : dependencyItems) {
+            HapVerifyInfo dependencyHapVerifyInfo = findAtomicServiceHapVerifyInfo(dependency, hapVerifyInfoList);
+            if (dependencyHapVerifyInfo == null) {
+                continue;
+            }
+            List<String> childDependencies = getModuleDependency(dependencyHapVerifyInfo, hapVerifyInfoList);
+            for (String childDependency : childDependencies) {
+                if (!dependencyModules.contains(childDependency)) {
+                    dependencyModules.add(childDependency);
+                }
+            }
+        }
+        return dependencyModules;
+    }
+
+    private static HapVerifyInfo findAtomicServiceHapVerifyInfo(String moduleName,
+                                                                List<HapVerifyInfo> hapVerifyInfoList) {
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
+            if (hapVerifyInfo.getModuleName().equals(moduleName)) {
+                return hapVerifyInfo;
+            }
+        }
+        return null;
     }
 }

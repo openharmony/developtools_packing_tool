@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,22 +16,20 @@
 package ohos;
 
 /**
- * Version info.
+ * preload config in module.json
  *
  */
-class Version {
+public class PreloadItem {
     /**
-     * Indicates the versionCode of version.
+     * Indicates the module name of preload.
      */
-    public int versionCode = -1;
+    private String moduleName;
 
-    /**
-     * Indicates the versionName of version.
-     */
-    public String versionName = "";
+    public String getModuleName() {
+        return moduleName;
+    }
 
-    /**
-     * Indicates the minCompatibleVersionCode of version.
-     */
-    public int minCompatibleVersionCode = -1;
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
 }

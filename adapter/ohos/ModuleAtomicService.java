@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,23 +15,21 @@
 
 package ohos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Version info.
+ * AtomicService config in module.json
  *
  */
-class Version {
-    /**
-     * Indicates the versionCode of version.
-     */
-    public int versionCode = -1;
+public class ModuleAtomicService {
+    private List<PreloadItem> preloadItems = new ArrayList<>();
 
-    /**
-     * Indicates the versionName of version.
-     */
-    public String versionName = "";
+    public List<PreloadItem> getPreloadItems() {
+        return preloadItems;
+    }
 
-    /**
-     * Indicates the minCompatibleVersionCode of version.
-     */
-    public int minCompatibleVersionCode = -1;
+    public void setPreloadItems(List<PreloadItem> preloadItems) {
+        this.preloadItems = preloadItems;
+    }
 }

@@ -23,6 +23,7 @@
             "name",
             "description",
             "src",
+            "uiSyntax",
             "window",
             "colorMode",
             "formConfigAbility",
@@ -69,14 +70,13 @@
             "default": "auto"
           },
           "supportDimensions": {
-            "description": "This label identifies the card appearance specification. The value is \"1*2\", \"2*1\", \" 2*2\", \"2*4\", \"4*4\" and cannot be default. At least one card specification must be specified when defining a card.",
+            "description": "This label identifies the card appearance specification. The value is \"1*2\", \" 2*2\", \"2*4\", \"4*4\" and cannot be default. At least one card specification must be specified when defining a card.",
             "type": "array",
             "uniqueItems": true,
             "items": {
               "type": "string",
               "enum": [
                 "1*2",
-                "2*1",
                 "2*2",
                 "2*4",
                 "4*4"
@@ -89,7 +89,6 @@
             "uniqueItems": true,
             "enum": [
               "1*2",
-              "2*1",
               "2*2",
               "2*4",
               "4*4"
@@ -155,6 +154,15 @@
           "src": {
             "description": "Indicates the src of form.",
             "type": "string"
+          },
+          "uiSyntax": {
+            "description": "This tag identifies the ui syntax.",
+            "type": "string",
+            "default": "hml",
+            "enum": [
+              "hml",
+              "arkts"
+            ]
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",

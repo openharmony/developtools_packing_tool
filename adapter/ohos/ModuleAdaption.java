@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -80,9 +80,9 @@ class ModuleAdaption {
         appInfo.debug = moduleAppInfo.debug;
         appInfo.icon = moduleAppInfo.icon;
         appInfo.label = moduleAppInfo.label;
-        appInfo.labels = moduleAppInfo.labels;
+        appInfo.setLabels(moduleAppInfo.getLabels());
         appInfo.description = moduleAppInfo.description;
-        appInfo.descriptions = moduleAppInfo.descriptions;
+        appInfo.setDescriptions(moduleAppInfo.getDescriptions());
         appInfo.vendor = moduleAppInfo.vendor;
         appInfo.versionCode = String.valueOf(moduleAppInfo.versionCode);
         appInfo.versionName = moduleAppInfo.versionName;
@@ -93,6 +93,7 @@ class ModuleAdaption {
         appInfo.distributedNotificationEnabled = moduleAppInfo.distributedNotificationEnabled;
         appInfo.appName = moduleAppInfo.appName;
         appInfo.appNameEN = moduleAppInfo.appNameEN;
+        appInfo.setBundleType(moduleAppInfo.getBundleType());
         return appInfo;
     }
 
@@ -136,7 +137,7 @@ class ModuleAdaption {
         hapInfo.distro.deliveryWithInstall = moduleInfo.deliveryWithInstall;
         hapInfo.srcEntrance = moduleInfo.srcEntrance;
         hapInfo.description = moduleInfo.description;
-        hapInfo.descriptions = moduleInfo.descriptions;
+        hapInfo.setDescriptions(moduleInfo.getDescriptions());
         hapInfo.process = moduleInfo.process;
         hapInfo.mainElement = moduleInfo.mainElement;
         hapInfo.deviceType = moduleInfo.deviceTypes;
@@ -158,6 +159,9 @@ class ModuleAdaption {
         hapInfo.formInfos = moduleInfo.abilityFormInfos;
         hapInfo.commonEvents = moduleInfo.commonEvents;
         hapInfo.definePermissions = moduleInfo.definePermissions;
+        hapInfo.moduleAtomicService = moduleInfo.moduleAtomicService;
+        hapInfo.appModel = moduleInfo.appModel;
+        hapInfo.dependencies = moduleInfo.dependenies;
         return hapInfo;
     }
 
@@ -221,12 +225,12 @@ class ModuleAdaption {
             abilityInfo.name = info.name;
             abilityInfo.srcEntrance = info.srcEntrance;
             abilityInfo.description = info.description;
-            abilityInfo.descriptions = info.descriptions;
+            abilityInfo.setDescriptions(info.getDescriptions());
             abilityInfo.launchType = info.launchType;
             abilityInfo.icon = info.icon;
             abilityInfo.iconPath = info.icon;
             abilityInfo.label = info.label;
-            abilityInfo.labels = info.labels;
+            abilityInfo.setLabels(info.getLabels());
             abilityInfo.labelRes = info.label;
             abilityInfo.permissions = info.permissions;
             abilityInfo.visible = info.visible;

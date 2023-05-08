@@ -85,10 +85,14 @@ public class Utility {
     private String VersionName = "";
     private boolean isModuleJson = false;
     private String rpcid = FALSE_STRING;
-    private String packPath = "";
     private boolean isParse = false;
     private String appqfPath = "";
     private String anPath = "";
+    private String apPath = "";
+    private Boolean isSharedApp = false;
+    private String mainModuleLimit = "";
+    private String normalModuleLimit = "";
+    private String totalLimit = "";
 
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
@@ -103,6 +107,7 @@ public class Utility {
     private List<String> formNameList = new ArrayList<>();
     private List<String> formattedAppList = new ArrayList<>();
     private List<String> formattedHapList = new ArrayList<>();
+
     private List<String> formatedDirList = new ArrayList<>();
 
     private List<String> formatedHQFList = new ArrayList<>();
@@ -112,6 +117,7 @@ public class Utility {
     private String hapList = "";
     private String dirList = "";
     private String hqfList = "";
+    private String hspList = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -708,5 +714,53 @@ public class Utility {
 
     public String getANPath() {
         return this.anPath;
+    }
+
+    public void setAPPath(String apPath) {
+        this.apPath = apPath;
+    }
+
+    public String getAPPath() {
+        return this.apPath;
+    }
+
+    public void setIsSharedApp(boolean isSharedApp) {
+        this.isSharedApp = isSharedApp;
+    }
+
+    public Boolean getSharedApp() {
+        return isSharedApp;
+    }
+
+    public void setMainModuleLimit(String limit) {
+        this.mainModuleLimit = limit;
+    }
+
+    public String getMainModuleLimit() {
+        return mainModuleLimit;
+    }
+
+    public String getNormalModuleLimit() {
+        return normalModuleLimit;
+    }
+
+    public void setNormalModuleLimit(String limit) {
+        this.normalModuleLimit = limit;
+    }
+
+    public String getTotalLimit() {
+        return totalLimit;
+    }
+
+    public void setTotalLimit(String limit) {
+        this.totalLimit = limit;
+    }
+
+    public String getHspList() {
+        return hspList;
+    }
+
+    public void setHspList(String hspList) {
+        this.hspList = hspList;
     }
 }

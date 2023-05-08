@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,6 +25,11 @@ import java.util.List;
  */
 public class HapInfo {
     /**
+     * Indicates hap is stage or FA.
+     */
+    public AppModel appModel = AppModel.FA;
+
+    /**
      * Indicates the package of HapInfo.
      */
     public String packageStr = "";
@@ -38,10 +43,6 @@ public class HapInfo {
      * Indicates the description of HapInfo.
      */
     public String description = "";
-    /**
-     * Indicates the descriptions of HapInfo.
-     */
-    public HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Indicates the supportedModes of HapInfo.
@@ -90,6 +91,11 @@ public class HapInfo {
      * Indicates the metaData of HapInfo.
      */
     public MetaData metaData = new MetaData();
+
+    /**
+     * Indicates the dependency config.
+     */
+    public List<DependencyItem> dependencies = new ArrayList<>();
 
     /**
      * Indicates the HapInfo is Js app.
@@ -148,9 +154,27 @@ public class HapInfo {
     public  List<ExtensionAbilityInfo> extensionAbilityInfos = new ArrayList<>();
 
     /**
+     * Indicates the module atomic service of ModuleInfo.
+     */
+    public ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
+
+    /**
      * Indicates the form of module ModuleJson.
      */
     public List<AbilityFormInfo> formInfos = new ArrayList<>();
+
+    /**
+     * Indicates the descriptions of HapInfo.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
 
     /**
      * get the customize Data value defined in this module.

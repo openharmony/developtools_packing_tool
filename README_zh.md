@@ -2,7 +2,7 @@
 
 ## 简介
 
-packing_tool子系统用于生成打包工具和拆包工具，其中打包工具用于hap，app，hqf，appqf,har包的生成，拆包工具用于对hap，app，hqf，appqf,har包的拆包及对hap，app，appqf的解析。具体的功能介绍如下：
+packing_tool子系统用于生成打包工具和拆包工具，其中打包工具用于hap，app，hqf，appqf，har，hsp包的生成，拆包工具用于对hap，app，hqf，appqf，har，hsp包的拆包及对hap，hsp，app，appqf的解析。具体的功能介绍如下：
 
 打包工具子系统架构图如下：
 
@@ -18,7 +18,7 @@ packing_tool子系统用于生成打包工具和拆包工具，其中打包工�
 
 
 ```
-java -jar path\app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true
+java -jar app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true
 ```
 
 - FA模型的打包命令示例：
@@ -66,7 +66,7 @@ java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [optio
 | --json-path | 是         | NA            | .json文件路径，文件名必须为config.json。                     |
 | --jar-path  | 否         | NA            | 1.jar文件路径，文件名必须以.jar为后缀。如果是多个jar需要用“，”分隔。2.jar文件路径也可以为目录。 |
 | --lib-path  | 否         | NA            | lib库文件路径。                                              |
-| --res-path  | 否         | NA            | resources资源包路径。                                        |
+| --res-path  | 是         | NA            | resources资源包路径。                                        |
 | --out-path  | 是         | NA            | 目标文件路径，文件名必须以.hap为后缀。                       |
 | --force     | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
 
@@ -75,7 +75,7 @@ java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [optio
 #### 1.3.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode app --hap-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info [option]--force [option]
+java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info [option]--force [option]
 ```
 
 #### 1.3.2 参数含义及规范
@@ -91,7 +91,7 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --out-path [option
 | --certificate-path | 否     | NA          | 证书路径。                                                        |
 | --force            | 否     | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                           |
 
-#### 1.3.3 打包app是hap的合法性校验
+#### 1.3.3 打包app时hap的合法性校验
 
 在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode和versionName，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
 
@@ -105,16 +105,41 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list 1.hap,2.hap --app-list
 
 #### 1.4.2 参数含义及规范
 
-| 指令       | 是否必选项 | 选项          | 描述                                                         |
-| ---------- | ---------- | ------------- | ------------------------------------------------------------ |
-| --mode     | 是         | multiApp      | 打包类型，在将多个hap打入同一个app时，需保证每个hap满足合法性校验规则。 |
-| --hap-list | 否         | hap的路径     | 1.hap包文件路径，文件名必须以.hap为后缀。如果是多个hap包需要”，“分隔。2.hap文件路径也可以是目录。 |
-| --app-list | 否         | app的路径     | 1.app文件路径，文件名必须以.app为后缀。如果是多个hap包需要用”，“分隔。2.app文件路径也可以是目录。3.--hap-list命令与--app-list不可以都不传。 |
-| --force    | 否         | 默认值为false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
+| 指令       | 是否必选项 | 选项          | 描述                                                                                                  |
+| ---------- | ---------- | ------------- |-----------------------------------------------------------------------------------------------------|
+| --mode     | 是         | multiApp      | 打包类型，在将多个hap打入同一个app时，需保证每个hap满足合法性校验规则。                                                            |
+| --hap-list | 否         | hap的路径     | 1.hap包文件路径，文件名必须以.hap为后缀。如果是多个hap包需要”，“分隔。2.hap文件路径也可以是目录。                                          |
+| --hsp-list | 是        | hsp的路径     | 1.hsp包文件路径，文件名必须以.hsp为后缀。如果是多个hsp包需要”，“分隔。2.hsp文件路径也可以是目录。                                          |
+| --app-list | 否         | app的路径     | 1.app文件路径，文件名必须以.app为后缀。如果是多个app包需要用”，“分隔。2.app文件路径也可以是目录。3.--hap-list，--hsp-list，--app-list不可以都不传。 |
+| --force    | 否         | 默认值为false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                                                                  |
 
 #### 1.4.3 多工程打包hap合法性校验
 
 需要保证被打包的每个hap在json文件中配置的bundleName，versionCode和versionName，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。
+
+### 1.5 hsp模式打包指令
+
+#### 1.5.1 示例
+```
+java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\library.hsp --force true
+```
+
+#### 1.5.2 参数含义及规范
+
+| 指令             | 是否必选项 | 选项          | 描述                                                        |
+| ---------------- | ---------- |-------------|-----------------------------------------------------------|
+| --mode           | 是         | hsp         | 打包类型。                                                     |
+| --json-path      | 是         | NA          | .json文件路径，文件名必须为module.json。                              |
+| --profile-path   | 否         | NA          | CAPABILITY.profile文件路径。                                   |
+| --dex-path       | 否         | NA          | 1.dex文件路径，文件名必须以.dex为后缀。如果是多个dex需要用“，”分隔。2.dex文件路径也可以为目录。 |
+| --lib-path       | 否         | NA          | lib库文件路径。                                                 |
+| --resources-path | 否         | NA          | resources资源包路径。                                           |
+| --index-path     | 否         | NA          | .index文件路径，文件名必须为resources.index。                         |
+| --pack-info-path | 否         | NA          | pack.info文件路径，文件名必须为pack.info。                            |
+| --js-path        | 否         | NA          | 存放js文件目录路径。                                               |
+| --ets-path       | 否         | NA          | 存放ets文件目录路径。                                              |
+| --out-path       | 是         | NA          | 目标文件路径，文件名必须以.hsp为后缀。                                     |
+| --force          | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                        |
 
 ## 2. 拆包指令说明
 
@@ -147,10 +172,10 @@ java -jar app_unpacking_tool.jar --mode <options> --har-path <option> --out-path
 #### 2.2.2 参数含义及规范
 
 | 指令       | 是否必选项 | 选项          | 描述                                                        |
-| ---------- | ---------- | ------------- | ----------------------------------------------------------- |
-| --mode     | 是         | hap           | 拆包类型。                                                  |
-| --har-path | 是         | NA            | har包路径。                                                 |
-| --out-path | 是         | NA            | 拆包目标文件路径。                                          |
+| ---------- | ---------- |-------------| ----------------------------------------------------------- |
+| --mode     | 是         | har         | 拆包类型。                                                  |
+| --har-path | 是         | NA          | har包路径。                                                 |
+| --out-path | 是         | NA          | 拆包目标文件路径。                                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 2.3 app包模式拆包指令
@@ -164,10 +189,10 @@ java -jar app_unpacking_tool.jar --mode <options> --app-path <option> --out-path
 #### 2.3.2 参数含义及规范
 
 | 指令       | 是否必选项 | 选项          | 描述                                                        |
-| ---------- | ---------- | ------------- | ----------------------------------------------------------- |
-| --mode     | 是         | hap           | 拆包类型。                                                  |
-| --app-path | 是         | NA            | app包路径。                                                 |
-| --out-path | 是         | NA            | 拆包目标文件路径。                                          |
+| ---------- | ---------- |-------------| ----------------------------------------------------------- |
+| --mode     | 是         | app         | 拆包类型。                                                  |
+| --app-path | 是         | NA          | app包路径。                                                 |
+| --out-path | 是         | NA          | 拆包目标文件路径。                                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 2.4 从hap包中获取rpcid文件
@@ -188,27 +213,44 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | --out-path | 是         | NA            | 拆包rpcid目标文件路径                                        |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
 
+### 2.5 hsp包模式拆包指令
+
+#### 2.5.1 示例
+
+```
+java -jar app_unpacking_tool.jar --mode <option> --hsp-path <options> --out-path [option] --force [option]
+```
+
+#### 2.5.2 参数含义及规范
+
+| 指令         | 是否必选项 | 选项          | 描述                                 |
+|------------| ---------- | ------------- |------------------------------------|
+| --mode     | 是         | hap           | 拆包类型。                              |
+| --hsp-path | 是         | NA            | hsp包路径。                            |
+| --out-path | 是         | NA            | 拆包目标文件路径。                          |
+| --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
+
 ## 3. 包解析接口
 
 ### 3.1 接口目录
 
-| 类名               | 接口原型                                                     | 类型     | 接口详细描述                                                 |
-| ------------------ | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
+| 类名               | 接口原型                                                     | 类型     | 接口详细描述                                                            |
+| ------------------ | ------------------------------------------------------------ | -------- |-------------------------------------------------------------------|
 | UncompressEntrance | UncomperssResult parseApp(String appPath,String parseMode,String deviceType,String hapName) | Java接口 | 接口功能：根据参数解析app包的pack.info信息 输入参数：app包路径，解析参数 返回值：UncomperssResult |
 | UncompressEntrance | UncomperssResult parseApp(InputStream input,String parseMode,String deviceType,String hapName,String outPath) | Java接口 | 接口功能：根据参数解析app包的pack.info信息 输入参数：app文件流，解析参数 返回值：UncomperssResult |
-| UncompressEntrance | UncomperssResult parseHap(String hapPath)                    | Java接口 | 接口功能：根据参数解析app包的config.json信息 输入参数：hap包路径，解析参数 返回值：UncomperssResult |
-| UncompressEntrance | UncomperssResult parseHap(InputStream input)                 | Java接口 | 接口功能：根据参数解析app包的config.json信息 输入参数：hap包文件流，解析参数 返回值：UncomperssResult |
+| UncompressEntrance | UncomperssResult parseHap(String hapPath)                    | Java接口 | 接口功能：根据参数解析app包的json配置文件 输入参数：hap包路径，解析参数 返回值：UncomperssResult    |
+| UncompressEntrance | UncomperssResult parseHap(InputStream input)                 | Java接口 | 接口功能：根据参数解析app包的json配置文件 输入参数：hap包文件流，解析参数 返回值：UncomperssResult   |
 
 ## 4. 拆包工具信息字段
 
 ### 4.1 UncomperssResult（Bundle信息）结构体信息
 
-| 字段         | 类型               | 描述                                                         | 备注 |
-| ------------ | ------------------ | ------------------------------------------------------------ | ---- |
-| result       | boolean            | 标识此次解析是否成功                                         | NA   |
-| message      | String             | 标识此次解析失败的原因或Success                              | NA   |
-| packInfos    | List\<PackInfo>    | bundle中pack.info文件的packages信息                          | NA   |
-| profileInfos | List\<profileInfo> | 一个ProfileInfo对应一个module的信息                          | NA   |
+| 字段         | 类型               | 描述                                     | 备注 |
+| ------------ | ------------------ |----------------------------------------| ---- |
+| result       | boolean            | 标识此次解析是否成功                             | NA   |
+| message      | String             | 解析失败时返回失败原因                            | NA   |
+| packInfos    | List\<PackInfo>    | bundle中pack.info文件的packages信息          | NA   |
+| profileInfos | List\<profileInfo> | 应用的配置信息                                | NA   |
 | icon         | String             | 返回入口组件的icon路径，如果没有入口组件，则返回第一个组件的icon信息 | NA   |
 | label        | String             | 返回入口组件的label，如果没有入口组件，则返回第一个组件的label信息 | NA   |
 
@@ -294,25 +336,6 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | type              | String                   | 标识ability类型                                   | Stage模型下该值直接赋予page类型 |
 | uri               | String                   | 标识ability的uri信息                              | FA模型支持                      |
 | launchType        | String                   | 标识ability中的launcherType信息                   | NA                              |
-| metadata          | Metadata结构体（见下述MetaData） | 描述ability的配置信息                             | NA                              |
-| orientation       | String                   | 描述ability的显示模式                             | NA                              |
-| permissions       | List\<String>            | 标识被其它应用的ability调用时需要申请的权限的集合 | NA                              |
-| skills            | List\<SkillInfo>         | 标识ability能够接收的意图的特征集                 | NA                              |
-| backgroundModes   | List\<String>            | 标识ability长时任务集合                           | NA                              |
-| visible           | boolean                  | 标识ability是否可以被其它应用调用                 | NA                              |
-| grantPermission   | boolean                  | 标识ability的grantPermission                      | FA模型支持，stage模型废弃       |
-| readPermission    | String                   | 标识ability的读取权限                             | FA模型支持，stage模型废弃       |
-| writepermission   | String                   | 标识ability的写权限                               | FA模型支持，stage模型废弃       |
-| uriPermissionMode | String                   | 标识ability的uriPermissionMode                    | FA模型支持，stage模型废弃       |
-| uriPermissionPath | String                   | 标识ability的uriPermissionPath                    | FA模型支持，stage模型废弃       |
-| configChanges     | List\<String>            | 标识ability的configChanges                        | FA模型支持，stage模型废弃       |
-| directLaunch      | boolean                  | 标识ability的directLaunch                         | FA模型支持，stage模型废弃       |
-| mission           | String                   | 标识ability的mission                              | FA模型支持，stage模型废弃       |
-| targetAbility     | String                   | 标识ability的targetAbility                        | FA模型支持，stage模型废弃       |
-| mulitiUserShared  | boolean                  | 标识ability的mulitiUserShared                     | FA模型支持，stage模型废弃       |
-| supportPipMode    | boolean                  | 标识ability的supportPipMode                       | FA模型支持，stage模型废弃       |
-| srcEntrance       | String                   | 标识ability所对应的js代码路径                     | stage模型支持                   |
-| continuable       | boolean                  | 标识ability是否可以迁移                           | NA                              |
 
 ### 4.7 Distro结构体信息
 
@@ -492,6 +515,12 @@ java -jar app_unpacking_tool.jar --mode hap --rpcid true --hap-path <option> --o
 | type       | List\<String> | 配置当前静态公共时间的类别数组         | Stage模型从staticSubscriber类型的Extension中获取 |
 | events     | List\<String> | 标识能够接收的意图的event值的集合      | Stage模型从staticSubscriber类型的Extension中获取 |
 
+### 4.26 DependencyItem结构体信息
+
+| 字段           | 类型   | 描述             | 备注 |
+|--------------| ------ |----------------| ---- |
+| bundleName   | String | 共享包的bundleName | NA   |
+| moduleName   | String | 共享包的moduleName | NA   |
 
 
 

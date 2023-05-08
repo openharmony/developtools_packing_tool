@@ -75,9 +75,14 @@ class HapVerifyInfo {
     private boolean isStageModule = true;
 
     /**
-     * Indicates is entry of module.
+     * Indicates is type of module.
      */
     private String moduleType = "";
+
+    /**
+     * Indicates atomic service type, contain main, normal.
+     */
+    private String atomicServiceType = "";
 
     /**
      * Indicates is installationFree of module.
@@ -103,6 +108,27 @@ class HapVerifyInfo {
      * Indicates is file in profile of module.
      */
     private HashMap<String, String> resourceMap = new HashMap<>();
+
+    private String bundleType = "app";
+
+    private String targetBundleName = "";
+
+    private int targetPriority = 0;
+
+    private String targetModuleName = "";
+
+    private int targetModulePriority = 0;
+
+    private List<PreloadItem> preloadItems = new ArrayList<>();
+
+    private long fileLength = 0L;
+    private int entrySizeLimit = 2;
+
+    private int notEntrySizeLimit = 2;
+
+    private int sumSizeLimit = 10;
+
+    private boolean debug = false;
 
     /**
      * get bundle name form HapVerifyInfo.
@@ -342,5 +368,101 @@ class HapVerifyInfo {
                 dependencies.add(item.getModuleName());
             }
         }
+    }
+
+    public String getBundleType() {
+        return bundleType;
+    }
+
+    public void setBundleType(String bundleType) {
+        this.bundleType = bundleType;
+    }
+
+    public String getAtomicServiceType() {
+        return atomicServiceType;
+    }
+
+    public void setAtomicServiceType(String atomicServiceType) {
+        this.atomicServiceType = atomicServiceType;
+    }
+
+    public List<PreloadItem> getPreloadItems() {
+        return preloadItems;
+    }
+
+    public void setPreloadItems(List<PreloadItem> preloadItems) {
+        this.preloadItems = preloadItems;
+    }
+
+    public String getTargetBundleName() {
+        return targetBundleName;
+    }
+
+    public void setTargetBundleName(String targetBundleName) {
+        this.targetBundleName = targetBundleName;
+    }
+
+    public int getTargetPriority() {
+        return targetPriority;
+    }
+
+    public void setTargetPriority(int priority) {
+        this.targetPriority = priority;
+    }
+
+    public String getTargetModuleName() {
+        return targetModuleName;
+    }
+
+    public void setTargetModuleName(String targetModuleName) {
+        this.targetModuleName = targetModuleName;
+    }
+
+    public int getTargetModulePriority() {
+        return targetModulePriority;
+    }
+
+    public void setTargetModulePriority(int priority) {
+        this.targetModulePriority = priority;
+    }
+
+    public long getFileLength() {
+        return fileLength;
+    }
+
+    public void setFileLength(long fileLength) {
+        this.fileLength = fileLength;
+    }
+
+    public void setEntrySizeLimit(int limit) {
+        this.entrySizeLimit = limit;
+    }
+
+    public int getEntrySizeLimit() {
+        return entrySizeLimit;
+    }
+
+    public void setNotEntrySizeLimit(int notEntrySizeLimit) {
+        this.notEntrySizeLimit = notEntrySizeLimit;
+    }
+
+    public int getNotEntrySizeLimit() {
+        return notEntrySizeLimit;
+    }
+
+    public void setSumSizeLimit(int sumSizeLimit) {
+        this.sumSizeLimit = sumSizeLimit;
+    }
+
+    public int getSumSizeLimit() {
+        return sumSizeLimit;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

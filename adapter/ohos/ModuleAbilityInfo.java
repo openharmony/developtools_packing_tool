@@ -15,7 +15,6 @@
 
 package ohos;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,56 +28,85 @@ class ModuleAbilityInfo {
      * Indicates the name of module ModuleJson.
      */
     public String name = "";
+
     /**
      * Indicates the srcEntrance of module ModuleJson.
      */
     public String srcEntrance = "";
+
     /**
      * Indicates the launchType of module ModuleJson.
      */
     public String launchType = "standard";
+
     /**
      * Indicates the description of module ModuleJson.
      */
     public String description = "";
-    /**
-     * Indicates the descriptions of module ModuleJson, for Multilingual.
-     */
-    public HashMap<String, String> descriptions = new HashMap<>();
+
     /**
      * Indicates the icon of module ModuleJson.
      */
     public String icon = "";
+
     /**
      * Indicates the label of module ModuleJson.
      */
     public String label = "";
-    /**
-     * Indicates the labels of module ModuleJson, for Multilingual.
-     */
-    public HashMap<String, String> labels = new HashMap<>();
+
     /**
      * Indicates the permissions of module ModuleJson.
      */
     public List<String> permissions = new ArrayList<String>();
+
     /**
      * Indicates the metadata of module ModuleJson.
      */
     public List<ModuleMetadataInfo> metadata = new ArrayList<ModuleMetadataInfo>();
+
     /**
      * Indicates the visible of module ModuleJson.
      */
     public boolean visible = false;
+
     /**
      * Indicates the continuable of module ModuleJson.
      */
     public boolean continuable = false;
+
     /**
      * Indicates the skills of module ModuleJson.
      */
     public List<SkillInfo> skills = new ArrayList<SkillInfo>();
+
     /**
      * Indicates the backgroundModes of module ModuleJson.
      */
     public List<String> backgroundModes = new ArrayList<String>();
+
+    /**
+     * Indicates the descriptions of module ModuleJson, for Multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
+
+    /**
+     * Indicates the labels of module ModuleJson, for Multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
+    }
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
 }
