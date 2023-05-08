@@ -17,7 +17,6 @@ package ohos;
 
 import com.alibaba.fastjson.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Optional;

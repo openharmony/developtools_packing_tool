@@ -15,10 +15,7 @@
 
 package ohos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * App AppInfo info.
@@ -83,34 +80,46 @@ public class AppInfo {
      * Indicates the debug of app AppJson.
      */
     public boolean debug = false;
+
     /**
      * Indicates the icon of app AppJson.
      */
     public String icon = "";
+
     /**
      * Indicates the label of app AppJson.
      */
     public String label = "";
-    /**
-     * Indicates the labels of app AppJson, for multilingual.
-     */
-    public HashMap<String, String> labels;
+
     /**
      * Indicates the description of app AppJson.
      */
     public String description = "";
-    /**
-     * Indicates the descriptions of app AppJson, for multilingual.
-     */
-    public HashMap<String, String> descriptions;
+
     /**
      * Indicates the minCompatibleVersionCode of app AppJson.
      */
     public int minCompatibleVersionCode = -1;
+
     /**
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
     public boolean distributedNotificationEnabled = false;
+
+    /**
+     * Indicates the type of bundle.
+     */
+    private String bundleType = "app";
+
+    /**
+     * Indicates the labels of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
+
+    /**
+     * Indicates the descriptions of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Get shell version code.
@@ -137,6 +146,15 @@ public class AppInfo {
      */
     public String getShellVersionName() {
         return shellVersionName;
+    }
+
+    /**
+     * Get bundle type.
+     *
+     * @return bundle type
+     */
+    public String getBundleType() {
+        return bundleType;
     }
 
     /**
@@ -172,5 +190,30 @@ public class AppInfo {
     public void setDefaultShellVersion() {
         this.shellVersionCode = versionCode;
         this.shellVersionName = versionName;
+    }
+
+    /**
+     * Set bundle type
+     *
+     * @param type bundle type
+     */
+    public void setBundleType(String type) {
+        bundleType = type;
+    }
+
+    public void setDescriptions(HashMap<String, String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public void setLabels(HashMap<String, String> labels) {
+        this.labels = labels;
+    }
+
+    public HashMap<String, String> getLabels() {
+        return labels;
+    }
+
+    public HashMap<String, String> getDescriptions() {
+        return descriptions;
     }
 }

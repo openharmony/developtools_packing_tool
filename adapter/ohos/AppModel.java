@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,20 +16,11 @@
 package ohos;
 
 /**
- * ModuleJson Meta data info.
+ *
+ * AppModel info
  *
  */
-class ModuleMetadataInfo {
-    /**
-     * Indicates the name of ModuleMetadataInfo.
-     */
-    public String name = "";
-    /**
-     * Indicates the value of ModuleMetadataInfo.
-     */
-    public String value = "";
-    /**
-     * Indicates the resource of ModuleMetadataInfo.
-     */
-    public String resource = "";
+public enum AppModel {
+    FA,
+    STAGE
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -42,6 +42,7 @@ declare -a unpack_class=(
             "BundleException.java"
             "CommandParser.java"
             "Log.java"
+            "PackFormatter.java"
             "ShowHelp.java"
             "UncompressEntrance.*"
             "Uncompress.java"
@@ -95,6 +96,10 @@ declare -a unpack_class=(
             "FileUtils.java"
             "HQFInfo.java"
             "APPQFResult.java"
+            "ModuleAtomicService.java"
+            "PreloadItem.java"
+            "DependencyItem.java"
+            "AppModel.java"
             )
 unpack_class_length=${#unpack_class[@]}
 for ((i=0; i<${unpack_class_length};++i))
