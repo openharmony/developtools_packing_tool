@@ -37,14 +37,14 @@ public class DefinePermission {
      */
     public String label = "";
 
-    private HashMap<String, String> labels = new HashMap<>();
-
     /**
      * Indicates the description of DefPermission.
      */
     public String description = "";
 
     private HashMap<String, String> descriptions = new HashMap<>();
+
+    private HashMap<String, String> labels = new HashMap<>();
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
