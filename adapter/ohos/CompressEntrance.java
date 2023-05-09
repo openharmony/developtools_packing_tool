@@ -115,6 +115,15 @@ public class CompressEntrance {
             System.exit(EXIT_STATUS_EXCEPTION);
         }
 
+        if (utility.getGenerateBuildHash()) {
+            utility.setForceRewrite("true");
+            if (!compressor.compressProcess(utility)) {
+                LOG.error("CompressEntrance::main exit, compress failed");
+                ShowHelp.compressHelp();
+                System.exit(EXIT_STATUS_EXCEPTION);
+            }
+        }
+
         System.exit(EXIT_STATUS_NORMAL);
     }
 }
