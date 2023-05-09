@@ -42,8 +42,7 @@
                 "atomicService",
                 "targetModuleName",
                 "targetPriority",
-                "generateBuildHash",
-                "buildHash"
+                "generateBuildHash"
               ]
             },
             "required": [
@@ -128,7 +127,6 @@
                 "compressNativeLibs",
                 "atomicService",
                 "generateBuildHash",
-                "buildHash",
                 "proxyDatas",
                 "isolationMode"
               ]
@@ -176,7 +174,6 @@
                 "compressNativeLibs",
                 "atomicService",
                 "generateBuildHash",
-                "buildHash",
                 "proxyDatas",
                 "isolationMode"
               ]
@@ -1235,11 +1232,6 @@
           "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
           "type": "boolean",
           "default": false
-        },
-        "buildHash": {
-          "description": "Describes the hash value of hap or hsp.",
-          "type": "string",
-          "maxLength": 255
         },
         "proxyDatas": {
           "description": "Indicates all the proxy data of the module.",
