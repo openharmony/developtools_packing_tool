@@ -363,7 +363,8 @@
                 "maxWindowHeight",
                 "minWindowHeight",
                 "excludeFromMissions",
-                "recoverable"
+                "recoverable",
+                "unclearableMission"
               ]
             },
             "properties": {
@@ -679,6 +680,11 @@
               },
               "recoverable": {
                 "description": "Specifies whether to support recover UI interface",
+                "type": "boolean",
+                "default": false
+              },
+              "unclearableMission": {
+                "description": "Specify whether it is a task that cannot be deleted",
                 "type": "boolean",
                 "default": false
               }
