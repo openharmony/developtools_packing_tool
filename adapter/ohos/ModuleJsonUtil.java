@@ -93,8 +93,8 @@ class ModuleJsonUtil {
      * get the version from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static Version parseStageVersion(String jsonString) throws BundleException {
         Version version = new Version();
@@ -134,8 +134,8 @@ class ModuleJsonUtil {
      * get the version from json file for fa module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static Version parseFaVersion(String jsonString) throws BundleException {
         Version version = new Version();
@@ -177,8 +177,8 @@ class ModuleJsonUtil {
      * get the bundleType fa module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseFaBundleType(String jsonString) throws BundleException {
         boolean installationFree = parseFAInstallationFree(jsonString);
@@ -192,8 +192,8 @@ class ModuleJsonUtil {
      * get the apiVersion from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static ModuleApiVersion parseStageModuleApiVersion(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -226,8 +226,8 @@ class ModuleJsonUtil {
      * get the apiVersion from json file for fa module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -263,8 +263,8 @@ class ModuleJsonUtil {
      * get the module name from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseStageModuleName(String jsonString) throws BundleException {
         String moduleName = "";
@@ -293,8 +293,8 @@ class ModuleJsonUtil {
      * get the moduleName from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseFaModuleName(String jsonString) throws BundleException {
         String moduleName = "";
@@ -328,8 +328,8 @@ class ModuleJsonUtil {
      * get the package from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseFaPackageStr(String jsonString) throws BundleException {
         String packageStr = "";
@@ -358,8 +358,8 @@ class ModuleJsonUtil {
      * get the bundleName from json file.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseBundleName(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -389,8 +389,8 @@ class ModuleJsonUtil {
      * get the vendor from json file.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseVendor(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -420,8 +420,8 @@ class ModuleJsonUtil {
      *
      * @param finalPackInfo is the final packInfo
      * @param srcPackInfo is the packInfo to be merged
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String mergeTwoPackInfo(String finalPackInfo, String srcPackInfo) throws BundleException {
         String desPackInfo = "";
@@ -697,8 +697,8 @@ class ModuleJsonUtil {
      * @param finalPackInfo is the final packInfo
      * @param srcPackInfo is the packInfo to be merged
      * @param packagePair is the selected packageName-moduleName pair map
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String mergeTwoPackInfoByPackagePair(String finalPackInfo, String srcPackInfo,
                                                        HashMap<String, String> packagePair) throws BundleException {
@@ -1830,9 +1830,10 @@ class ModuleJsonUtil {
 
     /**
      * check module atomic service is valid
+     *
      * @param jsonString is the file content of config.json
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static boolean isModuleAtomicServiceValid(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -1899,9 +1900,10 @@ class ModuleJsonUtil {
 
     /**
      * check module atomic installation free is valid
+     *
      * @param jsonString is the file content of config.json
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
         JSONObject jsonObject;

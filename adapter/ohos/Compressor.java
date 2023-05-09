@@ -122,6 +122,7 @@ public class Compressor {
     private static int notEntryModuleSizeLimit = 2;
     private static int sumModuleSizeLimit = 10;
     private static boolean isOverlay = false;
+    
     private ZipOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private List<String> list = new ArrayList<String>();
