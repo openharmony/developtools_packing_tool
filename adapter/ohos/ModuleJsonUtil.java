@@ -1830,6 +1830,7 @@ class ModuleJsonUtil {
 
     /**
      * check module atomic service is valid
+     *
      * @param jsonString is the file content of config.json
      * @return the result
      * @throws BundleException Throws this exception if the json is not standard.
@@ -1899,6 +1900,7 @@ class ModuleJsonUtil {
 
     /**
      * check module atomic installation free is valid
+     *
      * @param jsonString is the file content of config.json
      * @return the result
      * @throws BundleException Throws this exception if the json is not standard.
