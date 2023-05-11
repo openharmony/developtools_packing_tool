@@ -1143,10 +1143,6 @@ class HapVerify {
         if (!bundleType.equals(ATOMIC_SERVICE)) {
             return true;
         }
-        if (!checkAtomicServiceSumLimit(hapVerifyInfoList)) {
-            LOG.error("checkAtomicServiceSumLimit failed.");
-            return false;
-        }
         boolean isStage = hapVerifyInfoList.get(0).isStageModule();
         if (!isStage) {
             return true;
@@ -1155,6 +1151,10 @@ class HapVerify {
         Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
         for (String device : deviceInfoMap.keySet()) {
             List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
+            if (!checkAtomicServiceSumLimit(hapVerifyInfos)) {
+                LOG.error("checkAtomicServiceSumLimit failed on device: " + device);
+                return false;
+            }
             if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
                 LOG.error("checkAtomicServicePreloadsIsValid failed on device " + device + ".");
                 return false;
