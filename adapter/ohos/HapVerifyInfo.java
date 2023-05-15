@@ -130,6 +130,10 @@ class HapVerifyInfo {
 
     private boolean debug = false;
 
+    private String compileSdkVersion = "";
+
+    private String compileSdkType = "";
+
     /**
      * get bundle name form HapVerifyInfo.
      */
@@ -464,5 +468,21 @@ class HapVerifyInfo {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    public String getCompileSdkVersion() {
+        return compileSdkVersion;
+    }
+
+    public void setCompileSdkVersion(String compileSdkVersion) {
+        this.compileSdkVersion = compileSdkVersion;
+    }
+
+    public String getCompileSdkType() {
+        return compileSdkType;
+    }
+
+    public void setCompileSdkType(String compileSdkType) {
+        this.compileSdkType = compileSdkType;
     }
 }

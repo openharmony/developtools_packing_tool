@@ -56,7 +56,7 @@ java -jar app_packing_tool.jar --mode hap --json-path <option> --maple-so-path [
 #### 1.2.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [option>]--lib-path [option] --resources-path [option] --out-path [option] --force [option]
+java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [option]--lib-path [option] --resources-path [option] --out-path [option] --force [option]
 ```
 
 #### 1.2.2 参数含义及规范
@@ -273,7 +273,7 @@ java -jar app_unpacking_tool.jar --mode <option> --hsp-path <options> --out-path
 #### 2.6.1 示例
 
 ```
-java -jar app_unpacking_tool.jar --mode <option> --appfq-path <options> --out-path [option] --force [option]
+java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-path [option] --force [option]
 ```
 
 #### 2.6.2 参数含义及规范
