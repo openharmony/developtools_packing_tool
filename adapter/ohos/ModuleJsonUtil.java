@@ -87,6 +87,9 @@ class ModuleJsonUtil {
     private static final String TARGET_BUNDLE_NAME = "targetBundleName";
     private static final String DEVICE_CONFIG = "deviceConfig";
     private static final String DEFAULT = "default";
+    private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
+    private static final String COMPILE_SDK_TYPE = "compileSdkType";
+
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
@@ -933,6 +936,8 @@ class ModuleJsonUtil {
         hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModulePriority(parseTargetModulePriority(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDebug(getDebug(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompileSdkType(getCompileSdkType(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompileSdkVersion(getCompileSdkVersion(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1683,6 +1688,52 @@ class ModuleJsonUtil {
         }
 
         return getJsonBooleanValue(defaultObj, DEBUG, false);
+    }
+
+    public static String getCompileSdkVersion(String jsonString) throws BundleException {
+        String compileSdkVersion = "";
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+            JSONObject appObj = jsonObject.getJSONObject(APP);
+            if (appObj == null) {
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+            }
+            if (appObj.containsKey(COMPILE_SDK_VERSION)) {
+                compileSdkVersion = appObj.getString(COMPILE_SDK_VERSION);
+            } else {
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+            }
+        } catch (BundleException e) {
+            LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
+            throw new BundleException("ModuleJsonUtil:parseStageModuleName failed.");
+        }
+        return compileSdkVersion;
+    }
+
+    public static String getCompileSdkType(String jsonString) throws BundleException {
+        String compileSdkType = "";
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+            JSONObject appObj = jsonObject.getJSONObject(APP);
+            if (appObj == null) {
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+            }
+            if (appObj.containsKey(COMPILE_SDK_TYPE)) {
+                compileSdkType = appObj.getString(COMPILE_SDK_TYPE);
+            } else {
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+            }
+        } catch (BundleException e) {
+            LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
+            throw new BundleException("ModuleJsonUtil:parseStageModuleName failed.");
+        }
+        return compileSdkType;
     }
 
     /**
