@@ -965,6 +965,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDebug(getFADebug(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1690,6 +1691,12 @@ class ModuleJsonUtil {
         return getJsonBooleanValue(defaultObj, DEBUG, false);
     }
 
+    /**
+     * get compileSdkVersion in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
     public static String getCompileSdkVersion(String jsonString) throws BundleException {
         String compileSdkVersion = "";
         JSONObject jsonObject;
@@ -1703,8 +1710,7 @@ class ModuleJsonUtil {
             if (appObj.containsKey(COMPILE_SDK_VERSION)) {
                 compileSdkVersion = appObj.getString(COMPILE_SDK_VERSION);
             } else {
-                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
-                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+                LOG.warning("ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkVersion.");
             }
         } catch (BundleException e) {
             LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
@@ -1713,6 +1719,12 @@ class ModuleJsonUtil {
         return compileSdkVersion;
     }
 
+    /**
+     * get compileSdkType in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
     public static String getCompileSdkType(String jsonString) throws BundleException {
         String compileSdkType = "";
         JSONObject jsonObject;
@@ -1726,8 +1738,7 @@ class ModuleJsonUtil {
             if (appObj.containsKey(COMPILE_SDK_TYPE)) {
                 compileSdkType = appObj.getString(COMPILE_SDK_TYPE);
             } else {
-                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
-                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+                LOG.warning("ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkType.");
             }
         } catch (BundleException e) {
             LOG.error("ModuleJsonUtil:parseStageModuleName failed.");

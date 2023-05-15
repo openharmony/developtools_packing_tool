@@ -30,6 +30,11 @@ public class DependencyItem {
      */
     private String moduleName = null;
 
+    /**
+     * Indicates the version code of dependent module.
+     */
+    private int versionCode = 0;
+
     public String getBundleName() {
         return bundleName;
     }
@@ -44,5 +49,13 @@ public class DependencyItem {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public int getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(int versionCode) {
+        this.versionCode = versionCode;
     }
 }
