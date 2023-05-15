@@ -93,6 +93,10 @@ class HapVerify {
             LOG.error("target module is not found.");
             return false;
         }
+        if (!checkCompileSdkIsValid(hapVerifyInfos)) {
+            LOG.error("compile sdk config is not same.");
+            return false;
+        }
         return true;
     }
 
@@ -167,7 +171,7 @@ class HapVerify {
                 return false;
             }
             if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
-                LOG.error("debug is different");
+                LOG.error("debug is different.");
                 return false;
             }
         }
@@ -331,6 +335,26 @@ class HapVerify {
         }
 
 
+        return true;
+    }
+
+    private static boolean checkCompileSdkIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("hapVerifyInfos is empty");
+            return false;
+        }
+        String compileSdkVersion = hapVerifyInfos.get(0).getCompileSdkVersion();
+        String compileSdkType = hapVerifyInfos.get(0).getCompileSdkType();
+        for (HapVerifyInfo info : hapVerifyInfos) {
+            if (!compileSdkType.equals(info.getCompileSdkType())) {
+                LOG.error("compile sdk type is not same.");
+                return false;
+            }
+            if (!compileSdkVersion.equals(info.getCompileSdkVersion())) {
+                LOG.error("compile sdk version is not same.");
+                return false;
+            }
+        }
         return true;
     }
 
