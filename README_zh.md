@@ -262,11 +262,28 @@ java -jar app_unpacking_tool.jar --mode <option> --hsp-path <options> --out-path
 #### 2.5.2 参数含义及规范
 
 | 指令         | 是否必选项 | 选项          | 描述                                 |
-|------------| ---------- | ------------- |------------------------------------|
-| --mode     | 是         | hap           | 拆包类型。                              |
-| --hsp-path | 是         | NA            | hsp包路径。                            |
-| --out-path | 是         | NA            | 拆包目标文件路径。                          |
+|------------| ---------- |-------------|------------------------------------|
+| --mode     | 是         | hsp         | 拆包类型。                              |
+| --hsp-path | 是         | NA          | hsp包路径。                            |
+| --out-path | 是         | NA          | 拆包目标文件路径。                          |
 | --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
+
+### 2.6 appqf模式拆包指令
+
+#### 2.6.1 示例
+
+```
+java -jar app_unpacking_tool.jar --mode <option> --appfq-path <options> --out-path [option] --force [option]
+```
+
+#### 2.6.2 参数含义及规范
+
+| 指令           | 是否必选项 | 选项          | 描述                                 |
+|--------------| ---------- |-------------|------------------------------------|
+| --mode       | 是         | appqf       | 拆包类型。                              |
+| --appqf-path | 是         | NA          | appqf包路径。                          |
+| --out-path   | 是         | NA          | 拆包目标文件路径。                          |
+| --force      | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ## 3. 包解析接口
 
