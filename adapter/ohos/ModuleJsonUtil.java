@@ -89,6 +89,8 @@ class ModuleJsonUtil {
     private static final String DEFAULT = "default";
     private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
     private static final String COMPILE_SDK_TYPE = "compileSdkType";
+    private static final String PROXY_DATAS = "proxyDatas";
+    private static final String PROXY_URI = "uri";
 
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
@@ -938,6 +940,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setDebug(getDebug(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkType(getCompileSdkType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkVersion(getCompileSdkVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setProxyDataUris(parseProxyDataUri(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1375,6 +1378,32 @@ class ModuleJsonUtil {
         return preloadItems;
     }
 
+    static List<String> parseProxyDataUri(String jsonString) throws BundleException {
+        List<String> proxyDataUris = new ArrayList<>();
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("parse JOSNObject failed in parseProxyDataUri.");
+            throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (!moduleObj.containsKey(PROXY_DATAS)) {
+            return proxyDataUris;
+        }
+        JSONArray proxyDatas = moduleObj.getJSONArray(PROXY_DATAS);
+        for (int i = 0; i < proxyDatas.size(); ++i) {
+            JSONObject itemObj = proxyDatas.getJSONObject(i);
+            if (!itemObj.containsKey(PROXY_URI)) {
+                LOG.error("parse JOSNObject failed in parseProxyDataUri.");
+                throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+            }
+            String uri = itemObj.getString(PROXY_URI);
+            proxyDataUris.add(uri);
+        }
+        return proxyDataUris;
+    }
+
     static JSONObject getAppObj(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
@@ -1710,7 +1739,8 @@ class ModuleJsonUtil {
             if (appObj.containsKey(COMPILE_SDK_VERSION)) {
                 compileSdkVersion = appObj.getString(COMPILE_SDK_VERSION);
             } else {
-                LOG.warning("ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkVersion.");
+                LOG.warning(
+                        "ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkVersion.");
             }
         } catch (BundleException e) {
             LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
@@ -1738,7 +1768,8 @@ class ModuleJsonUtil {
             if (appObj.containsKey(COMPILE_SDK_TYPE)) {
                 compileSdkType = appObj.getString(COMPILE_SDK_TYPE);
             } else {
-                LOG.warning("ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkType.");
+                LOG.warning(
+                        "ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkType.");
             }
         } catch (BundleException e) {
             LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
