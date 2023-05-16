@@ -134,6 +134,8 @@ class HapVerifyInfo {
 
     private String compileSdkType = "";
 
+    private List<String> proxyDataUris = new ArrayList<>();
+
     /**
      * get bundle name form HapVerifyInfo.
      */
@@ -484,5 +486,13 @@ class HapVerifyInfo {
 
     public void setCompileSdkType(String compileSdkType) {
         this.compileSdkType = compileSdkType;
+    }
+
+    public List<String> getProxyDataUris() {
+        return proxyDataUris;
+    }
+
+    public void setProxyDataUris(List<String> proxyDataUris) {
+        this.proxyDataUris = proxyDataUris;
     }
 }

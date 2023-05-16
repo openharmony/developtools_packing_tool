@@ -19,9 +19,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,6 +98,9 @@ class HapVerify {
         if (!checkCompileSdkIsValid(hapVerifyInfos)) {
             LOG.error("compile sdk config is not same.");
             return false;
+        }
+        if (!checkProxyDataUriIsUnique(hapVerifyInfos)) {
+            LOG.error("uris in proxy data are not unique.");
         }
         return true;
     }
@@ -356,6 +361,21 @@ class HapVerify {
             }
         }
         return true;
+    }
+
+    private static boolean checkProxyDataUriIsUnique(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("hapVerifyInfos is empty");
+            return false;
+        }
+        Set<String> uriSet = new HashSet<>();
+        int uriListSize = 0;
+        for (HapVerifyInfo info : hapVerifyInfos) {
+            uriSet.addAll(info.getProxyDataUris());
+            uriListSize += info.getProxyDataUris().size();
+        }
+
+        return uriListSize != uriSet.size();
     }
 
     /**
