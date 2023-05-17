@@ -153,6 +153,8 @@ public class JsonUtil {
     private static final String DEPENDENCY_BUNDLE_NAME = "bundleName";
     private static final String DEPENDENCY_MODULE_NAME = "moduleName";
     private static final String DEPENDENCIES = "dependencies";
+    private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
+    private static final String COMPILE_SDK_TYPE = "compileSdkType";
 
 
     /**
@@ -391,6 +393,12 @@ public class JsonUtil {
             appInfo.appNameEN = getJsonString(appJson, "label");
         }
         appInfo.setMultiFrameworkBundle(appJson.getBooleanValue(MULTI_FRAMEWORK_BUNDLE));
+        if (appJson.containsKey(COMPILE_SDK_TYPE)) {
+            appInfo.setCompileSdkType(appJson.getString(COMPILE_SDK_TYPE));
+        }
+        if (appJson.containsKey(COMPILE_SDK_VERSION)) {
+            appInfo.setCompileSdkVersion(appJson.getString(COMPILE_SDK_VERSION));
+        }
         return appInfo;
     }
 
@@ -434,7 +442,8 @@ public class JsonUtil {
                 getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
         moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
         moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
-
+        moduleAppInfo.setCompileSdkType(getJsonString(appJson, COMPILE_SDK_TYPE, EMPTY));
+        moduleAppInfo.setCompileSdkVersion(getJsonString(appJson, COMPILE_SDK_VERSION, EMPTY));
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
