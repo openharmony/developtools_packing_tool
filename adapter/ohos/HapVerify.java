@@ -405,20 +405,20 @@ class HapVerify {
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
                 if (!checkDuplicatedIsValid(entryHapVerifyInfos.get(i), entryHapVerifyInfos.get(j))) {
-                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
-                            hapVerifyInfos.get(j).getModuleName() + ") are entry, " +
+                    LOG.error("Module: (" + entryHapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            entryHapVerifyInfos.get(j).getModuleName() + ") are entry, " +
                             "please check deviceType or distroFilter of the module.");
-                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
-                            + hapVerifyInfos.get(i).getDeviceType() + ".");
-                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
-                            + hapVerifyInfos.get(j).getDeviceType() + ".");
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
-                                hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
+                    LOG.error("Module: " + entryHapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                            + entryHapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                            + entryHapVerifyInfos.get(j).getDeviceType() + ".");
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(i).getDistroFilter().dump())) {
+                        LOG.error("Module: " + entryHapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
+                                entryHapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
-                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
+                                entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
                     LOG.error("Solution: Make sure entry name is valid and unique.");
                     LOG.error("Reference: " + REFERENCE_LINK + ".");
