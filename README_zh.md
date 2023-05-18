@@ -330,31 +330,33 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 
 ### 4.4 AppInfo结构体信息
 
-| 字段                             | 类型      | 描述                                                                          | 备注        |
-|--------------------------------|---------|-----------------------------------------------------------------------------|-----------|
-| bundleName                     | String  | 标识app的包名称                                                                   | NA        |
-| bundleType                     | String  | 标识bundle的类型，取值：<br/>- app：普通应用<br/>- atomicService：元服务 <br/>- shared：应用间共享库 | NA        |
-| vendor                         | String  | 标识app的供应商信息                                                                 | NA        |
-| releatedBundleName             | String  | 标识app相关bundle的包名                                                            | NA        |
-| versionName                    | String  | 标识app中的versionName信息                                                        | NA        |
-| versionCode                    | String  | 标识app中的versionCode信息                                                        | NA        |
-| targetApiVersion               | int     | 标识应用运行需要的API目标版本                                                            | NA        |
-| compatibleApiVersion           | int     | 标识应用兼容的API版本                                                                | NA        |
-| appName                        | String  | 标识显示在桌面上的ability的label                                                      | NA        |
-| releaseType                    | String  | 标识应用运行需要的API目标版本的类型                                                         | NA        |
-| shellVersionCode               | String  | 标识HarmonyOS中的API版本                                                          | NA        |
-| shellVersionName               | String  | 标识HarmonyOS中的API版本名称                                                        | NA        |
-| multiFrameworkBundle           | String  | 标识双框架下app的bundleName                                                        | NA        |
-| debug                          | boolean | 标识应用是否可调试                                                                   | NA        |
-| icon                           | String  | 标识应用的图标路径                                                                   | NA        |
-| label                          | String  | 标识应用的label                                                                  | NA        |
-| description                    | String  | 标识应用的描述信息                                                                   | stage模型新增 |
-| minCompatibleVersionCode       | int     | 标识应用能够兼容的最低版本号                                                              | NA        |
-| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                                              | stage模型新增 |
-| jointUserid                    | String  | 标签标识一个用的共享userid                                                            | FA模型特有    |
-| process                        | String  | 标识应用的进程名                                                                    | FA模型特有    |
-| directLaunch                   | String  | 标识应用是否支持未解锁直接启动模式                                                           | NA        |
-| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                                              | stage模型特有 |
+| 字段                             | 类型      | 描述                                                                            | 备注          |
+|--------------------------------|---------|-------------------------------------------------------------------------------|-------------|
+| bundleName                     | String  | 标识app的包名称                                                                     | NA          |
+| bundleType                     | String  | 标识bundle的类型，取值：<br/>- app：普通应用<br/>- atomicService：元服务 <br/>- shared：应用间共享库   | NA          |
+| vendor                         | String  | 标识app的供应商信息                                                                   | NA          |
+| releatedBundleName             | String  | 标识app相关bundle的包名                                                              | NA          |
+| versionName                    | String  | 标识app中的versionName信息                                                          | NA          |
+| versionCode                    | String  | 标识app中的versionCode信息                                                          | NA          |
+| targetApiVersion               | int     | 标识应用运行需要的API目标版本                                                              | NA          |
+| compatibleApiVersion           | int     | 标识应用兼容的API版本                                                                  | NA          |
+| appName                        | String  | 标识显示在桌面上的ability的label                                                        | NA          |
+| releaseType                    | String  | 标识应用运行需要的API目标版本的类型                                                           | NA          |
+| shellVersionCode               | String  | 标识HarmonyOS中的API版本                                                            | NA          |
+| shellVersionName               | String  | 标识HarmonyOS中的API版本名称                                                          | NA          |
+| multiFrameworkBundle           | String  | 标识双框架下app的bundleName                                                          | NA          |
+| debug                          | boolean | 标识应用是否可调试                                                                     | NA          |
+| icon                           | String  | 标识应用的图标路径                                                                     | NA          |
+| label                          | String  | 标识应用的label                                                                    | NA          |
+| description                    | String  | 标识应用的描述信息                                                                     | stage模型新增   |
+| minCompatibleVersionCode       | int     | 标识应用能够兼容的最低版本号                                                                | NA          |
+| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                                                | stage模型新增   |
+| jointUserid                    | String  | 标签标识一个用的共享userid                                                              | FA模型特有      |
+| process                        | String  | 标识应用的进程名                                                                      | FA模型特有      |
+| directLaunch                   | String  | 标识应用是否支持未解锁直接启动模式                                                             | NA          |
+| distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                                                | stage模型新增   |
+| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                              | stage模型新增   |
+| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                              | stage模型新增   |
 
 ### 4.5 HapInfo结构体信息
 
