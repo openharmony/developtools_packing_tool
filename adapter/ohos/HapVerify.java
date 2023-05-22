@@ -101,6 +101,7 @@ class HapVerify {
         }
         if (!checkProxyDataUriIsUnique(hapVerifyInfos)) {
             LOG.error("uris in proxy data are not unique.");
+            return false;
         }
         return true;
     }
@@ -369,13 +370,17 @@ class HapVerify {
             return false;
         }
         Set<String> uriSet = new HashSet<>();
-        int uriListSize = 0;
         for (HapVerifyInfo info : hapVerifyInfos) {
-            uriSet.addAll(info.getProxyDataUris());
-            uriListSize += info.getProxyDataUris().size();
+            for (String uri : info.getProxyDataUris()) {
+                if (uriSet.contains(uri)) {
+                    LOG.error("uri " + uri + " in proxy data is duplicated");
+                    return false;
+                } else {
+                    uriSet.add(uri);
+                }
+            }
         }
-
-        return uriListSize != uriSet.size();
+        return true;
     }
 
     /**
