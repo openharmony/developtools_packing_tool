@@ -112,6 +112,16 @@ public class AppInfo {
     private String bundleType = "app";
 
     /**
+     * Indicates the sdk version the app was compiled.
+     */
+    private String compileSdkVersion = "";
+
+    /**
+     * Indicates the sdk type the app was compiled.
+     */
+    private String compileSdkType = "";
+
+    /**
      * Indicates the labels of app AppJson, for multilingual.
      */
     private HashMap<String, String> labels = new HashMap<>();
@@ -215,5 +225,21 @@ public class AppInfo {
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
+    }
+
+    public String getCompileSdkVersion() {
+        return compileSdkVersion;
+    }
+
+    public void setCompileSdkVersion(String compileSdkVersion) {
+        this.compileSdkVersion = compileSdkVersion;
+    }
+
+    public String getCompileSdkType() {
+        return compileSdkType;
+    }
+
+    public void setCompileSdkType(String compileSdkType) {
+        this.compileSdkType = compileSdkType;
     }
 }
