@@ -2241,7 +2241,7 @@ public class Compressor {
     }
 
     /**
-     * check hap is valid in haps when pack app, check type has bundleName,
+     * check hap and hsp is valid in haps when pack app, check type has bundleName,
      * vendor, version, apiVersion moduleName, packageName.
      *
      * @param fileLists is the list of hapPath.
