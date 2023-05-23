@@ -130,6 +130,7 @@ class HapVerify {
         verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
         verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
+        verifyCollection.setStageModule(hapVerifyInfos.get(0).isStageModule());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
@@ -178,6 +179,10 @@ class HapVerify {
             }
             if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
                 LOG.error("debug is different.");
+                return false;
+            }
+            if (verifyCollection.getStageModule() != hapVerifyInfo.isStageModule()) {
+                LOG.error("module type is different");
                 return false;
             }
         }
