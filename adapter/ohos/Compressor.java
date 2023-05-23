@@ -479,7 +479,7 @@ public class Compressor {
     }
 
     private static byte[] checkSum(String filename) throws BundleException {
-        try (InputStream fis = new FileInputStream(filename)){
+        try (InputStream fis = new FileInputStream(filename)) {
             byte[] buffer = new byte[BUFFER_BYTE_SIZE];
             MessageDigest complete = MessageDigest.getInstance(SHA_256);
             int numRead;
