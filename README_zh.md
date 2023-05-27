@@ -56,7 +56,7 @@ java -jar app_packing_tool.jar --mode hap --json-path <option> --maple-so-path [
 #### 1.2.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [option]--lib-path [option] --resources-path [option] --out-path [option] --force [option]
+java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [option] --lib-path [option] --resources-path [option] --out-path [option] --force [option]
 ```
 
 #### 1.2.2 参数含义及规范
@@ -106,13 +106,14 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list 1.hap,2.hap --app-list
 
 #### 1.4.2 参数含义及规范
 
-| 指令         | 是否必选项 | 选项        | 描述                                                                                                  |
-|------------|-------|-----------|-----------------------------------------------------------------------------------------------------|
-| --mode     | 是     | multiApp  | 打包类型，在将多个hap打入同一个app时，需保证每个hap满足合法性校验规则。                                                            |
-| --hap-list | 否     | hap的路径    | 1.hap包文件路径，文件名必须以.hap为后缀。如果是多个hap包需要”，“分隔。2.hap文件路径也可以是目录。                                          |
-| --hsp-list | 否     | hsp的路径    | 1.hsp包文件路径，文件名必须以.hsp为后缀。如果是多个hsp包需要”，“分隔。2.hsp文件路径也可以是目录。                                          |
+| 指令         | 是否必选项 | 选项        | 描述                                                                                                |
+|------------|-------|-----------|---------------------------------------------------------------------------------------------------|
+| --mode     | 是     | multiApp  | 打包类型，在将多个hap打入同一个app时，需保证每个hap满足合法性校验规则。                                                          |
+| --hap-list | 否     | hap的路径    | 1.hap包文件路径，文件名必须以.hap为后缀。如果是多个hap包需要”，“分隔。2.hap文件路径也可以是目录。                                        |
+| --hsp-list | 否     | hsp的路径    | 1.hsp包文件路径，文件名必须以.hsp为后缀。如果是多个hsp包需要”，“分隔。2.hsp文件路径也可以是目录。                                        |
 | --app-list | 否     | app的路径    | 1.app文件路径，文件名必须以.app为后缀。如果是多个app包需要用”，“分隔。2.app文件路径也可以是目录。3.--hap-list，--hsp-list，--app-list不可以都不传。 |
-| --force    | 否     | 默认值为false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                                                                  |
+| --out-path | 是     | NA          | 目标文件路径，文件名必须以.app为后缀。            |
+| --force    | 否     | 默认值为false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                                                                |
 
 #### 1.4.3 多工程打包hap合法性校验
 
@@ -123,7 +124,7 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list 1.hap,2.hap --app-list
 #### 1.5.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode hqf --json-path <option> ---lib-path <option> --ets-path <option> --out-path <option>
+java -jar app_packing_tool.jar --mode hqf --json-path <option> --lib-path <option> --ets-path <option> --out-path <option>
 ```
 
 #### 1.5.2 参数含义及规范
