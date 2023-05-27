@@ -87,14 +87,19 @@ class ModuleJsonUtil {
     private static final String TARGET_BUNDLE_NAME = "targetBundleName";
     private static final String DEVICE_CONFIG = "deviceConfig";
     private static final String DEFAULT = "default";
+    private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
+    private static final String COMPILE_SDK_TYPE = "compileSdkType";
+    private static final String PROXY_DATAS = "proxyDatas";
+    private static final String PROXY_URI = "uri";
+
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
     /**
      * get the version from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static Version parseStageVersion(String jsonString) throws BundleException {
         Version version = new Version();
@@ -134,8 +139,8 @@ class ModuleJsonUtil {
      * get the version from json file for fa module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static Version parseFaVersion(String jsonString) throws BundleException {
         Version version = new Version();
@@ -177,8 +182,8 @@ class ModuleJsonUtil {
      * get the bundleType fa module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseFaBundleType(String jsonString) throws BundleException {
         boolean installationFree = parseFAInstallationFree(jsonString);
@@ -192,8 +197,8 @@ class ModuleJsonUtil {
      * get the apiVersion from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static ModuleApiVersion parseStageModuleApiVersion(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -226,8 +231,8 @@ class ModuleJsonUtil {
      * get the apiVersion from json file for fa module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -263,8 +268,8 @@ class ModuleJsonUtil {
      * get the module name from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseStageModuleName(String jsonString) throws BundleException {
         String moduleName = "";
@@ -293,8 +298,8 @@ class ModuleJsonUtil {
      * get the moduleName from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseFaModuleName(String jsonString) throws BundleException {
         String moduleName = "";
@@ -328,8 +333,8 @@ class ModuleJsonUtil {
      * get the package from json file for stage module.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseFaPackageStr(String jsonString) throws BundleException {
         String packageStr = "";
@@ -358,8 +363,8 @@ class ModuleJsonUtil {
      * get the bundleName from json file.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseBundleName(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -389,8 +394,8 @@ class ModuleJsonUtil {
      * get the vendor from json file.
      *
      * @param jsonString uncompress json object
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String parseVendor(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -420,8 +425,8 @@ class ModuleJsonUtil {
      *
      * @param finalPackInfo is the final packInfo
      * @param srcPackInfo is the packInfo to be merged
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String mergeTwoPackInfo(String finalPackInfo, String srcPackInfo) throws BundleException {
         String desPackInfo = "";
@@ -697,8 +702,8 @@ class ModuleJsonUtil {
      * @param finalPackInfo is the final packInfo
      * @param srcPackInfo is the packInfo to be merged
      * @param packagePair is the selected packageName-moduleName pair map
-     * @throws BundleException Throws this exception if the json is not standard.
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static String mergeTwoPackInfoByPackagePair(String finalPackInfo, String srcPackInfo,
                                                        HashMap<String, String> packagePair) throws BundleException {
@@ -932,6 +937,10 @@ class ModuleJsonUtil {
         hapVerifyInfo.setTargetPriority(parseTargetPriority(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModulePriority(parseTargetModulePriority(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDebug(getDebug(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompileSdkType(getCompileSdkType(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompileSdkVersion(getCompileSdkVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setProxyDataUris(parseProxyDataUri(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -959,6 +968,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setDebug(getFADebug(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1368,6 +1378,32 @@ class ModuleJsonUtil {
         return preloadItems;
     }
 
+    static List<String> parseProxyDataUri(String jsonString) throws BundleException {
+        List<String> proxyDataUris = new ArrayList<>();
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            LOG.error("parse JOSNObject failed in parseProxyDataUri.");
+            throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+        }
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (!moduleObj.containsKey(PROXY_DATAS)) {
+            return proxyDataUris;
+        }
+        JSONArray proxyDatas = moduleObj.getJSONArray(PROXY_DATAS);
+        for (int i = 0; i < proxyDatas.size(); ++i) {
+            JSONObject itemObj = proxyDatas.getJSONObject(i);
+            if (!itemObj.containsKey(PROXY_URI)) {
+                LOG.error("parse JOSNObject failed in parseProxyDataUri.");
+                throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+            }
+            String uri = itemObj.getString(PROXY_URI);
+            proxyDataUris.add(uri);
+        }
+        return proxyDataUris;
+    }
+
     static JSONObject getAppObj(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
@@ -1672,16 +1708,74 @@ class ModuleJsonUtil {
             LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
             throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
         }
-        JSONObject DeviceConfigObj = jsonObject.getJSONObject(DEVICE_CONFIG);
-        if (DeviceConfigObj == null) {
+        JSONObject deviceConfigObj = jsonObject.getJSONObject(DEVICE_CONFIG);
+        if (deviceConfigObj == null) {
             return false;
         }
-        JSONObject DefaultObj = DeviceConfigObj.getJSONObject(DEFAULT);
-        if (DefaultObj == null) {
+        JSONObject defaultObj = deviceConfigObj.getJSONObject(DEFAULT);
+        if (defaultObj == null) {
             return false;
         }
 
-        return getJsonBooleanValue(DefaultObj, DEBUG, false);
+        return getJsonBooleanValue(defaultObj, DEBUG, false);
+    }
+
+    /**
+     * get compileSdkVersion in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getCompileSdkVersion(String jsonString) throws BundleException {
+        String compileSdkVersion = "";
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+            JSONObject appObj = jsonObject.getJSONObject(APP);
+            if (appObj == null) {
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+            }
+            if (appObj.containsKey(COMPILE_SDK_VERSION)) {
+                compileSdkVersion = appObj.getString(COMPILE_SDK_VERSION);
+            } else {
+                LOG.warning(
+                        "ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkVersion.");
+            }
+        } catch (BundleException e) {
+            LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
+            throw new BundleException("ModuleJsonUtil:parseStageModuleName failed.");
+        }
+        return compileSdkVersion;
+    }
+
+    /**
+     * get compileSdkType in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getCompileSdkType(String jsonString) throws BundleException {
+        String compileSdkType = "";
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+            JSONObject appObj = jsonObject.getJSONObject(APP);
+            if (appObj == null) {
+                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
+            }
+            if (appObj.containsKey(COMPILE_SDK_TYPE)) {
+                compileSdkType = appObj.getString(COMPILE_SDK_TYPE);
+            } else {
+                LOG.warning(
+                        "ModuleJsonUtil:getCompileSdkType failed: json file do not contain module compileSdkType.");
+            }
+        } catch (BundleException e) {
+            LOG.error("ModuleJsonUtil:parseStageModuleName failed.");
+            throw new BundleException("ModuleJsonUtil:parseStageModuleName failed.");
+        }
+        return compileSdkType;
     }
 
     /**
@@ -1698,12 +1792,12 @@ class ModuleJsonUtil {
             LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
             throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
         }
-        JSONObject appObj = jsonObject.getJSONObject(MODULE);
-        if (appObj == null) {
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
             LOG.error("parse failed, input module.json is invalid, module.json has no app.");
             throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
         }
-        return getJsonString(appObj, TARGET_MODULE_NAME);
+        return getJsonString(moduleObj, TARGET_MODULE_NAME);
     }
 
     /**
@@ -1717,7 +1811,7 @@ class ModuleJsonUtil {
         try {
             jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            LOG.error("arse JOSNObject failed in getStageTargetModuleName.");
+            LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
             throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
         }
         JSONObject appObj = jsonObject.getJSONObject(APP);
@@ -1829,8 +1923,10 @@ class ModuleJsonUtil {
 
     /**
      * check module atomic service is valid
+     *
      * @param jsonString is the file content of config.json
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static boolean isModuleAtomicServiceValid(String jsonString) throws BundleException {
         JSONObject jsonObject;
@@ -1897,8 +1993,10 @@ class ModuleJsonUtil {
 
     /**
      * check module atomic installation free is valid
+     *
      * @param jsonString is the file content of config.json
      * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
         JSONObject jsonObject;

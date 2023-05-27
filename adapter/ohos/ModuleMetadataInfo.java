@@ -15,7 +15,6 @@
 
 package ohos;
 
-
 /**
  * ModuleJson Meta data info.
  *

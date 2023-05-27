@@ -32,39 +32,57 @@ class VerifyCollection {
      * Indicates the vendor of app.
      */
     public String vendor = "";
+
     /**
      * Indicates the versionCode of version.
      */
     public int versionCode = -1;
+
     /**
      * Indicates the versionName of version.
      */
     public String versionName = "";
+
     /**
      * Indicates the minCompatibleVersionCode of app.
      */
     public int minCompatibleVersionCode = -1;
+
     /**
      * Indicates the minApiVersion of app.
      */
     public int compatibleApiVersion = -1;
+
     /**
      * Indicates the targetApiVersion of app.
      */
     public int targetApiVersion = -1;
+
     /**
      * Indicates the apiReleaseType of app.
      */
     public String releaseType = "";
 
+    /**
+     * Indicates the targetBundleName value of app
+     */
     public String targetBundleName = "";
 
+    /**
+     * Indicates the targetPriority value of app
+     */
     public int targetPriority = 0;
+
+    /**
+     * Indicates the debug value of app
+     */
+    public boolean debug = false;
 
     /**
      * Indicates the moduleNames of app.
      */
     List<String> moduleNames = new ArrayList<>();
+
     /**
      * Indicates the packageNames of app.
      */
