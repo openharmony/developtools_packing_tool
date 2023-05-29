@@ -31,13 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
@@ -113,6 +107,7 @@ public class Compressor {
     private static final String BUILD_HASH = "buildHash";
     private static final String TEMP_DIR = "temp";
     private static final String SHA_256 = "SHA-256";
+    private static final String JSON_SUFFIX = ".json";
     private static final Integer ONE = 1;
     private static final String ATOMIC_SERVICE = "atomicService";
 
@@ -1782,8 +1777,7 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
-            if (CONFIG_JSON.equals(srcName) || MODULE_JSON.equals(srcName)) {
+            if (srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 jsonSpecialProcess(utility, srcFile, zipEntry);
                 return;
@@ -2519,20 +2513,63 @@ public class Compressor {
             }
         }
 
-        if (!ONE.equals(hapVerifyInfos.size())) {
-            LOG.error("Shared app only can contain one module.");
-            return false;
+//        String moduleName = hapVerifyInfos.get(0).getModuleName();
+//        Set<String> deviceTypes = new HashSet<>();
+//        for (HapVerifyInfo sharedHspInfo : hapVerifyInfos) {
+//            if (!moduleName.equals(sharedHspInfo.getModuleName())) {
+//                LOG.error("Module name in inter-application hsp should be the same");
+//                return false;
+//            }
+//            if (!sharedHspInfo.getDependencyItemList().isEmpty()) {
+//                LOG.error("Shared hsp cannot depend on other modules.");
+//                return false;
+//            }
+//            String bundleType = sharedHspInfo.getBundleType();
+//            if (!TYPE_SHARED.equals(bundleType)) {
+//                LOG.error("The input hsp is invalid for shared app.");
+//                return false;
+//            }
+//            List<String> types = sharedHspInfo.getDeviceType();
+//            for (String type : types) {
+//                if (deviceTypes.contains(type)) {
+//                    LOG.error("Device type " + type + "is duplicated");
+//                    return false;
+//                } else {
+//                    deviceTypes.add(type);
+//                }
+//            }
+//        }
+        for (int i = 0; i < hapVerifyInfos.size() - 1; ++i) {
+            if (hapVerifyInfos.get(i).getModuleName().isEmpty()) {
+                LOG.error("HapVerify::checkModuleNameIsValid should not be empty.");
+                return false;
+            }
+            for (int j = i + 1; j < hapVerifyInfos.size(); ++j) {
+                if (hapVerifyInfos.get(i).getModuleName().equals(hapVerifyInfos.get(j).getModuleName()) &&
+                        !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
+                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            hapVerifyInfos.get(j).getModuleName() + ") have the same moduleName, " +
+                            "please check deviceType or distroFilter of the module.");
+                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                            + hapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                            + hapVerifyInfos.get(j).getDeviceType() + ".");
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
+                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : "
+                                + hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
+                    }
+                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is "
+                                + hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
+                    }
+                    LOG.error("Solution: Make sure the module name is valid and unique.");
+                    LOG.error("Reference: " + REFERENCE_LINK + ".");
+                    return false;
+                }
+            }
         }
-        HapVerifyInfo sharedHspInfo = hapVerifyInfos.get(0);
-        if (!sharedHspInfo.getDependencyItemList().isEmpty()) {
-            LOG.error("Shared hsp cannot depend on other modules.");
-            return false;
-        }
-        String bundleType = sharedHspInfo.getBundleType();
-        if (!TYPE_SHARED.equals(bundleType)) {
-            LOG.error("The input hsp is invalid for shared app.");
-            return false;
-        }
+        return true;
+
         return true;
     }
 }
