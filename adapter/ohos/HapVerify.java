@@ -107,6 +107,70 @@ class HapVerify {
     }
 
     /**
+     * check inter-app hsp is valid.
+     *
+     * @param hapVerifyInfos is the collection of hap infos
+     * @return the result
+     * @throws BundleException Throws this exception if the json is not standard
+     */
+    public static boolean checkSharedApppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            LOG.error("HapVerify::checkSharedApppIsValid hapVerifyInfos is empty.");
+            return false;
+        }
+        String moduleName = hapVerifyInfos.get(0).getModuleName();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            if (!moduleName.equals(hapVerifyInfo.getModuleName())) {
+                LOG.error("HapVerify::checkSharedApppIsValid module name is different.");
+                return false;
+            }
+        }
+        // check app variable is same
+        if (!checkAppFieldsIsSame(hapVerifyInfos)) {
+            LOG.error("some app variable is different.");
+            return false;
+        }
+        // check package is valid
+        if (!checkPackageNameIsValid(hapVerifyInfos)) {
+            LOG.error("packageName duplicated.");
+            return false;
+        }
+        // check entry is valid
+        if (!checkEntryIsValid(hapVerifyInfos)) {
+            return false;
+        }
+        // check dependency is valid
+        if (!checkDependencyIsValid(hapVerifyInfos)) {
+            LOG.error("module dependency is invalid.");
+            return false;
+        }
+        // check atomic service is valid
+        if (!checkAtomicServiceIsValid(hapVerifyInfos)) {
+            LOG.error("checkAtomicServiceIsValid failed.");
+            return false;
+        }
+        // check ability is valid
+        if (!checkAbilityNameIsValid(hapVerifyInfos)) {
+            LOG.info("Ability name is duplicated.");
+        }
+        // check targetModuleName
+        if (!checkTargetModuleNameIsExisted(hapVerifyInfos)) {
+            LOG.error("target module is not found.");
+            return false;
+        }
+        if (!checkCompileSdkIsValid(hapVerifyInfos)) {
+            LOG.error("compile sdk config is not same.");
+            return false;
+        }
+        if (!checkProxyDataUriIsUnique(hapVerifyInfos)) {
+            LOG.error("uris in proxy data are not unique.");
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
      * check whether the app fields in the hap are the same.
      *
      * @param hapVerifyInfos is the collection of hap infos
