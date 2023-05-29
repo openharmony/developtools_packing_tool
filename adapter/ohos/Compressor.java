@@ -115,7 +115,7 @@ public class Compressor {
     private static final String SHA_256 = "SHA-256";
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
-    private static final String JSON_SUFFIX = ".json";
+
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
     private static final int ENTRY_FILE_LIMIT_DEFAULT = 2;
