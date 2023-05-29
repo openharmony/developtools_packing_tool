@@ -108,11 +108,6 @@ class VerifyCollection {
      */
     private String bundleType = "app";
 
-    /**
-     * Indicates the model of bundle
-     */
-    private Boolean isStageModule = false;
-
     public String getMain() {
         return main;
     }
@@ -143,13 +138,5 @@ class VerifyCollection {
 
     public String getBundleType() {
         return bundleType;
-    }
-
-    public Boolean getStageModule() {
-        return isStageModule;
-    }
-
-    public void setStageModule(Boolean stageModule) {
-        isStageModule = stageModule;
     }
 }
