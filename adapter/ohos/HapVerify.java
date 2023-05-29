@@ -44,6 +44,7 @@ class HapVerify {
     private static final String REFERENCE_LINK =
             "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String TYPE_SHARED = "shared";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
 
     /**
@@ -124,47 +125,22 @@ class HapVerify {
                 LOG.error("HapVerify::checkSharedApppIsValid module name is different.");
                 return false;
             }
+            if (!hapVerifyInfo.getDependencyItemList().isEmpty()) {
+                LOG.error("HapVerify::checkSharedApppIsValid shared hsp cannot depend on other modules.");
+                return false;
+            }
+            if (!TYPE_SHARED.equals(hapVerifyInfo.getModuleType())) {
+                LOG.error("HapVerify::checkSharedApppIsValid module type is not shared app.");
+                return false;
+            }
         }
-        // check app variable is same
-        if (!checkAppFieldsIsSame(hapVerifyInfos)) {
-            LOG.error("some app variable is different.");
-            return false;
-        }
-        // check package is valid
-        if (!checkPackageNameIsValid(hapVerifyInfos)) {
-            LOG.error("packageName duplicated.");
-            return false;
-        }
-        // check entry is valid
-        if (!checkEntryIsValid(hapVerifyInfos)) {
-            return false;
-        }
-        // check dependency is valid
-        if (!checkDependencyIsValid(hapVerifyInfos)) {
-            LOG.error("module dependency is invalid.");
-            return false;
-        }
-        // check atomic service is valid
-        if (!checkAtomicServiceIsValid(hapVerifyInfos)) {
-            LOG.error("checkAtomicServiceIsValid failed.");
-            return false;
-        }
-        // check ability is valid
-        if (!checkAbilityNameIsValid(hapVerifyInfos)) {
-            LOG.info("Ability name is duplicated.");
-        }
-        // check targetModuleName
-        if (!checkTargetModuleNameIsExisted(hapVerifyInfos)) {
-            LOG.error("target module is not found.");
-            return false;
-        }
-        if (!checkCompileSdkIsValid(hapVerifyInfos)) {
-            LOG.error("compile sdk config is not same.");
-            return false;
-        }
-        if (!checkProxyDataUriIsUnique(hapVerifyInfos)) {
-            LOG.error("uris in proxy data are not unique.");
-            return false;
+        for (int i = 0; i < hapVerifyInfos.size(); i++) {
+            for (int j = i + 1; j < hapVerifyInfos.size(); j++) {
+                if (!checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
+                    LOG.error("HapVerify::checkSharedApppIsValid duplicated module.");
+                    return false;
+                }
+            }
         }
         return true;
     }
@@ -194,7 +170,6 @@ class HapVerify {
         verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
         verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
-        verifyCollection.setStageModule(hapVerifyInfos.get(0).isStageModule());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
@@ -243,10 +218,6 @@ class HapVerify {
             }
             if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
                 LOG.error("debug is different.");
-                return false;
-            }
-            if (verifyCollection.getStageModule() != hapVerifyInfo.isStageModule()) {
-                LOG.error("module type is different");
                 return false;
             }
         }
