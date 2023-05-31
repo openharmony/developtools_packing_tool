@@ -422,8 +422,8 @@ class HapVerify {
                                 entryHapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
                     if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
-                                entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".");
+                        LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() +
+                                " DistroFilter is " + entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
                     LOG.error("Solution: Make sure entry name is valid and unique.");
                     LOG.error("Reference: " + REFERENCE_LINK + ".");
