@@ -19,9 +19,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,6 +93,14 @@ class HapVerify {
         // check targetModuleName
         if (!checkTargetModuleNameIsExisted(hapVerifyInfos)) {
             LOG.error("target module is not found.");
+            return false;
+        }
+        if (!checkCompileSdkIsValid(hapVerifyInfos)) {
+            LOG.error("compile sdk config is not same.");
+            return false;
+        }
+        if (!checkProxyDataUriIsUnique(hapVerifyInfos)) {
+            LOG.error("uris in proxy data are not unique.");
             return false;
         }
         return true;
@@ -167,7 +177,7 @@ class HapVerify {
                 return false;
             }
             if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
-                LOG.error("debug is different");
+                LOG.error("debug is different.");
                 return false;
             }
         }
@@ -334,6 +344,45 @@ class HapVerify {
         return true;
     }
 
+    private static boolean checkCompileSdkIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("hapVerifyInfos is empty");
+            return false;
+        }
+        String compileSdkVersion = hapVerifyInfos.get(0).getCompileSdkVersion();
+        String compileSdkType = hapVerifyInfos.get(0).getCompileSdkType();
+        for (HapVerifyInfo info : hapVerifyInfos) {
+            if (!compileSdkType.equals(info.getCompileSdkType())) {
+                LOG.error("compile sdk type is not same.");
+                return false;
+            }
+            if (!compileSdkVersion.equals(info.getCompileSdkVersion())) {
+                LOG.error("compile sdk version is not same.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkProxyDataUriIsUnique(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("hapVerifyInfos is empty");
+            return false;
+        }
+        Set<String> uriSet = new HashSet<>();
+        for (HapVerifyInfo info : hapVerifyInfos) {
+            for (String uri : info.getProxyDataUris()) {
+                if (uriSet.contains(uri)) {
+                    LOG.error("uri " + uri + " in proxy data is duplicated");
+                    return false;
+                } else {
+                    uriSet.add(uri);
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * check entry is valid.
      *
@@ -361,20 +410,20 @@ class HapVerify {
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
                 if (!checkDuplicatedIsValid(entryHapVerifyInfos.get(i), entryHapVerifyInfos.get(j))) {
-                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
-                            hapVerifyInfos.get(j).getModuleName() + ") are entry, " +
+                    LOG.error("Module: (" + entryHapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            entryHapVerifyInfos.get(j).getModuleName() + ") are entry, " +
                             "please check deviceType or distroFilter of the module.");
-                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
-                            + hapVerifyInfos.get(i).getDeviceType() + ".");
-                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
-                            + hapVerifyInfos.get(j).getDeviceType() + ".");
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
-                                hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
+                    LOG.error("Module: " + entryHapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                            + entryHapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                            + entryHapVerifyInfos.get(j).getDeviceType() + ".");
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(i).getDistroFilter().dump())) {
+                        LOG.error("Module: " + entryHapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
+                                entryHapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
-                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
+                                entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
                     LOG.error("Solution: Make sure entry name is valid and unique.");
                     LOG.error("Reference: " + REFERENCE_LINK + ".");
@@ -1143,10 +1192,6 @@ class HapVerify {
         if (!bundleType.equals(ATOMIC_SERVICE)) {
             return true;
         }
-        if (!checkAtomicServiceSumLimit(hapVerifyInfoList)) {
-            LOG.error("checkAtomicServiceSumLimit failed.");
-            return false;
-        }
         boolean isStage = hapVerifyInfoList.get(0).isStageModule();
         if (!isStage) {
             return true;
@@ -1155,6 +1200,10 @@ class HapVerify {
         Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
         for (String device : deviceInfoMap.keySet()) {
             List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
+            if (!checkAtomicServiceSumLimit(hapVerifyInfos)) {
+                LOG.error("checkAtomicServiceSumLimit failed on device: " + device);
+                return false;
+            }
             if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
                 LOG.error("checkAtomicServicePreloadsIsValid failed on device " + device + ".");
                 return false;
