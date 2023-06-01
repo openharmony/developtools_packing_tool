@@ -1957,13 +1957,19 @@ public class Compressor {
         BufferedReader bufferedReader = null;
         InputStreamReader inputStreamReader = null;
 
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.get();
+        if (isModuleJSON(utility.getJsonPath())) {
+            utility.setModuleName(ModuleJsonUtil.parseStageModuleName(jsonString));
+        } else {
+            utility.setModuleName(ModuleJsonUtil.parseFaModuleName(jsonString));
+        }
+
         try {
             fileInputStream = new FileInputStream(srcFile);
             inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
             bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.mark((int) srcFile.length() + 1);
-            // parse moduleName from config.json
-            parseModuleName(bufferedReader, utility);
             bufferedReader.reset();
             String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
             if (CONFIG_JSON.equals(srcName)) {
@@ -2010,38 +2016,6 @@ public class Compressor {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(inputStreamReader);
             Utility.closeStream(fileInputStream);
-        }
-    }
-
-    /**
-     * Parse module name from config.json
-     *
-     * @param bufferedReader config.json buffered Reader
-     * @param utility        common data
-     * @throws BundleException IOException
-     */
-    private void parseModuleName(BufferedReader bufferedReader, Utility utility) throws BundleException {
-        String lineStr = null;
-        boolean isDistroStart = false;
-        try {
-            while ((lineStr = bufferedReader.readLine()) != null) {
-                if (!isDistroStart) {
-                    if (lineStr.contains(DISTRO)) {
-                        isDistroStart = true;
-                    }
-                    continue;
-                }
-                if (lineStr.contains(JSON_END)) {
-                    continue;
-                }
-                if (lineStr.contains(MODULE_NAME_NEW) || lineStr.contains(MODULE_NAME)) {
-                    getModuleNameFromString(lineStr, utility);
-                    break;
-                }
-            }
-        } catch (IOException exception) {
-            LOG.error("Compressor::parseModuleName io exception: " + exception.getMessage());
-            throw new BundleException("Parse module name failed.");
         }
     }
 
