@@ -113,9 +113,9 @@ public class Compressor {
     private static final String BUILD_HASH = "buildHash";
     private static final String TEMP_DIR = "temp";
     private static final String SHA_256 = "SHA-256";
-    private static final Integer ONE = 1;
-    private static final String ATOMIC_SERVICE = "atomicService";
     private static final String JSON_SUFFIX = ".json";
+    private static final String ATOMIC_SERVICE = "atomicService";
+
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
     private static final int ENTRY_FILE_LIMIT_DEFAULT = 2;
@@ -2252,7 +2252,7 @@ public class Compressor {
     }
 
     /**
-     * check hap is valid in haps when pack app, check type has bundleName,
+     * check hap and hsp is valid in haps when pack app, check type has bundleName,
      * vendor, version, apiVersion moduleName, packageName.
      *
      * @param fileLists is the list of hapPath.
@@ -2518,7 +2518,7 @@ public class Compressor {
         compressHapModeMultiple(utility);
     }
 
-    private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) {
+    private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos.isEmpty()) {
             LOG.error("no module included");
             return false;
@@ -2529,21 +2529,6 @@ public class Compressor {
                 return true;
             }
         }
-
-        if (!ONE.equals(hapVerifyInfos.size())) {
-            LOG.error("Shared app only can contain one module.");
-            return false;
-        }
-        HapVerifyInfo sharedHspInfo = hapVerifyInfos.get(0);
-        if (!sharedHspInfo.getDependencyItemList().isEmpty()) {
-            LOG.error("Shared hsp cannot depend on other modules.");
-            return false;
-        }
-        String bundleType = sharedHspInfo.getBundleType();
-        if (!TYPE_SHARED.equals(bundleType)) {
-            LOG.error("The input hsp is invalid for shared app.");
-            return false;
-        }
-        return true;
+        return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
     }
 }

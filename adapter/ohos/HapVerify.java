@@ -44,6 +44,7 @@ class HapVerify {
     private static final String REFERENCE_LINK =
             "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String TYPE_SHARED = "shared";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
 
     /**
@@ -105,6 +106,45 @@ class HapVerify {
         }
         return true;
     }
+
+    /**
+     * check inter-app hsp is valid.
+     *
+     * @param hapVerifyInfos is the collection of hap infos
+     * @return the result
+     * @throws BundleException Throws this exception if the json is not standard
+     */
+    public static boolean checkSharedApppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            LOG.error("HapVerify::checkSharedApppIsValid hapVerifyInfos is empty.");
+            return false;
+        }
+        String moduleName = hapVerifyInfos.get(0).getModuleName();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            if (!moduleName.equals(hapVerifyInfo.getModuleName())) {
+                LOG.error("HapVerify::checkSharedApppIsValid module name is different.");
+                return false;
+            }
+            if (!hapVerifyInfo.getDependencyItemList().isEmpty()) {
+                LOG.error("HapVerify::checkSharedApppIsValid shared hsp cannot depend on other modules.");
+                return false;
+            }
+            if (!TYPE_SHARED.equals(hapVerifyInfo.getModuleType())) {
+                LOG.error("HapVerify::checkSharedApppIsValid module type is not shared app.");
+                return false;
+            }
+        }
+        for (int i = 0; i < hapVerifyInfos.size(); i++) {
+            for (int j = i + 1; j < hapVerifyInfos.size(); j++) {
+                if (!checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
+                    LOG.error("HapVerify::checkSharedApppIsValid duplicated module.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     /**
      * check whether the app fields in the hap are the same.
