@@ -814,7 +814,8 @@
                   "preview",
                   "print",
                   "push",
-                  "driver"
+                  "driver",
+                  "appAccountAuthorization"
                 ]
               },
               "permissions": {
