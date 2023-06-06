@@ -969,6 +969,8 @@ class ModuleJsonUtil {
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDebug(getFADebug(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompileSdkType(getFACompileSdkType(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompileSdkVersion(getFACompileSdkVersion(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1718,6 +1720,66 @@ class ModuleJsonUtil {
         }
 
         return getJsonBooleanValue(defaultObj, DEBUG, false);
+    }
+
+    /**
+     * get compileSdkVersion in config.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getFACompileSdkVersion(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain app.");
+        }
+        if (!appObj.containsKey(API_VERSION)) {
+            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
+        }
+        JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
+        String compileSdkVersion = "";
+        if (apiVersionObj.containsKey(COMPILE_SDK_VERSION)) {
+            compileSdkVersion = apiVersionObj.getString(COMPILE_SDK_VERSION);
+        }
+        return compileSdkVersion;
+    }
+
+    /**
+     * get compileSdkType in config.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static String getFACompileSdkType(String jsonString) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "parse JSONobject failed";
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+        JSONObject appObj = jsonObject.getJSONObject(APP);
+        if (appObj == null) {
+            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain app.");
+        }
+        if (!appObj.containsKey(API_VERSION)) {
+            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
+        }
+        JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
+        String compileSdkType = "";
+        if (apiVersionObj.containsKey(COMPILE_SDK_TYPE)) {
+            compileSdkType = apiVersionObj.getString(COMPILE_SDK_TYPE);
+        }
+        return compileSdkType;
     }
 
     /**
