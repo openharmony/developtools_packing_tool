@@ -379,6 +379,8 @@ public class JsonUtil {
             appInfo.compatibleApiVersion = apiVersion.getIntValue("compatible");
             appInfo.targetApiVersion = apiVersion.getIntValue("target");
             appInfo.releaseType = getJsonString(apiVersion, "releaseType");
+            appInfo.setCompileSdkType(getJsonString(apiVersion, COMPILE_SDK_TYPE));
+            appInfo.setCompileSdkVersion(getJsonString(apiVersion, COMPILE_SDK_VERSION));
         }
         String labelRes = "";
         if (appJson.containsKey("labelId")) {
