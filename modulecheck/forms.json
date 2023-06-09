@@ -24,6 +24,7 @@
             "description",
             "src",
             "uiSyntax",
+            "isDynamic",
             "window",
             "colorMode",
             "formConfigAbility",
@@ -163,6 +164,11 @@
               "hml",
               "arkts"
             ]
+          },
+          "isDynamic": {
+            "description": "This tag identifies whether the card is isDynamic.",
+            "type": "boolean",
+            "default": true
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
