@@ -34,6 +34,7 @@
             "updateDuration",
             "defaultDimension",
             "supportDimensions",
+            "dataProxyEnabled",
             "metadata"
           ]
         },
@@ -107,6 +108,11 @@
             "description": "This tag identifies the update frequency of the card. The unit is 30 minutes. The value is a multiple of 30. The maximum frequency of a card is refreshed every 30 minutes. You can select either refresh or refresh at a fixed point. If both are configured, the card is refreshed at a scheduled time. This label is an integer.",
             "type": "integer",
             "minimum": 0
+          },
+          "dataProxyEnabled": {
+            "description": "Indicates whether the card supports data proxy refresh. The value is of the Boolean type. true indicates that the card supports data proxy refresh, and false indicates that the card does not support data proxy refresh.",
+            "type": "boolean",
+            "default": false
           },
           "metadata": {
             "description": "Indicates the metadata of the form.",
