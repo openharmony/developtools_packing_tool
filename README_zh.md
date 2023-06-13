@@ -134,7 +134,7 @@ java -jar app_packing_tool.jar --mode hqf --json-path <option> --lib-path <optio
 | --mode      | 是     | hqf         | 打包类型。                              |
 | --json-path | 是     | NA          | .json文件路径，文件名必须为patch.json。        |
 | --lib-path  | 否     | NA          | lib库文件的路径。                         |
-| --ets-path  | 否     | NA          | 存放ets文件目录路径。                       |
+| --ets-path  | 是     | NA          | 存放ets文件目录路径。                       |
 | --out-path  | 是     | NA          | 目标文件路径，文件名必须以.hqf为后缀。              |
 | --force     | 否     | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
@@ -358,6 +358,8 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                              | stage模型新增   |
 | labels                         | HashMap\<String, String> | 标识多语言应用程序AppJson的标签。 | NA          |
 | descriptions                   | HashMap\<String, String> | 标识多语言应用程序AppJson的说明。 | NA          |
+| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                              | NA        |
+| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                              | NA        |
 
 ### 4.5 HapInfo结构体信息
 
@@ -474,7 +476,7 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | name      | String                             | 标识ReqPermission的名称信息                                 | NA   |
 | reason    | String                             | 当申请的权限为user_grant权限时此字段必填，描述申请权限的原因 | NA   |
 | usedScene | UsedScene结构体（见下述UsedScene） | 描述权限使用的场景和时机。场景类型有：ability、调用时机（when），可配置多个ability | NA   |
-| reasons   | HashMap\<String, String>           | 当申请的权限为user_grant权限时此字段必填，描述申请权限的原因 | NA    
+| reasons   | HashMap\<String, String>           | 当申请的权限为user_grant权限时此字段必填，描述申请权限的原因 | NA    |
 
 ### 4.12 UsedScene结构体信息
 
