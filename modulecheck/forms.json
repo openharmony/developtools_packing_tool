@@ -45,6 +45,24 @@
           "defaultDimension",
           "updateEnabled"
         ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "uiSyntax": {
+                  "const": "hml"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "isDynamic": {
+                  "const": true
+                }
+              }
+            }
+          }
+        ],
         "properties": {
           "name": {
             "description": "Indicates the name of the form class. The tag value is a string of up to 127 bytes. The tag cannot be default.",
