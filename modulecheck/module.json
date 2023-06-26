@@ -821,7 +821,8 @@
                   "print",
                   "push",
                   "driver",
-                  "appAccountAuthorization"
+                  "appAccountAuthorization",
+                  "sysPicker/mediaControl"
                 ]
               },
               "permissions": {
