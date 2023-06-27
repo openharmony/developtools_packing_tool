@@ -330,6 +330,36 @@ class ModuleJsonUtil {
     }
 
     /**
+     * get the moduleName from json file for hqf.
+     *
+     * @param jsonString uncompress json object
+     * @return the result
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static String parsePatchModuleName(String jsonString) throws BundleException {
+        String moduleName = "";
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(jsonString);
+            JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+            if (moduleObj == null) {
+                LOG.error("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain module.");
+                throw new BundleException("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain module.");
+            }
+            if (!moduleObj.containsKey(NAME)) {
+                LOG.error("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain moduleName.");
+                throw new BundleException(
+                        "ModuleJsonUtil:parsePatchModuleName failed: json file do not contain moduleName.");
+            }
+            moduleName = moduleObj.getString(NAME);
+        } catch (BundleException | JSONException e) {
+            LOG.error("ModuleJsonUtil:parseFaModuleName failed");
+            throw new BundleException("ModuleJsonUtil:parseFaModuleName failed");
+        }
+        return moduleName;
+    }
+
+    /**
      * get the package from json file for stage module.
      *
      * @param jsonString uncompress json object

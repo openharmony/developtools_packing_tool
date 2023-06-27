@@ -61,6 +61,7 @@ public class Compressor {
     private static final String UPPERCASE_PNG_SUFFIX = ".PNG";
     private static final String CONFIG_JSON = "config.json";
     private static final String MODULE_JSON = "module.json";
+    private static final String PATCH_JSON = "patch.json";
     private static final String NAME = "name";
     private static final String NULL_DIR_NAME = "";
     private static final String RES_DIR_NAME = "res/";
@@ -1956,14 +1957,6 @@ public class Compressor {
         BufferedReader bufferedReader = null;
         InputStreamReader inputStreamReader = null;
 
-        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-        String jsonString = optional.get();
-        if (isModuleJSON(utility.getJsonPath())) {
-            utility.setModuleName(ModuleJsonUtil.parseStageModuleName(jsonString));
-        } else {
-            utility.setModuleName(ModuleJsonUtil.parseFaModuleName(jsonString));
-        }
-
         try {
             fileInputStream = new FileInputStream(srcFile);
             inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
@@ -1971,10 +1964,16 @@ public class Compressor {
             bufferedReader.mark((int) srcFile.length() + 1);
             bufferedReader.reset();
             String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
             if (CONFIG_JSON.equals(srcName)) {
                 parseCompressNativeLibs(bufferedReader, utility);
+                utility.setModuleName(ModuleJsonUtil.parseFaModuleName(jsonString));
             } else if (MODULE_JSON.equals(srcName)) {
                 parseStageCompressNativeLibs(bufferedReader, utility);
+                utility.setModuleName(ModuleJsonUtil.parseStageModuleName(jsonString));
+            } else if (PATCH_JSON.equals(srcName)) {
+                utility.setModuleName(ModuleJsonUtil.parsePatchModuleName(jsonString));
             }
             bufferedReader.reset();
             parseDeviceType(bufferedReader, utility);
