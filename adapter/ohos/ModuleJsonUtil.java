@@ -90,6 +90,7 @@ class ModuleJsonUtil {
     private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
     private static final String COMPILE_SDK_TYPE = "compileSdkType";
     private static final String PROXY_DATAS = "proxyDatas";
+    private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_URI = "uri";
 
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
@@ -1420,18 +1421,30 @@ class ModuleJsonUtil {
             throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
         }
         JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
-        if (!moduleObj.containsKey(PROXY_DATAS)) {
+        if (!moduleObj.containsKey(PROXY_DATAS) && !moduleObj.containsKey(PROXY_DATA)) {
             return proxyDataUris;
-        }
-        JSONArray proxyDatas = moduleObj.getJSONArray(PROXY_DATAS);
-        for (int i = 0; i < proxyDatas.size(); ++i) {
-            JSONObject itemObj = proxyDatas.getJSONObject(i);
-            if (!itemObj.containsKey(PROXY_URI)) {
-                LOG.error("parse JOSNObject failed in parseProxyDataUri.");
-                throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+        } else if (moduleObj.containsKey(PROXY_DATA)) {
+            JSONArray proxyData = moduleObj.getJSONArray(PROXY_DATA);
+            for (int i = 0; i < proxyData.size(); ++i) {
+                JSONObject itemObj = proxyData.getJSONObject(i);
+                if (!itemObj.containsKey(PROXY_URI)) {
+                    LOG.error("parse JOSNObject failed in parseProxyDataUri.");
+                    throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+                }
+                String uri = itemObj.getString(PROXY_URI);
+                proxyDataUris.add(uri);
             }
-            String uri = itemObj.getString(PROXY_URI);
-            proxyDataUris.add(uri);
+        } else {
+            JSONArray proxyDatas = moduleObj.getJSONArray(PROXY_DATAS);
+            for (int i = 0; i < proxyDatas.size(); ++i) {
+                JSONObject itemObj = proxyDatas.getJSONObject(i);
+                if (!itemObj.containsKey(PROXY_URI)) {
+                    LOG.error("parse JOSNObject failed in parseProxyDataUri.");
+                    throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+                }
+                String uri = itemObj.getString(PROXY_URI);
+                proxyDataUris.add(uri);
+            }
         }
         return proxyDataUris;
     }
