@@ -822,7 +822,8 @@
                   "push",
                   "driver",
                   "appAccountAuthorization",
-                  "sysPicker/mediaControl"
+                  "sysPicker/mediaControl",
+                  "sysDialog/userAuth"
                 ]
               },
               "permissions": {
