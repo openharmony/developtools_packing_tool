@@ -284,7 +284,9 @@
                 "deviceCapability",
                 "resizeable",
                 "srcLanguage",
-                "srcPath"
+                "srcPath",
+                "metaData",
+                "skills"
               ]
             },
             "properties": {
@@ -349,6 +351,215 @@
                 "description": "This tag indicates the JS component code path corresponding to the ability. The tag value is a character string (a maximum of 127 bytes). When srcLanguage is set to js or ets, this tag cannot be defaulted.",
                 "type": "string",
                 "maxLength": 127
+              },
+              "metaData": {
+                "description": "Indicates the metadata of the ability.",
+                "type": "object",
+                "propertyNames": {
+                  "enum": [
+                    "parameters",
+                    "results",
+                    "customizeData"
+                  ]
+                },
+                "properties": {
+                  "parameters": {
+                    "description": "Indicates the metadata of the parameters to be passed for calling the ability. The metadata of each parameter consists of the description, name, and type sub-attributes.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "propertyNames": {
+                        "enum": [
+                          "description",
+                          "name",
+                          "type"
+                        ]
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Indicates the name of the parameter.",
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "type": {
+                          "description": "Indicates the type of the parameter, for example, Integer.",
+                          "type": "string"
+                        },
+                        "description": {
+                          "description": "Describes the parameter. The value can be a string or a resource index to descriptions in multiple languages.",
+                          "type": "string",
+                          "maxLength": 255
+                        }
+                      }
+                    }
+                  },
+                  "results": {
+                    "description": "Indicates the metadata of the ability return value. The metadata of each return value consists of the description, name, and type sub-attributes.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "propertyNames": {
+                        "enum": [
+                          "description",
+                          "name",
+                          "type"
+                        ]
+                      },
+                      "required": [
+                        "type"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Indicates the name of the return value.",
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "type": {
+                          "description": "Indicates the type of the return value, for example, Integer.",
+                          "type": "string"
+                        },
+                        "description": {
+                          "description": "Describes the return value. The value can be a string or a resource index to descriptions in multiple languages.",
+                          "type": "string",
+                          "maxLength": 255
+                        }
+                      }
+                    }
+                  },
+                  "customizeData": {
+                    "description": "Indicates the custom metadata of the parent component. The parameters and results attributes are not configurable in the module tag.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "propertyNames": {
+                        "enum": [
+                          "name",
+                          "value",
+                          "extra"
+                        ]
+                      },
+                      "properties": {
+                        "name": {
+                          "description": "Indicates the key of a data element. The value is a string with a maximum of 255 bytes.",
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "value": {
+                          "description": "Indicates the value of a data element. The value is a string with a maximum of 255 bytes.",
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "extra": {
+                          "description": "Indicates the custom format of the data element. The value is an index to the resource that identifies the data.",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "skills": {
+                "description": "Indicates the types of the intent that can be accepted by the ability.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "propertyNames": {
+                    "enum": [
+                      "actions",
+                      "entities",
+                      "uris"
+                    ]
+                  },
+                  "properties": {
+                    "actions": {
+                      "description": "Indicates the actions of the intent that can be accepted by the ability. The value can have one or multiple actions predefined in the system.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "entities": {
+                      "description": "Indicates the entities of the intent that can be accepted by the ability, such as video and Home application. The value can have one or multiple entities either predefined in the system or be customized.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "uris": {
+                      "description": "This tag identifies the collection of data specifications to be added to the Intent filter.",
+                      "type": "array",
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "propertyNames": {
+                              "enum": [
+                                "scheme",
+                                "host",
+                                "port",
+                                "pathStartWith",
+                                "path",
+                                "pathRegx",
+                                "type"
+                              ]
+                            },
+                            "required": [
+                              "scheme"
+                            ],
+                            "properties": {
+                              "scheme": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              },
+                              "host": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              },
+                              "port": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              },
+                              "pathStartWith": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              },
+                              "path": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              },
+                              "pathRegx": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              },
+                              "type": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "propertyNames": {
+                              "enum": [
+                                "type"
+                              ]
+                            },
+                            "properties": {
+                              "type": {
+                                "description": "This label is a string type.",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
               }
             }
           }
