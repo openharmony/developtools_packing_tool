@@ -345,7 +345,8 @@ class ModuleJsonUtil {
             JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
             if (moduleObj == null) {
                 LOG.error("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain module.");
-                throw new BundleException("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain module.");
+                throw new BundleException(
+                    "ModuleJsonUtil:parsePatchModuleName failed: json file do not contain module.");
             }
             if (!moduleObj.containsKey(NAME)) {
                 LOG.error("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain moduleName.");
