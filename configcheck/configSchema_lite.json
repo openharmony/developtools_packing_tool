@@ -463,7 +463,7 @@
                 }
               },
               "skills": {
-                "description": "Indicates the types of the intent that can be accepted by the ability.",
+                "description": "Indicates the types of the want that can be accepted by the ability.",
                 "type": "array",
                 "items": {
                   "type": "object",
@@ -476,21 +476,21 @@
                   },
                   "properties": {
                     "actions": {
-                      "description": "Indicates the actions of the intent that can be accepted by the ability. The value can have one or multiple actions predefined in the system.",
+                      "description": "Indicates the actions of the want that can be accepted by the ability. The value can have one or multiple actions predefined in the system.",
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
                     "entities": {
-                      "description": "Indicates the entities of the intent that can be accepted by the ability, such as video and Home application. The value can have one or multiple entities either predefined in the system or be customized.",
+                      "description": "Indicates the entities of the want that can be accepted by the ability, such as video and Home application. The value can have one or multiple entities either predefined in the system or be customized.",
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
                     "uris": {
-                      "description": "This tag identifies the collection of data specifications to be added to the Intent filter.",
+                      "description": "This tag identifies the collection of data specifications to be added to the want filter.",
                       "type": "array",
                       "items": {
                         "anyOf": [
