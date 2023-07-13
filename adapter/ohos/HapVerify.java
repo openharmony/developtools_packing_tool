@@ -46,7 +46,7 @@ class HapVerify {
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String TYPE_SHARED = "shared";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
-    private static final double FIZE_SIZE_OFFSET_DOUBLE = 0.01;
+    private static final double FILE_SIZE_OFFSET_DOUBLE = 0.01d;
     private static final int FILE_SIZE_DECIMAL_PRECISION = 2;
 
     /**
@@ -1203,7 +1203,7 @@ class HapVerify {
     }
 
     private static double getCeilFileSize(long fileSize, int sizeLimit) {
-        double threshold = Double.valueOf(sizeLimit) + FIZE_SIZE_OFFSET_DOUBLE;
+        double threshold = Double.valueOf(sizeLimit) + FILE_SIZE_OFFSET_DOUBLE;
         double size = new BigDecimal((float) fileSize
                 / FILE_LENGTH_1M).setScale(FILE_SIZE_DECIMAL_PRECISION, BigDecimal.ROUND_HALF_UP).doubleValue();
         if (size < threshold && size >= sizeLimit) {
