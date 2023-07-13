@@ -825,7 +825,8 @@
                   "driver",
                   "appAccountAuthorization",
                   "sysPicker/mediaControl",
-                  "sysDialog/userAuth"
+                  "sysDialog/userAuth",
+                  "sysDialog/common"
                 ]
               },
               "permissions": {
