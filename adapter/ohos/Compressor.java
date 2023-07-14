@@ -2446,6 +2446,10 @@ public class Compressor {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
         }
 
+        if (!utility.getAPPath().isEmpty()) {
+            pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
+        }
+
         if (!utility.getFilePath().isEmpty()) {
             pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
         }
@@ -2454,9 +2458,9 @@ public class Compressor {
             String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
                     + RESOURCES_DIR_NAME;
             if (DEVICE_TYPE_FITNESSWATCH.equals(
-                utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
+                    utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
                     DEVICE_TYPE_FITNESSWATCH_NEW.equals(
-                        utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
+                            utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
                 resPath = RES_DIR_NAME;
             }
             pathToFile(utility, utility.getResPath(), resPath, false);
@@ -2491,6 +2495,14 @@ public class Compressor {
 
         if (!utility.getPackInfoPath().isEmpty()) {
             pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        }
+
+        // pack --dir-list
+        if (!utility.getFormatedDirList().isEmpty()) {
+            for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
+                String baseDir = new File(utility.getFormatedDirList().get(i)).getName() + File.separator;
+                pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
+            }
         }
 
         compressHapModeMultiple(utility);
