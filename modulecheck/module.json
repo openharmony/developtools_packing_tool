@@ -824,7 +824,8 @@
                   "appAccountAuthorization",
                   "sysPicker/mediaControl",
                   "sysDialog/userAuth",
-                  "sysDialog/common"
+                  "sysDialog/common",
+                  "sysDialog/atomicServicePanel"
                 ]
               },
               "permissions": {
