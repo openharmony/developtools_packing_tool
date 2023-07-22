@@ -127,7 +127,6 @@
                 "compressNativeLibs",
                 "atomicService",
                 "generateBuildHash",
-                "proxyDatas",
                 "isolationMode",
                 "proxyData"
               ]
@@ -175,7 +174,6 @@
                 "compressNativeLibs",
                 "atomicService",
                 "generateBuildHash",
-                "proxyDatas",
                 "isolationMode",
                 "proxyData"
               ]
@@ -272,7 +270,7 @@
             "ets",
             "hml"
           ],
-        "default": "hml"
+          "default": "hml"
         },
         "pages": {
           "description": "Used to list the information of each page in JS Component.",
@@ -825,9 +823,10 @@
                   "push",
                   "driver",
                   "appAccountAuthorization",
-                  "sysPicker/mediaControl",
                   "sysDialog/userAuth",
-                  "sysDialog/common"
+                  "sysDialog/common",
+                  "sysPicker/mediaControl",
+                  "sysDialog/atomicServicePanel"
                 ]
               },
               "permissions": {
@@ -1245,66 +1244,6 @@
           "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
           "type": "boolean",
           "default": false
-        },
-        "proxyDatas": {
-          "description": "Indicates all the proxy data of the module.",
-          "deprecationMessage": "Deprecated since api 10, use proxyData instead.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "uri"
-            ],
-            "propertyNames": {
-              "enum": [
-                "uri",
-                "requiredReadPermission",
-                "requiredWritePermission",
-                "metadata"
-              ]
-            },
-            "properties": {
-              "uri": {
-                "description": "Indicates the uri of the data proxy.",
-                "type": "string",
-                "pattern": "^datashareproxy:",
-                "maxLength": 255
-              },
-              "requiredReadPermission": {
-                "description": "Indicates the permission required to read data from the proxy.",
-                "type": "string",
-                "maxLength": 255
-              },
-              "requiredWritePermission": {
-                "description": "Indicates the permission required to write data to the proxy.",
-                "type": "string",
-                "maxLength": 255
-              },
-              "metadata": {
-                "description": "Indicates the metadata of the proxy.",
-                "type": "object",
-                "propertyNames": {
-                  "enum": [
-                    "name",
-                    "resource"
-                  ]
-                },
-                "properties": {
-                  "name": {
-                    "description": "Indicates the key of a data element. The value is a string with a maximum of 255 bytes.",
-                    "type": "string",
-                    "maxLength": 255
-                  },
-                  "resource": {
-                    "description": "Indicates the resource of a data element.",
-                    "type": "string",
-                    "pattern": "^[$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
-                    "maxLength": 255
-                  }
-                }
-              }
-            }
-          }
         },
         "isolationMode": {
           "description": "Indicates the module process isolation mode.",
