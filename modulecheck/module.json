@@ -822,9 +822,9 @@
                   "push",
                   "driver",
                   "appAccountAuthorization",
-                  "sysPicker/mediaControl",
                   "sysDialog/userAuth",
                   "sysDialog/common",
+                  "sysPicker/mediaControl",
                   "sysDialog/atomicServicePanel"
                 ]
               },
