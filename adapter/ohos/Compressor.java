@@ -116,6 +116,7 @@ public class Compressor {
     private static final String SHA_256 = "SHA-256";
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String RAW_FILE_PATH = "resources/rawfile";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -1800,7 +1801,8 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            if (srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
+            if (!entryName.contains(RAW_FILE_PATH) &&
+                    srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 jsonSpecialProcess(utility, srcFile, zipEntry);
                 return;
