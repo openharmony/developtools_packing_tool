@@ -270,7 +270,7 @@
             "ets",
             "hml"
           ],
-        "default": "hml"
+          "default": "hml"
         },
         "pages": {
           "description": "Used to list the information of each page in JS Component.",
