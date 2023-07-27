@@ -323,6 +323,11 @@ public class Compressor {
     }
 
     private void compressHap(Utility utility) throws BundleException {
+        if (utility.getJsonPath().isEmpty() && !utility.getBinPath().isEmpty()) {
+            // only for slim device
+            compressHapMode(utility);
+            return;
+        }
         if (isModuleJSON(utility.getJsonPath())) {
             if (!checkStageHap(utility)) {
                 LOG.error("Error: checkStageHap failed.");
