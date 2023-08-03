@@ -42,7 +42,7 @@ class HapVerify {
     private static final String SHARED_LIBRARY = "shared";
     private static final String HAR = "har";
     private static final String REFERENCE_LINK =
-            "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
+            "https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/verification_rule-0000001406748378";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String TYPE_SHARED = "shared";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
