@@ -828,7 +828,8 @@
                   "sysPicker/mediaControl",
                   "sysDialog/atomicServicePanel",
                   "sysPicker/share",
-                  "hms/account"
+                  "hms/account",
+                  "action"
                 ]
               },
               "permissions": {
