@@ -180,33 +180,45 @@ public class Compressor {
         int sumLimit = TOTAL_FILE_LIMIT_DEFAULT;
         String totalLimit = utility.getTotalLimit();
         if (!totalLimit.isEmpty()) {
-            sumLimit = Integer.parseInt(totalLimit);
+            try {
+                sumLimit = Integer.parseInt(totalLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
+            }
             if (sumLimit <= 0 || sumLimit > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
             }
         }
-
         String normalLimit = utility.getNormalModuleLimit();
         int notEntry = NOT_ENTRY_FILE_LIMIT_DEFAULT;
         if (!normalLimit.isEmpty()) {
-            notEntry = Integer.parseInt(normalLimit);
+            try {
+                notEntry = Integer.parseInt(normalLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
+            }
             if (notEntry <= 0 || notEntry > sumLimit || notEntry > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
             }
         }
-
         String mainLimit = utility.getMainModuleLimit();
         int entryLimit = ENTRY_FILE_LIMIT_DEFAULT;
         if (!mainLimit.isEmpty()) {
-            entryLimit = Integer.parseInt(mainLimit);
+            try {
+                entryLimit = Integer.parseInt(mainLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
+            }
             if (entryLimit <= 0 || entryLimit > sumLimit || entryLimit > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
             }
         }
-
         setEntryModuleSizeLimit(entryLimit);
         setNotEntryModuleSizeLimit(notEntry);
         setSumModuleSizeLimit(sumLimit);
