@@ -822,14 +822,14 @@
                   "print",
                   "push",
                   "driver",
+                  "action",
                   "appAccountAuthorization",
                   "sysDialog/userAuth",
                   "sysDialog/common",
                   "sysPicker/mediaControl",
                   "sysDialog/atomicServicePanel",
                   "sysPicker/share",
-                  "hms/account",
-                  "action"
+                  "hms/account"
                 ]
               },
               "permissions": {
