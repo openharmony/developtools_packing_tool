@@ -116,6 +116,7 @@ public class Compressor {
     private static final String SHA_256 = "SHA-256";
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String RAW_FILE_PATH = "resources/rawfile";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -179,33 +180,45 @@ public class Compressor {
         int sumLimit = TOTAL_FILE_LIMIT_DEFAULT;
         String totalLimit = utility.getTotalLimit();
         if (!totalLimit.isEmpty()) {
-            sumLimit = Integer.parseInt(totalLimit);
+            try {
+                sumLimit = Integer.parseInt(totalLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
+            }
             if (sumLimit <= 0 || sumLimit > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
             }
         }
-
         String normalLimit = utility.getNormalModuleLimit();
         int notEntry = NOT_ENTRY_FILE_LIMIT_DEFAULT;
         if (!normalLimit.isEmpty()) {
-            notEntry = Integer.parseInt(normalLimit);
+            try {
+                notEntry = Integer.parseInt(normalLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
+            }
             if (notEntry <= 0 || notEntry > sumLimit || notEntry > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
             }
         }
-
         String mainLimit = utility.getMainModuleLimit();
         int entryLimit = ENTRY_FILE_LIMIT_DEFAULT;
         if (!mainLimit.isEmpty()) {
-            entryLimit = Integer.parseInt(mainLimit);
+            try {
+                entryLimit = Integer.parseInt(mainLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
+            }
             if (entryLimit <= 0 || entryLimit > sumLimit || entryLimit > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
             }
         }
-
         setEntryModuleSizeLimit(entryLimit);
         setNotEntryModuleSizeLimit(notEntry);
         setSumModuleSizeLimit(sumLimit);
@@ -1800,7 +1813,8 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            if (srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
+            if (!entryName.contains(RAW_FILE_PATH) &&
+                    srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 jsonSpecialProcess(utility, srcFile, zipEntry);
                 return;
@@ -1971,13 +1985,14 @@ public class Compressor {
             String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
-            if (CONFIG_JSON.equals(srcName)) {
+            String jsonName = new File(utility.getJsonPath()).getName().toLowerCase(Locale.ENGLISH);
+            if (CONFIG_JSON.equals(jsonName)) {
                 parseCompressNativeLibs(bufferedReader, utility);
                 utility.setModuleName(ModuleJsonUtil.parseFaModuleName(jsonString));
-            } else if (MODULE_JSON.equals(srcName)) {
-                parseStageCompressNativeLibs(bufferedReader, utility);
+            } else if (MODULE_JSON.equals(jsonName)) {
+                utility.setIsCompressNativeLibs(ModuleJsonUtil.stageIsCompressNativeLibs(jsonString));
                 utility.setModuleName(ModuleJsonUtil.parseStageModuleName(jsonString));
-            } else if (PATCH_JSON.equals(srcName)) {
+            } else if (PATCH_JSON.equals(jsonName)) {
                 utility.setModuleName(ModuleJsonUtil.parsePatchModuleName(jsonString));
             }
             bufferedReader.reset();
@@ -2137,22 +2152,6 @@ public class Compressor {
             LOG.error("Compressor::parseModuleName field module-name is fault: " + exception.getMessage());
             throw new BundleException("Parse module name failed, module-name is invalid.");
         }
-    }
-
-    private void parseStageCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
-        StringBuffer buffer = new StringBuffer();
-        String lineString = null;
-        String jsonString = null;
-        try {
-            while ((lineString = bufferedReader.readLine()) != null) {
-                buffer.append(lineString.trim());
-            }
-            jsonString = buffer.toString();
-        } catch (IOException exception) {
-            LOG.error("Compressor::parseStageCompressNativeLibs io exception: " + exception.getMessage());
-            throw new BundleException("Parse compress native libs failed.");
-        }
-        utility.setIsCompressNativeLibs(ModuleJsonUtil.stageIsCompressNativeLibs(jsonString));
     }
 
     private void parseCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
