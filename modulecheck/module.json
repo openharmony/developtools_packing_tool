@@ -823,6 +823,7 @@
                   "share",
                   "push",
                   "driver",
+                  "action",
                   "appAccountAuthorization",
                   "sysDialog/userAuth",
                   "sysDialog/common",
