@@ -538,13 +538,18 @@ public class ResourcesParser {
         StringBuilder result = new StringBuilder();
         ByteBuffer byteBuf = ByteBuffer.wrap(data);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
-        while(byteBuf.hasRemaining()) {
-            result.append(LEFT_BRACKET);
-            int len = byteBuf.getShort();
-            byte[] value = new byte[len + CHAR_LENGTH];
-            byteBuf.get(value);
-            String item = new String(value, StandardCharsets.UTF_8);
-            result.append(item, 0, item.length() - 1);
+        try {
+            while(byteBuf.hasRemaining()) {
+                result.append(LEFT_BRACKET);
+                int len = byteBuf.getShort();
+                byte[] value = new byte[len + CHAR_LENGTH];
+                byteBuf.get(value);
+                String item = new String(value, StandardCharsets.UTF_8);
+                result.append(item, 0, item.length() - 1);
+                result.append(RIGHT_BRACKET);
+            }
+        } catch (NegativeArraySizeException e) {
+            LOG.error("convertBytesToString exception: " + e);
             result.append(RIGHT_BRACKET);
         }
         return result.toString();

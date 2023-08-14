@@ -110,7 +110,7 @@ public class CompressEntrance {
 
         Compressor compressor = new Compressor();
         if (!compressor.compressProcess(utility)) {
-            LOG.error("CompressEntrance::main exit, compress failedaaa");
+            LOG.error("CompressEntrance::main exit, compress failed");
             ShowHelp.compressHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
