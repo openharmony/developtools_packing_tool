@@ -541,6 +541,11 @@ public class ResourcesParser {
         while(byteBuf.hasRemaining()) {
             result.append(LEFT_BRACKET);
             int len = byteBuf.getShort();
+            if (len <= 0) {
+                LOG.info("len less than 0, dismiss");
+                result.append(RIGHT_BRACKET);
+                break;
+            }
             byte[] value = new byte[len + CHAR_LENGTH];
             byteBuf.get(value);
             String item = new String(value, StandardCharsets.UTF_8);
