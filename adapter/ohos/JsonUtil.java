@@ -709,6 +709,11 @@ public class JsonUtil {
             return reqPermissions;
         }
         JSONArray reqPermissionObjs = hapJson.getJSONArray(REQ_PERMISSIONS);
+        return parseCommonReqPermission(reqPermissionObjs, data);
+    }
+
+    private static List<ReqPermission> parseCommonReqPermission(JSONArray reqPermissionObjs, byte[] data) {
+        List<ReqPermission> reqPermissions = new ArrayList<>();
         for (int i = 0; i < reqPermissionObjs.size(); ++i) {
             ReqPermission reqPermission = new ReqPermission();
             JSONObject requestPermission = reqPermissionObjs.getJSONObject(i);
@@ -1930,21 +1935,8 @@ public class JsonUtil {
         if (!moduleJson.containsKey(REQUEST_PERMISSIONS)) {
             return reqPermissions;
         }
-        JSONArray requestPermissionObjs = moduleJson.getJSONArray(REQUEST_PERMISSIONS);
-        for (int i = 0; i < requestPermissionObjs.size(); ++i) {
-            ReqPermission reqPermission = new ReqPermission();
-            JSONObject requestPermission = requestPermissionObjs.getJSONObject(i);
-            reqPermission.name = getJsonString(requestPermission, NAME);
-            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
-            if (requestPermission.containsKey(REASON_ID)) {
-                reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
-            }
-            if (requestPermission.containsKey(USED_SCENE)) {
-                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
-            }
-            reqPermissions.add(reqPermission);
-        }
-        return reqPermissions;
+        JSONArray reqPermissionObjs = moduleJson.getJSONArray(REQ_PERMISSIONS);
+        return parseCommonReqPermission(reqPermissionObjs, data);
     }
 
     private static UsedScene parseModuleUsedScene(JSONObject usedSceneObj) {
