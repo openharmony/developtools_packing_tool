@@ -144,25 +144,13 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static Version parseFaVersion(String jsonString) throws BundleException {
-        Version version = new Version();
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed.";
-            LOG.error(errMsg);
-            throw new BundleException(errMsg);
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
-            throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         JSONObject versionObj = appObj.getJSONObject(VERSION);
         if (versionObj == null) {
             LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
         }
+        Version version = new Version();
         if (versionObj.containsKey(CODE) && versionObj.containsKey(NAME)) {
             version.versionName = versionObj.getString(NAME);
             version.versionCode = versionObj.getIntValue(CODE);
@@ -202,19 +190,7 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static ModuleApiVersion parseStageModuleApiVersion(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed.";
-            LOG.error(errMsg);
-            throw new BundleException(errMsg);
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
-            throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not contain app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
         if (appObj.containsKey(MIN_API_VERSION)) {
             moduleApiVersion.setCompatibleApiVersion(appObj.getIntValue(MIN_API_VERSION));
@@ -236,18 +212,7 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed";
-            LOG.error(errMsg);
-            throw new BundleException(errMsg);
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(API_VERSION)) {
             throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
         }
@@ -1603,11 +1568,13 @@ class ModuleJsonUtil {
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("parsePatch failed, input patch.json is invalid, patch.json has no app.");
-            throw new BundleException("parsePatch failed, input patch.json is invalid.");
+        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
+        if (moduleObj == null) {
+            LOG.error("parse failed, input patch.json is invalid, patch.json has no module.");
+            throw new BundleException("parse failed, input patch.json is invalid, patch.json has no module.");
         }
+
+        JSONObject appObj = jsonObject.getJSONObject(APP);
         HQFInfo hqfVerifyInfo = new HQFInfo();
         if (appObj.containsKey(BUNDLE_NAME)) {
             hqfVerifyInfo.setBundleName(appObj.getString(BUNDLE_NAME));
@@ -1623,11 +1590,6 @@ class ModuleJsonUtil {
         }
         if (appObj.containsKey(PATCH_VERSION_NAME)) {
             hqfVerifyInfo.setPatchVersionName(appObj.getString(PATCH_VERSION_NAME));
-        }
-        JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
-        if (moduleObj == null) {
-            LOG.error("parse failed, input patch.json is invalid, patch.json has no module.");
-            throw new BundleException("parse failed, input patch.json is invalid, patch.json has no module.");
         }
         if (moduleObj.containsKey(NAME)) {
             hqfVerifyInfo.setModuleName(moduleObj.getString(NAME));
@@ -1725,18 +1687,7 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static boolean getDebug(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
-            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("parse failed, input module.json is invalid, module.json has no app.");
-            throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         return getJsonBooleanValue(appObj, DEBUG, false);
     }
 
@@ -1773,18 +1724,8 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static String getFACompileSdkVersion(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed";
-            LOG.error(errMsg);
-            throw new BundleException(errMsg);
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
+
         if (!appObj.containsKey(API_VERSION)) {
             throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
         }
@@ -1803,18 +1744,7 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static String getFACompileSdkType(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed";
-            LOG.error(errMsg);
-            throw new BundleException(errMsg);
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(API_VERSION)) {
             throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
         }
@@ -1863,14 +1793,8 @@ class ModuleJsonUtil {
      */
     public static String getCompileSdkType(String jsonString) throws BundleException {
         String compileSdkType = "";
-        JSONObject jsonObject;
         try {
-            jsonObject = JSON.parseObject(jsonString);
-            JSONObject appObj = jsonObject.getJSONObject(APP);
-            if (appObj == null) {
-                LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
-                throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain app.");
-            }
+            JSONObject appObj = getAppObj(jsonString);
             if (appObj.containsKey(COMPILE_SDK_TYPE)) {
                 compileSdkType = appObj.getString(COMPILE_SDK_TYPE);
             } else {
@@ -1913,18 +1837,7 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static String getStageTargetBundleName(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            LOG.error("parse JOSNObject failed in getStageTargetModuleName.");
-            throw new BundleException("parse JOSNObject failed in getStageTargetModuleName.");
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("parse failed, input module.json is invalid, module.json has no app.");
-            throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         return getJsonString(appObj, TARGET_BUNDLE_NAME);
     }
 
@@ -1983,18 +1896,7 @@ class ModuleJsonUtil {
      * @return the value of asanEnabled
      */
     public static boolean getFAAsanEnabled(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            LOG.error("parse JOSNObject failed in getStageAsanEnabled.");
-            throw new BundleException("parse JOSNObject failed in getStageAsanEnabled.");
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("parse failed, input module.json is invalid, module.json has no app.");
-            throw new BundleException("parse failed, input module.json is invalid, module.json has no app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         if (appObj.containsKey(ASAN_ENABLED)) {
             return appObj.getBoolean(ASAN_ENABLED);
         }
@@ -2008,18 +1910,7 @@ class ModuleJsonUtil {
      * @return the result
      */
     public static String getFAReleaseType(String jsonString) throws BundleException {
-        JSONObject jsonObject;
-        try {
-            jsonObject = JSON.parseObject(jsonString);
-        } catch (JSONException exception) {
-            LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
-            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("parse failed, input config.json is invalid, config.json has no app.");
-            throw new BundleException("parse failed, input config.json is invalid, config.json has no app.");
-        }
+        JSONObject appObj = getAppObj(jsonString);
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
         if (apiVersionObj == null) {
             return "";
@@ -2080,11 +1971,6 @@ class ModuleJsonUtil {
         JSONObject moduleObj = jsonObject.getJSONObject(MODULE);
         if (moduleObj == null) {
             LOG.error("parse failed, input config.json is invalid, config.json has no module.");
-            throw new BundleException("parse failed, input config.json is invalid, module.json has no app.");
-        }
-        JSONObject appObj = jsonObject.getJSONObject(APP);
-        if (appObj == null) {
-            LOG.error("parse failed, input config.json is invalid, module.json has no app.");
             throw new BundleException("parse failed, input config.json is invalid, module.json has no app.");
         }
         if (!parseStageBundleType(jsonString).equals(ATOMIC_SERVICE)) {
