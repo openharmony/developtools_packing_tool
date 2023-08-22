@@ -227,13 +227,17 @@ public class UncompressEntrance {
      */
     public static UncompressResult parseApp(String appPath, String parseMode, String deviceType, String hapName,
                                             String outPath) {
-        UncompressResult compressResult = new UncompressResult();
-
         Utility utility = new Utility();
         utility.setAppPath(appPath);
         utility.setParseMode(parseMode);
         utility.setDeviceType(deviceType == null ? "" : deviceType);
         utility.setHapName(hapName == null ? "" : hapName);
+
+        return parseAppCommon(utility);
+    }
+
+    private static UncompressResult parseAppCommon(Utility utility) {
+        UncompressResult compressResult = new UncompressResult();
 
         if (!UncompressVerify.isPathValid(utility.getAppPath(), true, APP_SUFFIX)) {
             LOG.error("UncompressEntrance::parseApp must input a app file!");
@@ -310,20 +314,8 @@ public class UncompressEntrance {
         utility.setParseMode(parseAppMode.getType());
         utility.setDeviceType("");
         utility.setHapName(hapName);
-        if (!UncompressVerify.isPathValid(utility.getAppPath(), true, APP_SUFFIX)) {
-            LOG.error("UncompressEntrance::parseApp must input a app file!");
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseApp verify failed");
-            return compressResult;
-        }
-        if (!UncompressVerify.isParseAppModeValid(utility.getParseMode(), utility.getHapName())) {
-            compressResult.setResult(false);
-            compressResult.setMessage("ParseApp verify failed");
-            return compressResult;
-        }
-        compressResult = Uncompress.uncompressAppByPath(utility);
 
-        return compressResult;
+        return parseAppCommon(utility);
     }
 
     /**
