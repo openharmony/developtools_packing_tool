@@ -831,7 +831,12 @@
                   "sysDialog/atomicServicePanel",
                   "sysDialog/power",
                   "sysPicker/share",
-                  "hms/account"
+                  "hms/account",
+                  "sysDialog/meetimeCall",
+                  "sysDialog/meetimeContact",
+                  "sysDialog/meetimeMessage",
+                  "sysPicker/meetimeContact",
+                  "sysPicker/meetimeCallLog"
                 ]
               },
               "permissions": {
