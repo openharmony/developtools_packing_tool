@@ -19,9 +19,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,9 +42,12 @@ class HapVerify {
     private static final String SHARED_LIBRARY = "shared";
     private static final String HAR = "har";
     private static final String REFERENCE_LINK =
-            "https://developer.harmonyos.com/cn/docs/documentation/doc-guides/verification_rule-0000001406748378";
+            "https://developer.harmonyos.com/cn/docs/documentation/doc-guides-V3/verification_rule-0000001406748378";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String TYPE_SHARED = "shared";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
+    private static final double FILE_SIZE_OFFSET_DOUBLE = 0.01d;
+    private static final int FILE_SIZE_DECIMAL_PRECISION = 2;
 
     /**
      * check hap is verify.
@@ -93,8 +98,55 @@ class HapVerify {
             LOG.error("target module is not found.");
             return false;
         }
+        if (!checkCompileSdkIsValid(hapVerifyInfos)) {
+            LOG.error("compile sdk config is not same.");
+            return false;
+        }
+        if (!checkProxyDataUriIsUnique(hapVerifyInfos)) {
+            LOG.error("uris in proxy data are not unique.");
+            return false;
+        }
         return true;
     }
+
+    /**
+     * check inter-app hsp is valid.
+     *
+     * @param hapVerifyInfos is the collection of hap infos
+     * @return the result
+     * @throws BundleException Throws this exception if the json is not standard
+     */
+    public static boolean checkSharedApppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            LOG.error("HapVerify::checkSharedApppIsValid hapVerifyInfos is empty.");
+            return false;
+        }
+        String moduleName = hapVerifyInfos.get(0).getModuleName();
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            if (!moduleName.equals(hapVerifyInfo.getModuleName())) {
+                LOG.error("HapVerify::checkSharedApppIsValid module name is different.");
+                return false;
+            }
+            if (!hapVerifyInfo.getDependencyItemList().isEmpty()) {
+                LOG.error("HapVerify::checkSharedApppIsValid shared hsp cannot depend on other modules.");
+                return false;
+            }
+            if (!TYPE_SHARED.equals(hapVerifyInfo.getModuleType())) {
+                LOG.error("HapVerify::checkSharedApppIsValid module type is not shared app.");
+                return false;
+            }
+        }
+        for (int i = 0; i < hapVerifyInfos.size(); i++) {
+            for (int j = i + 1; j < hapVerifyInfos.size(); j++) {
+                if (!checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
+                    LOG.error("HapVerify::checkSharedApppIsValid duplicated module.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     /**
      * check whether the app fields in the hap are the same.
@@ -119,6 +171,7 @@ class HapVerify {
         verifyCollection.releaseType = hapVerifyInfos.get(0).getApiVersion().getReleaseType();
         verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
+        verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.getBundleName().isEmpty() ||
                     !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
@@ -163,6 +216,10 @@ class HapVerify {
             }
             if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
                 LOG.error("targetPriority is different.");
+                return false;
+            }
+            if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
+                LOG.error("debug is different.");
                 return false;
             }
         }
@@ -329,6 +386,45 @@ class HapVerify {
         return true;
     }
 
+    private static boolean checkCompileSdkIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("hapVerifyInfos is empty");
+            return false;
+        }
+        String compileSdkVersion = hapVerifyInfos.get(0).getCompileSdkVersion();
+        String compileSdkType = hapVerifyInfos.get(0).getCompileSdkType();
+        for (HapVerifyInfo info : hapVerifyInfos) {
+            if (!compileSdkType.equals(info.getCompileSdkType())) {
+                LOG.error("compile sdk type is not same.");
+                return false;
+            }
+            if (!compileSdkVersion.equals(info.getCompileSdkVersion())) {
+                LOG.error("compile sdk version is not same.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkProxyDataUriIsUnique(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.error("hapVerifyInfos is empty");
+            return false;
+        }
+        Set<String> uriSet = new HashSet<>();
+        for (HapVerifyInfo info : hapVerifyInfos) {
+            for (String uri : info.getProxyDataUris()) {
+                if (uriSet.contains(uri)) {
+                    LOG.error("uri " + uri + " in proxy data is duplicated");
+                    return false;
+                } else {
+                    uriSet.add(uri);
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * check entry is valid.
      *
@@ -356,20 +452,20 @@ class HapVerify {
         for (int i = 0; i < entryHapVerifyInfos.size() - 1; ++i) {
             for (int j = i + 1; j < entryHapVerifyInfos.size(); ++j) {
                 if (!checkDuplicatedIsValid(entryHapVerifyInfos.get(i), entryHapVerifyInfos.get(j))) {
-                    LOG.error("Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
-                            hapVerifyInfos.get(j).getModuleName() + ") are entry, " +
+                    LOG.error("Module: (" + entryHapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
+                            entryHapVerifyInfos.get(j).getModuleName() + ") are entry, " +
                             "please check deviceType or distroFilter of the module.");
-                    LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " has deviceType "
-                            + hapVerifyInfos.get(i).getDeviceType() + ".");
-                    LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType "
-                            + hapVerifyInfos.get(j).getDeviceType() + ".");
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        LOG.error("Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
-                                hapVerifyInfos.get(i).getDistroFilter().dump() + ".");
+                    LOG.error("Module: " + entryHapVerifyInfos.get(i).getModuleName() + " has deviceType "
+                            + entryHapVerifyInfos.get(i).getDeviceType() + ".");
+                    LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() + " has deviceType "
+                            + entryHapVerifyInfos.get(j).getDeviceType() + ".");
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(i).getDistroFilter().dump())) {
+                        LOG.error("Module: " + entryHapVerifyInfos.get(i).getModuleName() + " DistroFilter is : " +
+                                entryHapVerifyInfos.get(i).getDistroFilter().dump() + ".");
                     }
-                    if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        LOG.error("Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
-                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".");
+                    if (!EMPTY_STRING.equals(entryHapVerifyInfos.get(j).getDistroFilter().dump())) {
+                        LOG.error("Another Module: " + entryHapVerifyInfos.get(j).getModuleName() +
+                                " DistroFilter is " + entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".");
                     }
                     LOG.error("Solution: Make sure entry name is valid and unique.");
                     LOG.error("Reference: " + REFERENCE_LINK + ".");
@@ -1091,20 +1187,29 @@ class HapVerify {
                 }
                 fileSize += dependency.getFileLength();
             }
-            double file = new BigDecimal((float) fileSize
-                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            if (hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize > entryLimit * FILE_LENGTH_1M)) {
+            if (hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize >= entryLimit * FILE_LENGTH_1M)) {
                 LOG.error("module " + hapVerifyInfo.getModuleName() + " and it's dependencies size is " +
-                        file + "MB, which is overlarge than " + entryLimit + "MB.");
+                        getCeilFileSize(fileSize, entryLimit) + "MB, which is overlarge than " + entryLimit + "MB.");
                 return false;
             }
-            if (!hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize > notEntryLimit * FILE_LENGTH_1M)) {
+            if (!hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize >= notEntryLimit * FILE_LENGTH_1M)) {
                 LOG.error("module " + hapVerifyInfo.getModuleName() + " and it's dependencies size is " +
-                        file + "MB, which is overlarge than " + notEntryLimit + "MB.");
+                        getCeilFileSize(fileSize, notEntryLimit) +
+                        "MB, which is overlarge than " + notEntryLimit + "MB.");
                 return false;
             }
         }
         return true;
+    }
+
+    private static double getCeilFileSize(long fileSize, int sizeLimit) {
+        double threshold = Double.valueOf(sizeLimit) + FILE_SIZE_OFFSET_DOUBLE;
+        double size = new BigDecimal((float) fileSize
+                / FILE_LENGTH_1M).setScale(FILE_SIZE_DECIMAL_PRECISION, BigDecimal.ROUND_HALF_UP).doubleValue();
+        if (size < threshold && size >= sizeLimit) {
+            size = threshold;
+        }
+        return size;
     }
 
     private static Map<String, List<HapVerifyInfo>> getDeviceHapVerifyInfoMap(List<HapVerifyInfo> hapVerifyInfoList)
@@ -1138,10 +1243,6 @@ class HapVerify {
         if (!bundleType.equals(ATOMIC_SERVICE)) {
             return true;
         }
-        if (!checkAtomicServiceSumLimit(hapVerifyInfoList)) {
-            LOG.error("checkAtomicServiceSumLimit failed.");
-            return false;
-        }
         boolean isStage = hapVerifyInfoList.get(0).isStageModule();
         if (!isStage) {
             return true;
@@ -1150,6 +1251,10 @@ class HapVerify {
         Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
         for (String device : deviceInfoMap.keySet()) {
             List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
+            if (!checkAtomicServiceSumLimit(hapVerifyInfos)) {
+                LOG.error("checkAtomicServiceSumLimit failed on device: " + device);
+                return false;
+            }
             if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
                 LOG.error("checkAtomicServicePreloadsIsValid failed on device " + device + ".");
                 return false;
@@ -1171,10 +1276,9 @@ class HapVerify {
         long fileSize = 0L;
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             fileSize += hapVerifyInfo.getFileLength();
-            double fileSizeMB = new BigDecimal((float) fileSize
-                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            if (fileSize > sumLimit * FILE_LENGTH_1M) {
-                LOG.error("The total file size is " + fileSizeMB + "MB, greater than " + sumLimit + "MB.");
+            if (fileSize >= sumLimit * FILE_LENGTH_1M) {
+                LOG.error("The total file size is " + getCeilFileSize(fileSize, sumLimit) +
+                        "MB, greater than " + sumLimit + "MB.");
                 return false;
             }
         }
@@ -1257,18 +1361,18 @@ class HapVerify {
         int entryLimit = hapVerifyInfoList.get(0).getEntrySizeLimit();
         int notEntryLimit = hapVerifyInfoList.get(0).getNotEntrySizeLimit();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
-            double fileSize = new BigDecimal((float) hapVerifyInfo.getFileLength()
-                    / FILE_LENGTH_1M).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             if (hapVerifyInfo.getModuleType().equals(ENTRY) &&
-                    (hapVerifyInfo.getFileLength() > entryLimit * FILE_LENGTH_1M)) {
+                    (hapVerifyInfo.getFileLength() >= entryLimit * FILE_LENGTH_1M)) {
                 LOG.error("module " + hapVerifyInfo.getModuleName() + "'s size is " +
-                        fileSize + "MB, which is overlarge than " + entryLimit + "MB.");
+                        getCeilFileSize(hapVerifyInfo.getFileLength(), entryLimit) +
+                        "MB, which is overlarge than " + entryLimit + "MB.");
                 return false;
             }
             if (!hapVerifyInfo.getModuleType().equals(ENTRY) &&
-                    (hapVerifyInfo.getFileLength() > notEntryLimit * FILE_LENGTH_1M)) {
+                    (hapVerifyInfo.getFileLength() >= notEntryLimit * FILE_LENGTH_1M)) {
                 LOG.error("module " + hapVerifyInfo.getModuleName() + "'s size is " +
-                        fileSize + "MB, which is overlarge than " + notEntryLimit + "MB.");
+                        getCeilFileSize(hapVerifyInfo.getFileLength(), notEntryLimit) +
+                        "MB, which is overlarge than " + notEntryLimit + "MB.");
                 return false;
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@ package ohos;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,10 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-
 import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
-
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -45,7 +46,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 /**
  * bundle compressor class, compress file and directory.
@@ -58,6 +61,7 @@ public class Compressor {
     private static final String UPPERCASE_PNG_SUFFIX = ".PNG";
     private static final String CONFIG_JSON = "config.json";
     private static final String MODULE_JSON = "module.json";
+    private static final String PATCH_JSON = "patch.json";
     private static final String NAME = "name";
     private static final String NULL_DIR_NAME = "";
     private static final String RES_DIR_NAME = "res/";
@@ -104,8 +108,15 @@ public class Compressor {
     private static final String EMPTY_STRING = "";
     private static final String RELEASE = "Release";
     private static final String TYPE_SHARED = "shared";
-    private static final Integer ONE = 1;
+    private static final String APP = "app";
+    private static final String MODULE = "module";
+    private static final String GENERATE_BUILD_HASH = "generateBuildHash";
+    private static final String BUILD_HASH = "buildHash";
+    private static final String TEMP_DIR = "temp";
+    private static final String SHA_256 = "SHA-256";
+    private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
+    private static final String RAW_FILE_PATH = "resources/rawfile";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -113,14 +124,22 @@ public class Compressor {
     private static final int NOT_ENTRY_FILE_LIMIT_DEFAULT = 2;
     private static final int TOTAL_FILE_LIMIT_DEFAULT = 10;
     private static final int FILE_LIMIT = 10;
+    private static final int SHA256_BASE = 0xff;
+    private static final int SHA256_OFFSET = 0x100;
+    private static final int RADIX = 16;
+    private static final int BEGIN_INDEX = 1;
+    private static final int BUFFER_BYTE_SIZE = 1024;
+    private static final int BUFFER_WRITE_SIZE = 1444;
 
     // set buffer size of each read
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final Log LOG = new Log(Compressor.class.toString());
+
     private static int entryModuleSizeLimit = 2;
     private static int notEntryModuleSizeLimit = 2;
     private static int sumModuleSizeLimit = 10;
     private static boolean isOverlay = false;
+
     private ZipOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private List<String> list = new ArrayList<String>();
@@ -161,33 +180,45 @@ public class Compressor {
         int sumLimit = TOTAL_FILE_LIMIT_DEFAULT;
         String totalLimit = utility.getTotalLimit();
         if (!totalLimit.isEmpty()) {
-            sumLimit = Integer.parseInt(totalLimit);
+            try {
+                sumLimit = Integer.parseInt(totalLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
+            }
             if (sumLimit <= 0 || sumLimit > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
             }
         }
-
         String normalLimit = utility.getNormalModuleLimit();
         int notEntry = NOT_ENTRY_FILE_LIMIT_DEFAULT;
         if (!normalLimit.isEmpty()) {
-            notEntry = Integer.parseInt(normalLimit);
+            try {
+                notEntry = Integer.parseInt(normalLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
+            }
             if (notEntry <= 0 || notEntry > sumLimit || notEntry > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
             }
         }
-
         String mainLimit = utility.getMainModuleLimit();
         int entryLimit = ENTRY_FILE_LIMIT_DEFAULT;
         if (!mainLimit.isEmpty()) {
-            entryLimit = Integer.parseInt(mainLimit);
+            try {
+                entryLimit = Integer.parseInt(mainLimit);
+            } catch (NumberFormatException e) {
+                LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
+                throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
+            }
             if (entryLimit <= 0 || entryLimit > sumLimit || entryLimit > FILE_LIMIT) {
                 LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
                 throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
             }
         }
-
         setEntryModuleSizeLimit(entryLimit);
         setNotEntryModuleSizeLimit(notEntry);
         setSumModuleSizeLimit(sumLimit);
@@ -288,6 +319,7 @@ public class Compressor {
     }
 
     private void compressHsp(Utility utility) throws BundleException {
+        setGenerateBuildHash(utility);
         if (isModuleJSON(utility.getJsonPath())) {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
@@ -307,9 +339,16 @@ public class Compressor {
             }
         }
         compressHSPMode(utility);
+        buildHash(utility);
     }
 
     private void compressHap(Utility utility) throws BundleException {
+        if (utility.getJsonPath().isEmpty() && !utility.getBinPath().isEmpty()) {
+            // only for slim device
+            compressHapMode(utility);
+            return;
+        }
+        setGenerateBuildHash(utility);
         if (isModuleJSON(utility.getJsonPath())) {
             if (!checkStageHap(utility)) {
                 LOG.error("checkStageHap failed.");
@@ -326,13 +365,215 @@ public class Compressor {
                 LOG.warning("Compress mode is hap, but app type is shared.");
             }
             compressHapModeForModule(utility);
+            buildHash(utility);
         } else {
             if (!checkFAHap(utility)) {
                 LOG.error("checkFAHap failed.");
                 throw new BundleException("checkStageHap failed.");
             }
             compressHapMode(utility);
+            buildHash(utility);
         }
+    }
+
+    private static boolean hasGenerateBuildHash(Utility utility) throws BundleException {
+        File file = new File(utility.getJsonPath());
+        if (!file.exists()) {
+            LOG.error("Compressor::hasGenerateBuildHash failed for json file not exist");
+            throw new BundleException("Compressor::hasGenerateBuildHash failed for json file not exist");
+        }
+        InputStream json = null;
+        boolean res = false;
+        try {
+            json = new FileInputStream(file);
+            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
+            if (!jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
+                LOG.error("json file is invalid.");
+                throw new BundleException("json file is invalid.");
+            }
+            JSONObject appJson = jsonObject.getJSONObject(APP);
+            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+            if (appJson.containsKey(GENERATE_BUILD_HASH) || moduleJson.containsKey(GENERATE_BUILD_HASH)) {
+                res = true;
+            }
+        } catch (BundleException | IOException exception) {
+            LOG.error("Compressor::hasGenerateBuildHash failed.");
+            throw new BundleException("Compressor::hasGenerateBuildHash failed.");
+        } finally {
+            FileUtils.closeStream(json);
+        }
+        return res;
+    }
+
+    private static void setGenerateBuildHash(Utility utility) throws BundleException {
+        if (utility.isBuildHashFinish() || !hasGenerateBuildHash(utility)) {
+            return;
+        }
+        copyFileToTempDir(utility);
+        File file = new File(utility.getJsonPath());
+        if (!file.exists()) {
+            LOG.error("Compressor::setGenerateBuildHash failed for json file not exist");
+            throw new BundleException("Compressor::setGenerateBuildHash failed for json file not exist");
+        }
+        InputStream json = null;
+        BufferedWriter bw = null;
+        try {
+            json = new FileInputStream(file);
+            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
+            if (!jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
+                LOG.error("json file is invalid.");
+                throw new BundleException("json file is invalid.");
+            }
+            JSONObject appJson = jsonObject.getJSONObject(APP);
+            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+            if (appJson.containsKey(GENERATE_BUILD_HASH) && appJson.getBoolean(GENERATE_BUILD_HASH)) {
+                utility.setGenerateBuildHash(true);
+            } else {
+                if (moduleJson.containsKey(GENERATE_BUILD_HASH) && moduleJson.getBoolean(GENERATE_BUILD_HASH)) {
+                    utility.setGenerateBuildHash(true);
+                }
+            }
+            appJson.remove(GENERATE_BUILD_HASH);
+            moduleJson.remove(GENERATE_BUILD_HASH);
+            String pretty = JSON.toJSONString(jsonObject, new SerializerFeature[]{
+                    SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
+                    SerializerFeature.WriteDateUseDateFormat});
+            bw = new BufferedWriter(new FileWriter(utility.getJsonPath()));
+            bw.write(pretty);
+        } catch (BundleException | IOException exception) {
+            LOG.error("Compressor::setGenerateBuildHash failed.");
+            throw new BundleException("Compressor::setGenerateBuildHash failed.");
+        } finally {
+            FileUtils.closeStream(json);
+            if (bw != null) {
+                try {
+                    bw.flush();
+                    bw.close();
+                } catch (IOException e) {
+                    LOG.error("Compressor::setGenerateBuildHash failed for IOException " + e.getMessage());
+                    throw new BundleException("Compressor::setGenerateBuildHash failed.");
+                }
+            }
+        }
+    }
+
+    private static void copyFileToTempDir(Utility utility) throws BundleException {
+        String jsonPath = utility.getJsonPath();
+        File oldfile = new File(jsonPath);
+        if (!oldfile.exists()) {
+            LOG.error("Compressor::copyFileToTempDir failed for json file not found.");
+            throw new BundleException("Compressor::copyFileToTempDir failed for json file not found.");
+        }
+        String oldfileParent = oldfile.getParent();
+        mkdir(new File(oldfileParent + File.separator + TEMP_DIR));
+        String fileName;
+        if (isModuleJSON(utility.getJsonPath())) {
+            fileName = MODULE_JSON;
+        } else {
+            fileName = CONFIG_JSON;
+        }
+        String tempPath = oldfileParent + File.separator + TEMP_DIR + File.separator + fileName;
+
+        try (InputStream inStream = new FileInputStream(jsonPath);
+             FileOutputStream fs = new FileOutputStream(tempPath)) {
+                byte[] buffer = new byte[BUFFER_WRITE_SIZE];
+                int byteread;
+                while ((byteread = inStream.read(buffer)) != -1) {
+                    fs.write(buffer, 0, byteread);
+                }
+                utility.setJsonPath(tempPath);
+        } catch (IOException e) {
+            LOG.error("Compressor::copyFileToTempDir failed, IOException: " + e.getMessage());
+            throw new BundleException("Compressor::copyFileToTempDir failed.");
+        }
+    }
+
+    private static void mkdir(File file) {
+        if (null != file && !file.exists()) {
+            mkdir(file.getParentFile());
+            file.mkdir();
+        }
+    }
+
+    private static void buildHash(Utility utility) throws BundleException {
+        if (utility.isBuildHashFinish() || (!utility.getGenerateBuildHash())) {
+            return;
+        }
+        String filePath = utility.getOutPath();
+        String hash = getSHA256(filePath);
+        try {
+            putBuildHash(utility, hash);
+        } catch (IOException e) {
+            LOG.error("Compressor::putBuildHash failed, " + e.getMessage());
+            throw new BundleException("Compressor::putBuildHash failed.");
+        }
+    }
+
+    private static byte[] checkSum(String filename) throws BundleException {
+        try (InputStream fis = new FileInputStream(filename)) {
+            byte[] buffer = new byte[BUFFER_BYTE_SIZE];
+            MessageDigest complete = MessageDigest.getInstance(SHA_256);
+            int numRead;
+            do {
+                numRead = fis.read(buffer);
+                if (numRead > 0) {
+                    complete.update(buffer, 0, numRead);
+                }
+            } while (numRead != -1);
+            return complete.digest();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            LOG.error("Compressor::checkSum failed, IOException or NoSuchAlgorithmException: " + e.getMessage());
+            throw new BundleException("Compressor::checkSum failed.");
+        }
+    }
+
+    /**
+     * get SHA256 of hap or hsp
+     *
+     * @param filePath the path of hap or hsp.
+     */
+    public static String getSHA256(String filePath) throws BundleException {
+        byte[] byteSum = checkSum(filePath);
+        StringBuilder temp = new StringBuilder();
+        for (int i = 0; i < byteSum.length; i++) {
+            temp.append(
+                    Integer.toString((byteSum[i] & SHA256_BASE) + SHA256_OFFSET, RADIX).substring(BEGIN_INDEX));
+        }
+        return temp.toString();
+    }
+
+    private static void putBuildHash(Utility utility, String hash) throws BundleException, IOException {
+        if (utility.isBuildHashFinish()) {
+            return;
+        }
+        String jsonPath = utility.getJsonPath();
+        File file = new File(jsonPath);
+        if (!file.exists()) {
+            LOG.error("Compressor::putBuildHash failed for json file not exist");
+            throw new BundleException("Compressor::putBuildHash failed for json file not exist");
+        }
+        InputStream json = null;
+        BufferedWriter bw = null;
+        try {
+            json = new FileInputStream(file);
+            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
+            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+            moduleJson.put(BUILD_HASH, hash);
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+            bw = new BufferedWriter(new FileWriter(jsonPath));
+            bw.write(pretty);
+        } catch (IOException e) {
+            LOG.error("Compressor::putBuildHash failed, IOException: " + e.getMessage());
+            throw new BundleException("Compressor::putBuildHash failed.");
+        } finally {
+            FileUtils.closeStream(json);
+            if (bw != null) {
+                bw.flush();
+                bw.close();
+            }
+        }
+        utility.setBuildHashFinish(true);
     }
 
     private static boolean checkStageHap(Utility utility) throws BundleException {
@@ -443,14 +684,24 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private void compressHapMode(Utility utility) throws BundleException {
-        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
-
-        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
+        compressCommonFile(utility);
 
         if (!utility.getIndexPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String assetsPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR;
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
         }
+
+        if (!utility.getAssetsPath().isEmpty()) {
+            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
+        }
+
+        compressHapModeMultiple(utility);
+    }
+
+    private void compressCommonFile(Utility utility) throws BundleException {
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
 
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
@@ -487,13 +738,10 @@ public class Compressor {
             pathToFile(utility, utility.getPackInfoPath(), packInfoPath, false);
         }
 
-        if (!utility.getAssetsPath().isEmpty()) {
-            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
-        }
-
         if (!utility.getBinPath().isEmpty()) {
             pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
         }
+
         // pack --dir-list
         if (!utility.getFormatedDirList().isEmpty()) {
             for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
@@ -501,8 +749,6 @@ public class Compressor {
                 pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
             }
         }
-
-        compressHapModeMultiple(utility);
     }
 
     /**
@@ -512,17 +758,11 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private void compressHapModeForModule(Utility utility) throws BundleException {
-        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
-
-        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
+        compressCommonFile(utility);
 
         if (!utility.getIndexPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String assetsPath = NULL_DIR_NAME;
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
-        }
-
-        if (!utility.getLibPath().isEmpty()) {
-            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
         }
 
         if (!utility.getANPath().isEmpty()) {
@@ -533,25 +773,6 @@ public class Compressor {
             pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
         }
 
-        if (!utility.getFilePath().isEmpty()) {
-            pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
-        }
-
-        if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
-            String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
-                    + RESOURCES_DIR_NAME;
-            String deviceTypes = utility.getDeviceType().replace("\"", "").trim();
-            if (DEVICE_TYPE_FITNESSWATCH.equals(deviceTypes) ||
-                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(deviceTypes)) {
-                resPath = RES_DIR_NAME;
-            }
-            pathToFile(utility, utility.getResPath(), resPath, false);
-        }
-
-        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
-            String resourcesPath = RESOURCES_DIR_NAME;
-            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
-        }
         if (!utility.getJsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String jsPath = JS_PATH;
             pathToFile(utility, utility.getJsPath(), jsPath, false);
@@ -569,22 +790,6 @@ public class Compressor {
 
         if (!utility.getAssetsPath().isEmpty()) {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
-        }
-
-        if (!utility.getBinPath().isEmpty()) {
-            pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
-        }
-
-        if (!utility.getPackInfoPath().isEmpty()) {
-            pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
-        }
-
-        // pack --dir-list
-        if (!utility.getFormatedDirList().isEmpty()) {
-            for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
-                String baseDir = new File(utility.getFormatedDirList().get(i)).getName() + File.separator;
-                pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
-            }
         }
 
         compressHapModeMultiple(utility);
@@ -1106,9 +1311,10 @@ public class Compressor {
                     }
                     String moduleName = temp[temp.length - 4];
                     if (!isModelName(moduleName)) {
-                        LOG.error("Compressor::compressProcess compress pack.res failed, moduleName "
-                            + moduleName + " is error, please check it in config.json.");
-                        throw new BundleException("Compress pack.res failed, moduleName Error.");
+                        String errMessage = "Compressor::compressProcess compress pack.res failed, " +
+                                "please check the related configurations in module " + moduleName + ".";
+                        LOG.error(errMessage);
+                        throw new BundleException(errMessage);
                     }
                     String fileLanguageCountryName = temp[temp.length - 3];
                     if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
@@ -1571,8 +1777,8 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-            String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
-            if (CONFIG_JSON.equals(srcName) || MODULE_JSON.equals(srcName)) {
+            if (!entryName.contains(RAW_FILE_PATH) &&
+                    srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 jsonSpecialProcess(utility, srcFile, zipEntry);
                 return;
@@ -1739,14 +1945,19 @@ public class Compressor {
             inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
             bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.mark((int) srcFile.length() + 1);
-            // parse moduleName from config.json
-            parseModuleName(bufferedReader, utility);
             bufferedReader.reset();
             String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
-            if (CONFIG_JSON.equals(srcName)) {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.get();
+            String jsonName = new File(utility.getJsonPath()).getName().toLowerCase(Locale.ENGLISH);
+            if (CONFIG_JSON.equals(jsonName)) {
                 parseCompressNativeLibs(bufferedReader, utility);
-            } else if (MODULE_JSON.equals(srcName)) {
-                parseStageCompressNativeLibs(bufferedReader, utility);
+                utility.setModuleName(ModuleJsonUtil.parseFaModuleName(jsonString));
+            } else if (MODULE_JSON.equals(jsonName)) {
+                utility.setIsCompressNativeLibs(ModuleJsonUtil.stageIsCompressNativeLibs(jsonString));
+                utility.setModuleName(ModuleJsonUtil.parseStageModuleName(jsonString));
+            } else if (PATCH_JSON.equals(jsonName)) {
+                utility.setModuleName(ModuleJsonUtil.parsePatchModuleName(jsonString));
             }
             bufferedReader.reset();
             parseDeviceType(bufferedReader, utility);
@@ -1787,38 +1998,6 @@ public class Compressor {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(inputStreamReader);
             Utility.closeStream(fileInputStream);
-        }
-    }
-
-    /**
-     * Parse module name from config.json
-     *
-     * @param bufferedReader config.json buffered Reader
-     * @param utility        common data
-     * @throws BundleException IOException
-     */
-    private void parseModuleName(BufferedReader bufferedReader, Utility utility) throws BundleException {
-        String lineStr = null;
-        boolean isDistroStart = false;
-        try {
-            while ((lineStr = bufferedReader.readLine()) != null) {
-                if (!isDistroStart) {
-                    if (lineStr.contains(DISTRO)) {
-                        isDistroStart = true;
-                    }
-                    continue;
-                }
-                if (lineStr.contains(JSON_END)) {
-                    continue;
-                }
-                if (lineStr.contains(MODULE_NAME_NEW) || lineStr.contains(MODULE_NAME)) {
-                    getModuleNameFromString(lineStr, utility);
-                    break;
-                }
-            }
-        } catch (IOException exception) {
-            LOG.error("Compressor::parseModuleName io exception: " + exception.getMessage());
-            throw new BundleException("Parse module name failed.");
         }
     }
 
@@ -1939,22 +2118,6 @@ public class Compressor {
         }
     }
 
-    private void parseStageCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
-        StringBuffer buffer = new StringBuffer();
-        String lineString = null;
-        String jsonString = null;
-        try {
-            while ((lineString = bufferedReader.readLine()) != null) {
-                buffer.append(lineString.trim());
-            }
-            jsonString = buffer.toString();
-        } catch (IOException exception) {
-            LOG.error("Compressor::parseStageCompressNativeLibs io exception: " + exception.getMessage());
-            throw new BundleException("Parse compress native libs failed.");
-        }
-        utility.setIsCompressNativeLibs(ModuleJsonUtil.stageIsCompressNativeLibs(jsonString));
-    }
-
     private void parseCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
         String lineStr = null;
         try {
@@ -2030,7 +2193,7 @@ public class Compressor {
     }
 
     /**
-     * check hap is valid in haps when pack app, check type has bundleName,
+     * check hap and hsp is valid in haps when pack app, check type has bundleName,
      * vendor, version, apiVersion moduleName, packageName.
      *
      * @param fileLists is the list of hapPath.
@@ -2229,9 +2392,7 @@ public class Compressor {
     }
 
     private void compressHSPMode(Utility utility) throws BundleException {
-        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
-
-        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
+        compressCommonFile(utility);
 
         if (!utility.getIndexPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String assetsPath = NULL_DIR_NAME;
@@ -2246,26 +2407,14 @@ public class Compressor {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
         }
 
+        if (!utility.getAPPath().isEmpty()) {
+            pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
+        }
+
         if (!utility.getFilePath().isEmpty()) {
             pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
         }
 
-        if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
-            String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
-                    + RESOURCES_DIR_NAME;
-            if (DEVICE_TYPE_FITNESSWATCH.equals(
-                utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
-                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(
-                        utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
-                resPath = RES_DIR_NAME;
-            }
-            pathToFile(utility, utility.getResPath(), resPath, false);
-        }
-
-        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
-            String resourcesPath = RESOURCES_DIR_NAME;
-            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
-        }
         if (!utility.getJsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String jsPath = JS_PATH;
             pathToFile(utility, utility.getJsPath(), jsPath, false);
@@ -2285,10 +2434,6 @@ public class Compressor {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
         }
 
-        if (!utility.getBinPath().isEmpty()) {
-            pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
-        }
-
         if (!utility.getPackInfoPath().isEmpty()) {
             pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
         }
@@ -2296,7 +2441,7 @@ public class Compressor {
         compressHapModeMultiple(utility);
     }
 
-    private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) {
+    private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos.isEmpty()) {
             LOG.error("no module included");
             return false;
@@ -2307,21 +2452,6 @@ public class Compressor {
                 return true;
             }
         }
-
-        if (!ONE.equals(hapVerifyInfos.size())) {
-            LOG.error("Shared app only can contain one module.");
-            return false;
-        }
-        HapVerifyInfo sharedHspInfo = hapVerifyInfos.get(0);
-        if (!sharedHspInfo.getDependencyItemList().isEmpty()) {
-            LOG.error("Shared hsp cannot depend on other modules.");
-            return false;
-        }
-        String bundleType = sharedHspInfo.getBundleType();
-        if (TYPE_SHARED.equals(bundleType)) {
-            LOG.error("The input hsp is invalid for shared app.");
-            return false;
-        }
-        return true;
+        return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
     }
 }

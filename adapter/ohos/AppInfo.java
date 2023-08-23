@@ -80,19 +80,16 @@ public class AppInfo {
      * Indicates the debug of app AppJson.
      */
     public boolean debug = false;
+
     /**
      * Indicates the icon of app AppJson.
      */
     public String icon = "";
+
     /**
      * Indicates the label of app AppJson.
      */
     public String label = "";
-
-    /**
-     * Indicates the labels of app AppJson, for multilingual.
-     */
-    private HashMap<String, String> labels = new HashMap<>();
 
     /**
      * Indicates the description of app AppJson.
@@ -100,14 +97,10 @@ public class AppInfo {
     public String description = "";
 
     /**
-     * Indicates the descriptions of app AppJson, for multilingual.
-     */
-    private HashMap<String, String> descriptions = new HashMap<>();
-
-    /**
      * Indicates the minCompatibleVersionCode of app AppJson.
      */
     public int minCompatibleVersionCode = -1;
+
     /**
      * Indicates the distributedNotificationEnabled of app AppJson.
      */
@@ -117,6 +110,26 @@ public class AppInfo {
      * Indicates the type of bundle.
      */
     private String bundleType = "app";
+
+    /**
+     * Indicates the sdk version the app was compiled.
+     */
+    private String compileSdkVersion = "";
+
+    /**
+     * Indicates the sdk type the app was compiled.
+     */
+    private String compileSdkType = "";
+
+    /**
+     * Indicates the labels of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> labels = new HashMap<>();
+
+    /**
+     * Indicates the descriptions of app AppJson, for multilingual.
+     */
+    private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
      * Get shell version code.
@@ -212,5 +225,21 @@ public class AppInfo {
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
+    }
+
+    public String getCompileSdkVersion() {
+        return compileSdkVersion;
+    }
+
+    public void setCompileSdkVersion(String compileSdkVersion) {
+        this.compileSdkVersion = compileSdkVersion;
+    }
+
+    public String getCompileSdkType() {
+        return compileSdkType;
+    }
+
+    public void setCompileSdkType(String compileSdkType) {
+        this.compileSdkType = compileSdkType;
     }
 }

@@ -24,6 +24,7 @@
             "description",
             "src",
             "uiSyntax",
+            "isDynamic",
             "window",
             "colorMode",
             "formConfigAbility",
@@ -34,6 +35,7 @@
             "updateDuration",
             "defaultDimension",
             "supportDimensions",
+            "dataProxyEnabled",
             "metadata"
           ]
         },
@@ -43,6 +45,24 @@
           "supportDimensions",
           "defaultDimension",
           "updateEnabled"
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "uiSyntax": {
+                  "const": "hml"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "isDynamic": {
+                  "const": true
+                }
+              }
+            }
+          }
         ],
         "properties": {
           "name": {
@@ -108,6 +128,11 @@
             "type": "integer",
             "minimum": 0
           },
+          "dataProxyEnabled": {
+            "description": "Indicates whether the card supports data proxy refresh. The value is of the Boolean type. true indicates that the card supports data proxy refresh, and false indicates that the card does not support data proxy refresh.",
+            "type": "boolean",
+            "default": false
+          },
           "metadata": {
             "description": "Indicates the metadata of the form.",
             "type": "array",
@@ -163,6 +188,11 @@
               "hml",
               "arkts"
             ]
+          },
+          "isDynamic": {
+            "description": "This tag identifies whether the card is isDynamic.",
+            "type": "boolean",
+            "default": true
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
