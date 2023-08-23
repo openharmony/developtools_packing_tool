@@ -282,8 +282,8 @@ public class JsonUtil {
                 }
                 if (deviceTypes != null && !deviceTypes.isEmpty()) {
                     hapInfo.deviceType = JSONArray.parseArray(deviceTypes
-                        .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
-                        String.class);
+                                .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
+                            String.class);
                 }
                 break;
             }
@@ -301,7 +301,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static ProfileInfo parseProfileInfo(String harmonyProfileJsonString, byte[] data, String paclInfoJsonString,
-        String hapName) throws BundleException {
+                                        String hapName) throws BundleException {
         ProfileInfo profileInfo = new ProfileInfo();
         JSONObject jsonObject = JSONObject.parseObject(harmonyProfileJsonString);
         if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey("deviceConfig")
@@ -514,7 +514,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static Map<String, DeviceConfig> parseDeviceConfigInfo(JSONObject deviceConfigInfoJson,
-            List<String> deviceTypes) throws BundleException {
+                                                           List<String> deviceTypes) throws BundleException {
         Map<String, DeviceConfig> deviceConfigs = new HashMap<>();
         if (deviceConfigInfoJson == null) {
             return deviceConfigs;
@@ -547,7 +547,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static void getTargetDeviceConfig(Map<String, DeviceConfig> deviceConfigs, JSONObject deviceConfigInfoJson,
-            DeviceConfig defaultConfig, String targetDeviceType) throws BundleException {
+                                      DeviceConfig defaultConfig, String targetDeviceType) throws BundleException {
         if (deviceConfigInfoJson.containsKey(targetDeviceType)) {
             DeviceConfig deviceConfig = parseDeviceConfig(
                     deviceConfigInfoJson.getJSONObject(targetDeviceType), defaultConfig);
@@ -654,7 +654,7 @@ public class JsonUtil {
 
         if (hapJson.containsKey("deviceType")) {
             hapInfo.deviceType = JSONArray.parseArray(getJsonString(hapJson, "deviceType")
-                    .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
+                            .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
                     String.class);
         }
 
@@ -709,11 +709,6 @@ public class JsonUtil {
             return reqPermissions;
         }
         JSONArray reqPermissionObjs = hapJson.getJSONArray(REQ_PERMISSIONS);
-        return parseCommonReqPermission(reqPermissionObjs, data);
-    }
-
-    private static List<ReqPermission> parseCommonReqPermission(JSONArray reqPermissionObjs, byte[] data) {
-        List<ReqPermission> reqPermissions = new ArrayList<>();
         for (int i = 0; i < reqPermissionObjs.size(); ++i) {
             ReqPermission reqPermission = new ReqPermission();
             JSONObject requestPermission = reqPermissionObjs.getJSONObject(i);
@@ -1349,7 +1344,7 @@ public class JsonUtil {
         moduleAbilityInfo.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
         if (abilityJson.containsKey(PERMISSIONS)) {
             moduleAbilityInfo.permissions = JSONObject.parseArray(
-                getJsonString(abilityJson, PERMISSIONS), String.class);
+                    getJsonString(abilityJson, PERMISSIONS), String.class);
         }
         moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
         if (abilityJson.containsKey(EXPORTED)) {
@@ -1401,7 +1396,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static ModuleMetadataInfo parseModuleMetadata(JSONObject jsonObject, byte[] data,
-                                                          HashMap<String, String> profileJson) throws BundleException {
+                                                  HashMap<String, String> profileJson) throws BundleException {
         if (jsonObject == null) {
             LOG.error("JsonUtil::parseModuleMetadata exception: jsonObject is null.");
             throw new BundleException("Parse ModuleMetadataInfo failed, jsonObject is null.");
@@ -1438,8 +1433,8 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
-                if (FORM.equals(extensionAbilityInfo.type)) {
-                        for (AbilityFormInfo formInfo : formInfos) {
+            if (FORM.equals(extensionAbilityInfo.type)) {
+                for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
                 }
             }
@@ -1884,7 +1879,7 @@ public class JsonUtil {
         if (res != null && !res.isEmpty()) {
             return res;
         } else if (jsonObject.containsKey(key)) {
-           return getJsonString(jsonObject, key);
+            return getJsonString(jsonObject, key);
         } else {
             return "";
         }
@@ -1917,7 +1912,7 @@ public class JsonUtil {
         if (!iconPath.isEmpty()) {
             return iconPath;
         } else if (jsonObject.containsKey("icon")) {
-           return getJsonString(jsonObject, "icon");
+            return getJsonString(jsonObject, "icon");
         } else {
             return "";
         }
@@ -1935,8 +1930,21 @@ public class JsonUtil {
         if (!moduleJson.containsKey(REQUEST_PERMISSIONS)) {
             return reqPermissions;
         }
-        JSONArray reqPermissionObjs = moduleJson.getJSONArray(REQ_PERMISSIONS);
-        return parseCommonReqPermission(reqPermissionObjs, data);
+        JSONArray requestPermissionObjs = moduleJson.getJSONArray(REQUEST_PERMISSIONS);
+        for (int i = 0; i < requestPermissionObjs.size(); ++i) {
+            ReqPermission reqPermission = new ReqPermission();
+            JSONObject requestPermission = requestPermissionObjs.getJSONObject(i);
+            reqPermission.name = getJsonString(requestPermission, NAME);
+            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
+            if (requestPermission.containsKey(REASON_ID)) {
+                reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
+            }
+            if (requestPermission.containsKey(USED_SCENE)) {
+                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
+            }
+            reqPermissions.add(reqPermission);
+        }
+        return reqPermissions;
     }
 
     private static UsedScene parseModuleUsedScene(JSONObject usedSceneObj) {
