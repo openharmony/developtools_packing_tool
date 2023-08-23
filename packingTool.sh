@@ -127,3 +127,4 @@ if [ -f "${pack_jar_file}"]
 fi
 rm -rf ${temp_pack_jar_dir}
 rm -rf ${temp_dir}
+rm -rf "${root_path}/out"

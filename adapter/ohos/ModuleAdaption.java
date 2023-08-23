@@ -94,6 +94,8 @@ class ModuleAdaption {
         appInfo.appName = moduleAppInfo.appName;
         appInfo.appNameEN = moduleAppInfo.appNameEN;
         appInfo.setBundleType(moduleAppInfo.getBundleType());
+        appInfo.setCompileSdkType(moduleAppInfo.getCompileSdkType());
+        appInfo.setCompileSdkVersion(moduleAppInfo.getCompileSdkVersion());
         return appInfo;
     }
 

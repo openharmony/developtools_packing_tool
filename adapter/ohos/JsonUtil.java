@@ -153,6 +153,8 @@ public class JsonUtil {
     private static final String DEPENDENCY_BUNDLE_NAME = "bundleName";
     private static final String DEPENDENCY_MODULE_NAME = "moduleName";
     private static final String DEPENDENCIES = "dependencies";
+    private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
+    private static final String COMPILE_SDK_TYPE = "compileSdkType";
 
 
     /**
@@ -377,6 +379,8 @@ public class JsonUtil {
             appInfo.compatibleApiVersion = apiVersion.getIntValue("compatible");
             appInfo.targetApiVersion = apiVersion.getIntValue("target");
             appInfo.releaseType = getJsonString(apiVersion, "releaseType");
+            appInfo.setCompileSdkType(getJsonString(apiVersion, COMPILE_SDK_TYPE));
+            appInfo.setCompileSdkVersion(getJsonString(apiVersion, COMPILE_SDK_VERSION));
         }
         String labelRes = "";
         if (appJson.containsKey("labelId")) {
@@ -391,6 +395,12 @@ public class JsonUtil {
             appInfo.appNameEN = getJsonString(appJson, "label");
         }
         appInfo.setMultiFrameworkBundle(appJson.getBooleanValue(MULTI_FRAMEWORK_BUNDLE));
+        if (appJson.containsKey(COMPILE_SDK_TYPE)) {
+            appInfo.setCompileSdkType(appJson.getString(COMPILE_SDK_TYPE));
+        }
+        if (appJson.containsKey(COMPILE_SDK_VERSION)) {
+            appInfo.setCompileSdkVersion(appJson.getString(COMPILE_SDK_VERSION));
+        }
         return appInfo;
     }
 
@@ -434,7 +444,8 @@ public class JsonUtil {
                 getJsonBooleanValue(appJson, DISTRIBUTED_NOTIFICATION_ENABLED, false);
         moduleAppInfo.entityType = getJsonString(appJson, ENTITY_TYPE, UNSPECIFIED);
         moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
-
+        moduleAppInfo.setCompileSdkType(getJsonString(appJson, COMPILE_SDK_TYPE, EMPTY));
+        moduleAppInfo.setCompileSdkVersion(getJsonString(appJson, COMPILE_SDK_VERSION, EMPTY));
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
@@ -698,6 +709,11 @@ public class JsonUtil {
             return reqPermissions;
         }
         JSONArray reqPermissionObjs = hapJson.getJSONArray(REQ_PERMISSIONS);
+        return parseCommonReqPermission(reqPermissionObjs, data);
+    }
+
+    private static List<ReqPermission> parseCommonReqPermission(JSONArray reqPermissionObjs, byte[] data) {
+        List<ReqPermission> reqPermissions = new ArrayList<>();
         for (int i = 0; i < reqPermissionObjs.size(); ++i) {
             ReqPermission reqPermission = new ReqPermission();
             JSONObject requestPermission = reqPermissionObjs.getJSONObject(i);
@@ -1919,21 +1935,8 @@ public class JsonUtil {
         if (!moduleJson.containsKey(REQUEST_PERMISSIONS)) {
             return reqPermissions;
         }
-        JSONArray requestPermissionObjs = moduleJson.getJSONArray(REQUEST_PERMISSIONS);
-        for (int i = 0; i < requestPermissionObjs.size(); ++i) {
-            ReqPermission reqPermission = new ReqPermission();
-            JSONObject requestPermission = requestPermissionObjs.getJSONObject(i);
-            reqPermission.name = getJsonString(requestPermission, NAME);
-            reqPermission.reason = parseResourceByKey(requestPermission, data, REASON, REASON_ID);
-            if (requestPermission.containsKey(REASON_ID)) {
-                reqPermission.setReasons(parseResourceMapByKey(requestPermission, data, REASON_ID));
-            }
-            if (requestPermission.containsKey(USED_SCENE)) {
-                reqPermission.usedScene = parseModuleUsedScene(requestPermission.getJSONObject(USED_SCENE));
-            }
-            reqPermissions.add(reqPermission);
-        }
-        return reqPermissions;
+        JSONArray reqPermissionObjs = moduleJson.getJSONArray(REQ_PERMISSIONS);
+        return parseCommonReqPermission(reqPermissionObjs, data);
     }
 
     private static UsedScene parseModuleUsedScene(JSONObject usedSceneObj) {

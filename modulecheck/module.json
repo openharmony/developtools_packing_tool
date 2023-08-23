@@ -41,7 +41,8 @@
                 "installationFree",
                 "atomicService",
                 "targetModuleName",
-                "targetPriority"
+                "targetPriority",
+                "generateBuildHash"
               ]
             },
             "required": [
@@ -125,7 +126,9 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "atomicService",
-                "proxyDatas"
+                "generateBuildHash",
+                "isolationMode",
+                "proxyData"
               ]
             },
             "required": [
@@ -170,7 +173,9 @@
                 "libIsolation",
                 "compressNativeLibs",
                 "atomicService",
-                "proxyDatas"
+                "generateBuildHash",
+                "isolationMode",
+                "proxyData"
               ]
             },
             "required": [
@@ -186,7 +191,7 @@
         "name": {
           "description": "Indicates the module name.",
           "type": "string",
-          "pattern": "[^\u4e00-\u9fa5]+",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
           "maxLength": 31
         },
         "type": {
@@ -265,7 +270,7 @@
             "ets",
             "hml"
           ],
-        "default": "hml"
+          "default": "hml"
         },
         "pages": {
           "description": "Used to list the information of each page in JS Component.",
@@ -358,7 +363,8 @@
                 "maxWindowHeight",
                 "minWindowHeight",
                 "excludeFromMissions",
-                "recoverable"
+                "recoverable",
+                "unclearableMission"
               ]
             },
             "properties": {
@@ -371,7 +377,7 @@
               "name": {
                 "description": "Indicates the name of the ability.",
                 "type": "string",
-                "pattern": "[^\u4e00-\u9fa5]+",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
                 "maxLength": 127
               },
               "srcEntrance": {
@@ -676,6 +682,11 @@
                 "description": "Specifies whether to support recover UI interface",
                 "type": "boolean",
                 "default": false
+              },
+              "unclearableMission": {
+                "description": "Specify whether it is a task that cannot be deleted",
+                "type": "boolean",
+                "default": false
               }
             }
           }
@@ -759,6 +770,7 @@
               },
               "name": {
                 "description": "Indicates the name of the extension.",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
                 "type": "string",
                 "maxLength": 127
               },
@@ -808,8 +820,23 @@
                   "thumbnail",
                   "preview",
                   "print",
+                  "share",
                   "push",
-                  "driver"
+                  "driver",
+                  "action",
+                  "appAccountAuthorization",
+                  "sysDialog/userAuth",
+                  "sysDialog/common",
+                  "sysPicker/mediaControl",
+                  "sysDialog/atomicServicePanel",
+                  "sysDialog/power",
+                  "sysPicker/share",
+                  "hms/account",
+                  "sysDialog/meetimeCall",
+                  "sysDialog/meetimeContact",
+                  "sysDialog/meetimeMessage",
+                  "sysPicker/meetimeContact",
+                  "sysPicker/meetimeCallLog"
                 ]
               },
               "permissions": {
@@ -1223,7 +1250,23 @@
           "minimum": 1,
           "maximum": 100
         },
-        "proxyDatas": {
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
+        },
+        "isolationMode": {
+          "description": "Indicates the module process isolation mode.",
+          "type": "string",
+          "enum": [
+            "isolationOnly",
+            "nonisolationOnly",
+            "isolationFirst",
+            "nonisolationFirst"
+          ],
+          "default": "nonisolationFirst"
+        },
+        "proxyData": {
           "description": "Indicates all the proxy data of the module.",
           "type": "array",
           "items": {
@@ -1243,16 +1286,16 @@
               "uri": {
                 "description": "Indicates the uri of the data proxy.",
                 "type": "string",
-                "pattern": "^datashareproxy: \\/\\/",
+                "pattern": "^datashareproxy:",
                 "maxLength": 255
               },
               "requiredReadPermission": {
-                "description": "Indicates the permission required to read data.",
+                "description": "Indicates the permission required to read data from the proxy.",
                 "type": "string",
                 "maxLength": 255
               },
               "requiredWritePermission": {
-                "description": "Indicates the permission required to write data.",
+                "description": "Indicates the permission required to write data to the proxy.",
                 "type": "string",
                 "maxLength": 255
               },
