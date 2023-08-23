@@ -1355,8 +1355,8 @@ public class Compressor {
                     String fileLanguageCountryName = temp[temp.length - 3];
                     if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
                         LOG.error("Compressor::compressProcess compress failed third level directory name: "
-                                + fileLanguageCountryName + " is invalid, please check it with reference to this example: "
-                                + "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.");
+                            + fileLanguageCountryName + " is invalid, please check it with reference to this example: "
+                            + "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.");
                         throw new BundleException("Compress failed third level directory name Error.");
                     }
                     String filePicturingName = temp[temp.length - 1];

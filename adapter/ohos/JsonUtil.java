@@ -282,7 +282,7 @@ public class JsonUtil {
                 }
                 if (deviceTypes != null && !deviceTypes.isEmpty()) {
                     hapInfo.deviceType = JSONArray.parseArray(deviceTypes
-                                    .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
+                                .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
                             String.class);
                 }
                 break;
