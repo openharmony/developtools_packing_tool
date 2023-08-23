@@ -836,7 +836,8 @@
                   "sysDialog/meetimeContact",
                   "sysDialog/meetimeMessage",
                   "sysPicker/meetimeContact",
-                  "sysPicker/meetimeCallLog"
+                  "sysPicker/meetimeCallLog",
+                  "ads"
                 ]
               },
               "permissions": {
