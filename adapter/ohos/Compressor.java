@@ -476,12 +476,12 @@ public class Compressor {
 
         try (InputStream inStream = new FileInputStream(jsonPath);
              FileOutputStream fs = new FileOutputStream(tempPath)) {
-                byte[] buffer = new byte[BUFFER_WRITE_SIZE];
-                int byteread;
-                while ((byteread = inStream.read(buffer)) != -1) {
-                    fs.write(buffer, 0, byteread);
-                }
-                utility.setJsonPath(tempPath);
+            byte[] buffer = new byte[BUFFER_WRITE_SIZE];
+            int byteread;
+            while ((byteread = inStream.read(buffer)) != -1) {
+                fs.write(buffer, 0, byteread);
+            }
+            utility.setJsonPath(tempPath);
         } catch (IOException e) {
             LOG.error("Compressor::copyFileToTempDir failed, IOException: " + e.getMessage());
             throw new BundleException("Compressor::copyFileToTempDir failed.");
@@ -684,30 +684,14 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private void compressHapMode(Utility utility) throws BundleException {
-        compressCommonFile(utility);
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
 
-        if (!utility.getResourcesPath().isEmpty() && !utility.getModuleName().isEmpty()) {
-            String resourcesPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
-                    + RESOURCES_DIR_NAME;
-            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
-        }
+        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
 
         if (!utility.getIndexPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String assetsPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR;
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
         }
-
-        if (!utility.getAssetsPath().isEmpty()) {
-            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
-        }
-
-        compressHapModeMultiple(utility);
-    }
-
-    private void compressCommonFile(Utility utility) throws BundleException {
-        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
-
-        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
 
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
@@ -728,6 +712,12 @@ public class Compressor {
             pathToFile(utility, utility.getResPath(), resPath, false);
         }
 
+        if (!utility.getResourcesPath().isEmpty() && !utility.getModuleName().isEmpty()) {
+            String resourcesPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
+
         if (!utility.getRpcidPath().isEmpty()) {
             String rpcidPath = NULL_DIR_NAME;
             pathToFile(utility, utility.getRpcidPath(), rpcidPath, false);
@@ -738,10 +728,13 @@ public class Compressor {
             pathToFile(utility, utility.getPackInfoPath(), packInfoPath, false);
         }
 
+        if (!utility.getAssetsPath().isEmpty()) {
+            pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
+        }
+
         if (!utility.getBinPath().isEmpty()) {
             pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
         }
-
         // pack --dir-list
         if (!utility.getFormatedDirList().isEmpty()) {
             for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
@@ -749,6 +742,8 @@ public class Compressor {
                 pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
             }
         }
+
+        compressHapModeMultiple(utility);
     }
 
     /**
@@ -758,11 +753,17 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private void compressHapModeForModule(Utility utility) throws BundleException {
-        compressCommonFile(utility);
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
 
         if (!utility.getIndexPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String assetsPath = NULL_DIR_NAME;
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
+        }
+
+        if (!utility.getLibPath().isEmpty()) {
+            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
         }
 
         if (!utility.getANPath().isEmpty()) {
@@ -773,6 +774,25 @@ public class Compressor {
             pathToFile(utility, utility.getAPPath(), AP_PATH_NAME, false);
         }
 
+        if (!utility.getFilePath().isEmpty()) {
+            pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
+            String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + RESOURCES_DIR_NAME;
+            String deviceTypes = utility.getDeviceType().replace("\"", "").trim();
+            if (DEVICE_TYPE_FITNESSWATCH.equals(deviceTypes) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(deviceTypes)) {
+                resPath = RES_DIR_NAME;
+            }
+            pathToFile(utility, utility.getResPath(), resPath, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String resourcesPath = RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
         if (!utility.getJsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String jsPath = JS_PATH;
             pathToFile(utility, utility.getJsPath(), jsPath, false);
@@ -792,9 +812,20 @@ public class Compressor {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
         }
 
-        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
-            String resourcesPath = RESOURCES_DIR_NAME;
-            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        if (!utility.getBinPath().isEmpty()) {
+            pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getPackInfoPath().isEmpty()) {
+            pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        }
+
+        // pack --dir-list
+        if (!utility.getFormatedDirList().isEmpty()) {
+            for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
+                String baseDir = new File(utility.getFormatedDirList().get(i)).getName() + File.separator;
+                pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
+            }
         }
 
         compressHapModeMultiple(utility);
@@ -1032,7 +1063,7 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private static String disposeApp(Utility utility, List<String> seletedHaps,
-        String tempDir) throws BundleException {
+                                     String tempDir) throws BundleException {
         // dispose app conflict
         if (utility.getFormattedAppList().isEmpty()) {
             return "";
@@ -1091,7 +1122,7 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private static void copyHapAndHspFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
-        String tempDir) throws BundleException {
+                                             String tempDir) throws BundleException {
         ZipInputStream zipInput = null;
         ZipFile zipFile = null;
         OutputStream outputStream = null;
@@ -1166,7 +1197,7 @@ public class Compressor {
      * @throws BundleException FileNotFoundException|IOException.
      */
     private static String disposeHap(Utility utility, List<String> seletedHaps, String tempDir,
-                                   String finalPackInfoStr) throws BundleException, IOException {
+                                     String finalPackInfoStr) throws BundleException, IOException {
         // dispose hap conflict
         if (utility.getFormattedHapList().isEmpty()) {
             return finalPackInfoStr;
@@ -1311,7 +1342,7 @@ public class Compressor {
                     String[] temp = fName.replace("\\", "/").split("/");
                     if (temp.length < 4) {
                         LOG.error("Compressor::compressPackResMode the hap file path is invalid, length: "
-                            + temp.length + ".");
+                                + temp.length + ".");
                         continue;
                     }
                     String moduleName = temp[temp.length - 4];
@@ -1324,22 +1355,22 @@ public class Compressor {
                     String fileLanguageCountryName = temp[temp.length - 3];
                     if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
                         LOG.error("Compressor::compressProcess compress failed third level directory name: "
-                            + fileLanguageCountryName + " is invalid, please check it with reference to this example: "
-                            + "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.");
+                                + fileLanguageCountryName + " is invalid, please check it with reference to this example: "
+                                + "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.");
                         throw new BundleException("Compress failed third level directory name Error.");
                     }
                     String filePicturingName = temp[temp.length - 1];
                     if (!isPicturing(filePicturingName, utility)) {
                         LOG.error("Compressor::compressProcess Compress pack.res failed, Invalid resource file" +
-                            " name: " + filePicturingName + ", correct format example is formName-2x2.png.");
+                                " name: " + filePicturingName + ", correct format example is formName-2x2.png.");
                         throw new BundleException("Compress pack.res failed, Invalid resource file name: "
-                            + filePicturingName + ", correct format example is formName-2x2.png.");
+                                + filePicturingName + ", correct format example is formName-2x2.png.");
                     }
 
                 } else {
                     LOG.error("Compressor::compressProcess compress failed No image in PNG format is found.");
                     throw new BundleException("Compress pack.res failed, compress failed No image in"
-                        + " PNG format is found.");
+                            + " PNG format is found.");
                 }
             }
             pathToFile(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
@@ -1450,7 +1481,7 @@ public class Compressor {
     private boolean checkOrientation(String orientation) {
         if (!Pattern.compile(REGEX_ORIENTATION).matcher(orientation).matches()) {
             LOG.error("Compressor::compressProcess orientation " + orientation +
-                " is not in {vertical, horizontal} list.");
+                    " is not in {vertical, horizontal} list.");
             return false;
         }
         return true;
@@ -1485,7 +1516,7 @@ public class Compressor {
 
     private boolean checkColorModeOrShape(String tmp) {
         if (Pattern.compile(REGEX_COLOR_MODE).matcher(tmp).matches() ||
-            Pattern.compile(REGEX_SHAPE).matcher(tmp).matches()) {
+                Pattern.compile(REGEX_SHAPE).matcher(tmp).matches()) {
             return true;
         }
         LOG.error("Compressor::compressProcess " + tmp +
@@ -1525,13 +1556,13 @@ public class Compressor {
         String formName = name.substring(0, delimiterIndex);
         if (!utility.getFormNameList().contains(formName)) {
             LOG.error("isPicturing: the name is not same as formName, name: " + formName + " is not in " +
-                utility.getFormNameList().toString() + ".");
+                    utility.getFormNameList().toString() + ".");
             return false;
         }
         String dimension = name.substring(delimiterIndex + 1, name.lastIndexOf("."));
         if (!supportDimensionsList.contains(dimension)) {
             LOG.error("isPicturing: the dimension: " + dimension + " is invalid, is not in the following list: "
-                + "{1X2, 2X2, 2X4, 4X4}.");
+                    + "{1X2, 2X2, 2X4, 4X4}.");
             return false;
         }
         return true;
@@ -1558,9 +1589,9 @@ public class Compressor {
                     String snapshotDirectoryName = f.getParentFile().getName();
                     if (!ENTRYCARD_SNAPSHOT_NAME.equals(snapshotDirectoryName)) {
                         LOG.error("The level-4 directory of EntryCard must be named as snapshot" +
-                            ", but current is: " + snapshotDirectoryName + ".");
+                                ", but current is: " + snapshotDirectoryName + ".");
                         throw new BundleException("The level-4 directory of EntryCard must be named as snapshot" +
-                            ", but current is: " + snapshotDirectoryName + ".");
+                                ", but current is: " + snapshotDirectoryName + ".");
                     }
                     checkContain2x2EntryCard(f.getParentFile());
                     fileNameList.add(f.getCanonicalPath());
@@ -1594,9 +1625,9 @@ public class Compressor {
         }
         mIsContain2x2EntryCard = false;
         LOG.error("checkContain2x2EntryCard: must contain 2x2 entryCard, please check it in "
-            + snapshotDirectory.getCanonicalPath() + ".");
+                + snapshotDirectory.getCanonicalPath() + ".");
         throw new BundleException("checkContain2x2EntryCard: must contain 2x2 entryCard, please check it in "
-            + snapshotDirectory.getCanonicalPath() + ".");
+                + snapshotDirectory.getCanonicalPath() + ".");
     }
 
     /**
@@ -1666,7 +1697,7 @@ public class Compressor {
      * @param KeepDirStructure Empty File
      */
     private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name,
-                                boolean KeepDirStructure) {
+                          boolean KeepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
@@ -2397,7 +2428,9 @@ public class Compressor {
     }
 
     private void compressHSPMode(Utility utility) throws BundleException {
-        compressCommonFile(utility);
+        pathToFile(utility, utility.getJsonPath(), NULL_DIR_NAME, false);
+
+        pathToFile(utility, utility.getProfilePath(), NULL_DIR_NAME, false);
 
         if (!utility.getIndexPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String assetsPath = NULL_DIR_NAME;
@@ -2420,6 +2453,22 @@ public class Compressor {
             pathToFile(utility, utility.getFilePath(), NULL_DIR_NAME, false);
         }
 
+        if (!utility.getResPath().isEmpty() && !utility.getModuleName().isEmpty()) {
+            String resPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + RESOURCES_DIR_NAME;
+            if (DEVICE_TYPE_FITNESSWATCH.equals(
+                    utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim()) ||
+                    DEVICE_TYPE_FITNESSWATCH_NEW.equals(
+                            utility.getDeviceType().replace(SEMICOLON, EMPTY_STRING).trim())) {
+                resPath = RES_DIR_NAME;
+            }
+            pathToFile(utility, utility.getResPath(), resPath, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String resourcesPath = RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
         if (!utility.getJsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String jsPath = JS_PATH;
             pathToFile(utility, utility.getJsPath(), jsPath, false);
@@ -2439,13 +2488,20 @@ public class Compressor {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
         }
 
+        if (!utility.getBinPath().isEmpty()) {
+            pathToFile(utility, utility.getBinPath(), NULL_DIR_NAME, false);
+        }
+
         if (!utility.getPackInfoPath().isEmpty()) {
             pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
         }
 
-        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
-            String resourcesPath = RESOURCES_DIR_NAME;
-            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        // pack --dir-list
+        if (!utility.getFormatedDirList().isEmpty()) {
+            for (int i = 0; i < utility.getFormatedDirList().size(); ++i) {
+                String baseDir = new File(utility.getFormatedDirList().get(i)).getName() + File.separator;
+                pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
+            }
         }
 
         compressHapModeMultiple(utility);
