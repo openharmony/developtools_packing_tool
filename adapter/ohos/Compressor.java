@@ -686,6 +686,12 @@ public class Compressor {
     private void compressHapMode(Utility utility) throws BundleException {
         compressCommonFile(utility);
 
+        if (!utility.getResourcesPath().isEmpty() && !utility.getModuleName().isEmpty()) {
+            String resourcesPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
+        }
+
         if (!utility.getIndexPath().isEmpty() && !utility.getModuleName().isEmpty()) {
             String assetsPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR;
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
@@ -720,12 +726,6 @@ public class Compressor {
                 resPath = RES_DIR_NAME;
             }
             pathToFile(utility, utility.getResPath(), resPath, false);
-        }
-
-        if (!utility.getResourcesPath().isEmpty() && !utility.getModuleName().isEmpty()) {
-            String resourcesPath = ASSETS_DIR_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
-                    + RESOURCES_DIR_NAME;
-            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
         }
 
         if (!utility.getRpcidPath().isEmpty()) {
@@ -790,6 +790,11 @@ public class Compressor {
 
         if (!utility.getAssetsPath().isEmpty()) {
             pathToFile(utility, utility.getAssetsPath(), ASSETS_DIR_NAME, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String resourcesPath = RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
         }
 
         compressHapModeMultiple(utility);
@@ -2436,6 +2441,11 @@ public class Compressor {
 
         if (!utility.getPackInfoPath().isEmpty()) {
             pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        }
+
+        if (!utility.getResourcesPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String resourcesPath = RESOURCES_DIR_NAME;
+            pathToFile(utility, utility.getResourcesPath(), resourcesPath, false);
         }
 
         compressHapModeMultiple(utility);
