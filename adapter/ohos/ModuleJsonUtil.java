@@ -144,7 +144,6 @@ class ModuleJsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     public static Version parseFaVersion(String jsonString) throws BundleException {
-        Version version = new Version();
         JSONObject jsonObject;
         try {
             jsonObject = JSON.parseObject(jsonString);
@@ -163,6 +162,7 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
             throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
         }
+        Version version = new Version();
         if (versionObj.containsKey(CODE) && versionObj.containsKey(NAME)) {
             version.versionName = versionObj.getString(NAME);
             version.versionCode = versionObj.getIntValue(CODE);
@@ -795,7 +795,7 @@ class ModuleJsonUtil {
         if (finalModules == null || srcModules == null) {
             LOG.error("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
             throw new
-                    BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
+                BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
         }
         boolean findModule = false;
         for (int index = 0; index < srcModules.size(); ++index) {
