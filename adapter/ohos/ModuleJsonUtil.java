@@ -66,6 +66,7 @@ class ModuleJsonUtil {
     private static final String VALUE = "value";
     private static final String JSON_PERFIX = ".json";
     private static final String DISTRO_FILTER = "distroFilter";
+    private static final String DISTRIBUTION_FILTER = "distributionFilter";
     private static final String DEPENDENCIES = "dependencies";
     private static final String EXTENSION_ABILITIES = "extensionAbilities";
     private static final String INSTALLATION_FREE = "installationFree";
@@ -556,7 +557,8 @@ class ModuleJsonUtil {
             }
             if (!distroObj.containsKey(MODULE_NAME)) {
                 LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
-                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed:" +
+                        "json file do not contain moduleName.");
             }
             moduleName = distroObj.getString(MODULE_NAME);
         } catch (BundleException e) {
@@ -890,26 +892,22 @@ class ModuleJsonUtil {
      * @param moduleMetadataInfos all metadata of module
      * @return DistroFilter is the result of parsed distroFilter
      */
-    public static DistroFilter parseStageDistroFilter(
-            List<ModuleMetadataInfo> moduleMetadataInfos) throws BundleException {
-        DistroFilter distroFilter = new DistroFilter();
+    public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
+        DistroFilter distro = new DistroFilter();
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
-            if (moduleMetadataInfo.resource.isEmpty()) {
+            String resource = moduleMetadataInfo.resource;
+            if (resource.isEmpty()) {
                 continue;
             }
-            try {
-                JSONObject distroFilterObj = JSON.parseObject(moduleMetadataInfo.resource);
-                if (distroFilterObj.containsKey(DISTRO_FILTER)) {
-                    distroFilter = JSONObject.parseObject(getJsonString(distroFilterObj,
-                            DISTRO_FILTER), DistroFilter.class);
-                }
-            } catch (JSONException exception) {
-                String errMsg = "parse JSONobject failed.";
-                LOG.error(errMsg);
-                throw new BundleException(errMsg);
+            JSONObject distroFilter = JSONObject.parseObject(resource);
+            if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+            }
+            if (distroFilter.containsKey(DISTRO_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
         }
-        return distroFilter;
+        return distro;
     }
 
     /**
