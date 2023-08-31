@@ -1168,10 +1168,8 @@ public class JsonUtil {
      *
      * @param moduleMetadataInfos metedata in moduleInfo
      * @return the parse result
-     * @throws BundleException Throws this exception if the json is not standard.
      */
-    static DistroFilter parseModuleDistrofilterFromMetadata(
-            List<ModuleMetadataInfo> moduleMetadataInfos) throws BundleException {
+    static DistroFilter parseModuleDistrofilterFromMetadata(List<ModuleMetadataInfo> moduleMetadataInfos) {
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String resource = moduleMetadataInfo.resource;
             if (resource.isEmpty()) {
