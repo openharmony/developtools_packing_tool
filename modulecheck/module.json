@@ -1004,7 +1004,7 @@
                     "resource": {
                       "description": "Indicates the resource of a data element.",
                       "type": "string",
-                      "pattern": "^[$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                      "pattern": "^([$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+)|(^(\/[\\w-]+)+(.[a-z]+)?)$",
                       "maxLength": 255
                     }
                   }
