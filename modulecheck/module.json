@@ -837,7 +837,8 @@
                   "sysDialog/meetimeMessage",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
-                  "ads"
+                  "ads",
+                  "sys/commonUI"
                 ]
               },
               "permissions": {
