@@ -105,10 +105,29 @@ public class CompressVerify {
                 return isVerifyValidInAPPQFMode(utility);
             case Utility.MODE_HSP:
                 return isVerifyValidInHspMode(utility);
+            case Utility.VERSION_NORMALIZE:
+                return validateVersionNormalizeMode(utility);
             default:
                 LOG.error("CompressVerify::commandVerify mode is invalid.");
                 return false;
         }
+    }
+
+    private static boolean validateVersionNormalizeMode(Utility utility) {
+        if (!utility.getHapList().isEmpty()) {
+            if (!compatibleProcess(utility, utility.getHapList(), utility.getFormattedHapList(), HAP_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hap-list is invalid.");
+                return false;
+            }
+        }
+
+        if (!utility.getHspList().isEmpty()) {
+            if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
+                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hsp-list is invalid.");
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isValidRpcid(Utility utility) {

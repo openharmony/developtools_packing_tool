@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -117,6 +119,7 @@ public class Compressor {
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String RAW_FILE_PATH = "resources/rawfile";
+    private static final String VERSION_CODE = "versionCode";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -250,6 +253,15 @@ public class Compressor {
      */
     public boolean compressProcess(Utility utility) {
         boolean compressResult = true;
+
+        if (Utility.VERSION_NORMALIZE.equals(utility.getMode())) {
+            try {
+                versionNormalize(utility);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
         File destFile = new File(utility.getOutPath());
 
         // if out file directory not exist, mkdirs.
@@ -313,6 +325,8 @@ public class Compressor {
             case Utility.MODE_HSP:
                 compressHsp(utility);
                 break;
+            case Utility.VERSION_NORMALIZE:
+                versionNormalize(utility);
             default:
                 compressPackResMode(utility);
         }
@@ -2519,5 +2533,111 @@ public class Compressor {
             }
         }
         return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
+    }
+
+    private static void versionNormalize(Utility utility) throws BundleException {
+        // 创建根目录
+        try {
+            String tempRootPath = utility.getOutPath() + File.separator + TEMP_DIR;
+//            mkdir(new File(tempRootPath));
+            Path tempDir = Files.createTempDirectory(Path.of(utility.getOutPath()), "temp");
+            for (String hapPath : utility.getFormattedHapList()) {
+                try {
+                    UncompressEntrance.unpackHap(hapPath, tempDir.toAbsolutePath().toString(), false);
+//                    extractHap(hapPath, tempDir);
+                    String moduleJsonPath = tempDir.resolve("module.json").toString();
+                    int version = getVersionAndModifyJson(moduleJsonPath, utility.getVersionCode());
+
+//                    String modifiedHapPath = hapPath.replace(".hap", "_modified.hap");
+                    String modifiedHapPath = Path.of(utility.getOutPath()) +
+                            LINUX_FILE_SEPARATOR + Path.of(hapPath).getFileName().toString();
+
+                    compressToHap(tempDir, modifiedHapPath);
+                } finally {
+
+                    System.out.println(tempDir);
+                    deleteDirectory(tempDir.toFile());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 遍历hap
+        // 根据hap和hsp名称+时间戳创建临时目录
+        // 解压到临时目录
+        // 获取每个hap的版本号，并判断、记录
+        // 更新module.json
+        // 重新打成hap、hsp
+    }
+
+    public static int getVersionAndModifyJson(String jsonFilePath, int versionCode) throws BundleException {
+        // Your logic for modifying the JSON file (e.g., using a JSON library)
+        // For demonstration purposes, let's assume we replace the content with a new JSON string
+        BufferedWriter bw = null;
+        FileInputStream jsonStream = null;
+        try {
+            jsonStream = new FileInputStream(jsonFilePath);
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (!jsonObject.containsKey(APP)) {
+                return -1;
+            }
+            JSONObject appObject = jsonObject.getJSONObject(APP);
+            if (!appObject.containsKey(VERSION_CODE)) {
+                return -1;
+            }
+            int originVersion = appObject.getIntValue(VERSION_CODE);
+            appObject.put(VERSION_CODE, versionCode);
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue,SerializerFeature.WriteDateUseDateFormat);
+            bw = new BufferedWriter(new FileWriter(jsonFilePath));
+
+            bw.write(pretty);
+            return originVersion;
+//            Files.write(Paths.get(jsonFilePath), newJsonContent.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    jsonStream.close();
+                    bw.flush();
+                    bw.close();
+                } catch (IOException e) {
+                    LOG.error("Compressor::setGenerateBuildHash failed for IOException " + e.getMessage());
+                    throw new BundleException("Compressor::setGenerateBuildHash failed.");
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static void compressToHap(Path sourceDir, String zipFilePath) throws IOException {
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
+            Files.walk(sourceDir)
+                    .filter(path -> !Files.isDirectory(path))
+                    .forEach(path -> {
+                        String relativePath = sourceDir.relativize(path).toString();
+                        ZipEntry zipEntry = new ZipEntry(relativePath);
+                        try {
+                            zipOutputStream.putNextEntry(zipEntry);
+                            Files.copy(path, zipOutputStream);
+                            zipOutputStream.closeEntry();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+    }
+
+    public static void deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            File[] children = dir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    deleteDirectory(child);
+                }
+            }
+        }
+        dir.delete();
     }
 }

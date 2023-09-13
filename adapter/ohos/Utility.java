@@ -35,6 +35,7 @@ public class Utility {
     static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
     static final String MODE_HSP = "hsp";
+    static final String VERSION_NORMALIZE = "versionNormalize";
     static final String FALSE_STRING = "false";
 
     private static final String CMD_PREFIX = "--";
