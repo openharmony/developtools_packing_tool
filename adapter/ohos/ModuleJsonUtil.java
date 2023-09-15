@@ -1112,7 +1112,6 @@ class ModuleJsonUtil {
     }
 
     static String parseStageBundleType(String jsonString) throws BundleException {
-        JSONObject appObj = getAppObj(jsonString);
         JSONObject moduleObj = getModuleObj(jsonString);
         String moduleName = parseStageModuleName(jsonString);
         if (!moduleObj.containsKey(TYPE)) {
@@ -1127,6 +1126,7 @@ class ModuleJsonUtil {
             isShared = true;
         }
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
+        JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
                 String errMessage = "The app.json5 file configuration does not match the installationFree:" +
