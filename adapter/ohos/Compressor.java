@@ -291,7 +291,7 @@ public class Compressor {
         if (Utility.VERSION_NORMALIZE.equals(utility.getMode())) {
             try {
                 versionNormalize(utility);
-            } catch (Exception e) {
+            } catch (BundleException e) {
                 e.printStackTrace();
             }
             return true;
@@ -1745,7 +1745,7 @@ public class Compressor {
      * @param KeepDirStructure Empty File
      */
     private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name,
-                          boolean KeepDirStructure) {
+                                 boolean KeepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
@@ -1879,60 +1879,6 @@ public class Compressor {
 
                 // update crc
                 CRC32 crc = getCrcFromFile(utility, srcFile);
-                zipEntry.setCrc(crc.getValue());
-            }
-
-            // update fileTime
-            FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastAccessTime(fileTime);
-            zipEntry.setLastModifiedTime(fileTime);
-
-            zipOut.putNextEntry(zipEntry);
-            byte[] data = new byte[BUFFER_SIZE];
-            fileInputStream = new FileInputStream(srcFile);
-            bufferedInputStream = new BufferedInputStream(fileInputStream);
-
-            int count = bufferedInputStream.read(data);
-            while (count > 0) {
-                zipOut.write(data, 0, count);
-                count = bufferedInputStream.read(data);
-            }
-        } catch (FileNotFoundException ignored) {
-            throw new BundleException("CoompressFile failed.");
-        } catch (IOException exception) {
-            LOG.error("Compressor::compressFile io exception: " + exception.getMessage());
-            throw new BundleException("CoompressFile failed.");
-        } finally {
-            Utility.closeStream(bufferedInputStream);
-            Utility.closeStream(fileInputStream);
-        }
-    }
-
-    private void compressFileByPath(File srcFile, String baseDir, boolean isCompression)
-            throws BundleException {
-        BufferedInputStream bufferedInputStream = null;
-        FileInputStream fileInputStream = null;
-        try {
-            String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
-            ZipEntry zipEntry = new ZipEntry(entryName);
-//            if (!entryName.contains(RAW_FILE_PATH) &&
-//                    srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
-//                zipEntry.setMethod(ZipEntry.STORED);
-//                jsonSpecialProcess(utility, srcFile, zipEntry);
-//                return;
-//            }
-
-            if (isCompression) {
-                zipEntry.setMethod(ZipEntry.DEFLATED);
-            } else {
-                zipEntry.setMethod(ZipEntry.STORED);
-
-                // update size
-                zipEntry.setCompressedSize(srcFile.length());
-                zipEntry.setSize(srcFile.length());
-
-                // update crc
-                CRC32 crc = getCrcFromFile(srcFile);
                 zipEntry.setCrc(crc.getValue());
             }
 
@@ -2623,7 +2569,7 @@ public class Compressor {
         return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
     }
 
-    private static void versionNormalize(Utility utility) throws BundleException {
+    private void versionNormalize(Utility utility) throws BundleException {
         // 创建根目录
         List<VersionNormalizeUtil> utils = new ArrayList<>();
         try {
@@ -2638,16 +2584,18 @@ public class Compressor {
                             tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + CONFIG_JSON);
 
                     if (moduleFile.exists() && configFile.exists()) {
-                        LOG.error("versionNormalize failed, hap structure not valid.");
-                        throw new BundleException("versionNormalize failed, hap structure not valid.");
+                        LOG.error("versionNormalize failed, invalid hap structure.");
+                        throw new BundleException("versionNormalize failed, invalid hap structure.");
                     }
                     if (moduleFile.exists()) {
                         String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
                         util = parseAndModifyModuleJson(moduleJsonPath, utility.getVersionCode());
-                    }
-                    if (configFile.exists()) {
+                    } else if (configFile.exists()) {
                         String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
                         util = parseAndModifyConfigJson(configJsonPath, utility.getVersionCode());
+                    } else {
+                        LOG.error("versionNormalize failed, invalid hap structure.");
+                        throw new BundleException("versionNormalize failed, invalid hap structure.");
                     }
 
                     String modifiedHapPath = Path.of(utility.getOutPath()) +
@@ -2657,7 +2605,7 @@ public class Compressor {
                     for (VersionNormalizeUtil versionNormalizeUtil : utils) {
                         if (versionNormalizeUtil.getOriginVersion() < utility.getVersionCode()) {
                             String errorMsg = "versionNormalize failed, module " + versionNormalizeUtil.getModuleName()
-                                    + "version code less than input version code";
+                                    + " version code less than input version code";
                             LOG.error(errorMsg);
                             throw new BundleException(errorMsg);
                         }
@@ -2674,7 +2622,7 @@ public class Compressor {
         }
     }
 
-    private static VersionNormalizeUtil parseAndModifyModuleJson(String jsonFilePath, int versionCode)
+    private VersionNormalizeUtil parseAndModifyModuleJson(String jsonFilePath, int versionCode)
             throws BundleException {
         VersionNormalizeUtil util = new VersionNormalizeUtil();
         try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
@@ -2707,7 +2655,7 @@ public class Compressor {
         return util;
     }
 
-    private static void writeJson(String jsonFilePath, JSONObject jsonObject) throws BundleException {
+    private void writeJson(String jsonFilePath, JSONObject jsonObject) throws BundleException {
         BufferedWriter bw = null;
         try {
             String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
@@ -2730,7 +2678,7 @@ public class Compressor {
         }
     }
 
-    private static VersionNormalizeUtil parseAndModifyConfigJson(String jsonFilePath, int versionCode)
+    private VersionNormalizeUtil parseAndModifyConfigJson(String jsonFilePath, int versionCode)
             throws BundleException {
         BufferedWriter bw = null;
         VersionNormalizeUtil util = new VersionNormalizeUtil();
@@ -2774,7 +2722,7 @@ public class Compressor {
         return util;
     }
 
-    private static void compressToHap(Path sourceDir, String zipFilePath) throws IOException {
+    private void compressToHap(Path sourceDir, String zipFilePath) throws IOException {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
             Files.walk(sourceDir)
                     .filter(path -> !Files.isDirectory(path))
