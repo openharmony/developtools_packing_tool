@@ -180,16 +180,17 @@ public class Compressor {
     }
 
     private static class VersionNormalizeUtil {
-        private int originVersion = INVALID_VERSION;
+        private int originVersionCode = INVALID_VERSION;
+        private String originVersionName = "";
         private String moduleName;
         private boolean compressNativeLibs = true;
 
-        public int getOriginVersion() {
-            return originVersion;
+        public int getOriginVersionCode() {
+            return originVersionCode;
         }
 
-        public void setOriginVersion(int originVersion) {
-            this.originVersion = originVersion;
+        public void setOriginVersionCode(int originVersionCode) {
+            this.originVersionCode = originVersionCode;
         }
 
         public boolean isCompressNativeLibs() {
@@ -2571,55 +2572,55 @@ public class Compressor {
     }
 
     private void versionNormalize(Utility utility) throws BundleException {
-        // 创建根目录
         List<VersionNormalizeUtil> utils = new ArrayList<>();
+        Path tempDir = null;
         try {
-            Path tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
+            tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
             for (String hapPath : utility.getFormattedHapList()) {
-                try {
-                    UncompressEntrance.unpackHap(hapPath, tempDir.toAbsolutePath().toString(), false);
-                    VersionNormalizeUtil util = new VersionNormalizeUtil();
-                    File moduleFile = new File(
-                            tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
-                    File configFile = new File(
-                            tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + CONFIG_JSON);
+                UncompressEntrance.unpackHap(hapPath, tempDir.toAbsolutePath().toString(), false);
+                VersionNormalizeUtil util = new VersionNormalizeUtil();
+                File moduleFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
+                File configFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + CONFIG_JSON);
 
-                    if (moduleFile.exists() && configFile.exists()) {
-                        LOG.error("versionNormalize failed, invalid hap structure.");
-                        throw new BundleException("versionNormalize failed, invalid hap structure.");
-                    }
-                    if (moduleFile.exists()) {
-                        String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
-                        util = parseAndModifyModuleJson(moduleJsonPath, utility.getVersionCode());
-                    } else if (configFile.exists()) {
-                        String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
-                        util = parseAndModifyConfigJson(configJsonPath, utility.getVersionCode());
-                    } else {
-                        LOG.error("versionNormalize failed, invalid hap structure.");
-                        throw new BundleException("versionNormalize failed, invalid hap structure.");
-                    }
-
-                    String modifiedHapPath = Paths.get(utility.getOutPath()) +
-                            LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
-                    utils.add(util);
-
-                    for (VersionNormalizeUtil versionNormalizeUtil : utils) {
-                        if (versionNormalizeUtil.getOriginVersion() > utility.getVersionCode()) {
-                            String errorMsg = "versionNormalize failed, module " + versionNormalizeUtil.getModuleName()
-                                    + " version code less than input version code";
-                            LOG.error(errorMsg);
-                            throw new BundleException(errorMsg);
-                        }
-                    }
-                    writeVersionRecord(utils, utility.getOutPath());
-                    compressToHap(tempDir, modifiedHapPath);
-                } finally {
-                    deleteDirectory(tempDir.toFile());
+                if (moduleFile.exists() && configFile.exists()) {
+                    LOG.error("versionNormalize failed, invalid hap structure.");
+                    throw new BundleException("versionNormalize failed, invalid hap structure.");
                 }
+                if (moduleFile.exists()) {
+                    String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
+                    util = parseAndModifyModuleJson(moduleJsonPath, utility.getVersionCode());
+                } else if (configFile.exists()) {
+                    String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
+                    util = parseAndModifyConfigJson(configJsonPath, utility.getVersionCode());
+                } else {
+                    LOG.error("versionNormalize failed, invalid hap structure.");
+                    throw new BundleException("versionNormalize failed, invalid hap structure.");
+                }
+
+                String modifiedHapPath = Paths.get(utility.getOutPath()) +
+                        LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
+                utils.add(util);
+
+                for (VersionNormalizeUtil versionNormalizeUtil : utils) {
+                    if (versionNormalizeUtil.getOriginVersionCode() > utility.getVersionCode()) {
+                        String errorMsg = "versionNormalize failed, module " + versionNormalizeUtil.getModuleName()
+                                + " version code less than input version code";
+                        LOG.error(errorMsg);
+                        throw new BundleException(errorMsg);
+                    }
+                }
+                writeVersionRecord(utils, utility.getOutPath());
+                compressToHap(tempDir, modifiedHapPath);
             }
         } catch (IOException e) {
             LOG.error("versionNormalize failed " + e.getMessage());
             throw new BundleException("versionNormalize failed " + e.getMessage());
+        } finally {
+            if (tempDir != null) {
+                deleteDirectory(tempDir.toFile());
+            }
         }
     }
 
@@ -2637,7 +2638,7 @@ public class Compressor {
                 LOG.error("parseAndModifyJson failed, json file not valid.");
                 throw new BundleException("parseAndModifyJson failed, json file not valid.");
             }
-            util.setOriginVersion(appObject.getIntValue(VERSION));
+            util.setOriginVersionCode(appObject.getIntValue(VERSION));
             JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
             if (moduleObject.containsKey(COMPRESS_NATIVE_LIBS)) {
                 util.setCompressNativeLibs(moduleObject.getBoolean(COMPRESS_NATIVE_LIBS));
@@ -2699,7 +2700,7 @@ public class Compressor {
                 LOG.error("parseAndModifyModuleJson failed, json file not valid.");
                 throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
             }
-            util.setOriginVersion(versionObj.getIntValue(CODE));
+            util.setOriginVersionCode(versionObj.getIntValue(CODE));
 
             InputStreamReader inputStreamReader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
