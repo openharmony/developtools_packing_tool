@@ -893,7 +893,6 @@ class ModuleJsonUtil {
      * @return DistroFilter is the result of parsed distroFilter
      */
     public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
-        DistroFilter distro = new DistroFilter();
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String resource = moduleMetadataInfo.resource;
             if (resource.isEmpty()) {
@@ -907,7 +906,7 @@ class ModuleJsonUtil {
                 return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
         }
-        return distro;
+        return new DistroFilter();
     }
 
     /**
