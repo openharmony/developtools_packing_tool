@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -2573,7 +2574,7 @@ public class Compressor {
         // 创建根目录
         List<VersionNormalizeUtil> utils = new ArrayList<>();
         try {
-            Path tempDir = Files.createTempDirectory(Path.of(utility.getOutPath()), "temp");
+            Path tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
             for (String hapPath : utility.getFormattedHapList()) {
                 try {
                     UncompressEntrance.unpackHap(hapPath, tempDir.toAbsolutePath().toString(), false);
@@ -2598,12 +2599,12 @@ public class Compressor {
                         throw new BundleException("versionNormalize failed, invalid hap structure.");
                     }
 
-                    String modifiedHapPath = Path.of(utility.getOutPath()) +
-                            LINUX_FILE_SEPARATOR + Path.of(hapPath).getFileName().toString();
+                    String modifiedHapPath = Paths.get(utility.getOutPath()) +
+                            LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
                     utils.add(util);
 
                     for (VersionNormalizeUtil versionNormalizeUtil : utils) {
-                        if (versionNormalizeUtil.getOriginVersion() < utility.getVersionCode()) {
+                        if (versionNormalizeUtil.getOriginVersion() > utility.getVersionCode()) {
                             String errorMsg = "versionNormalize failed, module " + versionNormalizeUtil.getModuleName()
                                     + " version code less than input version code";
                             LOG.error(errorMsg);
