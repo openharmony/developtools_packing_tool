@@ -84,6 +84,7 @@ public class CommandParser {
     private static final String NORMAL_MODULE_LIMIT = "--normal-module-limit";
     private static final String TOTAL_LIMIT = "--total-limit";
     private static final String VERSION_CODE = "--version-code";
+    private static final String VERSION_NAME = "--version-name";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -283,6 +284,10 @@ public class CommandParser {
         });
         commandFuncs.put(VERSION_CODE, entry -> {
             entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
+            return true;
+        });
+        commandFuncs.put(VERSION_NAME, entry -> {
+            entry.getKey().setVersionName(entry.getValue());
             return true;
         });
     }
