@@ -297,14 +297,8 @@ public class Compressor {
      * @return compressProcess if compress succeed
      */
     public boolean compressProcess(Utility utility) {
-        boolean compressResult = true;
-
         if (Utility.VERSION_NORMALIZE.equals(utility.getMode())) {
-            try {
-                versionNormalize(utility);
-            } catch (BundleException e) {
-                e.printStackTrace();
-            }
+            versionNormalize(utility);
             return true;
         }
         File destFile = new File(utility.getOutPath());
@@ -317,7 +311,7 @@ public class Compressor {
                 return false;
             }
         }
-
+        boolean compressResult = true;
         FileOutputStream fileOut = null;
         CheckedOutputStream checkedOut = null;
         try {
@@ -370,8 +364,6 @@ public class Compressor {
             case Utility.MODE_HSP:
                 compressHsp(utility);
                 break;
-            case Utility.VERSION_NORMALIZE:
-                versionNormalize(utility);
             default:
                 compressPackResMode(utility);
         }
@@ -1755,8 +1747,7 @@ public class Compressor {
      * @param name filename
      * @param KeepDirStructure Empty File
      */
-    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name,
-                                 boolean KeepDirStructure) {
+    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name, boolean KeepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
@@ -2213,7 +2204,7 @@ public class Compressor {
         }
     }
 
-    private static void parseCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
+    private void parseCompressNativeLibs(BufferedReader bufferedReader, Utility utility) throws BundleException {
         String lineStr = null;
         try {
             while ((lineStr = bufferedReader.readLine()) != null) {
@@ -2580,7 +2571,7 @@ public class Compressor {
         return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
     }
 
-    private void versionNormalize(Utility utility) throws BundleException {
+    private void versionNormalize(Utility utility) {
         List<VersionNormalizeUtil> utils = new ArrayList<>();
         Path tempDir = null;
         try {
@@ -2613,12 +2604,11 @@ public class Compressor {
 
                 String modifiedHapPath = Paths.get(utility.getOutPath()) +
                         LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
-                compressToHap(tempDir, modifiedHapPath);
+                compressToHap(tempDir, modifiedHapPath, util.isCompressNativeLibs());
             }
             writeVersionRecord(utils, utility.getOutPath());
-        } catch (IOException e) {
+        } catch (IOException | BundleException e) {
             LOG.error("versionNormalize failed " + e.getMessage());
-            throw new BundleException("versionNormalize failed " + e.getMessage());
         } finally {
             if (tempDir != null) {
                 deleteDirectory(tempDir.toFile());
@@ -2666,11 +2656,11 @@ public class Compressor {
         return util;
     }
 
-    private void writeJson(String jsonFilePath, JSONObject jsonObject) throws BundleException {
+    private void writeJson(String jsonFilePath, JSONObject jsonObject) throws IOException, BundleException {
         BufferedWriter bw = null;
         try {
             String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
-                    SerializerFeature.WriteMapNullValue,SerializerFeature.WriteDateUseDateFormat);
+                SerializerFeature.WriteMapNullValue,SerializerFeature.WriteDateUseDateFormat);
             bw = new BufferedWriter(new FileWriter(jsonFilePath));
             bw.write(pretty);
         } catch (IOException exception) {
@@ -2678,13 +2668,8 @@ public class Compressor {
             throw new BundleException("Compressor::writeJson failed for IOException");
         } finally {
             if (bw != null) {
-                try {
-                    bw.flush();
-                    bw.close();
-                } catch (IOException e) {
-                    LOG.error("Compressor::writeJson failed for IOException " + e.getMessage());
-                    throw new BundleException("Compressor::writeJson failed.");
-                }
+                bw.flush();
+                bw.close();
             }
         }
     }
@@ -2736,19 +2721,40 @@ public class Compressor {
         return util;
     }
 
-    private void compressToHap(Path sourceDir, String zipFilePath) throws IOException {
+    private void compressToHap(Path sourceDir, String zipFilePath, boolean compressNativeLibs)
+            throws IOException, BundleException {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
             Files.walk(sourceDir)
                 .filter(path -> !Files.isDirectory(path))
                 .forEach(path -> {
                     String relativePath = sourceDir.relativize(path).toString();
+                    File file = path.toFile();
                     ZipEntry zipEntry = new ZipEntry(relativePath);
+                    if (compressNativeLibs && zipEntry.getName().startsWith(LIBS_DIR_NAME)) {
+                        zipEntry.setMethod(ZipEntry.DEFLATED);
+                    } else {
+                        zipEntry.setMethod(ZipEntry.STORED);
+                        zipEntry.setCompressedSize(file.length());
+                        zipEntry.setSize(file.length());
+
+                        CRC32 crc = null;
+                        try {
+                            crc = getCrcFromFile(new File(path.toString()));
+                        } catch (BundleException e) {
+                            LOG.error("getCrcFromFile Exception." + e.getMessage());
+                        }
+                        zipEntry.setCrc(crc.getValue());
+                    }
+                    FileTime fileTime = FileTime.fromMillis(FILE_TIME);
+                    zipEntry.setLastAccessTime(fileTime);
+                    zipEntry.setLastModifiedTime(fileTime);
+
                     try {
                         zipOutputStream.putNextEntry(zipEntry);
                         Files.copy(path, zipOutputStream);
                         zipOutputStream.closeEntry();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOG.error("compressToHap IOException." + e.getMessage());
                     }
                 });
         }
@@ -2766,12 +2772,13 @@ public class Compressor {
         dir.delete();
     }
 
-    private static void writeVersionRecord(List<VersionNormalizeUtil> utils, String outPath) {
+    private static void writeVersionRecord(List<VersionNormalizeUtil> utils, String outPath) throws BundleException {
         String jsonString = JSON.toJSONString(utils);
         try (FileWriter fileWriter = new FileWriter(outPath + LINUX_FILE_SEPARATOR + VERSION_RECORD)) {
             fileWriter.write(jsonString);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("writeVersionRecord failed " + e.getMessage());
+            throw new BundleException("writeVersionRecord failed " + e.getMessage());
         }
     }
 
@@ -2792,7 +2799,7 @@ public class Compressor {
         }
     }
 
-    private static void unpackHap(String srcPath, String outPath) throws BundleException{
+    private static void unpackHap(String srcPath, String outPath) throws BundleException {
         FileInputStream fis = null;
         ZipInputStream zipInputStream = null;
         try {
@@ -2811,20 +2818,21 @@ public class Compressor {
 
                 if (entry.isDirectory()) {
                     entryFile.mkdirs();
-                } else {
-                    File parent = entryFile.getParentFile();
-                    if (!parent.exists()) {
-                        parent.mkdirs();
-                    }
-
-                    FileOutputStream fos = new FileOutputStream(entryFile);
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int bytesRead;
-                    while ((bytesRead = zipInputStream.read(buffer)) != -1) {
-                        fos.write(buffer, 0, bytesRead);
-                    }
-                    fos.close();
+                    zipInputStream.closeEntry();
+                    continue;
                 }
+                File parent = entryFile.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+
+                FileOutputStream fos = new FileOutputStream(entryFile);
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int bytesRead;
+                while ((bytesRead = zipInputStream.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+                fos.close();
                 zipInputStream.closeEntry();
             }
         } catch (IOException e) {
