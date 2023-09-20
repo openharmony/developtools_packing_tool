@@ -416,11 +416,11 @@ public class ResourcesParser {
         item.size = buf.getInt();
         item.type = buf.getInt();
         item.id = buf.getInt();
-        int len = buf.getShort();
+        int len = buf.getShort() & 0xFFFF;
         byte[] value = new byte[len];
         buf.get(value);
         item.value = new String(value, StandardCharsets.UTF_8);
-        len = buf.getShort();
+        len = buf.getShort() & 0xFFFF;
         byte[] name = new byte[len];
         buf.get(name);
         item.name = new String(name, StandardCharsets.UTF_8);
@@ -541,6 +541,11 @@ public class ResourcesParser {
         while(byteBuf.hasRemaining()) {
             result.append(LEFT_BRACKET);
             int len = byteBuf.getShort();
+            if (len <= 0) {
+                LOG.info("len less than 0, dismiss");
+                result.append(RIGHT_BRACKET);
+                break;
+            }
             byte[] value = new byte[len + CHAR_LENGTH];
             byteBuf.get(value);
             String item = new String(value, StandardCharsets.UTF_8);

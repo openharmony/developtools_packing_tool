@@ -101,6 +101,7 @@ public class JsonUtil {
     private static final String SPEAKER = "speaker";
     private static final String LINK_IOT = "linkIOT";
     private static final String ROUTER = "router";
+    private static final String TWO_IN_ONE = "2in1";
     private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
     private static final String INSTALLATION_FREE = "installationFree";
     private static final String VIRTUAL_MACHINE = "virtualMachine";
@@ -282,8 +283,8 @@ public class JsonUtil {
                 }
                 if (deviceTypes != null && !deviceTypes.isEmpty()) {
                     hapInfo.deviceType = JSONArray.parseArray(deviceTypes
-                        .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
-                        String.class);
+                                .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
+                            String.class);
                 }
                 break;
             }
@@ -301,7 +302,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static ProfileInfo parseProfileInfo(String harmonyProfileJsonString, byte[] data, String paclInfoJsonString,
-        String hapName) throws BundleException {
+                                        String hapName) throws BundleException {
         ProfileInfo profileInfo = new ProfileInfo();
         JSONObject jsonObject = JSONObject.parseObject(harmonyProfileJsonString);
         if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey("deviceConfig")
@@ -379,6 +380,8 @@ public class JsonUtil {
             appInfo.compatibleApiVersion = apiVersion.getIntValue("compatible");
             appInfo.targetApiVersion = apiVersion.getIntValue("target");
             appInfo.releaseType = getJsonString(apiVersion, "releaseType");
+            appInfo.setCompileSdkType(getJsonString(apiVersion, COMPILE_SDK_TYPE));
+            appInfo.setCompileSdkVersion(getJsonString(apiVersion, COMPILE_SDK_VERSION));
         }
         String labelRes = "";
         if (appJson.containsKey("labelId")) {
@@ -465,6 +468,7 @@ public class JsonUtil {
         parseDeviceType(appJson, moduleAppInfo, SPEAKER);
         parseDeviceType(appJson, moduleAppInfo, LINK_IOT);
         parseDeviceType(appJson, moduleAppInfo, ROUTER);
+        parseDeviceType(appJson, moduleAppInfo, TWO_IN_ONE);
     }
 
     /**
@@ -512,7 +516,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static Map<String, DeviceConfig> parseDeviceConfigInfo(JSONObject deviceConfigInfoJson,
-            List<String> deviceTypes) throws BundleException {
+                                                           List<String> deviceTypes) throws BundleException {
         Map<String, DeviceConfig> deviceConfigs = new HashMap<>();
         if (deviceConfigInfoJson == null) {
             return deviceConfigs;
@@ -545,7 +549,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static void getTargetDeviceConfig(Map<String, DeviceConfig> deviceConfigs, JSONObject deviceConfigInfoJson,
-            DeviceConfig defaultConfig, String targetDeviceType) throws BundleException {
+                                      DeviceConfig defaultConfig, String targetDeviceType) throws BundleException {
         if (deviceConfigInfoJson.containsKey(targetDeviceType)) {
             DeviceConfig deviceConfig = parseDeviceConfig(
                     deviceConfigInfoJson.getJSONObject(targetDeviceType), defaultConfig);
@@ -652,7 +656,7 @@ public class JsonUtil {
 
         if (hapJson.containsKey("deviceType")) {
             hapInfo.deviceType = JSONArray.parseArray(getJsonString(hapJson, "deviceType")
-                    .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
+                            .replace(UncompressEntrance.DEVICE_TYPE_DEFAULT, UncompressEntrance.DEVICE_TYPE_PHONE),
                     String.class);
         }
 
@@ -1166,10 +1170,8 @@ public class JsonUtil {
      *
      * @param moduleMetadataInfos metedata in moduleInfo
      * @return the parse result
-     * @throws BundleException Throws this exception if the json is not standard.
      */
-    static DistroFilter parseModuleDistrofilterFromMetadata(
-            List<ModuleMetadataInfo> moduleMetadataInfos) throws BundleException {
+    static DistroFilter parseModuleDistrofilterFromMetadata(List<ModuleMetadataInfo> moduleMetadataInfos) {
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String resource = moduleMetadataInfo.resource;
             if (resource.isEmpty()) {
@@ -1342,7 +1344,7 @@ public class JsonUtil {
         moduleAbilityInfo.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
         if (abilityJson.containsKey(PERMISSIONS)) {
             moduleAbilityInfo.permissions = JSONObject.parseArray(
-                getJsonString(abilityJson, PERMISSIONS), String.class);
+                    getJsonString(abilityJson, PERMISSIONS), String.class);
         }
         moduleAbilityInfo.metadata = parseModuleMetadataInfos(abilityJson, data, profileJsons);
         if (abilityJson.containsKey(EXPORTED)) {
@@ -1394,7 +1396,7 @@ public class JsonUtil {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     static ModuleMetadataInfo parseModuleMetadata(JSONObject jsonObject, byte[] data,
-                                                          HashMap<String, String> profileJson) throws BundleException {
+                                                  HashMap<String, String> profileJson) throws BundleException {
         if (jsonObject == null) {
             LOG.error("JsonUtil::parseModuleMetadata exception: jsonObject is null.");
             throw new BundleException("Parse ModuleMetadataInfo failed, jsonObject is null.");
@@ -1431,8 +1433,8 @@ public class JsonUtil {
         for (ExtensionAbilityInfo extensionAbilityInfo : extensionAbilityInfos) {
             List<AbilityFormInfo> formInfos =
                     parseModuleFormInfoInMetadata(data, extensionAbilityInfo.metadataInfos);
-                if (FORM.equals(extensionAbilityInfo.type)) {
-                        for (AbilityFormInfo formInfo : formInfos) {
+            if (FORM.equals(extensionAbilityInfo.type)) {
+                for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
                 }
             }
@@ -1877,7 +1879,7 @@ public class JsonUtil {
         if (res != null && !res.isEmpty()) {
             return res;
         } else if (jsonObject.containsKey(key)) {
-           return getJsonString(jsonObject, key);
+            return getJsonString(jsonObject, key);
         } else {
             return "";
         }
@@ -1910,7 +1912,7 @@ public class JsonUtil {
         if (!iconPath.isEmpty()) {
             return iconPath;
         } else if (jsonObject.containsKey("icon")) {
-           return getJsonString(jsonObject, "icon");
+            return getJsonString(jsonObject, "icon");
         } else {
             return "";
         }

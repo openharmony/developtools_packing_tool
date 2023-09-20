@@ -127,8 +127,8 @@
                 "compressNativeLibs",
                 "atomicService",
                 "generateBuildHash",
-                "proxyDatas",
-                "isolationMode"
+                "isolationMode",
+                "proxyData"
               ]
             },
             "required": [
@@ -174,8 +174,8 @@
                 "compressNativeLibs",
                 "atomicService",
                 "generateBuildHash",
-                "proxyDatas",
-                "isolationMode"
+                "isolationMode",
+                "proxyData"
               ]
             },
             "required": [
@@ -191,7 +191,7 @@
         "name": {
           "description": "Indicates the module name.",
           "type": "string",
-          "pattern": "[^\u4e00-\u9fa5]+",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
           "maxLength": 31
         },
         "type": {
@@ -241,7 +241,8 @@
               "tablet",
               "tv",
               "wearable",
-              "car"
+              "car",
+              "2in1"
             ]
           }
         },
@@ -270,7 +271,7 @@
             "ets",
             "hml"
           ],
-        "default": "hml"
+          "default": "hml"
         },
         "pages": {
           "description": "Used to list the information of each page in JS Component.",
@@ -377,7 +378,7 @@
               "name": {
                 "description": "Indicates the name of the ability.",
                 "type": "string",
-                "pattern": "[^\u4e00-\u9fa5]+",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
                 "maxLength": 127
               },
               "srcEntrance": {
@@ -770,6 +771,7 @@
               },
               "name": {
                 "description": "Indicates the name of the extension.",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
                 "type": "string",
                 "maxLength": 127
               },
@@ -819,8 +821,25 @@
                   "thumbnail",
                   "preview",
                   "print",
+                  "share",
                   "push",
-                  "driver"
+                  "driver",
+                  "action",
+                  "appAccountAuthorization",
+                  "sysDialog/userAuth",
+                  "sysDialog/common",
+                  "sysPicker/mediaControl",
+                  "sysDialog/atomicServicePanel",
+                  "sysDialog/power",
+                  "sysPicker/share",
+                  "hms/account",
+                  "sysDialog/meetimeCall",
+                  "sysDialog/meetimeContact",
+                  "sysDialog/meetimeMessage",
+                  "sysPicker/meetimeContact",
+                  "sysPicker/meetimeCallLog",
+                  "ads",
+                  "sys/commonUI"
                 ]
               },
               "permissions": {
@@ -987,7 +1006,7 @@
                     "resource": {
                       "description": "Indicates the resource of a data element.",
                       "type": "string",
-                      "pattern": "^[$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                      "pattern": "^([$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+)|(^(\/[\\w-]+)+(.[a-z]+)?)$",
                       "maxLength": 255
                     }
                   }
@@ -1239,7 +1258,18 @@
           "type": "boolean",
           "default": false
         },
-        "proxyDatas": {
+        "isolationMode": {
+          "description": "Indicates the module process isolation mode.",
+          "type": "string",
+          "enum": [
+            "isolationOnly",
+            "nonisolationOnly",
+            "isolationFirst",
+            "nonisolationFirst"
+          ],
+          "default": "nonisolationFirst"
+        },
+        "proxyData": {
           "description": "Indicates all the proxy data of the module.",
           "type": "array",
           "items": {
@@ -1297,17 +1327,6 @@
               }
             }
           }
-        },
-        "isolationMode": {
-          "description": "Indicates the module process isolation mode.",
-          "type": "string",
-          "enum": [
-            "isolationOnly",
-            "nonisolationOnly",
-            "isolationFirst",
-            "nonisolationFirst"
-          ],
-          "default": "nonisolationFirst"
         }
       }
     }
