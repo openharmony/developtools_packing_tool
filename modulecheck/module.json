@@ -831,7 +831,8 @@
                   "sysDialog/atomicServicePanel",
                   "sysDialog/power",
                   "sysPicker/share",
-                  "hms/account"
+                  "hms/account",
+                  "sys/commonUI"
                 ]
               },
               "permissions": {
