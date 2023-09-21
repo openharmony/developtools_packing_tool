@@ -183,7 +183,7 @@ public class Compressor {
     private static class VersionNormalizeUtil {
         private int originVersionCode = INVALID_VERSION;
         private String originVersionName = "";
-        private String moduleName;
+        private String moduleName = "";
         private boolean compressNativeLibs = true;
 
         public int getOriginVersionCode() {
@@ -2604,7 +2604,7 @@ public class Compressor {
 
                 String modifiedHapPath = Paths.get(utility.getOutPath()) +
                         LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
-                compressToHap(tempDir, modifiedHapPath, util.isCompressNativeLibs());
+                compressDirToHap(tempDir, modifiedHapPath, util.isCompressNativeLibs());
             }
             writeVersionRecord(utils, utility.getOutPath());
         } catch (IOException | BundleException e) {
@@ -2721,7 +2721,7 @@ public class Compressor {
         return util;
     }
 
-    private void compressToHap(Path sourceDir, String zipFilePath, boolean compressNativeLibs)
+    private void compressDirToHap(Path sourceDir, String zipFilePath, boolean compressNativeLibs)
             throws IOException, BundleException {
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
             Files.walk(sourceDir)
@@ -2800,12 +2800,8 @@ public class Compressor {
     }
 
     private static void unpackHap(String srcPath, String outPath) throws BundleException {
-        FileInputStream fis = null;
-        ZipInputStream zipInputStream = null;
-        try {
-            fis = new FileInputStream(srcPath);
-            zipInputStream = new ZipInputStream(new BufferedInputStream(fis));
-
+        try (FileInputStream fis = new FileInputStream(srcPath);
+             ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fis))) {
             File destDir = new File(outPath);
             if (!destDir.exists()) {
                 destDir.mkdirs();
@@ -2838,17 +2834,6 @@ public class Compressor {
         } catch (IOException e) {
             LOG.error("unpack hap failed IOException " + e.getMessage());
             throw new BundleException("unpack hap failed IOException " + e.getMessage());
-        } finally {
-            try {
-                if (zipInputStream != null) {
-                    zipInputStream.close();
-                }
-                if (fis != null) {
-                    fis.close();
-                }
-            } catch (IOException e) {
-                LOG.error("unpack hap failed IOException " + e.getMessage());
-            }
         }
     }
 }
