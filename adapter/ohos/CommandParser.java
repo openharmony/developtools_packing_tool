@@ -85,6 +85,7 @@ public class CommandParser {
     private static final String TOTAL_LIMIT = "--total-limit";
     private static final String VERSION_CODE = "--version-code";
     private static final String VERSION_NAME = "--version-name";
+    private static final String INPUT_LIST = "--input-list";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -288,6 +289,10 @@ public class CommandParser {
         });
         commandFuncs.put(VERSION_NAME, entry -> {
             entry.getKey().setVersionName(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(INPUT_LIST, entry -> {
+            entry.getKey().setInputList(entry.getValue());
             return true;
         });
     }
