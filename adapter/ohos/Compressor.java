@@ -28,6 +28,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -117,6 +120,11 @@ public class Compressor {
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String RAW_FILE_PATH = "resources/rawfile";
+    private static final String VERSION_CODE = "versionCode";
+    private static final String VERSION_NAME = "versionName";
+    private static final String VERSION = "version";
+    private static final String CODE = "code";
+    private static final String VERSION_RECORD = "version_record.json";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -138,6 +146,7 @@ public class Compressor {
     private static int entryModuleSizeLimit = 2;
     private static int notEntryModuleSizeLimit = 2;
     private static int sumModuleSizeLimit = 10;
+    private static final int INVALID_VERSION = -1;
     private static boolean isOverlay = false;
 
     private ZipOutputStream zipOut = null;
@@ -169,6 +178,45 @@ public class Compressor {
 
     public static void setSumModuleSizeLimit(int sumModule) {
         sumModuleSizeLimit = sumModule;
+    }
+
+    private static class VersionNormalizeUtil {
+        private int originVersionCode = INVALID_VERSION;
+        private String originVersionName = "";
+        private String moduleName = "";
+        private boolean compressNativeLibs = true;
+
+        public int getOriginVersionCode() {
+            return originVersionCode;
+        }
+
+        public void setOriginVersionCode(int originVersionCode) {
+            this.originVersionCode = originVersionCode;
+        }
+
+        public boolean isCompressNativeLibs() {
+            return compressNativeLibs;
+        }
+
+        public void setCompressNativeLibs(boolean compressNativeLibs) {
+            this.compressNativeLibs = compressNativeLibs;
+        }
+
+        public String getModuleName() {
+            return moduleName;
+        }
+
+        public void setModuleName(String name) {
+            moduleName = name;
+        }
+
+        public String getOriginVersionName() {
+            return originVersionName;
+        }
+
+        public void setOriginVersionName(String originVersionName) {
+            this.originVersionName = originVersionName;
+        }
     }
 
     /**
@@ -249,7 +297,10 @@ public class Compressor {
      * @return compressProcess if compress succeed
      */
     public boolean compressProcess(Utility utility) {
-        boolean compressResult = true;
+        if (Utility.VERSION_NORMALIZE.equals(utility.getMode())) {
+            versionNormalize(utility);
+            return true;
+        }
         File destFile = new File(utility.getOutPath());
 
         // if out file directory not exist, mkdirs.
@@ -260,7 +311,7 @@ public class Compressor {
                 return false;
             }
         }
-
+        boolean compressResult = true;
         FileOutputStream fileOut = null;
         CheckedOutputStream checkedOut = null;
         try {
@@ -1696,8 +1747,7 @@ public class Compressor {
      * @param name filename
      * @param KeepDirStructure Empty File
      */
-    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name,
-                          boolean KeepDirStructure) {
+    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name, boolean KeepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
@@ -2519,5 +2569,271 @@ public class Compressor {
             }
         }
         return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
+    }
+
+    private void versionNormalize(Utility utility) {
+        List<VersionNormalizeUtil> utils = new ArrayList<>();
+        Path tempDir = null;
+        try {
+            tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
+            for (String hapPath : utility.getFormattedHapList()) {
+                unpackHap(hapPath, tempDir.toAbsolutePath().toString());
+                VersionNormalizeUtil util = new VersionNormalizeUtil();
+                File moduleFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
+                File configFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + CONFIG_JSON);
+
+                if (moduleFile.exists() && configFile.exists()) {
+                    LOG.error("versionNormalize failed, invalid hap structure.");
+                    throw new BundleException("versionNormalize failed, invalid hap structure.");
+                }
+                if (moduleFile.exists()) {
+                    String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
+                    util = parseAndModifyModuleJson(moduleJsonPath, utility);
+                } else if (configFile.exists()) {
+                    String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
+                    util = parseAndModifyConfigJson(configJsonPath, utility);
+                } else {
+                    LOG.error("versionNormalize failed, invalid hap structure.");
+                    throw new BundleException("versionNormalize failed, invalid hap structure.");
+                }
+
+                verifyModuleVersion(util, utility);
+                utils.add(util);
+
+                String modifiedHapPath = Paths.get(utility.getOutPath()) +
+                        LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
+                compressDirToHap(tempDir, modifiedHapPath, util.isCompressNativeLibs());
+            }
+            writeVersionRecord(utils, utility.getOutPath());
+        } catch (IOException | BundleException e) {
+            LOG.error("versionNormalize failed " + e.getMessage());
+        } finally {
+            if (tempDir != null) {
+                deleteDirectory(tempDir.toFile());
+            }
+        }
+    }
+
+    private VersionNormalizeUtil parseAndModifyModuleJson(String jsonFilePath, Utility utility)
+            throws BundleException {
+        VersionNormalizeUtil util = new VersionNormalizeUtil();
+        try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (!jsonObject.containsKey(APP)) {
+                LOG.error("parseAndModifyJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyJson failed, json file not valid.");
+            }
+            JSONObject appObject = jsonObject.getJSONObject(APP);
+            if (!appObject.containsKey(VERSION_CODE)) {
+                LOG.error("parseAndModifyJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyJson failed, json file not valid.");
+            }
+            if (!appObject.containsKey(VERSION_NAME)) {
+                LOG.error("parseAndModifyJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyJson failed, json file not valid.");
+            }
+            util.setOriginVersionCode(appObject.getIntValue(VERSION_CODE));
+            util.setOriginVersionName(appObject.getString(VERSION_NAME));
+
+            JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
+            if (moduleObject.containsKey(COMPRESS_NATIVE_LIBS)) {
+                util.setCompressNativeLibs(moduleObject.getBoolean(COMPRESS_NATIVE_LIBS));
+            }
+            if (!moduleObject.containsKey(NAME)) {
+                LOG.error("parseAndModifyModuleJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
+            }
+            util.setModuleName(moduleObject.getString(NAME));
+            appObject.put(VERSION_CODE, utility.getVersionCode());
+            appObject.put(VERSION_NAME, utility.getVersionName());
+            writeJson(jsonFilePath, jsonObject);
+        } catch (IOException e) {
+            LOG.error("parseAndModifyModuleJson failed, IOException." + e.getMessage());
+            throw new BundleException("parseAndModifyModuleJson failed, IOException." + e.getMessage());
+        }
+        return util;
+    }
+
+    private void writeJson(String jsonFilePath, JSONObject jsonObject) throws IOException, BundleException {
+        BufferedWriter bw = null;
+        try {
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
+                SerializerFeature.WriteMapNullValue,SerializerFeature.WriteDateUseDateFormat);
+            bw = new BufferedWriter(new FileWriter(jsonFilePath));
+            bw.write(pretty);
+        } catch (IOException exception) {
+            LOG.error("Compressor::writeJson failed for IOException " + exception.getMessage());
+            throw new BundleException("Compressor::writeJson failed for IOException");
+        } finally {
+            if (bw != null) {
+                bw.flush();
+                bw.close();
+            }
+        }
+    }
+
+    private VersionNormalizeUtil parseAndModifyConfigJson(String jsonFilePath, Utility utility)
+            throws BundleException {
+        VersionNormalizeUtil util = new VersionNormalizeUtil();
+        try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (!jsonObject.containsKey(APP)) {
+                LOG.error("parseAndModifyJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyJson failed, json file not valid.");
+            }
+            JSONObject appObject = jsonObject.getJSONObject(APP);
+            if (!appObject.containsKey(VERSION)) {
+                LOG.error("parseAndModifyModuleJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
+            }
+            JSONObject versionObj = appObject.getJSONObject(VERSION);
+            if (!versionObj.containsKey(CODE)) {
+                LOG.error("parseAndModifyModuleJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
+            }
+            util.setOriginVersionCode(versionObj.getIntValue(CODE));
+            if (!versionObj.containsKey(NAME)) {
+                LOG.error("parseAndModifyModuleJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
+            }
+            util.setOriginVersionName(versionObj.getString(NAME));
+            InputStreamReader inputStreamReader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            parseCompressNativeLibs(bufferedReader, utility);
+            util.setCompressNativeLibs(utility.isCompressNativeLibs());
+
+            JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
+            if (!moduleObject.containsKey(NAME)) {
+                LOG.error("parseAndModifyModuleJson failed, json file not valid.");
+                throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
+            }
+            util.setModuleName(moduleObject.getString(NAME));
+
+            versionObj.put(CODE, utility.getVersionCode());
+            versionObj.put(NAME, utility.getVersionName());
+            writeJson(jsonFilePath, jsonObject);
+        } catch (IOException e) {
+            LOG.error("parseAndModifyModuleJson IOException." + e.getMessage());
+            throw new BundleException("parseAndModifyModuleJson IOException." + e.getMessage());
+        }
+        return util;
+    }
+
+    private void compressDirToHap(Path sourceDir, String zipFilePath, boolean compressNativeLibs)
+            throws IOException, BundleException {
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
+            Files.walk(sourceDir)
+                .filter(path -> !Files.isDirectory(path))
+                .forEach(path -> {
+                    String relativePath = sourceDir.relativize(path).toString();
+                    File file = path.toFile();
+                    ZipEntry zipEntry = new ZipEntry(relativePath);
+                    if (compressNativeLibs && zipEntry.getName().startsWith(LIBS_DIR_NAME)) {
+                        zipEntry.setMethod(ZipEntry.DEFLATED);
+                    } else {
+                        zipEntry.setMethod(ZipEntry.STORED);
+                        zipEntry.setCompressedSize(file.length());
+                        zipEntry.setSize(file.length());
+
+                        CRC32 crc = null;
+                        try {
+                            crc = getCrcFromFile(new File(path.toString()));
+                        } catch (BundleException e) {
+                            LOG.error("getCrcFromFile Exception." + e.getMessage());
+                        }
+                        zipEntry.setCrc(crc.getValue());
+                    }
+                    FileTime fileTime = FileTime.fromMillis(FILE_TIME);
+                    zipEntry.setLastAccessTime(fileTime);
+                    zipEntry.setLastModifiedTime(fileTime);
+
+                    try {
+                        zipOutputStream.putNextEntry(zipEntry);
+                        Files.copy(path, zipOutputStream);
+                        zipOutputStream.closeEntry();
+                    } catch (IOException e) {
+                        LOG.error("compressToHap IOException." + e.getMessage());
+                    }
+                });
+        }
+    }
+
+    private static void deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            File[] children = dir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    deleteDirectory(child);
+                }
+            }
+        }
+        dir.delete();
+    }
+
+    private static void writeVersionRecord(List<VersionNormalizeUtil> utils, String outPath) throws BundleException {
+        String jsonString = JSON.toJSONString(utils);
+        try (FileWriter fileWriter = new FileWriter(outPath + LINUX_FILE_SEPARATOR + VERSION_RECORD)) {
+            fileWriter.write(jsonString);
+        } catch (IOException e) {
+            LOG.error("writeVersionRecord failed " + e.getMessage());
+            throw new BundleException("writeVersionRecord failed " + e.getMessage());
+        }
+    }
+
+    private static void verifyModuleVersion(VersionNormalizeUtil versionNormalizeUtil, Utility utility)
+            throws BundleException {
+        if (versionNormalizeUtil.getOriginVersionCode() > utility.getVersionCode()) {
+            String errorMsg = "versionNormalize failed, module " + versionNormalizeUtil.getModuleName()
+                    + " version code less than input version code";
+            LOG.error(errorMsg);
+            throw new BundleException(errorMsg);
+        } else if (versionNormalizeUtil.getOriginVersionCode() == utility.getVersionCode()) {
+            LOG.warning("versionNormalize warning: module " +
+                    versionNormalizeUtil.getModuleName() + " version code not changed");
+        }
+        if (versionNormalizeUtil.getOriginVersionName().equals(utility.getVersionName())) {
+            LOG.warning("versionNormalize warning: module " +
+                    versionNormalizeUtil.getModuleName() + " version name not changed");
+        }
+    }
+
+    private static void unpackHap(String srcPath, String outPath) throws BundleException {
+        try (FileInputStream fis = new FileInputStream(srcPath);
+             ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fis))) {
+            File destDir = new File(outPath);
+            if (!destDir.exists()) {
+                destDir.mkdirs();
+            }
+
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                String entryName = entry.getName();
+                File entryFile = new File(outPath, entryName);
+
+                if (entry.isDirectory()) {
+                    entryFile.mkdirs();
+                    zipInputStream.closeEntry();
+                    continue;
+                }
+                File parent = entryFile.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+
+                FileOutputStream fos = new FileOutputStream(entryFile);
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int bytesRead;
+                while ((bytesRead = zipInputStream.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+                fos.close();
+                zipInputStream.closeEntry();
+            }
+        } catch (IOException e) {
+            LOG.error("unpack hap failed IOException " + e.getMessage());
+            throw new BundleException("unpack hap failed IOException " + e.getMessage());
+        }
     }
 }

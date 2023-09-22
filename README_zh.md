@@ -183,6 +183,25 @@ java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-
 | --ap-path        | 否     | NA                   | 存放ap文件的路径。                                                |
 | --dir-list       | 否     | 可指定目标文件夹列表，将其打入hap包内 | NA                                                        |
 
+### 1.8 versionNormalize模式指令
+
+如果一个应用由多个团队开发，当只有一个hap或hsp需要修改升级时，可以调用此命令，将多个hap、hsp的版本统一。本命令会修改所传入的hap、hsp的版本号和版本名称，并在指定目录生成修改后的同名hap、hsp。
+
+#### 1.8.1 示例
+```
+java -jar path\app_packing_tool.jar --mode versionNormalize --input-list 1.hap,2.hsp --version-code 1000001 --version-name 1.0.1 --out-path path\out\
+```
+
+#### 1.8.2 参数含义及规范
+
+| 指令             | 是否必选项 | 选项               | 描述                                                                |
+|----------------|-------|------------------|-------------------------------------------------------------------|
+| --mode         | 是     | versionNormalize | 命令类型。                                                             |
+| --input-list   | 是     | hap或hsp的路径       | 1.hap或hsp包文件路径，文件名必须以.hap或.hsp为后缀。如果是多个hap包需要”，“分隔。2.hap包或hsp包目录。 |
+| --version-code | 是     | 版本号              | 指定的版本号，hap、hsp的版本号会被修改为该版本。需要为整数，且不小于所有传入的hap、hsp的版本号。            |
+| --version-name | 是     | 版本名称             | 指定的版本号，hap、hsp的版本名称会被修改为该版本名称。                                    |                                  
+| --out-path     | 是     | NA               | 目标文件路径，需要为一个目录。                                                   |
+
 
 ## 2. 拆包指令说明
 
