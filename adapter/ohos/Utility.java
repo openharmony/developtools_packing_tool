@@ -35,6 +35,7 @@ public class Utility {
     static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
     static final String MODE_HSP = "hsp";
+    static final String VERSION_NORMALIZE = "versionNormalize";
     static final String FALSE_STRING = "false";
 
     private static final String CMD_PREFIX = "--";
@@ -120,6 +121,7 @@ public class Utility {
     private String dirList = "";
     private String hqfList = "";
     private String hspList = "";
+    private String inputList = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -780,5 +782,13 @@ public class Utility {
 
     public boolean isBuildHashFinish() {
         return buildHashFinish;
+    }
+
+    public String getInputList() {
+        return inputList;
+    }
+
+    public void setInputList(String inputList) {
+        this.inputList = inputList;
     }
 }
