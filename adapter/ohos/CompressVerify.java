@@ -114,19 +114,18 @@ public class CompressVerify {
     }
 
     private static boolean validateVersionNormalizeMode(Utility utility) {
-        if (utility.getHapList().isEmpty()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode hap-list is empty.");
+        if (utility.getInputList().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
+            return false;
         }
-        if (!compatibleProcess(utility, utility.getHapList(), utility.getFormattedHapList(), HAP_SUFFIX)) {
+        if (!compatibleProcess(utility, utility.getInputList(), utility.getFormattedHapList(), HAP_SUFFIX)) {
             LOG.error("CompressVerify::validateVersionNormalizeMode hap-list is invalid.");
             return false;
         }
 
-        if (!utility.getHspList().isEmpty()) {
-            if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
-                LOG.error("CompressVerify::validateVersionNormalizeMode hsp-list is invalid.");
-                return false;
-            }
+        if (!compatibleProcess(utility, utility.getInputList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode hsp-list is invalid.");
+            return false;
         }
 
         if (utility.getVersionCode() <= 0) {

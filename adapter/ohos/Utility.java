@@ -121,6 +121,7 @@ public class Utility {
     private String dirList = "";
     private String hqfList = "";
     private String hspList = "";
+    private String inputList = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -781,5 +782,13 @@ public class Utility {
 
     public boolean isBuildHashFinish() {
         return buildHashFinish;
+    }
+
+    public String getInputList() {
+        return inputList;
+    }
+
+    public void setInputList(String inputList) {
+        this.inputList = inputList;
     }
 }
