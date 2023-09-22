@@ -96,7 +96,7 @@ public class Compressor {
     private static final String REGEX_SCRIPT = "^[A-Z][a-z]{3}$";
     private static final String REGEX_COUNTRY = "^[A-Z]{2,3}|[0-9]{3}$";
     private static final String REGEX_ORIENTATION = "^vertical|horizontal$";
-    private static final String REGEX_DEVICE_TYPE = "^phone|tablet|car|tv|wearable|liteWearable$";
+    private static final String REGEX_DEVICE_TYPE = "^phone|tablet|car|tv|wearable|liteWearable|2in1$";
     private static final String REGEX_SCREEN_DENSITY = "^sdpi|mdpi|ldpi|xldpi|xxldpi$";
     private static final String REGEX_COLOR_MODE = "^light|dark$";
     private static final String REGEX_SHAPE = "^circle$";
@@ -1490,7 +1490,7 @@ public class Compressor {
     private boolean checkDeviceType(String deviceType) {
         if (!Pattern.compile(REGEX_DEVICE_TYPE).matcher(deviceType).matches()) {
             LOG.error("Compressor::compressProcess deviceType " + deviceType +
-                    " is not in {phone, tablet, car, tv, wearable, liteWearable} list.");
+                    " is not in {phone, tablet, car, tv, wearable, liteWearable, 2in1} list.");
             return false;
         }
         return true;

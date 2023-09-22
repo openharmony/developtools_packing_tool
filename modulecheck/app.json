@@ -18,7 +18,7 @@
           "accessible"
         ]
       },
-      "properties": { 
+      "properties": {
         "minAPIVersion": {
           "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
           "type": "integer",
@@ -109,7 +109,8 @@
           "car",
           "targetBundleName",
           "targetPriority",
-          "generateBuildHash"
+          "generateBuildHash",
+          "2in1"
         ]
       },
       "properties": {
@@ -264,6 +265,9 @@
           "$ref": "#/definitions/default"
         },
         "car": {
+          "$ref": "#/definitions/default"
+        },
+        "2in1": {
           "$ref": "#/definitions/default"
         },
         "targetBundleName": {
