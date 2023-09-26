@@ -125,6 +125,16 @@ public class Compressor {
     private static final String VERSION = "version";
     private static final String CODE = "code";
     private static final String VERSION_RECORD = "version_record.json";
+    private static final String RES_INDEX = "resources.index";
+    private static final String ETS_FILE_NAME = "ets";
+    private static final String DIR_FILE_NAME = "dir";
+    private static final String AN_FILE_NAME = "an";
+    private static final String AP_FILE_NAME = "ap";
+    private static final String RESOURCE_FILE_NAME = "resources";
+    private static final String JS_FILE_NAME = "js";
+    private static final String ASSETS_FILE_NAME = "assets";
+    private static final String MAPLE_FILE_NAME = "maple";
+    private static final String SHARED_LIBS_FILE_NAME = "shared_libs";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -184,7 +194,6 @@ public class Compressor {
         private int originVersionCode = INVALID_VERSION;
         private String originVersionName = "";
         private String moduleName = "";
-        private boolean compressNativeLibs = true;
 
         public int getOriginVersionCode() {
             return originVersionCode;
@@ -192,14 +201,6 @@ public class Compressor {
 
         public void setOriginVersionCode(int originVersionCode) {
             this.originVersionCode = originVersionCode;
-        }
-
-        public boolean isCompressNativeLibs() {
-            return compressNativeLibs;
-        }
-
-        public void setCompressNativeLibs(boolean compressNativeLibs) {
-            this.compressNativeLibs = compressNativeLibs;
         }
 
         public String getModuleName() {
@@ -1318,7 +1319,7 @@ public class Compressor {
         try {
             Enumeration<? extends ZipEntry> entries = sourceHapFile.entries();
             while (entries.hasMoreElements()) {
-                ZipEntry zipEntry = entries.nextElement();
+                ZipEntry zipEntry = new ZipEntry(entries.nextElement());
                 if (PACKINFO_NAME.equals(zipEntry.getName())) {
                     continue;
                 }
@@ -2604,7 +2605,7 @@ public class Compressor {
 
                 String modifiedHapPath = Paths.get(utility.getOutPath()) +
                         LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
-                compressDirToHap(tempDir, modifiedHapPath, util.isCompressNativeLibs());
+                compressDirToHap(tempDir, modifiedHapPath);
             }
             writeVersionRecord(utils, utility.getOutPath());
         } catch (IOException | BundleException e) {
@@ -2638,9 +2639,6 @@ public class Compressor {
             util.setOriginVersionName(appObject.getString(VERSION_NAME));
 
             JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
-            if (moduleObject.containsKey(COMPRESS_NATIVE_LIBS)) {
-                util.setCompressNativeLibs(moduleObject.getBoolean(COMPRESS_NATIVE_LIBS));
-            }
             if (!moduleObject.containsKey(NAME)) {
                 LOG.error("parseAndModifyModuleJson failed, json file not valid.");
                 throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
@@ -2660,7 +2658,7 @@ public class Compressor {
         BufferedWriter bw = null;
         try {
             String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
-                SerializerFeature.WriteMapNullValue,SerializerFeature.WriteDateUseDateFormat);
+                SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
             bw = new BufferedWriter(new FileWriter(jsonFilePath));
             bw.write(pretty);
         } catch (IOException exception) {
@@ -2701,8 +2699,6 @@ public class Compressor {
             util.setOriginVersionName(versionObj.getString(NAME));
             InputStreamReader inputStreamReader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            parseCompressNativeLibs(bufferedReader, utility);
-            util.setCompressNativeLibs(utility.isCompressNativeLibs());
 
             JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
             if (!moduleObject.containsKey(NAME)) {
@@ -2721,43 +2717,62 @@ public class Compressor {
         return util;
     }
 
-    private void compressDirToHap(Path sourceDir, String zipFilePath, boolean compressNativeLibs)
+    private void compressDirToHap(Path sourceDir, String zipFilePath)
             throws IOException, BundleException {
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
-            Files.walk(sourceDir)
-                .filter(path -> !Files.isDirectory(path))
-                .forEach(path -> {
-                    String relativePath = sourceDir.relativize(path).toString();
-                    File file = path.toFile();
-                    ZipEntry zipEntry = new ZipEntry(relativePath);
-                    if (compressNativeLibs && zipEntry.getName().startsWith(LIBS_DIR_NAME)) {
-                        zipEntry.setMethod(ZipEntry.DEFLATED);
-                    } else {
-                        zipEntry.setMethod(ZipEntry.STORED);
-                        zipEntry.setCompressedSize(file.length());
-                        zipEntry.setSize(file.length());
-
-                        CRC32 crc = null;
-                        try {
-                            crc = getCrcFromFile(new File(path.toString()));
-                        } catch (BundleException e) {
-                            LOG.error("getCrcFromFile Exception." + e.getMessage());
-                        }
-                        zipEntry.setCrc(crc.getValue());
-                    }
-                    FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-                    zipEntry.setLastAccessTime(fileTime);
-                    zipEntry.setLastModifiedTime(fileTime);
-
-                    try {
-                        zipOutputStream.putNextEntry(zipEntry);
-                        Files.copy(path, zipOutputStream);
-                        zipOutputStream.closeEntry();
-                    } catch (IOException e) {
-                        LOG.error("compressToHap IOException." + e.getMessage());
-                    }
-                });
+        Utility utility = new Utility();
+        utility.setOutPath(zipFilePath);
+        if (zipFilePath.endsWith(HAP_SUFFIX)) {
+            utility.setMode(Utility.MODE_HAP);
+        } else if (zipFilePath.endsWith(HSP_SUFFIX)) {
+            utility.setMode(Utility.MODE_HSP);
         }
+        Files.walk(sourceDir, 1).forEach(path -> {
+            String fileName = path.getFileName().toString();
+            String filePath = path.toString();
+
+            switch (fileName) {
+                case ETS_FILE_NAME:
+                    utility.setEtsPath(filePath);
+                    break;
+                case DIR_FILE_NAME:
+                    utility.setLibPath(filePath);
+                    break;
+                case AN_FILE_NAME:
+                    utility.setANPath(filePath);
+                    break;
+                case AP_FILE_NAME:
+                    utility.setAPPath(filePath);
+                    break;
+                case RESOURCE_FILE_NAME:
+                    utility.setResourcesPath(filePath);
+                    break;
+                case JS_FILE_NAME:
+                    utility.setJsPath(filePath);
+                    break;
+                case ASSETS_FILE_NAME:
+                    utility.setAssetsPath(filePath);
+                    break;
+                case MAPLE_FILE_NAME:
+                    utility.setSoDir(filePath);
+                    break;
+                case SHARED_LIBS_FILE_NAME:
+                    utility.setSharedLibsPath(filePath);
+                    break;
+                case CONFIG_JSON:
+                    utility.setJsonPath(filePath);
+                    break;
+                case MODULE_JSON:
+                    utility.setJsonPath(filePath);
+                    break;
+                case RES_INDEX:
+                    utility.setIndexPath(filePath);
+                    break;
+                case PACKINFO_NAME:
+                    utility.setPackInfoPath(filePath);
+                    break;
+            }
+        });
+        compressProcess(utility);
     }
 
     private static void deleteDirectory(File dir) {
