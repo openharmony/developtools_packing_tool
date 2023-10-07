@@ -37,7 +37,7 @@
         "bundleName": {
           "description": "Indicates the bundle name of the application. This label is a string type and cannot be defaulted. It uniquely identifies the application. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name.This label cannot be left blank.",
           "type": "string",
-          "maxLength": 127,
+          "maxLength": 128,
           "minLength": 7,
           "pattern": "^(([a-zA-Z]|[a-zA-Z][0-9a-zA-Z_]+)[.]([0-9a-zA-Z_.]+))|([{]([a-zA-Z]|[a-zA-Z][0-9a-zA-Z_]+)[}](.huawei.com))|[{](bundleName)[}]$"
         },
