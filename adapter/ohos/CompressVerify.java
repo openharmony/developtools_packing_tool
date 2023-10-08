@@ -118,13 +118,9 @@ public class CompressVerify {
             LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
             return false;
         }
-        if (!compatibleProcess(utility, utility.getInputList(), utility.getFormattedHapList(), HAP_SUFFIX)) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode hap-list is invalid.");
-            return false;
-        }
 
-        if (!compatibleProcess(utility, utility.getInputList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode hsp-list is invalid.");
+        if (!handleHapAndHspInput(utility, utility.getInputList(), utility.getFormattedHapList())) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is invalid.");
             return false;
         }
 
@@ -135,6 +131,17 @@ public class CompressVerify {
 
         if (utility.getVersionName().isEmpty()) {
             LOG.error("CompressVerify::validateVersionNormalizeMode version-name is empty.");
+            return false;
+        }
+
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode out-path is empty.");
+            return false;
+        }
+
+        File outDir = new File(utility.getOutPath());
+        if (!outDir.isDirectory()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode out-path is not a directory.");
             return false;
         }
         return true;
@@ -567,6 +574,36 @@ public class CompressVerify {
             for (String pathItem : pathList) {
                 formattedPathItem = utility.getFormattedPath(pathItem);
                 if (!isPathValid(formattedPathItem, TYPE_FILE, suffix)) {
+                    return false;
+                }
+                fileList.add(formattedPathItem);
+            }
+            return true;
+        }
+    }
+
+    private static boolean handleHapAndHspInput(Utility utility, String inputPath, List<String> fileList) {
+        if (isPathValid(inputPath, TYPE_DIR, null)) {
+            File inputFile = new File(inputPath);
+            File[] files = inputFile.listFiles();
+            if (files == null) {
+                return true;
+            }
+            for (File fileItem : files) {
+                if (fileItem.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX) ||
+                    fileItem.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                    fileList.add(fileItem.toString());
+                }
+            }
+            return true;
+        } else {
+            String formattedPathItem = "";
+            List<String> pathList = removeDuplicatePath(inputPath);
+            for (String pathItem : pathList) {
+                formattedPathItem = utility.getFormattedPath(pathItem);
+                if (!isPathValid(formattedPathItem, TYPE_FILE, HSP_SUFFIX) &&
+                    !isPathValid(formattedPathItem, TYPE_FILE, HAP_SUFFIX)) {
+                    LOG.error("input file " + formattedPathItem + " not valid");
                     return false;
                 }
                 fileList.add(formattedPathItem);
