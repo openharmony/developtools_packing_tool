@@ -25,6 +25,7 @@
             "src",
             "uiSyntax",
             "isDynamic",
+            "transparencyEnabled",
             "window",
             "colorMode",
             "formConfigAbility",
@@ -59,6 +60,9 @@
               "properties": {
                 "isDynamic": {
                   "const": true
+                },
+                "transparencyEnabled": {
+                  "const": false
                 }
               }
             }
@@ -193,6 +197,11 @@
             "description": "This tag identifies whether the card is isDynamic.",
             "type": "boolean",
             "default": true
+          },
+          "transparencyEnabled": {
+            "description": "This tag identifies whether the form can be set as a transparent background",
+            "type": "boolean",
+            "default": false
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
