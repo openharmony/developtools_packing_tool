@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * compress comment,command parser.
@@ -50,6 +52,7 @@ public class CompressVerify {
     private static final String HSP_SUFFIX = ".hsp";
     private static final String FALSE = "false";
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
+    private static final String VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
@@ -128,6 +131,11 @@ public class CompressVerify {
             return false;
         }
 
+        if (utility.getFormattedHapList().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
+            return false;
+        }
+
         if (utility.getVersionCode() <= 0) {
             LOG.error("CompressVerify::validateVersionNormalizeMode version-code is invalid.");
             return false;
@@ -137,6 +145,14 @@ public class CompressVerify {
             LOG.error("CompressVerify::validateVersionNormalizeMode version-name is empty.");
             return false;
         }
+
+        Pattern versionNamePattern = Pattern.compile(VERSION_NAME_PATTERN);
+        Matcher versionNameMatcher = versionNamePattern.matcher(utility.getVersionName());
+        if (!versionNameMatcher.matches()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode version-name is not valid.");
+            return false;
+        }
+
         return true;
     }
 
