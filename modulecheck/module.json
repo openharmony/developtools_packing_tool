@@ -241,7 +241,8 @@
               "tablet",
               "tv",
               "wearable",
-              "car"
+              "car",
+              "2in1"
             ]
           }
         },
@@ -823,21 +824,25 @@
                   "share",
                   "push",
                   "driver",
-                  "action",
+                  "action", 
+                  "hms/account",
                   "appAccountAuthorization",
+                  "ads",
+                  "remoteNotification",
+                  "remoteLocation",
+                  "voip",
                   "sysDialog/userAuth",
                   "sysDialog/common",
-                  "sysPicker/mediaControl",
                   "sysDialog/atomicServicePanel",
                   "sysDialog/power",
-                  "sysPicker/share",
-                  "hms/account",
                   "sysDialog/meetimeCall",
                   "sysDialog/meetimeContact",
                   "sysDialog/meetimeMessage",
+                  "sysPicker/mediaControl",
+                  "sysPicker/share",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
-                  "ads"
+                  "sys/commonUI"
                 ]
               },
               "permissions": {
@@ -1004,7 +1009,7 @@
                     "resource": {
                       "description": "Indicates the resource of a data element.",
                       "type": "string",
-                      "pattern": "^[$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
+                      "pattern": "^([$]profile:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+)|(^(\/[\\w-]+)+(.[a-z]+)?)$",
                       "maxLength": 255
                     }
                   }
@@ -1179,9 +1184,9 @@
             ],
             "properties":{
               "bundleName": {
-                "description": "Indicates the bundle name of the dependency shared library. It uniquely identifies the dependency shared library. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the dependency shared library name. This label is a string type and cannot be defaulted.",
+                "description": "Indicates the bundle name of the dependency shared library. It uniquely identifies the dependency shared library. The value is a string with 7 to 128 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the dependency shared library name. This label is a string type and cannot be defaulted.",
                 "type": "string",
-                "maxLength": 127,
+                "maxLength": 128,
                 "minLength": 7,
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
               },

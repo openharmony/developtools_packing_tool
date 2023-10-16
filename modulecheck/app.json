@@ -18,7 +18,7 @@
           "accessible"
         ]
       },
-      "properties": { 
+      "properties": {
         "minAPIVersion": {
           "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
           "type": "integer",
@@ -109,14 +109,15 @@
           "car",
           "targetBundleName",
           "targetPriority",
-          "generateBuildHash"
+          "generateBuildHash",
+          "2in1"
         ]
       },
       "properties": {
         "bundleName": {
-          "description": "Indicates the bundle name of the application. It uniquely identifies the application. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
+          "description": "Indicates the bundle name of the application. It uniquely identifies the application. The value is a string with 7 to 128 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
           "type": "string",
-          "maxLength": 127,
+          "maxLength": 128,
           "minLength": 7,
           "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
         },
@@ -266,10 +267,13 @@
         "car": {
           "$ref": "#/definitions/default"
         },
+        "2in1": {
+          "$ref": "#/definitions/default"
+        },
         "targetBundleName": {
-          "description": "Indicates the target bundle name of an overlay application. It uniquely identifies the application. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
+          "description": "Indicates the target bundle name of an overlay application. It uniquely identifies the application. The value is a string with 7 to 128 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
           "type": "string",
-          "maxLength": 127,
+          "maxLength": 128,
           "minLength": 7,
           "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
         },
