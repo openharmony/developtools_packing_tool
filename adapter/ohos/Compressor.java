@@ -99,7 +99,7 @@ public class Compressor {
     private static final String REGEX_SCRIPT = "^[A-Z][a-z]{3}$";
     private static final String REGEX_COUNTRY = "^[A-Z]{2,3}|[0-9]{3}$";
     private static final String REGEX_ORIENTATION = "^vertical|horizontal$";
-    private static final String REGEX_DEVICE_TYPE = "^phone|tablet|car|tv|wearable|liteWearable$";
+    private static final String REGEX_DEVICE_TYPE = "^phone|tablet|car|tv|wearable|liteWearable|2in1$";
     private static final String REGEX_SCREEN_DENSITY = "^sdpi|mdpi|ldpi|xldpi|xxldpi$";
     private static final String REGEX_COLOR_MODE = "^light|dark$";
     private static final String REGEX_SHAPE = "^circle$";
@@ -1323,7 +1323,7 @@ public class Compressor {
                 if (PACKINFO_NAME.equals(zipEntry.getName())) {
                     continue;
                 }
-                ZipEntry newEntry = new ZipEntry(zipEntry.getName());
+                ZipEntry newEntry = new ZipEntry(zipEntry);
                 append.putNextEntry(newEntry);
                 if (!zipEntry.isDirectory()) {
                     copy(sourceHapFile.getInputStream(zipEntry), append);
@@ -1397,13 +1397,6 @@ public class Compressor {
                                 + temp.length + ".");
                         continue;
                     }
-                    String moduleName = temp[temp.length - 4];
-                    if (!isModelName(moduleName)) {
-                        String errMessage = "Compressor::compressProcess compress pack.res failed, " +
-                                "please check the related configurations in module " + moduleName + ".";
-                        LOG.error(errMessage);
-                        throw new BundleException(errMessage);
-                    }
                     String fileLanguageCountryName = temp[temp.length - 3];
                     if (!isThirdLevelDirectoryNameValid(fileLanguageCountryName)) {
                         LOG.error("Compressor::compressProcess compress failed third level directory name: "
@@ -1425,7 +1418,7 @@ public class Compressor {
                             + " PNG format is found.");
                 }
             }
-            pathToFile(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
+            pathToFileResMode(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
         }
     }
 
@@ -1542,7 +1535,7 @@ public class Compressor {
     private boolean checkDeviceType(String deviceType) {
         if (!Pattern.compile(REGEX_DEVICE_TYPE).matcher(deviceType).matches()) {
             LOG.error("Compressor::compressProcess deviceType " + deviceType +
-                    " is not in {phone, tablet, car, tv, wearable, liteWearable} list.");
+                    " is not in {phone, tablet, car, tv, wearable, liteWearable, 2in1} list.");
             return false;
         }
         return true;
@@ -1703,6 +1696,44 @@ public class Compressor {
                 return;
             }
             for (File file : files) {
+                if (file.isDirectory()) {
+                    compressDirectory(utility, file, baseDir, isCompression);
+                } else if (isCompression) {
+                    compressFile(utility, file, baseDir, isCompression);
+                } else {
+                    compressFile(utility, file, baseDir, isCompression);
+                }
+            }
+        } else {
+            compressFile(utility, fileItem, baseDir, isCompression);
+        }
+    }
+
+    /**
+     * compress file or directory, res mode
+     *
+     * @param utility       common data
+     * @param path          create new file by path
+     * @param baseDir       base path for file
+     * @param isCompression if need compression
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private void pathToFileResMode(Utility utility, String path, String baseDir, boolean isCompression)
+            throws BundleException {
+        if (path.isEmpty()) {
+            return;
+        }
+        File fileItem = new File(path);
+        if (fileItem.isDirectory()) {
+            File[] files = fileItem.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (File file : files) {
+                if (!list.contains(file.getName())) {
+                    //moduleName not in pack.info
+                    continue;
+                }
                 if (file.isDirectory()) {
                     compressDirectory(utility, file, baseDir, isCompression);
                 } else if (isCompression) {

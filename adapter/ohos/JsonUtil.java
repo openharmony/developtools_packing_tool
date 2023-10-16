@@ -101,6 +101,7 @@ public class JsonUtil {
     private static final String SPEAKER = "speaker";
     private static final String LINK_IOT = "linkIOT";
     private static final String ROUTER = "router";
+    private static final String TWO_IN_ONE = "2in1";
     private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
     private static final String INSTALLATION_FREE = "installationFree";
     private static final String VIRTUAL_MACHINE = "virtualMachine";
@@ -467,6 +468,7 @@ public class JsonUtil {
         parseDeviceType(appJson, moduleAppInfo, SPEAKER);
         parseDeviceType(appJson, moduleAppInfo, LINK_IOT);
         parseDeviceType(appJson, moduleAppInfo, ROUTER);
+        parseDeviceType(appJson, moduleAppInfo, TWO_IN_ONE);
     }
 
     /**
@@ -1168,10 +1170,8 @@ public class JsonUtil {
      *
      * @param moduleMetadataInfos metedata in moduleInfo
      * @return the parse result
-     * @throws BundleException Throws this exception if the json is not standard.
      */
-    static DistroFilter parseModuleDistrofilterFromMetadata(
-            List<ModuleMetadataInfo> moduleMetadataInfos) throws BundleException {
+    static DistroFilter parseModuleDistrofilterFromMetadata(List<ModuleMetadataInfo> moduleMetadataInfos) {
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String resource = moduleMetadataInfo.resource;
             if (resource.isEmpty()) {

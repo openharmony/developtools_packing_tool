@@ -66,6 +66,7 @@ class ModuleJsonUtil {
     private static final String VALUE = "value";
     private static final String JSON_PERFIX = ".json";
     private static final String DISTRO_FILTER = "distroFilter";
+    private static final String DISTRIBUTION_FILTER = "distributionFilter";
     private static final String DEPENDENCIES = "dependencies";
     private static final String EXTENSION_ABILITIES = "extensionAbilities";
     private static final String INSTALLATION_FREE = "installationFree";
@@ -556,7 +557,8 @@ class ModuleJsonUtil {
             }
             if (!distroObj.containsKey(MODULE_NAME)) {
                 LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
-                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
+                throw new BundleException("ModuleJsonUtil:parseFaModuleName failed:" +
+                        "json file do not contain moduleName.");
             }
             moduleName = distroObj.getString(MODULE_NAME);
         } catch (BundleException e) {
@@ -890,26 +892,21 @@ class ModuleJsonUtil {
      * @param moduleMetadataInfos all metadata of module
      * @return DistroFilter is the result of parsed distroFilter
      */
-    public static DistroFilter parseStageDistroFilter(
-            List<ModuleMetadataInfo> moduleMetadataInfos) throws BundleException {
-        DistroFilter distroFilter = new DistroFilter();
+    public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
-            if (moduleMetadataInfo.resource.isEmpty()) {
+            String resource = moduleMetadataInfo.resource;
+            if (resource.isEmpty()) {
                 continue;
             }
-            try {
-                JSONObject distroFilterObj = JSON.parseObject(moduleMetadataInfo.resource);
-                if (distroFilterObj.containsKey(DISTRO_FILTER)) {
-                    distroFilter = JSONObject.parseObject(getJsonString(distroFilterObj,
-                            DISTRO_FILTER), DistroFilter.class);
-                }
-            } catch (JSONException exception) {
-                String errMsg = "parse JSONobject failed.";
-                LOG.error(errMsg);
-                throw new BundleException(errMsg);
+            JSONObject distroFilter = JSONObject.parseObject(resource);
+            if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+            }
+            if (distroFilter.containsKey(DISTRO_FILTER)) {
+                return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
             }
         }
-        return distroFilter;
+        return new DistroFilter();
     }
 
     /**
@@ -1114,11 +1111,13 @@ class ModuleJsonUtil {
     }
 
     static String parseStageBundleType(String jsonString) throws BundleException {
-        JSONObject appObj = getAppObj(jsonString);
         JSONObject moduleObj = getModuleObj(jsonString);
+        String moduleName = parseStageModuleName(jsonString);
         if (!moduleObj.containsKey(TYPE)) {
-            LOG.error("parse failed, input module.json is invalid, module.json has no type.");
-            throw new BundleException("parse failed, input module.json is invalid, module.json has no type.");
+            String errMsg = "parse failed, input module.json is invalid, " +
+                    "module.json has no type in module: " + moduleName;
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
         }
         boolean isShared = false;
         String type = moduleObj.getString(TYPE);
@@ -1126,6 +1125,7 @@ class ModuleJsonUtil {
             isShared = true;
         }
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
+        JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
                 String errMessage = "The app.json5 file configuration does not match the installationFree:" +
@@ -1138,20 +1138,25 @@ class ModuleJsonUtil {
             String bundleType = getJsonString(appObj, BUNDLE_TYPE);
             if (bundleType.equals(APP)) {
                 if (installationFree) {
-                    LOG.error("installationFree must be false when bundleType is app.");
-                    throw new BundleException("installationFree must be false when bundleType is app.");
+                    String errMsg = "installationFree must be false in module(" +
+                            moduleName + ") when bundleType is app.";
+                    LOG.error(errMsg);
+                    throw new BundleException(errMsg);
                 }
                 return APP;
             } else if (bundleType.equals(ATOMIC_SERVICE)) {
                 if (!installationFree) {
-                    LOG.error("installationFree must be true when bundleType is atomicService.");
-                    throw new BundleException("installationFree must be true when bundleType is atomicService.");
+                    String errMsg = "installationFree must be true in module(" +
+                            moduleName + ") when bundleType is atomicService.";
+                    LOG.error(errMsg);
+                    throw new BundleException(errMsg);
                 }
                 return ATOMIC_SERVICE;
             } else if (SHARED.equals(bundleType)) {
                 if (!isShared) {
-                    LOG.error("type must be shared when bundleType is shared.");
-                    throw new BundleException("type must be shared when bundleType is shared.");
+                    String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is shared.";
+                    LOG.error(errMsg);
+                    throw new BundleException(errMsg);
                 }
                 return SHARED;
             } else {
