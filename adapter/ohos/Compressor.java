@@ -1731,7 +1731,7 @@ public class Compressor {
             }
             for (File file : files) {
                 if (!list.contains(file.getName())) {
-                    //moduleName not in pack.info
+                    // moduleName not in pack.info
                     continue;
                 }
                 if (file.isDirectory()) {
