@@ -365,7 +365,8 @@
                 "minWindowHeight",
                 "excludeFromMissions",
                 "recoverable",
-                "unclearableMission"
+                "unclearableMission",
+                "specifiedProcess"
               ]
             },
             "properties": {
@@ -686,6 +687,11 @@
               },
               "unclearableMission": {
                 "description": "Specify whether it is a task that cannot be deleted",
+                "type": "boolean",
+                "default": false
+              },
+              "specifiedProcess": {
+                "description": "Indicates the process in which the component is running",
                 "type": "boolean",
                 "default": false
               }
