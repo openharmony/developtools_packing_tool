@@ -110,7 +110,8 @@
           "targetBundleName",
           "targetPriority",
           "generateBuildHash",
-          "2in1"
+          "2in1",
+          "GWPAsanEnabled"
         ]
       },
       "properties": {
@@ -285,6 +286,11 @@
         },
         "generateBuildHash": {
           "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
+        },
+        "GWPAsanEnabled": {
+          "description": "Indicates whether to support GWP asan.",
           "type": "boolean",
           "default": false
         }
