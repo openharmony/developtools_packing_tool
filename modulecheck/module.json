@@ -128,7 +128,8 @@
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
-                "proxyData"
+                "proxyData",
+                "fileContextMenu"
               ]
             },
             "required": [
@@ -1330,6 +1331,12 @@
               }
             }
           }
+        },
+        "fileContextMenu": {
+          "description": "Indicates the menu profile.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         }
       }
     }
