@@ -1777,9 +1777,9 @@ public class Compressor {
      * @param sourceFile source
      * @param zipOutputStream ZipOutputStream
      * @param name filename
-     * @param KeepDirStructure Empty File
+     * @param keepDirStructure Empty File
      */
-    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name, boolean KeepDirStructure) {
+    private void compress(File sourceFile, ZipOutputStream zipOutputStream, String name, boolean keepDirStructure) {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
@@ -1795,7 +1795,7 @@ public class Compressor {
             } else {
                 File[] listFiles = sourceFile.listFiles();
                 if (listFiles == null || listFiles.length == 0) {
-                    if (KeepDirStructure) {
+                    if (keepDirStructure) {
                         if (!name.isEmpty()) {
                             ZipEntry zipEntry = getStoredZipEntry(sourceFile, name + "/");
                             zipOutputStream.putNextEntry(zipEntry);
@@ -1807,10 +1807,10 @@ public class Compressor {
                     }
                 } else {
                     for (File file : listFiles) {
-                        if (KeepDirStructure) {
-                            isNameEmpty(zipOutputStream, name, KeepDirStructure, file);
+                        if (keepDirStructure) {
+                            isNameEmpty(zipOutputStream, name, keepDirStructure, file);
                         } else {
-                            compress(file, zipOutputStream, file.getName(), KeepDirStructure);
+                            compress(file, zipOutputStream, file.getName(), keepDirStructure);
                         }
                     }
                 }
@@ -1868,14 +1868,14 @@ public class Compressor {
      *
      * @param zipOutputStream ZipOutputStream
      * @param name filename
-     * @param KeepDirStructure KeepDirStructure
+     * @param keepDirStructure KeepDirStructure
      * @param file file
      */
-    private void isNameEmpty(ZipOutputStream zipOutputStream, String name, boolean KeepDirStructure, File file) {
+    private void isNameEmpty(ZipOutputStream zipOutputStream, String name, boolean keepDirStructure, File file) {
         if (!name.isEmpty()) {
-            compress(file, zipOutputStream, name + "/" + file.getName(), KeepDirStructure);
+            compress(file, zipOutputStream, name + "/" + file.getName(), keepDirStructure);
         } else {
-            compress(file, zipOutputStream, file.getName(), KeepDirStructure);
+            compress(file, zipOutputStream, file.getName(), keepDirStructure);
         }
     }
 
