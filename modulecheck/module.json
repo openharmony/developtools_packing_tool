@@ -843,7 +843,8 @@
                   "sysPicker/share",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
-                  "sys/commonUI"
+                  "sys/commonUI",
+                  "ohos.ads.adsservice"
                 ]
               },
               "permissions": {
