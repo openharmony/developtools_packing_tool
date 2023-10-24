@@ -826,7 +826,7 @@
                   "push",
                   "driver",
                   "action", 
-                  "ohos.advertising.adsservice",
+                  "adsService",
                   "hms/account",
                   "appAccountAuthorization",
                   "ads",
