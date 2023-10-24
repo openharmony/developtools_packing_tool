@@ -826,6 +826,7 @@
                   "push",
                   "driver",
                   "action", 
+                  "ohos.advertising.adsservice",
                   "hms/account",
                   "appAccountAuthorization",
                   "ads",
@@ -843,8 +844,7 @@
                   "sysPicker/share",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
-                  "sys/commonUI",
-                  "ohos.advertising.adsservice"
+                  "sys/commonUI"                 
                 ]
               },
               "permissions": {
