@@ -844,7 +844,7 @@
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
                   "sys/commonUI",
-                  "ohos.ads.adsservice"
+                  "ohos.advertising.adsservice"
                 ]
               },
               "permissions": {
