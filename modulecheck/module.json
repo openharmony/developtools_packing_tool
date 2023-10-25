@@ -826,6 +826,7 @@
                   "push",
                   "driver",
                   "action", 
+                  "adsService",
                   "hms/account",
                   "appAccountAuthorization",
                   "ads",
