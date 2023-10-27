@@ -1161,11 +1161,6 @@ class ModuleJsonUtil {
                 }
                 return SHARED;
             } else if (APP_SERVICE.equals(bundleType)) {
-                if (!isShared) {
-                    String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is appService.";
-                    LOG.error(errMsg);
-                    throw new BundleException(errMsg);
-                }
                 return APP_SERVICE;
             } else {
                 LOG.error("bundleType is invalid in app.json.");
