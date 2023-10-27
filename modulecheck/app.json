@@ -128,7 +128,8 @@
           "enum": [
             "app",
             "atomicService",
-            "shared"
+            "shared",
+            "appService"
           ]
         },
         "debug": {
