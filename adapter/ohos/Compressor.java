@@ -135,6 +135,9 @@ public class Compressor {
     private static final String ASSETS_FILE_NAME = "assets";
     private static final String MAPLE_FILE_NAME = "maple";
     private static final String SHARED_LIBS_FILE_NAME = "shared_libs";
+    private static final String LIBS_DIR = "libs";
+    private static final String RPCID = "rpcid.sc";
+
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -2765,7 +2768,7 @@ public class Compressor {
                 case ETS_FILE_NAME:
                     utility.setEtsPath(filePath);
                     break;
-                case DIR_FILE_NAME:
+                case LIBS_DIR:
                     utility.setLibPath(filePath);
                     break;
                 case AN_FILE_NAME:
@@ -2800,6 +2803,9 @@ public class Compressor {
                     break;
                 case PACKINFO_NAME:
                     utility.setPackInfoPath(filePath);
+                    break;
+                case RPCID:
+                    utility.setRpcid(filePath);
                     break;
             }
         });
