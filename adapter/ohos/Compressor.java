@@ -2609,9 +2609,10 @@ public class Compressor {
     private void versionNormalize(Utility utility) {
         List<VersionNormalizeUtil> utils = new ArrayList<>();
         Path tempDir = null;
-        try {
-            tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
-            for (String hapPath : utility.getFormattedHapList()) {
+        for (String hapPath : utility.getFormattedHapList()) {
+            try {
+                tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
+
                 unpackHap(hapPath, tempDir.toAbsolutePath().toString());
                 VersionNormalizeUtil util = new VersionNormalizeUtil();
                 File moduleFile = new File(
@@ -2640,15 +2641,15 @@ public class Compressor {
                 String modifiedHapPath = Paths.get(utility.getOutPath()) +
                         LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
                 compressDirToHap(tempDir, modifiedHapPath);
-            }
-            writeVersionRecord(utils, utility.getOutPath());
-        } catch (IOException | BundleException e) {
-            LOG.error("versionNormalize failed " + e.getMessage());
-        } finally {
-            if (tempDir != null) {
-                deleteDirectory(tempDir.toFile());
+            } catch (IOException | BundleException e) {
+                LOG.error("versionNormalize failed " + e.getMessage());
+            } finally {
+                if (tempDir != null) {
+                    deleteDirectory(tempDir.toFile());
+                }
             }
         }
+        writeVersionRecord(utils, utility.getOutPath());
     }
 
     private VersionNormalizeUtil parseAndModifyModuleJson(String jsonFilePath, Utility utility)
@@ -2824,13 +2825,12 @@ public class Compressor {
         dir.delete();
     }
 
-    private static void writeVersionRecord(List<VersionNormalizeUtil> utils, String outPath) throws BundleException {
+    private static void writeVersionRecord(List<VersionNormalizeUtil> utils, String outPath){
         String jsonString = JSON.toJSONString(utils);
         try (FileWriter fileWriter = new FileWriter(outPath + LINUX_FILE_SEPARATOR + VERSION_RECORD)) {
             fileWriter.write(jsonString);
         } catch (IOException e) {
             LOG.error("writeVersionRecord failed " + e.getMessage());
-            throw new BundleException("writeVersionRecord failed " + e.getMessage());
         }
     }
 
