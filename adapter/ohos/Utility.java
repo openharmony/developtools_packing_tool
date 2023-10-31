@@ -35,6 +35,7 @@ public class Utility {
     static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
     static final String MODE_HSP = "hsp";
+    static final String MODE_HAPADDITION = "hapAddition";
     static final String VERSION_NORMALIZE = "versionNormalize";
     static final String FALSE_STRING = "false";
 
@@ -94,6 +95,7 @@ public class Utility {
     private String mainModuleLimit = "";
     private String normalModuleLimit = "";
     private String totalLimit = "";
+    private String absoluteHapPath = "";
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
 
@@ -268,6 +270,7 @@ public class Utility {
     public void setHapPath(String hapPath) {
         if (!hapPath.startsWith(CMD_PREFIX)) {
             this.hapPath = hapPath;
+            this.absoluteHapPath = getFormattedPath(hapPath);
         }
     }
 
@@ -726,6 +729,16 @@ public class Utility {
 
     public String getAPPath() {
         return this.apPath;
+    }
+
+    public String getAbsoluteHapPath() {
+        return this.absoluteHapPath;
+    }
+
+    public void setAbsoluteHapPath(String absoluteHapPath) {
+        if (!absoluteHapPath.startsWith(CMD_PREFIX)) {
+            this.absoluteHapPath = getFormattedPath(absoluteHapPath);
+        }
     }
 
     public void setIsSharedApp(boolean isSharedApp) {
