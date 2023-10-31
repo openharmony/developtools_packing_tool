@@ -142,9 +142,9 @@ public class Compressor {
     private static final String LIBS_DIR = "libs";
     private static final String RPCID = "rpcid.sc";
     private static final String HAPADDITION_FOLDER_NAME = "hapAddition";
-    private static final String TARGET_FILE_PATH =  HAPADDITION_FOLDER_NAME + LINUX_FILE_SEPARATOR + "resources"
+    private static final String TARGET_FILE_PATH = HAPADDITION_FOLDER_NAME + LINUX_FILE_SEPARATOR + "resources"
             + LINUX_FILE_SEPARATOR + "base" + LINUX_FILE_SEPARATOR + "profile";
-    private static final String BACKUP_PREFIX =  "backup";
+    private static final String BACKUP_PREFIX = "backup";
 
     // set timestamp to get fixed MD5
     private static final long FILE_TIME = 1546272000000L;
@@ -1170,7 +1170,7 @@ public class Compressor {
     private void copyHapFile(Utility utility, String backName) throws IOException, BundleException {
         File hapFile = new File(utility.getAbsoluteHapPath());
         String currentDir = System.getProperty("user.dir");
-        String backupPath = currentDir+ LINUX_FILE_SEPARATOR + backName;
+        String backupPath = currentDir + LINUX_FILE_SEPARATOR + backName;
         File backupFile = new File(backupPath);
         FileUtils.copyFile(hapFile, backupFile);
         utility.setHapPath(backName);
@@ -1180,9 +1180,9 @@ public class Compressor {
         File jsonFile = new File(jsonPath);
         FileReader fileReader = new FileReader(jsonFile);
         Reader reader = new InputStreamReader(new FileInputStream(jsonFile), "Utf-8");
-        int ch= 0;
+        int ch = 0;
         StringBuffer sb = new StringBuffer();
-        while((ch = reader.read()) != -1) {
+        while ((ch = reader.read()) != -1) {
             sb.append((char) ch);
         }
         fileReader.close();
@@ -1250,7 +1250,7 @@ public class Compressor {
     private void compressHapAddition(Utility utility) throws BundleException, IOException {
         // decompression hap file to hapAddition
         String currentDir = System.getProperty("user.dir");
-        String hapAdditionPath = currentDir+ LINUX_FILE_SEPARATOR + HAPADDITION_FOLDER_NAME;
+        String hapAdditionPath = currentDir + LINUX_FILE_SEPARATOR + HAPADDITION_FOLDER_NAME;
         unpackHap(utility.getHapPath(), hapAdditionPath);
 
         // generate addition.json file
