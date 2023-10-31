@@ -1676,9 +1676,14 @@ class ModuleJsonUtil {
                 LOG.error("installationFree must be true when bundleType is atomicService.");
                 return false;
             }
-        } else if (SHARED.equals(bundleType) || APP_SERVICE.equals(bundleType)) {
+        } else if (SHARED.equals(bundleType)) {
             if (installationFree) {
                 LOG.error("installationFree must be false when bundleType is shared.");
+                return false;
+            }
+        } else if (APP_SERVICE.equals(bundleType)) {
+            if (installationFree) {
+                LOG.error("installationFree must be false when bundleType is appService.");
                 return false;
             }
         } else {
