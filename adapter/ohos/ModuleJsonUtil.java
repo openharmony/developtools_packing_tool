@@ -1120,11 +1120,7 @@ class ModuleJsonUtil {
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
-        boolean isShared = false;
         String type = moduleObj.getString(TYPE);
-        if (SHARED.equals(type)) {
-            isShared = true;
-        }
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
@@ -1154,7 +1150,7 @@ class ModuleJsonUtil {
                 }
                 return ATOMIC_SERVICE;
             } else if (SHARED.equals(bundleType)) {
-                if (!isShared) {
+                if (!SHARED.equals(type)) {
                     String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is shared.";
                     LOG.error(errMsg);
                     throw new BundleException(errMsg);
