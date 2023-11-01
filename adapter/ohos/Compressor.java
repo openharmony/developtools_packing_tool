@@ -1129,14 +1129,8 @@ public class Compressor {
     private void hapAddition(Utility utility) {
         File hapPath = new File(utility.getAbsoluteHapPath());
         String hapFileName = hapPath.getName();
-        File hapParentPath = hapPath.getParentFile();
-        File outPath = new File(utility.getOutPath());
-        File destFile;
-        if (!Objects.equals(hapParentPath, outPath)) {
-            destFile = new File(utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName);
-        } else {
-            destFile = new File(hapFileName);
-        }
+
+        File destFile = new File(utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName);
         File outParentFile = destFile.getParentFile();
         if ((outParentFile != null) && (!outParentFile.exists())) {
             if (!outParentFile.mkdirs()) {
@@ -1179,7 +1173,7 @@ public class Compressor {
     private static String readerFile(String jsonPath) throws IOException {
         File jsonFile = new File(jsonPath);
         FileReader fileReader = new FileReader(jsonFile);
-        Reader reader = new InputStreamReader(new FileInputStream(jsonFile), "Utf-8");
+        Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8);
         int ch = 0;
         StringBuffer sb = new StringBuffer();
         while ((ch = reader.read()) != -1) {
