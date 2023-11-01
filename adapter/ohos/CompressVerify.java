@@ -856,7 +856,7 @@ public class CompressVerify {
         }
         File absoluteHapFile = new File(utility.getAbsoluteHapPath());
         String hapFileName = absoluteHapFile.getName();
-        String destPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName;;
+        String destPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName;
         File destFile = new File(destPath);
         if ("false".equals(utility.getForceRewrite()) && destFile.exists()) {
             LOG.error("CompressVerify::isVerifyValidInHapAdditionMode target file already exists.");
