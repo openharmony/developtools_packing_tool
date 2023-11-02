@@ -161,7 +161,7 @@ public class Compressor {
     private static int sumModuleSizeLimit = 10;
     private static final int INVALID_VERSION = -1;
     private static boolean isOverlay = false;
-
+    private static int SHARED_APP_HSP_COUNT = 1;
     private ZipOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private List<String> list = new ArrayList<String>();
@@ -2595,6 +2595,10 @@ public class Compressor {
     private static boolean checkSharedAppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos.isEmpty()) {
             LOG.error("no module included");
+            return false;
+        }
+        if (hapVerifyInfos.size() > SHARED_APP_HSP_COUNT) {
+            LOG.error("Shared app only can contain one module");
             return false;
         }
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
