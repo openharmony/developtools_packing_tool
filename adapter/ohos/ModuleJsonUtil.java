@@ -82,6 +82,7 @@ class ModuleJsonUtil {
     private static final String MAIN = "main";
     private static final String PRELOADS = "preloads";
     private static final String SHARED = "shared";
+    private static final String APP_SERVICE = "appService";
     private static final String REQUEST_PERMISSIONS = "requestPermissions";
     private static final String TARGET_MODULE_NAME = "targetModuleName";
     private static final String TARGET_PRIORITY = "targetPriority";
@@ -1119,11 +1120,7 @@ class ModuleJsonUtil {
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
-        boolean isShared = false;
         String type = moduleObj.getString(TYPE);
-        if (SHARED.equals(type)) {
-            isShared = true;
-        }
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
@@ -1153,12 +1150,14 @@ class ModuleJsonUtil {
                 }
                 return ATOMIC_SERVICE;
             } else if (SHARED.equals(bundleType)) {
-                if (!isShared) {
+                if (!SHARED.equals(type)) {
                     String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is shared.";
                     LOG.error(errMsg);
                     throw new BundleException(errMsg);
                 }
                 return SHARED;
+            } else if (APP_SERVICE.equals(bundleType)) {
+                return APP_SERVICE;
             } else {
                 LOG.error("bundleType is invalid in app.json.");
                 throw new BundleException("bundleType is invalid in app.json.");
@@ -1676,6 +1675,11 @@ class ModuleJsonUtil {
         } else if (SHARED.equals(bundleType)) {
             if (installationFree) {
                 LOG.error("installationFree must be false when bundleType is shared.");
+                return false;
+            }
+        } else if (APP_SERVICE.equals(bundleType)) {
+            if (installationFree) {
+                LOG.error("installationFree must be false when bundleType is appService.");
                 return false;
             }
         } else {
