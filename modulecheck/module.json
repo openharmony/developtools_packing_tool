@@ -367,7 +367,7 @@
                 "excludeFromMissions",
                 "recoverable",
                 "unclearableMission",
-                "specifiedProcess"
+                "isolationProcess"
               ]
             },
             "properties": {
@@ -691,8 +691,8 @@
                 "type": "boolean",
                 "default": false
               },
-              "specifiedProcess": {
-                "description": "Indicates the process in which the component is running",
+              "isolationProcess": {
+                "description": "Specifies whether the ability can run in an independent process",
                 "type": "boolean",
                 "default": false
               }
