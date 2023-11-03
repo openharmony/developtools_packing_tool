@@ -850,7 +850,8 @@ public class CompressVerify {
             LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is empty.");
             return false;
         }
-        if (utility.getOutPath().contains(".")) {
+        File dir = new File(utility.getOutPath());
+        if (dir.exists() && dir.isFile()) {
             LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is file.");
             return false;
         }

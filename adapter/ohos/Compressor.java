@@ -1123,7 +1123,6 @@ public class Compressor {
      * compress in hapAddition mode.
      *
      * @param utility common data
-     * @throws BundleException FileNotFoundException|IOException.
      */
     private void hapAddition(Utility utility) {
         File hapPath = new File(utility.getAbsoluteHapPath());
@@ -1133,7 +1132,7 @@ public class Compressor {
         File outParentFile = destFile.getParentFile();
         if ((outParentFile != null) && (!outParentFile.exists())) {
             if (!outParentFile.mkdirs()) {
-                LOG.error("Compressor::compressProcess create out file parent directory failed.");
+                LOG.error("Compressor::hapAddition create out file parent directory failed.");
             }
         }
         FileOutputStream fileOut = null;
