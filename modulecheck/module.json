@@ -517,7 +517,9 @@
                                 "pathStartWith",
                                 "path",
                                 "pathRegex",
-                                "type"
+                                "type",
+                                "utd",
+                                "maxFileSupported"
                               ]
                             },
                             "required": [
@@ -551,6 +553,14 @@
                               "type": {
                                 "description": "This label is a string type.",
                                 "type": "string"
+                              },
+                              "utd": {
+                                "description": "Indicates the uniform file type supported by the ability. Please refer to https://gitee.com/openharmony/interface_sdk-js/blob/master/api/@ohos.data.uniformTypeDescriptor.d.ts for detailed information",
+                                "type": "string"
+                              },
+                              "maxFileSupported": {
+                                "description": "Indicates the maximum number of files that can be received.",
+                                "type": "integer"
                               }
                             }
                           },
@@ -928,7 +938,9 @@
                                 "pathStartWith",
                                 "path",
                                 "pathRegex",
-                                "type"
+                                "type",
+                                "utd",
+                                "maxFileSupported"
                               ]
                             },
                             "required": [
@@ -962,6 +974,14 @@
                               "type": {
                                 "description": "This label is a string type.",
                                 "type": "string"
+                              },
+                              "utd": {
+                                "description": "Indicates the uniform file type supported by the ability. Please refer to https://gitee.com/openharmony/interface_sdk-js/blob/master/api/@ohos.data.uniformTypeDescriptor.d.ts for detailed information",
+                                "type": "string"
+                              },
+                              "maxFileSupported": {
+                                "description": "Indicates the maximum number of files that can be received.",
+                                "type": "integer"
                               }
                             }
                           },
