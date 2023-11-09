@@ -50,9 +50,11 @@ public class CompressVerify {
     private static final String HQF_SUFFIX = ".hqf";
     private static final String APPQF_SUFFIX = ".appqf";
     private static final String HSP_SUFFIX = ".hsp";
+    private static final String JSON_SUFFIX = ".json";
     private static final String FALSE = "false";
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
     private static final String VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
+    private static final String LINUX_FILE_SEPARATOR = "/";
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
@@ -108,6 +110,8 @@ public class CompressVerify {
                 return isVerifyValidInAPPQFMode(utility);
             case Utility.MODE_HSP:
                 return isVerifyValidInHspMode(utility);
+            case Utility.MODE_HAPADDITION:
+                return isVerifyValidInHapAdditionMode(utility);
             case Utility.VERSION_NORMALIZE:
                 return validateVersionNormalizeMode(utility);
             default:
@@ -808,6 +812,58 @@ public class CompressVerify {
         }
 
         return isOutPathValid(utility, HSP_SUFFIX);
+    }
+
+    private static boolean isVerifyValidInHapAdditionMode(Utility utility) {
+        if (utility.getHapPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath is empty.");
+            return false;
+        }
+        String hapPath = utility.getAbsoluteHapPath();
+        File hapFile = new File(hapPath);
+        if (hapFile.isDirectory()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath cannot be a folder.");
+            return false;
+        }
+        if (!(hapPath.endsWith(HAP_SUFFIX) || hapPath.endsWith(HSP_SUFFIX))) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath is invalid.");
+            return false;
+        }
+        if (!hapFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hap file does not exist.");
+            return false;
+        }
+        if (utility.getJsonPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode jsonPath is empty.");
+            return false;
+        }
+        if (!utility.getJsonPath().endsWith(JSON_SUFFIX)) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode jsonPath is invalid.");
+            return false;
+        }
+        File jsonFile = new File(utility.getJsonPath());
+        if (!jsonFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json file does not exist.");
+            return false;
+        }
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is empty.");
+            return false;
+        }
+        File dir = new File(utility.getOutPath());
+        if (dir.exists() && dir.isFile()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is file.");
+            return false;
+        }
+        File absoluteHapFile = new File(utility.getAbsoluteHapPath());
+        String hapFileName = absoluteHapFile.getName();
+        String destPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName;
+        File destFile = new File(destPath);
+        if ("false".equals(utility.getForceRewrite()) && destFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode target file already exists.");
+            return false;
+        }
+        return true;
     }
 
     private static boolean isSharedApp(Utility utility) {
