@@ -833,6 +833,7 @@
                   "driver",
                   "action", 
                   "adsService",
+                  "autofill/password",
                   "hms/account",
                   "appAccountAuthorization",
                   "ads",
