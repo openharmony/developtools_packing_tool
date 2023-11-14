@@ -39,7 +39,7 @@ CONSTRAINT:
   so parameters are reserved now.
 
 HAP USAGE:
-java -jar hmos_app_packing_tool.jar --mode <option> --json-path <option> --maple-so-path [option]
+java -jar app_packing_tool.jar --mode <option> --json-path <option> --maple-so-path [option]
 --profile-path [option] --maple-so-dir [option] --dex-path [option] --lib-path [option] --assets-path [option]
 --resources-path [option] --shell-apk-path [option] --index-path [option] --out-path <option> --force [option]
 
@@ -68,7 +68,7 @@ HAP MODE OPTIONS:
                                  out file if exists.
 
 HAR USAGE:
-java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option>
+java -jar app_packing_tool.jar --mode <options> --json-path <option>
 --jar-path <option> --lib-path [option] --assets-path [option]
 --resources-path [option] --out-path <option> --force [option]
 OPTIONS:
@@ -87,7 +87,7 @@ OPTIONS:
                                  out file if exists.
 
 APP USAGE:
-java -jar hmos_app_packing_tool.jar --mode <option> --hap-path <option> --out-path <option>
+java -jar app_packing_tool.jar --mode <option> --hap-path <option> --out-path <option>
 --pack-info-path <option> --signature-path [option] --certificate-path [option] --force [option]
 
 APP MODE OPTIONS:
@@ -107,7 +107,7 @@ In both modes, if package success return 0, fail return 1.
 
 EXAMPLES:
 package module1.hap
- java -jar hmos_app_packing_tool.jar --mode hap --json-path example/config.json
+ java -jar app_packing_tool.jar --mode hap --json-path example/config.json
  --index-path example/resources.index --maple-so-path example/maple-so
  --dex-path example/test1.dex,example/test2.dex --shell-apk-path example/test1.apk,example/test2.apk
  --resources-path example/resources/ --lib-path example/lib/ --out-path example/out/module1.hap --force true
@@ -128,14 +128,14 @@ package module1.hap
  |   |   |   test1.so,test2.so
 
 package module2.hap
- java -jar hmos_app_packing_tool.jar --mode hap --json-path example/config.json
+ java -jar app_packing_tool.jar --mode hap --json-path example/config.json
  --out-path example/out/module2.hap --force true
 
  example/out/module2.hap
  |   config.json
 
 package demo.app
- java -jar hmos_app_packing_tool.jar --mode app --hap-path example/out/module1.hap,example/out/module2.hap
+ java -jar app_packing_tool.jar --mode app --hap-path example/out/module1.hap,example/out/module2.hap
  --signature-path example/signature --certificate-path example/certificate
  --pack-info-path example/pack.info --out-path example/out/demo.app --force true
 
@@ -168,7 +168,7 @@ CONSTRANIT:
   And after unpackage an app, all hap file will be unzipped to the output path.
 
 HAP USAGE:
-java -jar hmos_app_unpacking_tool.jar --mode <options> --hap-path <option>
+java -jar app_unpacking_tool.jar --mode <options> --hap-path <option>
 --out-path [option] --force [option] --unpackapk [option]
 
 HAP MODE OPTIONS:
@@ -180,7 +180,7 @@ HAP MODE OPTIONS:
   --unpack-cut_entry             default false; if true, unpack the cut_entry.apk
 
 HAR USAGE:
-java -jar hmos_app_unpacking_tool.jar --mode <options> --har-path <option>
+java -jar app_unpacking_tool.jar --mode <options> --har-path <option>
 --out-path [option] --force [option]
 OPTIONS:
   --mode               not null  must be har.
@@ -190,7 +190,7 @@ OPTIONS:
                                  out file if exists.
 
 APP USAGE:
-java -jar hmos_app_unpacking_tool.jar --mode <options> --app-path <option>
+java -jar app_unpacking_tool.jar --mode <options> --app-path <option>
 --out-path [option] --force [option] --unpackapk [option]
 
 APP MODE OPTIONS:
@@ -207,15 +207,15 @@ In both modes, if unpackage successfully return 0, fail return 1.
 
 EXAMPLES:
 unpackage demo.app
- java -jar hmos_app_unpacking_tool.jar --mode app --app-path example/demo.app
+ java -jar app_unpacking_tool.jar --mode app --app-path example/demo.app
  --out-path example/out/ --force true
 
 unpackage test1.hap
- java -jar hmos_app_unpacking_tool.jar --mode hap --hap-path example/out/module1.hap
+ java -jar app_unpacking_tool.jar --mode hap --hap-path example/out/module1.hap
  --out-path example/out/TEST --force true
 
 unpackage test2.hap
- java -jar hmos_app_unpacking_tool.jar --mode hap --hap-path example/out/module2.hap --force true
+ java -jar app_unpacking_tool.jar --mode hap --hap-path example/out/module2.hap --force true
 
  example/out
  |   module1.hap
