@@ -26,7 +26,7 @@ public interface ShowHelp {
      */
     static void compressHelp() {
         log.info("\nHAP USAGE:\n" +
-                "java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option>\n" +
+                "java -jar app_packing_tool.jar --mode <options> --json-path <option>\n" +
                 "--profile-path [option] --maple-so-path [option] --maple-so-dir [option]\n" +
                 "--dex-path [option] --lib-path [option] --resources-path [option] --assets-path [option]\n" +
                 "--shell-apk-path [option] --index-path [option] --out-path <option> --force [option]\n" +
@@ -53,7 +53,7 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "HAR USAGE:\n" +
-                "java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option>\n" +
+                "java -jar app_packing_tool.jar --mode <options> --json-path <option>\n" +
                 "--jar-path <option> --lib-path [option] --resources-path [option] --txt-path [option]\n" +
                 "--assets-path [option] --out-path <option> --force [option]\n" +
                 "OPTIONS:\n" +
@@ -73,7 +73,7 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "APP USAGE:\n" +
-                "java -jar hmos_app_packing_tool.jar --mode <options> --hap-path <option>\n" +
+                "java -jar app_packing_tool.jar --mode <options> --hap-path <option>\n" +
                 "--pack-info-path [option] --out-path [option] --signature-path [option]\n" +
                 "--certificate-path [option]  --force [option]\n" +
                 "OPTIONS:\n" +
@@ -94,7 +94,7 @@ public interface ShowHelp {
      */
     static void uncompressHelp() {
         log.info("\nHAP USAGE:\n" +
-                "java -jar hmos_app_unpacking_tool.jar --mode <options> --hap-path <option>\n" +
+                "java -jar app_unpacking_tool.jar --mode <options> --hap-path <option>\n" +
                 "--out-path [option] --force [option]\n" +
                 "OPTIONS:\n" +
                 "  --mode               not null  must be hap.\n" +
@@ -106,7 +106,7 @@ public interface ShowHelp {
                 "                                 in the app.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "HAR USAGE:\n" +
-                "java -jar hmos_app_unpacking_tool.jar --mode <options> --har-path <option>\n" +
+                "java -jar app_unpacking_tool.jar --mode <options> --har-path <option>\n" +
                 "--out-path [option] --force [option]\n" +
                 "OPTIONS:\n" +
                 "  --mode               not null  must be har.\n" +
@@ -116,7 +116,7 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "APP USAGE:\n" +
-                "java -jar hmos_app_unpacking_tool.jar --mode <options> --app-path <option>\n" +
+                "java -jar app_unpacking_tool.jar --mode <options> --app-path <option>\n" +
                 "--out-path [option] --force [option]\n" +
                 "OPTIONS:\n" +
                 "  --mode               not null  must be app.\n" +
