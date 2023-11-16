@@ -33,6 +33,11 @@ ohos_prebuilt_etc("formsSchema_json") {
   install_enable = false
 }
 
+ohos_prebuilt_etc("insightIntentSchema_json") {
+  source = "insightIntent.json"
+  install_enable = false
+}
+
 ohos_prebuilt_etc("moduleSchema_json") {
   source = "module.json"
   install_enable = false
