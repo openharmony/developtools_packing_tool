@@ -26,7 +26,7 @@ import java.util.logging.LogRecord;
  */
 public class PackFormatter extends Formatter {
     private static final int LOG_MAX_LIMIT = 1000;
-    private static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss.SSS");
+    private static final DateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
     @Override
 
