@@ -1121,6 +1121,9 @@ public class JsonUtil {
             if (object.containsKey(DEPENDENCY_MODULE_NAME)) {
                 item.setModuleName(object.getString(DEPENDENCY_MODULE_NAME));
             }
+            if (object.containsKey(VERSION_CODE)) {
+                item.setVersionCode(object.getIntValue(VERSION_CODE));
+            }
             dependencyItemList.add(item);
         }
         return dependencyItemList;
