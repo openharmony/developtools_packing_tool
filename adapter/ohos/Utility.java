@@ -270,7 +270,9 @@ public class Utility {
     public void setHapPath(String hapPath) {
         if (!hapPath.startsWith(CMD_PREFIX)) {
             this.hapPath = hapPath;
-            this.absoluteHapPath = getFormattedPath(hapPath);
+            if (MODE_HAPADDITION.equals(this.getMode())) {
+                this.absoluteHapPath = getFormattedPath(hapPath);
+            }
         }
     }
 
