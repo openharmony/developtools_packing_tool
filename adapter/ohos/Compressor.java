@@ -52,6 +52,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
@@ -464,9 +466,13 @@ public class Compressor {
         } catch (BundleException | IOException exception) {
             LOG.error("Compressor::hasGenerateBuildHash failed.");
             throw new BundleException("Compressor::hasGenerateBuildHash failed.");
+        } catch (JSONException e) {
+            LOG.error("Compressor::hasGenerateBuildHash failed for json file is invalid.");
+            throw new BundleException("Compressor::hasGenerateBuildHash failed, " + e.getMessage());
         } finally {
             FileUtils.closeStream(json);
         }
+
         return res;
     }
 
@@ -505,7 +511,7 @@ public class Compressor {
                     SerializerFeature.WriteDateUseDateFormat});
             bw = new BufferedWriter(new FileWriter(utility.getJsonPath()));
             bw.write(pretty);
-        } catch (BundleException | IOException exception) {
+        } catch (BundleException | IOException | JSONException exception) {
             LOG.error("Compressor::setGenerateBuildHash failed.");
             throw new BundleException("Compressor::setGenerateBuildHash failed.");
         } finally {
@@ -1137,25 +1143,28 @@ public class Compressor {
         }
         FileOutputStream fileOut = null;
         CheckedOutputStream checkedOut = null;
+        String currentDir = System.getProperty("user.dir");
+        String hapAdditionPath = currentDir + LINUX_FILE_SEPARATOR + HAPADDITION_FOLDER_NAME;
+        String backName = BACKUP_PREFIX + hapFileName;
+        String hapPathOri = utility.getHapPath();
         try {
-            String backName = BACKUP_PREFIX + hapFileName;
             copyHapFile(utility, backName);
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipOutputStream(checkedOut);
-            compressHapAddition(utility);
-            deleteFile(backName);
-        } catch (FileNotFoundException exception) {
+
+            compressHapAddition(utility, hapAdditionPath);
+        } catch (BundleException | IOException exception) {
             LOG.error("Compressor::HapAddition hapFile not found exception" + exception.getMessage());
-        } catch (BundleException ignored) {
-            LOG.error("Compressor::HapAddition Bundle exception.");
-        } catch (IOException exception) {
-            LOG.error("Compressor::HapAddition IO exception.");
+            copyFileSafely(backName, hapPathOri);
         } finally {
             closeZipOutputStream();
             Utility.closeStream(zipOut);
             Utility.closeStream(checkedOut);
             Utility.closeStream(fileOut);
+            // delete packaging and unpacking process files
+            deleteFile(backName);
+            deleteFile(hapAdditionPath);
         }
     }
 
@@ -1166,6 +1175,16 @@ public class Compressor {
         File backupFile = new File(backupPath);
         FileUtils.copyFile(hapFile, backupFile);
         utility.setHapPath(backName);
+    }
+
+    private void copyFileSafely(String source, String dest) {
+        try {
+            File sourceFile = new File(source);
+            File destFile = new File(dest);
+            FileUtils.copyFile(sourceFile, destFile);
+        } catch (IOException | BundleException e) {
+            LOG.error("copyFileSafely failed");
+        }
     }
 
     private static String readerFile(String jsonPath) throws IOException {
@@ -1182,15 +1201,31 @@ public class Compressor {
         return sb.toString();
     }
 
-    private static void writeJsonFile(String targetPath, JSONObject dataJson) throws IOException {
-        FileWriter fileWriter = new FileWriter(targetPath);
-        // format json
-        String pretty = JSON.toJSONString(dataJson,
-                SerializerFeature.PrettyFormat,
-                SerializerFeature.WriteMapNullValue);
-        fileWriter.write(pretty);
-        fileWriter.flush();
-        fileWriter.close();
+    private static void writeJsonFile(String dataJson, String targetPath) throws BundleException {
+        try {
+            Object object = JSON.parse(dataJson);
+            String jsonString = new String();
+            if (object instanceof JSONArray) {
+                JSONArray jsonArray = JSONArray.parseArray(dataJson);
+                jsonString = JSON.toJSONString(
+                        jsonArray, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+            } else {
+                JSONObject jsonObject = JSONObject.parseObject(dataJson);
+                jsonString = JSON.toJSONString(
+                        jsonObject, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+            }
+
+            FileWriter fileWriter = new FileWriter(targetPath);
+            fileWriter.write(jsonString);
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException exception) {
+            LOG.error("writeJsonFile failed, " + exception.getMessage());
+            throw new BundleException(exception.getMessage());
+        } catch (JSONException e) {
+            LOG.error("json file is invalid");
+            throw new BundleException(e.getMessage());
+        }
     }
 
     private static void setUtilityParameter(String hapAdditionPath, Utility utility) throws IOException {
@@ -1239,16 +1274,15 @@ public class Compressor {
         });
     }
 
-    private void compressHapAddition(Utility utility) throws BundleException, IOException {
+    private void compressHapAddition(Utility utility, String hapAdditionPath) throws BundleException {
         // decompression hap file to hapAddition
-        String currentDir = System.getProperty("user.dir");
-        String hapAdditionPath = currentDir + LINUX_FILE_SEPARATOR + HAPADDITION_FOLDER_NAME;
+
         unpackHap(utility.getHapPath(), hapAdditionPath);
 
         // generate addition.json file
         try {
             String data = readerFile(utility.getJsonPath());
-            JSONObject dataJson = JSONObject.parseObject(data);
+            String currentDir = System.getProperty("user.dir");
             String targetParentPath = currentDir + LINUX_FILE_SEPARATOR + TARGET_FILE_PATH;
             File targetParent = new File(targetParentPath);
             if (!targetParent.exists()) {
@@ -1257,9 +1291,9 @@ public class Compressor {
                 }
             }
             String targetPath = targetParentPath + LINUX_FILE_SEPARATOR + ADDITION_JSON;
-            writeJsonFile(targetPath, dataJson);
-        } catch (IOException e) {
-            String errMsg = "Compressor::compressHapAddition jsonfile failed.";
+            writeJsonFile(data, targetPath);
+        } catch (IOException | JSONException | BundleException e) {
+            String errMsg = "Compressor::compressHapAddition generate addition.json file failed, " + e.getMessage();
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
@@ -1281,8 +1315,6 @@ public class Compressor {
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
-        // delete packaging and unpacking process files
-        deleteFile(hapAdditionPath);
     }
 
     /**
