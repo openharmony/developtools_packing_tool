@@ -2420,8 +2420,8 @@ public class Compressor {
         try {
             while ((lineStr = bufferedReader.readLine()) != null) {
                 if (lineStr.contains(COMPRESS_NATIVE_LIBS)) {
-                    if (lineStr.contains(Utility.FALSE_STRING)) {
-                        utility.setIsCompressNativeLibs(false);
+                    if (lineStr.contains(Utility.TRUE_STRING)) {
+                        utility.setIsCompressNativeLibs(true);
                         break;
                     }
                 }

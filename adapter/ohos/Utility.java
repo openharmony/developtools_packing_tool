@@ -38,6 +38,7 @@ public class Utility {
     static final String MODE_HAPADDITION = "hapAddition";
     static final String VERSION_NORMALIZE = "versionNormalize";
     static final String FALSE_STRING = "false";
+    static final String TRUE_STRING = "true";
 
     private static final String CMD_PREFIX = "--";
     private static final Log LOG = new Log(Utility.class.toString());
@@ -64,7 +65,7 @@ public class Utility {
     private String outPath = "";
     private String packInfoPath = "";
     private String binPath = "";
-    private boolean isCompressNativeLibs = true;
+    private boolean isCompressNativeLibs = false;
     private String moduleName = "";
     private String harPath = "";
     private String hspPath = "";
