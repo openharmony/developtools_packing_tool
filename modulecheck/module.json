@@ -1240,7 +1240,7 @@
         "compressNativeLibs": {
           "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "atomicService": {
           "description": "Indicates the module config in atomic service.",

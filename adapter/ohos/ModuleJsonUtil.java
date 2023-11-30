@@ -1367,7 +1367,7 @@ class ModuleJsonUtil {
             return moduleObj.getBoolean(COMPRESS_NATIVE_LIBS);
         }
 
-        return true;
+        return false;
     }
 
     /**
