@@ -45,6 +45,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipInputStream;
@@ -508,6 +509,9 @@ public class Compressor {
         } catch (BundleException | IOException exception) {
             LOG.error("Compressor::setGenerateBuildHash failed.");
             throw new BundleException("Compressor::setGenerateBuildHash failed.");
+        } catch (NullPointerException e) {
+            LOG.error("Compressor::setGenerateBuildHash failed, json data err: " + e.getMessage());
+            throw new BundleException("Compressor::setGenerateBuildHash failed, json data err.");
         } finally {
             FileUtils.closeStream(json);
             if (bw != null) {
@@ -529,15 +533,16 @@ public class Compressor {
             LOG.error("Compressor::copyFileToTempDir failed for json file not found.");
             throw new BundleException("Compressor::copyFileToTempDir failed for json file not found.");
         }
-        String oldfileParent = oldfile.getParent();
-        mkdir(new File(oldfileParent + File.separator + TEMP_DIR));
+        String oldFileParent = oldfile.getParent();
+        String tempDir = TEMP_DIR + File.separator + UUID.randomUUID();
+        mkdir(new File(oldFileParent + File.separator + tempDir));
         String fileName;
         if (isModuleJSON(utility.getJsonPath())) {
             fileName = MODULE_JSON;
         } else {
             fileName = CONFIG_JSON;
         }
-        String tempPath = oldfileParent + File.separator + TEMP_DIR + File.separator + fileName;
+        String tempPath = oldFileParent + File.separator + tempDir + File.separator + fileName;
 
         try (InputStream inStream = new FileInputStream(jsonPath);
              FileOutputStream fs = new FileOutputStream(tempPath)) {
@@ -631,6 +636,9 @@ public class Compressor {
         } catch (IOException e) {
             LOG.error("Compressor::putBuildHash failed, IOException: " + e.getMessage());
             throw new BundleException("Compressor::putBuildHash failed.");
+        } catch (NullPointerException e) {
+            LOG.error("Compressor::putBuildHash failed, json data err: " + e.getMessage());
+            throw new BundleException("Compressor::putBuildHash failed, json data err.");
         } finally {
             FileUtils.closeStream(json);
             if (bw != null) {
