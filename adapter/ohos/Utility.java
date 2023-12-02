@@ -125,6 +125,10 @@ public class Utility {
     private String hqfList = "";
     private String hspList = "";
     private String inputList = "";
+    private String input = "";
+    private String statDuplicate = "false";
+    private String statSuffix = "false";
+    private String statFileSize = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -806,5 +810,36 @@ public class Utility {
 
     public void setInputList(String inputList) {
         this.inputList = inputList;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = getFormattedPath(input);
+    }
+
+    public String getStatDuplicate() {
+        return statDuplicate;
+    }
+
+    public void setStatDuplicate(String statDuplicate) {
+        this.statDuplicate = statDuplicate;
+    }
+
+    public String getStatSuffix() {
+        return statSuffix;
+    }
+
+    public void setStatSuffix(String statSuffix) {
+        this.statSuffix = statSuffix;
+    }
+    public String getStatFileSize() {
+        return statFileSize;
+    }
+
+    public void setStatFileSize(String statFileSize) {
+        this.statFileSize = statFileSize;
     }
 }
