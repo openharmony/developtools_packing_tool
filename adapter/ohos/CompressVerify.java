@@ -15,7 +15,15 @@
 
 package ohos;
 
+import com.alibaba.fastjson.JSONValidator;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -846,6 +854,11 @@ public class CompressVerify {
             LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json file does not exist.");
             return false;
         }
+        if (!checkJsonIsValid(jsonFile)) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json format is incorrect.");
+            return false;
+        }
+
         if (utility.getOutPath().isEmpty()) {
             LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is empty.");
             return false;
@@ -864,6 +877,22 @@ public class CompressVerify {
             return false;
         }
         return true;
+    }
+
+    private static boolean checkJsonIsValid(File jsonFile) {
+        StringBuffer jsonData = new StringBuffer();
+        try (FileReader fileReader = new FileReader(jsonFile);
+             Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8)) {
+            int ch = 0;
+            while ((ch = reader.read()) != -1) {
+                jsonData.append((char) ch);
+            }
+        } catch (IOException e) {
+            LOG.error("CompressVerify::CheckJsonIsValid failed.");
+            return false;
+        }
+        JSONValidator validator = JSONValidator.from(jsonData.toString());
+        return validator.validate();
     }
 
     private static boolean isSharedApp(Utility utility) {
