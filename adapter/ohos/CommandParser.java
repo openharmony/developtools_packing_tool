@@ -86,6 +86,10 @@ public class CommandParser {
     private static final String VERSION_CODE = "--version-code";
     private static final String VERSION_NAME = "--version-name";
     private static final String INPUT_LIST = "--input-list";
+    private static final String INPUT = "--input";
+    private static final String STAT_DUPLICATE = "--stat-duplicate";
+    private static final String STAT_SUFFIX = "--stat-suffix";
+    private static final String STAT_FILE_SIZE = "--stat-file-size";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -293,6 +297,22 @@ public class CommandParser {
         });
         commandFuncs.put(INPUT_LIST, entry -> {
             entry.getKey().setInputList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(INPUT, entry -> {
+            entry.getKey().setInput(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(STAT_DUPLICATE, entry -> {
+            entry.getKey().setStatDuplicate(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(STAT_SUFFIX, entry -> {
+            entry.getKey().setStatSuffix(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(STAT_FILE_SIZE, entry -> {
+            entry.getKey().setStatFileSize(entry.getValue());
             return true;
         });
     }

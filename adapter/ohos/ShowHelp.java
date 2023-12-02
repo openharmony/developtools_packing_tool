@@ -127,4 +127,38 @@ public interface ShowHelp {
                 "  --unpackapk                    default false; if true, unpack apk files from hap\n" +
                 "                                 in the app.");
     }
+
+    /**
+     * content of scan command help menu.
+     */
+    static void scanHelp() {
+        log.info(System.lineSeparator() + "STAT DUPLICATE USAGE:" + System.lineSeparator() +
+                "java -jar app_check_tool.jar --input [options] --out-path [option]" + System.lineSeparator() +
+                "--stat-duplicate [option]" + System.lineSeparator() +
+                "OPTIONS:" + System.lineSeparator() +
+                "  --input              not null  must be hap or hsp or app." + System.lineSeparator() +
+                "  --out-path           not null  must be folder." + System.lineSeparator() +
+                "  --stat-duplicate     not null  must be true or false." + System.lineSeparator() +
+                "                       if true, count duplicate files." + System.lineSeparator() +
+                "----------------------------------------------------------------------------------"
+                + System.lineSeparator() +
+                "STAT FILE SIZE USAGE:" + System.lineSeparator() +
+                "java -jar app_check_tool.jar --input [options] --out-path [option]" + System.lineSeparator() +
+                "--stat-file-size [option]" + System.lineSeparator() +
+                "OPTIONS:" + System.lineSeparator() +
+                "  --input              not null  must be hap or hsp or app." + System.lineSeparator() +
+                "  --out-path           not null  must be folder." + System.lineSeparator() +
+                "  --stat-file-size     not null  must be an number." + System.lineSeparator() +
+                "                       count files exceeding the specified size." + System.lineSeparator() +
+                "----------------------------------------------------------------------------------"
+                + System.lineSeparator() +
+                "STAT SUFFIX USAGE:" + System.lineSeparator() +
+                "java -jar app_check_tool.jar --input [options] --out-path [option]" + System.lineSeparator() +
+                "--stat-suffix [option]" + System.lineSeparator() +
+                "OPTIONS:" + System.lineSeparator() +
+                "  --input              not null  must be hap or hsp or app." + System.lineSeparator() +
+                "  --out-path           not null  must be folder." + System.lineSeparator() +
+                "  --stat-suffix        not null  must be true or false;" + System.lineSeparator() +
+    "                                   if true, calculate the proportion of various types of files.");
+    }
 }

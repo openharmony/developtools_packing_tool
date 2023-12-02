@@ -55,10 +55,8 @@ public class Scan {
     private static final String BACKUPS = "backups";
     private static final String HAP = ".hap";
     private static final String HSP = ".hsp";
-    private static final String TEMPLATE_HTML = "home/openharmony/developtools/packing_tool/" +
-            "adapter/ohos/scan_template.html";
-    private static final String TEMPLATE_CSS = "home/openharmony/developtools/packing_tool/" +
-            "adapter/ohos/scan_template.css";
+    private static final String TEMPLATE_HTML = "ohos/scan_template.html";
+    private static final String TEMPLATE_CSS = "ohos/scan_template.css";
     private static final String DIV_BOX = "<div id=\"box\">";
     private static final String HTML_BODY = "<body>";
     private static final String HTML_DIV_END = "</div>";

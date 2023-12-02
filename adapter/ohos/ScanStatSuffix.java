@@ -98,8 +98,7 @@ public class ScanStatSuffix {
     private static final String CLASS_TRTD_SUFFIXVALUE = "<tr class=\"suffixLayout\"><td class=\"suffixKey\">";
     private static final String CLASS_TD_SUFFIXVALUE = "</td><td class=\"suffixValue\">";
     private static final String LOG_CREATE_FAILED_MSG =
-            "Compressor::compressHapAddition create target file parent directory failed.";
-    private static final String LOG_UNPACK_FAILED_MSG = "unpack hap failed IOException ";
+            "Scan::statSuffix create target file parent directory failed.";
 
 
     private static final Log LOG = new Log(ScanStatSuffix.class.toString());
@@ -336,12 +335,12 @@ public class ScanStatSuffix {
     }
 
     private String splitPath(String path, String packageName) {
-        String res = EMPTY_STRING;
         String[] split = path.split(packageName);
-        if (split.length > 0) {
-            res = split[1];
+        if (split.length > 1) {
+            return split[1];
+        } else {
+            return path;
         }
-        return res;
     }
 
     private long getOldSize(List<String> soList, File hapFile) {
