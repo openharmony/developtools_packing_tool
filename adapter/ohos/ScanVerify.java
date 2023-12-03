@@ -30,8 +30,6 @@ public class ScanVerify {
     static final String HAP = ".hap";
     static final String HSP = ".hsp";
     static final String APP = ".app";
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
     private static final String EMPTY_STRING = "";
     private static final Pattern PATTERN = Pattern.compile("[0-9]*");
     private static final Long MAX_VALUE = 4294967295L;
@@ -66,11 +64,6 @@ public class ScanVerify {
             return false;
         }
 
-        if (!(TRUE.equals(utility.getStatDuplicate()) || FALSE.equals(utility.getStatDuplicate()))) {
-            LOG.error("ScanVerify::commandVerify statDuplicate is invalid! Must be true or false.");
-            return false;
-        }
-
         if (!utility.getStatFileSize().isEmpty()) {
             if (!PATTERN.matcher(utility.getStatFileSize()).matches()) {
                 LOG.error("ScanVerify::commandVerify statFileSize is invalid!"
@@ -85,12 +78,7 @@ public class ScanVerify {
             }
         }
 
-        if (!(TRUE.equals(utility.getStatSuffix()) || FALSE.equals(utility.getStatSuffix()))) {
-            LOG.error("ScanVerify::commandVerify statSuffix is invalid! Must be true or false.");
-            return false;
-        }
-
-        if (FALSE.equals(utility.getStatSuffix()) && FALSE.equals(utility.getStatDuplicate())
+        if (!utility.getStatSuffix() && !utility.getStatDuplicate()
                 && EMPTY_STRING.equals(utility.getStatFileSize())) {
             LOG.error("ScanVerify::commandVerify stat parameter is null.");
         }

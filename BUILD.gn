@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,6 +17,7 @@ import("//developtools/packing_tool/packingtool.gni")
 packing_tool("packing_tool") {
   sources = [
     "//developtools/packing_tool/adapter/ohos",
+    "//developtools/packing_tool/checkTool.sh",
     "//developtools/packing_tool/haptobin.sh",
     "//developtools/packing_tool/packingTool.sh",
     "//developtools/packing_tool/unpackingTool.sh",
@@ -26,6 +27,7 @@ packing_tool("packing_tool") {
     "${target_out_dir}/jar/app_unpacking_tool.jar",
     "${target_out_dir}/jar/app_packing_tool.jar",
     "${target_out_dir}/jar",
+    "${target_out_dir}/jar/app_check_tool.jar",
   ]
 }
 
@@ -46,6 +48,13 @@ ohos_prebuilt_etc("app_unpacking_tool") {
 ohos_prebuilt_etc("app_packing_tool") {
   list = get_target_outputs(":packing_tool")
   source = list[2]
+  deps = [ ":packing_tool" ]
+  install_enable = false
+}
+
+ohos_prebuilt_etc("app_check_tool") {
+  list = get_target_outputs(":packing_tool")
+  source = list[4]
   deps = [ ":packing_tool" ]
   install_enable = false
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2021 Huawei Device Co., Ltd.
+<!-- Copyright (c) 2021-2023 Huawei Device Co., Ltd.
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="img/打包工具架构图.webp" desc="the webp file for packing tool, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/app_packing_tool.jar" desc="the jar file for packing pre-installed hap, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/app_unpacking_tool.jar" desc="the jar file for unpacking hap, the file is self-developed"/>
+                <filteritem type="filepath" name="jar/app_check_tool.jar" desc="the jar file for check hap, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/haptobin_tool.jar" desc="the jar file for hap to bin hap, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/fastjson-1.2.83.jar" desc="the jar file for fast json, the file is self-developed"/>
             </filefilter>

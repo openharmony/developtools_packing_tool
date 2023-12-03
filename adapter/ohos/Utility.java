@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -126,8 +126,8 @@ public class Utility {
     private String hspList = "";
     private String inputList = "";
     private String input = "";
-    private String statDuplicate = "false";
-    private String statSuffix = "false";
+    private boolean statDuplicate = false;
+    private boolean statSuffix = false;
     private String statFileSize = "";
 
     public void setIsParse(boolean isParse) {
@@ -820,19 +820,19 @@ public class Utility {
         this.input = getFormattedPath(input);
     }
 
-    public String getStatDuplicate() {
+    public boolean getStatDuplicate() {
         return statDuplicate;
     }
 
-    public void setStatDuplicate(String statDuplicate) {
+    public void setStatDuplicate(boolean statDuplicate) {
         this.statDuplicate = statDuplicate;
     }
 
-    public String getStatSuffix() {
+    public boolean getStatSuffix() {
         return statSuffix;
     }
 
-    public void setStatSuffix(String statSuffix) {
+    public void setStatSuffix(boolean statSuffix) {
         this.statSuffix = statSuffix;
     }
     public String getStatFileSize() {
