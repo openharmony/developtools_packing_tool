@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -30,6 +30,7 @@ def main():
     parser.add_argument('--haptobinOutput', required=True)
     parser.add_argument('--unpackOutput', required=True)
     parser.add_argument('--packOutput', required=True)
+    parser.add_argument('--checkOutput', required=True)
     parser.add_argument('--outpath', required=True)
     parser.add_argument('--toolchain', required=True)
     parser.add_argument('--compileTarget', required=True)
@@ -37,6 +38,7 @@ def main():
     print(args.haptobinOutput)
     print(args.unpackOutput)
     print(args.packOutput)
+    print(args.checkOutput)
     print(args.outpath)
     print(args.compileTarget)
     root_dir = os.path.dirname(os.path.realpath(__file__))
@@ -85,6 +87,16 @@ def main():
         print(pack_out.decode('utf-8'))
         print(pack_err.decode('utf-8'))
         raise Exception("compile packing tool java class failed!")
+    
+    #compile app_check_tool.jar
+    check_tool_shell_path = os.path.join(root_dir, "checkTool.sh")
+    command_check = ['bash', check_tool_shell_path, root_dir, args.checkOutput, args.outpath, toolchain]
+    child_check = subprocess.Popen(command_check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    check_out, check_err = child_check.communicate(timeout=time_out)
+    if child_check.returncode != 0:
+        print(check_out.decode('utf-8'))
+        print(check_err.decode('utf-8'))
+        raise Exception("compile check tool java class failed!")
 
 if __name__ == '__main__':
     sys.exit(main())

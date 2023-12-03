@@ -109,7 +109,7 @@ public class Scan {
         String currentDir = System.getProperty(USER_DIR);
         String targetPath = currentDir + LINUX_FILE_SEPARATOR + UNPACK_NAME;
         List<String> fileList = getAllInputFileList(utility, targetPath);
-        if (TRUE.equals(utility.getStatDuplicate())) {
+        if (utility.getStatDuplicate()) {
             ScanStatDuplicate scanStatDuplicate = new ScanStatDuplicate();
             String duplicateHtml = scanStatDuplicate.statDuplicate(utility, jsonList, fileList);
             htmlStr = htmlStr + duplicateHtml;
@@ -119,12 +119,12 @@ public class Scan {
             String fileSizeHtml = scanStatFileSize.statFileSize(utility, jsonList, fileList);
             htmlStr = htmlStr + fileSizeHtml;
         }
-        if (TRUE.equals(utility.getStatSuffix())) {
+        if (utility.getStatSuffix()) {
             ScanStatSuffix scanStatSuffix = new ScanStatSuffix();
             String suffixHtml = scanStatSuffix.statSuffix(utility, jsonList, fileList);
             htmlStr = htmlStr + suffixHtml;
         }
-        if (!((FALSE.equals(utility.getStatDuplicate())) && FALSE.equals(utility.getStatSuffix())
+        if (!((!utility.getStatDuplicate()) && !utility.getStatSuffix()
                 && EMPTY_STRING.equals(utility.getStatFileSize()))) {
             htmlStr = htmlStr + HTML_DIV_END + HTML_BODY_END + HTML_END;
             String jsonPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + STAT_JSON;
