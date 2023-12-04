@@ -861,7 +861,8 @@
                   "sysPicker/share",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
-                  "sys/commonUI"
+                  "sys/commonUI",
+                  "fileAccess"
                 ]
               },
               "permissions": {
