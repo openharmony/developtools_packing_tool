@@ -40,8 +40,6 @@ import java.util.zip.ZipInputStream;
  */
 
 public class Scan {
-    private static final String TRUE = "true";
-    private static final String FALSE = "false";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String EMPTY_STRING = "";
     private static final String HTML_START = "<!DOCTYPE html><html lang=\"en\">";
@@ -66,6 +64,7 @@ public class Scan {
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final Log LOG = new Log(Scan.class.toString());
 
+
     /**
      * start scan.
      *
@@ -77,7 +76,7 @@ public class Scan {
         File outParentFile = destFile.getParentFile();
         if ((outParentFile != null) && (!outParentFile.exists())) {
             if (!outParentFile.mkdirs()) {
-                LOG.error("Scan::scanProcess create out file parent directory failed.");
+                LOG.error(ScanErrorEnum.SCAN_MKDIRS_ERROR.toString());
                 return false;
             }
         }
@@ -86,15 +85,15 @@ public class Scan {
             scanExecute(utility);
         } catch (FileNotFoundException exception) {
             scanResult = false;
-            LOG.error("Scan::scanProcess file not found exception" + exception.getMessage());
+            LOG.error(ScanErrorEnum.SCAN_NOT_FOUND_ERROR + exception.getMessage());
         } catch (BundleException | NoSuchAlgorithmException | IOException exception) {
             scanResult = false;
-            LOG.error("Scan::scanProcess exception." + exception.getMessage());
+            LOG.error(ScanErrorEnum.SCAN_REMIND_ERROR + exception.getMessage());
         } finally {
             if (!scanResult) {
-                LOG.error("Scan::scanProcess compress failed.");
+                LOG.error(ScanErrorEnum.SCAN_COMPRESS_ERROR.toString());
                 if (!destFile.delete()) {
-                    LOG.error("Scan::scanProcess delete dest file failed.");
+                    LOG.error(ScanErrorEnum.SCAN_DELETE_ERROR.toString());
                 }
             }
         }
@@ -145,7 +144,7 @@ public class Scan {
         File file = new File(path);
         File[] files = file.listFiles();
         if (files == null) {
-            LOG.error("getAllInputFileList: no file in this file path.");
+            LOG.error(ScanErrorEnum.SCAN_NO_FILE_ERROR.toString());
             return fileList;
         }
         String copyPath = path + LINUX_FILE_SEPARATOR + BACKUPS;
@@ -186,8 +185,8 @@ public class Scan {
             }
             unpackEntryToFile(zipInputStream, outPath);
         } catch (IOException e) {
-            LOG.error("unpack hap failed IOException " + e.getMessage());
-            throw new BundleException("unpack hap failed IOException " + e.getMessage());
+            LOG.error(ScanErrorEnum.SCAN_UNPACK_ERROR + e.getMessage());
+            throw new BundleException(ScanErrorEnum.SCAN_UNPACK_ERROR.msg + e.getMessage());
         }
     }
 
@@ -214,8 +213,8 @@ public class Scan {
                     fos.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                LOG.error("unpack hap FileOutputStream failed IOException " + e.getMessage());
-                throw new BundleException("unpack hap FileOutputStream failed IOException " + e.getMessage());
+                LOG.error(ScanErrorEnum.SCAN_UNPACK_ERROR + e.getMessage());
+                throw new BundleException(ScanErrorEnum.SCAN_UNPACK_ERROR.msg + e.getMessage());
             }
             zipInputStream.closeEntry();
         }
@@ -246,8 +245,8 @@ public class Scan {
             }
             return template.toString();
         } catch (IOException e) {
-            LOG.error("getJsTemplate failed IOException " + e.getMessage());
-            throw new IOException("getJsTemplate failed IOException " + e.getMessage());
+            LOG.error(ScanErrorEnum.SCAN_GET_JS_TEMPLATE_ERROR + e.getMessage());
+            throw new IOException(ScanErrorEnum.SCAN_GET_JS_TEMPLATE_ERROR.msg + e.getMessage());
         }
     }
 
@@ -256,8 +255,8 @@ public class Scan {
             fileWriter.write(data);
             fileWriter.flush();
         } catch (IOException e) {
-            LOG.error("writeFile failed IOException " + e.getMessage());
-            throw new IOException("writeFile failed IOException " + e.getMessage());
+            LOG.error(ScanErrorEnum.SCAN_WRITEFILE_ERROR + e.getMessage());
+            throw new IOException(ScanErrorEnum.SCAN_WRITEFILE_ERROR.msg + e.getMessage());
         }
     }
 }

@@ -44,43 +44,41 @@ public class ScanVerify {
      */
     public static boolean commandVerify(Utility utility) {
         if (utility == null) {
-            LOG.error("ScanVerify::commandVerify utility is null.");
+            LOG.error(ScanErrorEnum.SCAN_VERIFY_UTILITY_EMPTY_ERROR.toString());
             return false;
         }
 
         if (utility.getInput().isEmpty()) {
-            LOG.error("ScanVerify::commandVerify input is null.");
+            LOG.error(ScanErrorEnum.SCAN_VERIFY_INPUT_EMPTY_ERROR.toString());
             return false;
         }
 
         if (!(utility.getInput().endsWith(HAP) || utility.getInput().endsWith(HSP)
                 || utility.getInput().endsWith(APP))) {
-            LOG.error("ScanVerify::commandVerify input is invalid!");
+            LOG.error(ScanErrorEnum.SCAN_VERIFY_INPUT_INVALID_ERROR.toString());
             return false;
         }
 
         if (utility.getOutPath().isEmpty()) {
-            LOG.error("ScanVerify::commandVerify outPath is null.");
+            LOG.error(ScanErrorEnum.SCAN_VERIFY_OUT_PATH_EMPTY_ERROR.toString());
             return false;
         }
 
         if (!utility.getStatFileSize().isEmpty()) {
             if (!PATTERN.matcher(utility.getStatFileSize()).matches()) {
-                LOG.error("ScanVerify::commandVerify statFileSize is invalid!"
-                        + " Must be integer in [0, 4294967295]");
+                LOG.error(ScanErrorEnum.SCAN_VERIFY_STAT_FILE_SIZE_INVALID_ERROR.toString());
                 return false;
             }
             if (new BigDecimal(utility.getStatFileSize()).compareTo(BigDecimal.ZERO) < 0
                     || new BigDecimal(utility.getStatFileSize()).compareTo(new BigDecimal(MAX_VALUE)) > 0) {
-                LOG.error("ScanVerify::commandVerify statFileSize is invalid!"
-                        + " Must be integer in [0, 4294967295]");
+                LOG.error(ScanErrorEnum.SCAN_VERIFY_STAT_FILE_SIZE_INVALID_ERROR.toString());
                 return false;
             }
         }
 
         if (!utility.getStatSuffix() && !utility.getStatDuplicate()
                 && EMPTY_STRING.equals(utility.getStatFileSize())) {
-            LOG.error("ScanVerify::commandVerify stat parameter is null.");
+            LOG.error(ScanErrorEnum.SCAN_VERIFY_STAT_PARAMETER_EMPTY_ERROR.toString());
         }
 
         return true;
