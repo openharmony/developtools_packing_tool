@@ -48,6 +48,7 @@ declare -a compile_class=(
             "ScanStatDuplicate"
             "ScanStatFileSize"
             "ScanStatSuffix"
+            "ScanErrorEnum"
             "Log"
             "PackFormatter"
             "ShowHelp"
