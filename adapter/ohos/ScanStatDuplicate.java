@@ -173,7 +173,7 @@ public class ScanStatDuplicate {
         List<ParamModel> resList = getDuplicateResList(fileList);
         File parentFile = new File(utility.getOutPath());
         if (!parentFile.exists() && !parentFile.mkdirs()) {
-            LOG.error("Scan::statDuplicate create target file parent directory failed.");
+            LOG.error(ScanErrorEnum.STAT_DUPLICATE_CREATE_FILE_ERROR.toString());
         }
         List<ParamModel> filterList = new ArrayList<>();
         for (ParamModel model : resList) {
@@ -304,11 +304,11 @@ public class ScanStatDuplicate {
             BigInteger bigInt = new BigInteger(1, md5Bytes);
             return bigInt.toString(MD5_LENGTH);
         } catch (IOException e) {
-            LOG.error("md5HashCode InputStream failed IOException " + e.getMessage());
-            throw new IOException("md5HashCode InputStream failed IOException " + e.getMessage());
+            LOG.error(ScanErrorEnum.STAT_DUPLICATE_INPUT_STREAM_ERROR + e.getMessage());
+            throw new IOException(ScanErrorEnum.STAT_DUPLICATE_INPUT_STREAM_ERROR.msg + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
-            LOG.error("md5HashCode MessageDigest failed NoSuchAlgorithmException " + e.getMessage());
-            throw new NoSuchAlgorithmException("md5HashCode MessageDigest failed NoSuchAlgorithmException "
+            LOG.error(ScanErrorEnum.STAT_DUPLICATE_MESSAGE_DIGEST_ERROR + e.getMessage());
+            throw new NoSuchAlgorithmException(ScanErrorEnum.STAT_DUPLICATE_MESSAGE_DIGEST_ERROR.msg
                     + e.getMessage());
         }
     }

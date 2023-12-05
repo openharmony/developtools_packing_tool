@@ -97,10 +97,6 @@ public class ScanStatSuffix {
     private static final String CLASS_SUFFIXVALUE = " class=\"suffixValue\"";
     private static final String CLASS_TRTD_SUFFIXVALUE = "<tr class=\"suffixLayout\"><td class=\"suffixKey\">";
     private static final String CLASS_TD_SUFFIXVALUE = "</td><td class=\"suffixValue\">";
-    private static final String LOG_CREATE_FAILED_MSG =
-            "Scan::statSuffix create target file parent directory failed.";
-
-
     private static final Log LOG = new Log(ScanStatSuffix.class.toString());
 
     private static class FileInfo {
@@ -239,7 +235,7 @@ public class ScanStatSuffix {
         suffixResult.setResult(resulList);
         File parentFile = new File(utility.getOutPath());
         if (!parentFile.exists() && !parentFile.mkdirs()) {
-            LOG.error(LOG_CREATE_FAILED_MSG);
+            LOG.error(ScanErrorEnum.SUFFIX_MKDIRS_ERROR.toString());
         }
         suffixResult.setStopTime(getCurrentTime());
         String htmlStr = setHtmlData(suffixResult);
@@ -504,8 +500,8 @@ public class ScanStatSuffix {
             }
             unpackEntryToFile(zipInputStream, outPath);
         } catch (IOException e) {
-            LOG.error("unpack hap failed IOException " + e.getMessage());
-            throw new BundleException("unpack hap failed IOException " + e.getMessage());
+            LOG.error(ScanErrorEnum.SUFFIX_UNPACK_ERROR + e.getMessage());
+            throw new BundleException(ScanErrorEnum.SUFFIX_UNPACK_ERROR.msg + e.getMessage());
         }
     }
 
@@ -532,8 +528,8 @@ public class ScanStatSuffix {
                     fos.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                LOG.error("unpack hap FileOutputStream failed IOException " + e.getMessage());
-                throw new BundleException("unpack hap FileOutputStream failed IOException " + e.getMessage());
+                LOG.error(ScanErrorEnum.SUFFIX_UNPACK_STREAM_ERROR + e.getMessage());
+                throw new BundleException(ScanErrorEnum.SUFFIX_UNPACK_STREAM_ERROR.msg + e.getMessage());
             }
             zipInputStream.closeEntry();
         }

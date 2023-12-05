@@ -38,20 +38,20 @@ public class ScanEntrance {
         Utility utility = new Utility();
 
         if (!CommandParser.commandParser(utility, args)) {
-            LOG.error("ScanEntrance::main exit, parser failed");
+            LOG.error(ScanErrorEnum.SCAN_ENTRANCE_PARSER_ERROR.toString());
             ShowHelp.scanHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
 
         if (!ScanVerify.commandVerify(utility)) {
-            LOG.error("ScanEntrance::main exit, verify failed");
+            LOG.error(ScanErrorEnum.SCAN_ENTRANCE_VERIFY_ERROR.toString());
             ShowHelp.scanHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
 
         Scan scan = new Scan();
         if (!scan.scanProcess(utility)) {
-            LOG.error("ScanEntrance::main exit, compress failed");
+            LOG.error(ScanErrorEnum.SCAN_ENTRANCE_COMPRESS_ERROR.toString());
             ShowHelp.scanHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }

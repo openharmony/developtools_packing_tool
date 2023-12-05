@@ -163,7 +163,7 @@ public class ScanStatFileSize {
         fileSizeResult.setStopTime(getCurrentTime());
         File parentFile = new File(utility.getOutPath());
         if (!parentFile.exists() && !parentFile.mkdirs()) {
-            LOG.error("Scan::statFileSize create target file parent directory failed.");
+            LOG.error(ScanErrorEnum.SCAN_STAT_FILE_SIZE_CREATE_FILE_PARENT_ERROR.toString());
         }
         String jsonStr = JSON.toJSONString(fileSizeResult, new SerializerFeature[] {
                 SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
