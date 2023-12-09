@@ -776,7 +776,8 @@
                 "visible",
                 "exported",
                 "skills",
-                "metadata"
+                "metadata",
+                "extensionProcessMode"
               ]
             },
             "properties": {
@@ -1044,6 +1045,16 @@
                     }
                   }
                 }
+              },
+              "extensionProcessMode": {
+                "description": "Indicates the extension support multi instance model.",
+                "type": "string",
+                "enum": [
+                  "instance",
+                  "type",
+                  "bundle"
+                ],
+                "default": "instance"
               }
             }
           }
