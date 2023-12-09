@@ -34,8 +34,6 @@ class HapVerify {
     private static final String INCLUDE = "include";
     private static final String EXCLUDE = "exclude";
     private static final Log LOG = new Log(HapVerify.class.toString());
-    private static final int SERVICE_DEPTH = 2;
-    private static final int APPLICATION_DEPTH = 5;
     private static final String EMPTY_STRING = "";
     private static final String ENTRY = "entry";
     private static final String FEATURE = "feature";
@@ -1017,11 +1015,10 @@ class HapVerify {
                 return false;
             }
         }
-        int depth = isInstallationFree ? SERVICE_DEPTH : APPLICATION_DEPTH;
         for (HapVerifyInfo hapVerifyInfo : allHapVerifyInfo) {
             List<HapVerifyInfo> dependencyList = new ArrayList<>();
             dependencyList.add(hapVerifyInfo);
-            if (!dfsTraverseDependency(hapVerifyInfo, allHapVerifyInfo, dependencyList, depth)) {
+            if (!dfsTraverseDependency(hapVerifyInfo, allHapVerifyInfo, dependencyList)) {
                 return false;
             }
             dependencyList.remove(dependencyList.size() - 1);
@@ -1035,20 +1032,14 @@ class HapVerify {
      * @param hapVerifyInfo the first node of dependency list
      * @param allHapVerifyInfo is all input hap module
      * @param dependencyList is the current dependency list
-     * @param depth is th limit of depth
      * @return true if dependency list is valid
      * @throws BundleException when input hapVerifyInfo is invalid
      */
     private static boolean dfsTraverseDependency(
         HapVerifyInfo hapVerifyInfo, List<HapVerifyInfo> allHapVerifyInfo,
-        List<HapVerifyInfo> dependencyList, int depth) throws BundleException {
+        List<HapVerifyInfo> dependencyList) throws BundleException {
         // check dependencyList is valid
         if (checkDependencyListCirculate(dependencyList)) {
-            return false;
-        }
-        if (dependencyList.size() > depth + 1) {
-            LOG.error("dependency list depth exceed, dependencyList is "
-                    + getHapVerifyInfoListNames(dependencyList) + ".");
             return false;
         }
         for (DependencyItem dependency : hapVerifyInfo.getDependencyItemList()) {
@@ -1067,7 +1058,7 @@ class HapVerify {
                     return false;
                 }
                 dependencyList.add(item);
-                if (!dfsTraverseDependency(item, allHapVerifyInfo, dependencyList, depth)) {
+                if (!dfsTraverseDependency(item, allHapVerifyInfo, dependencyList)) {
                     return false;
                 }
                 dependencyList.remove(dependencyList.size() - 1);
