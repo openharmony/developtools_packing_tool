@@ -21,6 +21,7 @@
         "propertyNames": {
           "enum": [
             "name",
+            "displayName",
             "description",
             "src",
             "uiSyntax",
@@ -73,6 +74,11 @@
             "description": "Indicates the name of the form class. The tag value is a string of up to 127 bytes. The tag cannot be default.",
             "type": "string",
             "maxLength": 127
+          },
+          "displayName" : {
+            "description": "This tag identifies the display name of the form. The tag value can be a string indicating the display name content (a string of up to 30 bytes). This tag can be left blank by default.",
+            "type": "string",
+            "maxLength": 30
           },
           "description": {
             "description": "This tag identifies the description of the form. The tag value can be a string indicating the description content (a string of up to 255 bytes. If the length exceeds 255 bytes, use the resource index mode) or the resource index of the description content to support multiple languages. This tag can be left blank by default.",
