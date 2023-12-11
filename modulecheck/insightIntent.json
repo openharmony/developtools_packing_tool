@@ -108,7 +108,7 @@
               }
             }
           },
-          "UIExtension": {
+          "uiExtension": {
             "type": "object",
             "propertyNames": {
               "enum": [
