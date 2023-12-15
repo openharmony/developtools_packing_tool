@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 import java.util.UUID;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
+import java.util.zip.Deflater;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -335,6 +336,7 @@ public class Compressor {
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipOutputStream(checkedOut);
+            zipOut.setLevel(Deflater.BEST_SPEED);
             compressExcute(utility);
         } catch (FileNotFoundException exception) {
             compressResult = false;
