@@ -90,6 +90,10 @@ public class CommandParser {
     private static final String STAT_DUPLICATE = "--stat-duplicate";
     private static final String STAT_SUFFIX = "--stat-suffix";
     private static final String STAT_FILE_SIZE = "--stat-file-size";
+    private static final String PARSER_STAT_DUPLICATE_ERROR = "code:9132600 " +
+            "error:statDuplicate is invalid! Must be true or false.";
+    private static final String PARSER_STAT_SUFFIX_ERROR = "code:9132601 " +
+            "error:statSuffix is invalid! Must be true or false.";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -304,12 +308,22 @@ public class CommandParser {
             return true;
         });
         commandFuncs.put(STAT_DUPLICATE, entry -> {
-            entry.getKey().setStatDuplicate(Boolean.parseBoolean(entry.getValue()));
-            return true;
+            if (Boolean.TRUE.toString().equals(entry.getValue()) || Boolean.FALSE.toString().equals(entry.getValue())) {
+                entry.getKey().setStatDuplicate(Boolean.parseBoolean(entry.getValue()));
+                return true;
+            } else {
+                LOG.error(PARSER_STAT_DUPLICATE_ERROR);
+                return false;
+            }
         });
         commandFuncs.put(STAT_SUFFIX, entry -> {
-            entry.getKey().setStatSuffix(Boolean.parseBoolean(entry.getValue()));
-            return true;
+            if (Boolean.TRUE.toString().equals(entry.getValue()) || Boolean.FALSE.toString().equals(entry.getValue())) {
+                entry.getKey().setStatSuffix(Boolean.parseBoolean(entry.getValue()));
+                return true;
+            } else {
+                LOG.error(PARSER_STAT_SUFFIX_ERROR);
+                return false;
+            }
         });
         commandFuncs.put(STAT_FILE_SIZE, entry -> {
             entry.getKey().setStatFileSize(entry.getValue());
