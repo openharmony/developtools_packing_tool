@@ -69,6 +69,7 @@ public class ScanStatFileSize {
     private static final String CLASS_KEY = " class=\"key\"";
     private static final String CLASS_VALUE = " class=\"value\"";
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss:SSS";
+    private static final int INPUT_BYTE_SIZE = 1024;
     private static final Log LOG = new Log(ScanStatFileSize.class.toString());
 
     private static class ParamModelFileSize {
@@ -150,7 +151,7 @@ public class ScanStatFileSize {
         for (String filePath : fileList) {
             long statFileSize = Long.parseLong(utility.getStatFileSize());
             long size = FileUtils.getFileSize(filePath);
-            if (size > statFileSize) {
+            if (size > statFileSize * INPUT_BYTE_SIZE) {
                 ParamModelFileSize model = new ParamModelFileSize();
                 model.setFile(splitPath(filePath, UNPACK_NAME));
                 model.setSize(size);
