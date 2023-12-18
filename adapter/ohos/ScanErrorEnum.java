@@ -31,8 +31,9 @@ public enum ScanErrorEnum {
     SCAN_VERIFY_INPUT_INVALID_ERROR(9132102, "ScanVerify commandVerify input is invalid!"),
     SCAN_VERIFY_OUT_PATH_EMPTY_ERROR(9132103, "ScanVerify commandVerify outPath is null."),
     SCAN_VERIFY_STAT_FILE_SIZE_INVALID_ERROR(9132104,
-            "ScanVerify commandVerify statFileSize is invalid!  Must be integer in [0, 4294967295]"),
-    SCAN_VERIFY_STAT_PARAMETER_EMPTY_ERROR(9132105, "ScanVerify commandVerify stat parameter is null."),
+            "ScanVerify commandVerify statFileSize is invalid! Must be integer in [0, 4294967295]"),
+    SCAN_VERIFY_STAT_PARAMETER_EMPTY_ERROR(9132105, "ScanVerify commandVerify stat parameter is null. " +
+            "At least one of the parameters：--stat-duplicate true | --stat-suffix true | --stat-file-size 0"),
     STAT_DUPLICATE_CREATE_FILE_ERROR(9131300, "statDuplicate create target file parent directory failed."),
     STAT_DUPLICATE_INPUT_STREAM_ERROR(9134301, "md5HashCode InputStream failed IOException "),
     STAT_DUPLICATE_MESSAGE_DIGEST_ERROR(9134302,
