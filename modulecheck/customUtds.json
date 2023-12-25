@@ -41,14 +41,16 @@
           "typeId": {
             "description": "Indicates the name of utd type.",
             "type": "string",
-            "pattern": "[a-zA-Z0-9/.-]+$"
+            "pattern": "[a-zA-Z0-9/.-]+$",
+            "maxLength": 127
           },
           "belongingToTypes": {
             "description": "Indicates the utd type that this type depends on.",
             "type": "array",
             "uniqueItems": true,
             "items": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 127
             }
           },
           "filenameExtensions": {
@@ -57,7 +59,8 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^[/.].*"
+              "pattern": "^[/.].*",
+              "maxLength": 127
             }
           },
           "mimeTypes": {
@@ -65,31 +68,37 @@
             "type": "array",
             "uniqueItems": true,
             "items": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 127
             }
           },
           "description": {
             "description": "Indicates the description of utd type.",
-            "type": "string"
+            "type": "string",
+            "maxLength": 255
           },
           "referenceURL": {
             "description": "Indicates the referenceURL of utd type.",
-            "type": "string"
+            "type": "string",
+            "maxLength": 255
           },
           "iconFile": {
             "description": "Indicates the icon file of utd type.",
-            "type": "string"
+            "type": "string",
+            "maxLength": 255
           },
           "ownerBundle": {
             "description": "Indicates the owner bundle of utd type.",
-            "type": "string"
+            "type": "string",
+            "maxLength": 127
           },
           "installerBundles": {
             "description": "Indicates the installer bundles of utd type.",
             "type": "array",
             "uniqueItems": true,
             "items": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 127
             }
           }
         }
