@@ -28,14 +28,13 @@
             "mimeTypes",
             "description",
             "referenceURL",
-            "iconFile",
-            "ownerBundle",
-            "installerBundles"
+            "iconFile"
           ]
         },
         "required": [
           "typeId",
-          "belongingToTypes"
+          "belongingToTypes",
+          "description"
         ],
         "properties": {
           "typeId": {
@@ -77,7 +76,8 @@
           "description": {
             "description": "Indicates the description of utd type.",
             "type": "string",
-            "maxLength": 255
+            "maxLength": 255,
+            "minLength": 1
           },
           "referenceURL": {
             "description": "Indicates the referenceURL of utd type.",
@@ -88,21 +88,6 @@
             "description": "Indicates the icon file of utd type.",
             "type": "string",
             "maxLength": 255
-          },
-          "ownerBundle": {
-            "description": "Indicates the owner bundle of utd type.",
-            "type": "string",
-            "maxLength": 127
-          },
-          "installerBundles": {
-            "description": "Indicates the installer bundles of utd type.",
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "maxLength": 127,
-              "minLength": 1
-            }
           }
         }
       }
