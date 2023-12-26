@@ -50,13 +50,14 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "maxLength": 127
+              "maxLength": 127,
+              "minLength": 1
             }
           },
           "filenameExtensions": {
             "description": "Indicates the file name extensions of utd type.",
             "type": "array",
-            "uniqueItems": true,
+            "uniqueItems": false,
             "items": {
               "type": "string",
               "pattern": "^[/.].*",
@@ -66,10 +67,11 @@
           "mimeTypes": {
             "description": "Indicates the mime types of utd type.",
             "type": "array",
-            "uniqueItems": true,
+            "uniqueItems": false,
             "items": {
               "type": "string",
-              "maxLength": 127
+              "maxLength": 127,
+              "minLength": 1
             }
           },
           "description": {
@@ -98,7 +100,8 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "maxLength": 127
+              "maxLength": 127,
+              "minLength": 1
             }
           }
         }
