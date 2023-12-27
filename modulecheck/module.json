@@ -858,6 +858,7 @@
                   "sysDialog/meetimeCall",
                   "sysDialog/meetimeContact",
                   "sysDialog/meetimeMessage",
+                  "sysDialog/print",
                   "sysPicker/mediaControl",
                   "sysPicker/share",
                   "sysPicker/meetimeContact",
