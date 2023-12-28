@@ -1,0 +1,96 @@
+{
+  "title": "JSON schema for utd-adt.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "customUtds"
+  ],
+  "propertyNames": {
+    "enum": [
+      "customUtds"
+    ]
+  },
+  "properties": {
+    "customUtds": {
+      "description": "Indicates the configuration of customUtds.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "typeId",
+            "belongingToTypes",
+            "filenameExtensions",
+            "mimeTypes",
+            "description",
+            "referenceURL",
+            "iconFile"
+          ]
+        },
+        "required": [
+          "typeId",
+          "belongingToTypes",
+          "description"
+        ],
+        "properties": {
+          "typeId": {
+            "description": "Indicates the name of utd type.",
+            "type": "string",
+            "pattern": "[a-zA-Z0-9/.-]+$",
+            "maxLength": 127
+          },
+          "belongingToTypes": {
+            "description": "Indicates the utd type that this type depends on.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 127,
+              "minLength": 1
+            }
+          },
+          "filenameExtensions": {
+            "description": "Indicates the file name extensions of utd type.",
+            "type": "array",
+            "uniqueItems": false,
+            "items": {
+              "type": "string",
+              "pattern": "^[/.].*",
+              "maxLength": 127
+            }
+          },
+          "mimeTypes": {
+            "description": "Indicates the mime types of utd type.",
+            "type": "array",
+            "uniqueItems": false,
+            "items": {
+              "type": "string",
+              "maxLength": 127,
+              "minLength": 1
+            }
+          },
+          "description": {
+            "description": "Indicates the description of utd type.",
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1
+          },
+          "referenceURL": {
+            "description": "Indicates the referenceURL of utd type.",
+            "type": "string",
+            "maxLength": 255
+          },
+          "iconFile": {
+            "description": "Indicates the icon file of utd type.",
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      }
+    }
+  }
+}

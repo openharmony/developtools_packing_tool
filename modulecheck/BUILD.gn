@@ -23,6 +23,11 @@ ohos_prebuilt_etc("commonEventSchema_json") {
   install_enable = false
 }
 
+ohos_prebuilt_etc("customUtdSchema_json") {
+  source = "customUtds.json"
+  install_enable = false
+}
+
 ohos_prebuilt_etc("distroFilterSchema_json") {
   source = "distroFilter.json"
   install_enable = false
