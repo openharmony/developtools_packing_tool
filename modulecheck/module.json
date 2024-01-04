@@ -863,6 +863,7 @@
                   "sysPicker/share",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
+                  "sysPicker/photoPicker",
                   "sys/commonUI",
                   "fileAccess"
                 ]
