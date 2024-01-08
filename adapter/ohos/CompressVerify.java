@@ -63,6 +63,8 @@ public class CompressVerify {
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
     private static final String VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
     private static final String LINUX_FILE_SEPARATOR = "/";
+    private static final String BUNDLE_TYPE_SHARE = "shared";
+    private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
@@ -398,10 +400,8 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
-        boolean isSharedApp = isSharedApp(utility);
-        if (utility.getHapPath().isEmpty() && !isSharedApp) {
-            LOG.error("CompressVerify::isArgsValidInAppMode hap-path is empty.");
-            return false;
+        if (!checkInputModulePath(utility)) {
+            LOG.warning("CompressVerify::isArgsValidInAppMode input hap-path or hspPath is invalid.");
         }
 
         if (!utility.getHapPath().isEmpty()
@@ -449,6 +449,21 @@ public class CompressVerify {
         }
 
         return isOutPathValid(utility, APP_SUFFIX);
+    }
+
+    private static boolean checkInputModulePath(Utility utility) {
+        boolean isSharedApp = isSharedApp(utility);
+        boolean isAppService = isAppService(utility);
+        if (utility.getHapPath().isEmpty() && !isSharedApp && !isAppService) {
+            LOG.warning("CompressVerify::CheckInputModulePath hap-path is empty.");
+            return false;
+        }
+
+        if (utility.getHspPath().isEmpty() && isAppService) {
+            LOG.warning("CompressVerify::CheckInputModulePath hsp-path is empty.");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -903,10 +918,59 @@ public class CompressVerify {
             return false;
         }
         List<String> tmpHspPathList = new ArrayList<>();
-        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)) {
+        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)
+            && verifyIsSharedApp(tmpHspPathList)) {
             utility.setIsSharedApp(true);
             return true;
         }
         return false;
+    }
+
+    private static boolean isAppService(Utility utility) {
+        if (!utility.getHapPath().isEmpty()) {
+            List<String> tmpHapPathList = new ArrayList<>();
+            if (compatibleProcess(utility, utility.getHapPath(), tmpHapPathList, HSP_SUFFIX)
+                    && verifyIsAppService(tmpHapPathList)) {
+                utility.setIsAppService(true);
+                return true;
+            }
+        }
+        if (utility.getHspPath().isEmpty()) {
+            return false;
+        }
+        List<String> tmpHspPathList = new ArrayList<>();
+        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)
+                && verifyIsAppService(tmpHspPathList)) {
+            utility.setIsAppService(true);
+            return true;
+        }
+        return false;
+    }
+    private static boolean verifyIsAppService(List<String> modulePathList) {
+        if (modulePathList.isEmpty()) {
+            return false;
+        }
+        try {
+            for (String modulePath : modulePathList) {
+                HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(modulePath);
+                if (!hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_APP_SERVICE)) {
+                    return false;
+                }
+            }
+        } catch (BundleException e) {
+            return false;
+        }
+        return true;
+    }
+    private static boolean verifyIsSharedApp(List<String> hspPath) {
+        if (hspPath.size() != 1) {
+            return false;
+        }
+        try {
+            HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath.get(0));
+            return hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_SHARE);
+        } catch (BundleException e) {
+            return false;
+        }
     }
 }
