@@ -93,6 +93,7 @@ public class Utility {
     private String anPath = "";
     private String apPath = "";
     private Boolean isSharedApp = false;
+    private Boolean isAppService = false;
     private String mainModuleLimit = "";
     private String normalModuleLimit = "";
     private String totalLimit = "";
@@ -754,6 +755,14 @@ public class Utility {
 
     public Boolean getSharedApp() {
         return isSharedApp;
+    }
+
+    public void setIsAppService(boolean isAppService) {
+        this.isAppService = isAppService;
+    }
+
+    public Boolean getIsAppService() {
+        return isAppService;
     }
 
     public void setMainModuleLimit(String limit) {
