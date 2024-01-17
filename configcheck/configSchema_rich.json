@@ -129,7 +129,7 @@
           ]
         },
         "relatedBundleName": {
-          "description": "Indicates the name of the Android package associated with the Harmony application in the independent packaging scenario. The value is a character string. This tag is valid only for system applications.",
+          "description": "Indicates the name of the package associated with the Harmony application in the independent packaging scenario. The value is a character string. This tag is valid only for system applications.",
           "type": "string"
         },
         "smartWindowSize": {
