@@ -129,7 +129,8 @@
                 "generateBuildHash",
                 "isolationMode",
                 "proxyData",
-                "fileContextMenu"
+                "fileContextMenu",
+                "querySchemes"
               ]
             },
             "required": [
@@ -1379,6 +1380,17 @@
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
+        },
+        "querySchemes": {
+          "description": "Indicates the URL schemes control list",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 50,
+          "items": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z][0-9a-zA-Z+.-]*"
+          }
         }
       }
     }
