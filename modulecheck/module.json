@@ -525,7 +525,8 @@
                                 "pathRegex",
                                 "type",
                                 "utd",
-                                "maxFileSupported"
+                                "maxFileSupported",
+                                "linkFeature"
                               ]
                             },
                             "required": [
@@ -567,6 +568,12 @@
                               "maxFileSupported": {
                                 "description": "Indicates the maximum number of files that can be received.",
                                 "type": "integer"
+                              },
+                              "linkFeature": {
+                                "description": "Indicates the uri feature.",
+                                "type": "string",
+                                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+                                "maxLength": 127
                               }
                             }
                           },
