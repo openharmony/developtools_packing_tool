@@ -849,6 +849,7 @@
                   "driver",
                   "action", 
                   "adsService",
+                  "embeddedUI",
                   "autoFill/password",
                   "hms/account",
                   "appAccountAuthorization",
