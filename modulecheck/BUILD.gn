@@ -57,3 +57,8 @@ ohos_prebuilt_etc("shortcutsSchema_json") {
   source = "shortcuts.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("routerMapSchema_json") {
+  source = "routerMap.json"
+  install_enable = false
+}
