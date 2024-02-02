@@ -42,7 +42,8 @@
                 "atomicService",
                 "targetModuleName",
                 "targetPriority",
-                "generateBuildHash"
+                "generateBuildHash",
+                "routerMap"
               ]
             },
             "required": [
@@ -82,7 +83,8 @@
                 "definePermissions",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "routerMap"
               ]
             },
             "required": [
@@ -130,7 +132,8 @@
                 "isolationMode",
                 "proxyData",
                 "fileContextMenu",
-                "querySchemes"
+                "querySchemes",
+                "routerMap"
               ]
             },
             "required": [
@@ -177,7 +180,8 @@
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
-                "proxyData"
+                "proxyData",
+                "routerMap"
               ]
             },
             "required": [
@@ -1391,6 +1395,12 @@
             "maxLength": 128,
             "pattern": "^[a-zA-Z][0-9a-zA-Z+.-]*"
           }
+        },
+        "routerMap": {
+          "description": "Indicates the path of router navigation profile.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         }
       }
     }
