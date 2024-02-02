@@ -48,7 +48,7 @@ class FileUtils {
     private static final Log LOG = new Log(FileUtils.class.toString());
     private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final String SHA256 = "SHA-256";
-    private static final String PATTERN = "[0-9A-Za-z/].{0,255}";
+    private static final String PATTERN = "[0-9A-Za-z/].{0,4095}";
 
     /**
      * generate fileData byte stream
