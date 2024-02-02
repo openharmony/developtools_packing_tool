@@ -192,7 +192,7 @@
         "name": {
           "description": "Indicates the module name.",
           "type": "string",
-          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
           "maxLength": 31
         },
         "type": {
@@ -380,7 +380,7 @@
               "name": {
                 "description": "Indicates the name of the ability.",
                 "type": "string",
-                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
                 "maxLength": 127
               },
               "srcEntrance": {
@@ -789,7 +789,7 @@
               },
               "name": {
                 "description": "Indicates the name of the extension.",
-                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
                 "type": "string",
                 "maxLength": 127
               },
