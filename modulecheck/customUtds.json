@@ -1,19 +1,19 @@
 {
-  "title": "JSON schema for utd-adt.json",
+  "title": "JSON schema for utd.json5",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "customUtds"
   ],
   "propertyNames": {
     "enum": [
-      "customUtds"
+      "UniformDataTypeDeclarations",
+      "ReferenceUniformDataTypeDeclarations"
     ]
   },
   "properties": {
-    "customUtds": {
-      "description": "Indicates the configuration of customUtds.",
+    "UniformDataTypeDeclarations": {
+      "description": "Indicates the configuration of UniformDataTypeDeclarations.",
       "type": "array",
       "minItems": 1,
       "maxItems": 32,
@@ -22,28 +22,27 @@
         "type": "object",
         "propertyNames": {
           "enum": [
-            "typeId",
-            "belongingToTypes",
-            "filenameExtensions",
-            "mimeTypes",
-            "description",
-            "referenceURL",
-            "iconFile"
+            "TypeId",
+            "BelongingToTypes",
+            "FilenameExtensions",
+            "MIMETypes",
+            "Description",
+            "ReferenceURL"
           ]
         },
         "required": [
-          "typeId",
-          "belongingToTypes",
-          "description"
+          "TypeId",
+          "BelongingToTypes",
+          "Description"
         ],
         "properties": {
-          "typeId": {
+          "TypeId": {
             "description": "Indicates the name of utd type.",
             "type": "string",
             "pattern": "[a-zA-Z0-9/.-]+$",
             "maxLength": 127
           },
-          "belongingToTypes": {
+          "BelongingToTypes": {
             "description": "Indicates the utd type that this type depends on.",
             "type": "array",
             "uniqueItems": true,
@@ -53,7 +52,7 @@
               "minLength": 1
             }
           },
-          "filenameExtensions": {
+          "FilenameExtensions": {
             "description": "Indicates the file name extensions of utd type.",
             "type": "array",
             "uniqueItems": false,
@@ -63,7 +62,7 @@
               "maxLength": 127
             }
           },
-          "mimeTypes": {
+          "MIMETypes": {
             "description": "Indicates the mime types of utd type.",
             "type": "array",
             "uniqueItems": false,
@@ -73,19 +72,88 @@
               "minLength": 1
             }
           },
-          "description": {
+          "Description": {
             "description": "Indicates the description of utd type.",
             "type": "string",
             "maxLength": 255,
             "minLength": 1
           },
-          "referenceURL": {
+          "ReferenceURL": {
             "description": "Indicates the referenceURL of utd type.",
             "type": "string",
             "maxLength": 255
+          }
+        }
+      }
+    },
+      "ReferenceUniformDataTypeDeclarations": {
+      "description": "Indicates the configuration of ReferenceUniformDataTypeDeclarations.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "TypeId",
+            "BelongingToTypes",
+            "FilenameExtensions",
+            "MIMETypes",
+            "Description",
+            "ReferenceURL"
+          ]
+        },
+        "required": [
+          "TypeId",
+          "BelongingToTypes",
+          "Description"
+        ],
+        "properties": {
+          "TypeId": {
+            "description": "Indicates the name of utd type.",
+            "type": "string",
+            "pattern": "[a-zA-Z0-9/.-]+$",
+            "maxLength": 127
           },
-          "iconFile": {
-            "description": "Indicates the icon file of utd type.",
+          "BelongingToTypes": {
+            "description": "Indicates the utd type that this type depends on.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 127,
+              "minLength": 1
+            }
+          },
+          "FilenameExtensions": {
+            "description": "Indicates the file name extensions of utd type.",
+            "type": "array",
+            "uniqueItems": false,
+            "items": {
+              "type": "string",
+              "pattern": "^[/.].*",
+              "maxLength": 127
+            }
+          },
+          "MIMETypes": {
+            "description": "Indicates the mime types of utd type.",
+            "type": "array",
+            "uniqueItems": false,
+            "items": {
+              "type": "string",
+              "maxLength": 127,
+              "minLength": 1
+            }
+          },
+          "Description": {
+            "description": "Indicates the description of utd type.",
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1
+          },
+          "ReferenceURL": {
+            "description": "Indicates the referenceURL of utd type.",
             "type": "string",
             "maxLength": 255
           }
