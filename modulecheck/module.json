@@ -42,7 +42,8 @@
                 "atomicService",
                 "targetModuleName",
                 "targetPriority",
-                "generateBuildHash"
+                "generateBuildHash",
+                "routerMap"
               ]
             },
             "required": [
@@ -82,7 +83,8 @@
                 "definePermissions",
                 "testRunner",
                 "dependencies",
-                "libIsolation"
+                "libIsolation",
+                "routerMap"
               ]
             },
             "required": [
@@ -128,7 +130,10 @@
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
-                "proxyData"
+                "proxyData",
+                "fileContextMenu",
+                "querySchemes",
+                "routerMap"
               ]
             },
             "required": [
@@ -175,7 +180,8 @@
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
-                "proxyData"
+                "proxyData",
+                "routerMap"
               ]
             },
             "required": [
@@ -191,7 +197,7 @@
         "name": {
           "description": "Indicates the module name.",
           "type": "string",
-          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
           "maxLength": 31
         },
         "type": {
@@ -365,7 +371,8 @@
                 "minWindowHeight",
                 "excludeFromMissions",
                 "recoverable",
-                "unclearableMission"
+                "unclearableMission",
+                "isolationProcess"
               ]
             },
             "properties": {
@@ -378,7 +385,7 @@
               "name": {
                 "description": "Indicates the name of the ability.",
                 "type": "string",
-                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
                 "maxLength": 127
               },
               "srcEntrance": {
@@ -516,7 +523,9 @@
                                 "pathStartWith",
                                 "path",
                                 "pathRegex",
-                                "type"
+                                "type",
+                                "utd",
+                                "maxFileSupported"
                               ]
                             },
                             "required": [
@@ -550,6 +559,14 @@
                               "type": {
                                 "description": "This label is a string type.",
                                 "type": "string"
+                              },
+                              "utd": {
+                                "description": "Indicates the uniform file type supported by the ability. Please refer to https://gitee.com/openharmony/interface_sdk-js/blob/master/api/@ohos.data.uniformTypeDescriptor.d.ts for detailed information",
+                                "type": "string"
+                              },
+                              "maxFileSupported": {
+                                "description": "Indicates the maximum number of files that can be received.",
+                                "type": "integer"
                               }
                             }
                           },
@@ -688,6 +705,11 @@
                 "description": "Specify whether it is a task that cannot be deleted",
                 "type": "boolean",
                 "default": false
+              },
+              "isolationProcess": {
+                "description": "Specifies whether the ability can run in an independent process",
+                "type": "boolean",
+                "default": false
               }
             }
           }
@@ -759,7 +781,8 @@
                 "visible",
                 "exported",
                 "skills",
-                "metadata"
+                "metadata",
+                "extensionProcessMode"
               ]
             },
             "properties": {
@@ -771,7 +794,7 @@
               },
               "name": {
                 "description": "Indicates the name of the extension.",
-                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
                 "type": "string",
                 "maxLength": 127
               },
@@ -824,22 +847,30 @@
                   "share",
                   "push",
                   "driver",
-                  "action",
+                  "action", 
+                  "adsService",
+                  "autoFill/password",
+                  "hms/account",
                   "appAccountAuthorization",
+                  "ads",
+                  "remoteNotification",
+                  "remoteLocation",
+                  "voip",
                   "sysDialog/userAuth",
                   "sysDialog/common",
-                  "sysPicker/mediaControl",
                   "sysDialog/atomicServicePanel",
                   "sysDialog/power",
-                  "sysPicker/share",
-                  "hms/account",
                   "sysDialog/meetimeCall",
                   "sysDialog/meetimeContact",
                   "sysDialog/meetimeMessage",
+                  "sysDialog/print",
+                  "sysPicker/mediaControl",
+                  "sysPicker/share",
                   "sysPicker/meetimeContact",
                   "sysPicker/meetimeCallLog",
-                  "ads",
-                  "sys/commonUI"
+                  "sysPicker/photoPicker",
+                  "sys/commonUI",
+                  "fileAccess"
                 ]
               },
               "permissions": {
@@ -923,7 +954,9 @@
                                 "pathStartWith",
                                 "path",
                                 "pathRegex",
-                                "type"
+                                "type",
+                                "utd",
+                                "maxFileSupported"
                               ]
                             },
                             "required": [
@@ -957,6 +990,14 @@
                               "type": {
                                 "description": "This label is a string type.",
                                 "type": "string"
+                              },
+                              "utd": {
+                                "description": "Indicates the uniform file type supported by the ability. Please refer to https://gitee.com/openharmony/interface_sdk-js/blob/master/api/@ohos.data.uniformTypeDescriptor.d.ts for detailed information",
+                                "type": "string"
+                              },
+                              "maxFileSupported": {
+                                "description": "Indicates the maximum number of files that can be received.",
+                                "type": "integer"
                               }
                             }
                           },
@@ -1011,6 +1052,16 @@
                     }
                   }
                 }
+              },
+              "extensionProcessMode": {
+                "description": "Indicates the extension support multi instance model.",
+                "type": "string",
+                "enum": [
+                  "instance",
+                  "type",
+                  "bundle"
+                ],
+                "default": "instance"
               }
             }
           }
@@ -1181,9 +1232,9 @@
             ],
             "properties":{
               "bundleName": {
-                "description": "Indicates the bundle name of the dependency shared library. It uniquely identifies the dependency shared library. The value is a string with 7 to 127 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the dependency shared library name. This label is a string type and cannot be defaulted.",
+                "description": "Indicates the bundle name of the dependency shared library. It uniquely identifies the dependency shared library. The value is a string with 7 to 128 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the dependency shared library name. This label is a string type and cannot be defaulted.",
                 "type": "string",
-                "maxLength": 127,
+                "maxLength": 128,
                 "minLength": 7,
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
               },
@@ -1208,7 +1259,7 @@
         "compressNativeLibs": {
           "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "atomicService": {
           "description": "Indicates the module config in atomic service.",
@@ -1327,6 +1378,29 @@
               }
             }
           }
+        },
+        "fileContextMenu": {
+          "description": "Indicates the menu profile.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
+        },
+        "querySchemes": {
+          "description": "Indicates the URL schemes control list",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 50,
+          "items": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z][0-9a-zA-Z+.-]*"
+          }
+        },
+        "routerMap": {
+          "description": "Indicates the path of router navigation profile.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         }
       }
     }

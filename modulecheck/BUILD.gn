@@ -23,6 +23,11 @@ ohos_prebuilt_etc("commonEventSchema_json") {
   install_enable = false
 }
 
+ohos_prebuilt_etc("customUtdSchema_json") {
+  source = "customUtds.json"
+  install_enable = false
+}
+
 ohos_prebuilt_etc("distroFilterSchema_json") {
   source = "distroFilter.json"
   install_enable = false
@@ -30,6 +35,11 @@ ohos_prebuilt_etc("distroFilterSchema_json") {
 
 ohos_prebuilt_etc("formsSchema_json") {
   source = "forms.json"
+  install_enable = false
+}
+
+ohos_prebuilt_etc("insightIntentSchema_json") {
+  source = "insightIntent.json"
   install_enable = false
 }
 
@@ -45,5 +55,10 @@ ohos_prebuilt_etc("pageSchema_json") {
 
 ohos_prebuilt_etc("shortcutsSchema_json") {
   source = "shortcuts.json"
+  install_enable = false
+}
+
+ohos_prebuilt_etc("routerMapSchema_json") {
+  source = "routerMap.json"
   install_enable = false
 }
