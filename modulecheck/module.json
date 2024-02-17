@@ -372,6 +372,7 @@
                 "excludeFromMissions",
                 "recoverable",
                 "unclearableMission",
+                "excludeFromDock",
                 "isolationProcess"
               ]
             },
@@ -703,6 +704,11 @@
               },
               "unclearableMission": {
                 "description": "Specify whether it is a task that cannot be deleted",
+                "type": "boolean",
+                "default": false
+              },
+              "excludeFromDock": {
+                "description": "Specify whether to hide the application icon from the dock area.",
                 "type": "boolean",
                 "default": false
               },
