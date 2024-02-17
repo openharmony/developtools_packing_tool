@@ -26,7 +26,7 @@ public interface ShowHelp {
      */
     static void compressHelp() {
         log.info("\nHAP USAGE:\n" +
-                "java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option>\n" +
+                "java -jar app_packing_tool.jar --mode <options> --json-path <option>\n" +
                 "--profile-path [option] --maple-so-path [option] --maple-so-dir [option]\n" +
                 "--dex-path [option] --lib-path [option] --resources-path [option] --assets-path [option]\n" +
                 "--shell-apk-path [option] --index-path [option] --out-path <option> --force [option]\n" +
@@ -53,7 +53,7 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "HAR USAGE:\n" +
-                "java -jar hmos_app_packing_tool.jar --mode <options> --json-path <option>\n" +
+                "java -jar app_packing_tool.jar --mode <options> --json-path <option>\n" +
                 "--jar-path <option> --lib-path [option] --resources-path [option] --txt-path [option]\n" +
                 "--assets-path [option] --out-path <option> --force [option]\n" +
                 "OPTIONS:\n" +
@@ -73,7 +73,7 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "APP USAGE:\n" +
-                "java -jar hmos_app_packing_tool.jar --mode <options> --hap-path <option>\n" +
+                "java -jar app_packing_tool.jar --mode <options> --hap-path <option>\n" +
                 "--pack-info-path [option] --out-path [option] --signature-path [option]\n" +
                 "--certificate-path [option]  --force [option]\n" +
                 "OPTIONS:\n" +
@@ -94,7 +94,7 @@ public interface ShowHelp {
      */
     static void uncompressHelp() {
         log.info("\nHAP USAGE:\n" +
-                "java -jar hmos_app_unpacking_tool.jar --mode <options> --hap-path <option>\n" +
+                "java -jar app_unpacking_tool.jar --mode <options> --hap-path <option>\n" +
                 "--out-path [option] --force [option]\n" +
                 "OPTIONS:\n" +
                 "  --mode               not null  must be hap.\n" +
@@ -106,7 +106,7 @@ public interface ShowHelp {
                 "                                 in the app.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "HAR USAGE:\n" +
-                "java -jar hmos_app_unpacking_tool.jar --mode <options> --har-path <option>\n" +
+                "java -jar app_unpacking_tool.jar --mode <options> --har-path <option>\n" +
                 "--out-path [option] --force [option]\n" +
                 "OPTIONS:\n" +
                 "  --mode               not null  must be har.\n" +
@@ -116,7 +116,7 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "----------------------------------------------------------------------------------\n" +
                 "APP USAGE:\n" +
-                "java -jar hmos_app_unpacking_tool.jar --mode <options> --app-path <option>\n" +
+                "java -jar app_unpacking_tool.jar --mode <options> --app-path <option>\n" +
                 "--out-path [option] --force [option]\n" +
                 "OPTIONS:\n" +
                 "  --mode               not null  must be app.\n" +
@@ -126,5 +126,39 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "  --unpackapk                    default false; if true, unpack apk files from hap\n" +
                 "                                 in the app.");
+    }
+
+    /**
+     * content of scan command help menu.
+     */
+    static void scanHelp() {
+        log.info(System.lineSeparator() + "STAT DUPLICATE USAGE:" + System.lineSeparator() +
+                "java -jar app_check_tool.jar --input [options] --out-path [option]" + System.lineSeparator() +
+                "--stat-duplicate [option]" + System.lineSeparator() +
+                "OPTIONS:" + System.lineSeparator() +
+                "  --input              not null  must be hap or hsp or app." + System.lineSeparator() +
+                "  --out-path           not null  must be folder." + System.lineSeparator() +
+                "  --stat-duplicate     not null  must be true or false." + System.lineSeparator() +
+                "                       if true, count duplicate files." + System.lineSeparator() +
+                "----------------------------------------------------------------------------------"
+                + System.lineSeparator() +
+                "STAT FILE SIZE USAGE:" + System.lineSeparator() +
+                "java -jar app_check_tool.jar --input [options] --out-path [option]" + System.lineSeparator() +
+                "--stat-file-size [option]" + System.lineSeparator() +
+                "OPTIONS:" + System.lineSeparator() +
+                "  --input              not null  must be hap or hsp or app." + System.lineSeparator() +
+                "  --out-path           not null  must be folder." + System.lineSeparator() +
+                "  --stat-file-size     not null  must be an number." + System.lineSeparator() +
+                "                       count files exceeding the specified size." + System.lineSeparator() +
+                "----------------------------------------------------------------------------------"
+                + System.lineSeparator() +
+                "STAT SUFFIX USAGE:" + System.lineSeparator() +
+                "java -jar app_check_tool.jar --input [options] --out-path [option]" + System.lineSeparator() +
+                "--stat-suffix [option]" + System.lineSeparator() +
+                "OPTIONS:" + System.lineSeparator() +
+                "  --input              not null  must be hap or hsp or app." + System.lineSeparator() +
+                "  --out-path           not null  must be folder." + System.lineSeparator() +
+                "  --stat-suffix        not null  must be true or false;" + System.lineSeparator() +
+    "                                   if true, calculate the proportion of various types of files.");
     }
 }

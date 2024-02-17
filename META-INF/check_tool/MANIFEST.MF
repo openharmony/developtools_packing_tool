@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: fastjson-1.2.83.jar
+Created-By: javac.py
+Main-Class: ohos.ScanEntrance

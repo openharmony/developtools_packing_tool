@@ -1,0 +1,47 @@
+<script>
+    function show(stat){<br/>
+        var type = document.getElementsByClassName(stat);<br/>
+        if (stat === 'fileSize') {<br/>
+            for (i = 0; i < type.length; i++) {<br/>
+                type[i].style.display = "table-row";<br/>
+            }<br/>
+        }<br/>
+        else {<br/>
+            for (i = 0; i < type.length; i++) {<br/>
+                type[i].style.display = "list-item";<br/>
+            }<br/>
+        }<br/>
+        var show = document.getElementById("show_" + stat);<br/>
+        show.style.display = 'none';<br/>
+        var hide = document.getElementById("hide_" + stat);<br/>
+        hide.style.display = 'block';<br/>
+    }<br/>
+    function hide(stat){<br/>
+        var type = document.getElementsByClassName(stat);<br/>
+        for (i = 0; i < type.length; i++) {<br/>
+            type[i].style.display = "none";<br/>
+        }<br/>
+        var show = document.getElementById("show_" + stat);<br/>
+        show.style.display = 'block';<br/>
+        var hide = document.getElementById("hide_" + stat);<br/>
+        hide.style.display = 'none';<br/>
+    }<br/>
+    function show_duplicate(){<br/>
+        show("duplicate");<br/>
+    }<br/>
+    function hide_duplicate(){<br/>
+        hide("duplicate");<br/>
+    }<br/>
+    function show_fileSize(){<br/>
+        show("fileSize");<br/>
+    }<br/>
+    function hide_fileSize(){<br/>
+        hide("fileSize");<br/>
+    }<br/>
+    function show_suffix(){<br/>
+        show("suffix");<br/>
+    }<br/>
+    function hide_suffix(){<br/>
+        hide("suffix");<br/>
+    }<br/>
+</script>

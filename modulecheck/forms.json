@@ -21,10 +21,12 @@
         "propertyNames": {
           "enum": [
             "name",
+            "displayName",
             "description",
             "src",
             "uiSyntax",
             "isDynamic",
+            "transparencyEnabled",
             "window",
             "colorMode",
             "formConfigAbility",
@@ -59,6 +61,9 @@
               "properties": {
                 "isDynamic": {
                   "const": true
+                },
+                "transparencyEnabled": {
+                  "const": false
                 }
               }
             }
@@ -69,6 +74,16 @@
             "description": "Indicates the name of the form class. The tag value is a string of up to 127 bytes. The tag cannot be default.",
             "type": "string",
             "maxLength": 127
+          },
+          "displayName" : {
+            "description": "This tag identifies the display name of the form. The tag value can be a string indicating the display name content (a string of up to 30 bytes). This tag can be left blank by default.",
+            "type": "string",
+            "if": {
+              "pattern": "^[$]string:[0-9a-zA-Z_.]+$"
+            },
+            "else": {
+              "maxLength": 30
+            }
           },
           "description": {
             "description": "This tag identifies the description of the form. The tag value can be a string indicating the description content (a string of up to 255 bytes. If the length exceeds 255 bytes, use the resource index mode) or the resource index of the description content to support multiple languages. This tag can be left blank by default.",
@@ -90,7 +105,7 @@
             "default": "auto"
           },
           "supportDimensions": {
-            "description": "This label identifies the card appearance specification. The value is \"1*2\", \" 2*2\", \"2*4\", \"4*4\" and cannot be default. At least one card specification must be specified when defining a card.",
+            "description": "This label identifies the card appearance specification. The value is \"1*2\", \" 2*2\", \"2*4\", \"4*4\", \"1*1\" and cannot be default. At least one card specification must be specified when defining a card.",
             "type": "array",
             "uniqueItems": true,
             "items": {
@@ -99,7 +114,8 @@
                 "1*2",
                 "2*2",
                 "2*4",
-                "4*4"
+                "4*4",
+                "1*1"
               ]
             }
           },
@@ -111,7 +127,8 @@
               "1*2",
               "2*2",
               "2*4",
-              "4*4"
+              "4*4",
+              "1*1"
             ]
           },
           "updateEnabled": {
@@ -193,6 +210,11 @@
             "description": "This tag identifies whether the card is isDynamic.",
             "type": "boolean",
             "default": true
+          },
+          "transparencyEnabled": {
+            "description": "This tag identifies whether the form can be set as a transparent background",
+            "type": "boolean",
+            "default": false
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",

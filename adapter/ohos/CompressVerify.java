@@ -15,10 +15,20 @@
 
 package ohos;
 
+import com.alibaba.fastjson.JSONValidator;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * compress comment,command parser.
@@ -48,8 +58,13 @@ public class CompressVerify {
     private static final String HQF_SUFFIX = ".hqf";
     private static final String APPQF_SUFFIX = ".appqf";
     private static final String HSP_SUFFIX = ".hsp";
+    private static final String JSON_SUFFIX = ".json";
     private static final String FALSE = "false";
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
+    private static final String VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
+    private static final String LINUX_FILE_SEPARATOR = "/";
+    private static final String BUNDLE_TYPE_SHARE = "shared";
+    private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
@@ -105,10 +120,60 @@ public class CompressVerify {
                 return isVerifyValidInAPPQFMode(utility);
             case Utility.MODE_HSP:
                 return isVerifyValidInHspMode(utility);
+            case Utility.MODE_HAPADDITION:
+                return isVerifyValidInHapAdditionMode(utility);
+            case Utility.VERSION_NORMALIZE:
+                return validateVersionNormalizeMode(utility);
             default:
                 LOG.error("CompressVerify::commandVerify mode is invalid.");
                 return false;
         }
+    }
+
+    private static boolean validateVersionNormalizeMode(Utility utility) {
+        if (utility.getInputList().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
+            return false;
+        }
+
+        if (!handleHapAndHspInput(utility, utility.getInputList(), utility.getFormattedHapList())) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is invalid.");
+            return false;
+        }
+
+        if (utility.getFormattedHapList().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
+            return false;
+        }
+
+        if (utility.getVersionCode() <= 0) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode version-code is invalid.");
+            return false;
+        }
+
+        if (utility.getVersionName().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode version-name is empty.");
+            return false;
+        }
+
+        Pattern versionNamePattern = Pattern.compile(VERSION_NAME_PATTERN);
+        Matcher versionNameMatcher = versionNamePattern.matcher(utility.getVersionName());
+        if (!versionNameMatcher.matches()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode version-name is not valid.");
+            return false;
+        }
+
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode out-path is empty.");
+            return false;
+        }
+
+        File outDir = new File(utility.getOutPath());
+        if (!outDir.isDirectory()) {
+            LOG.error("CompressVerify::validateVersionNormalizeMode out-path is not a directory.");
+            return false;
+        }
+        return true;
     }
 
     private static boolean isValidRpcid(Utility utility) {
@@ -335,10 +400,8 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
-        boolean isSharedApp = isSharedApp(utility);
-        if (utility.getHapPath().isEmpty() && !isSharedApp) {
-            LOG.error("CompressVerify::isArgsValidInAppMode hap-path is empty.");
-            return false;
+        if (!checkInputModulePath(utility)) {
+            LOG.warning("CompressVerify::isArgsValidInAppMode input hap-path or hspPath is invalid.");
         }
 
         if (!utility.getHapPath().isEmpty()
@@ -386,6 +449,21 @@ public class CompressVerify {
         }
 
         return isOutPathValid(utility, APP_SUFFIX);
+    }
+
+    private static boolean checkInputModulePath(Utility utility) {
+        boolean isSharedApp = isSharedApp(utility);
+        boolean isAppService = isAppService(utility);
+        if (utility.getHapPath().isEmpty() && !isSharedApp && !isAppService) {
+            LOG.warning("CompressVerify::CheckInputModulePath hap-path is empty.");
+            return false;
+        }
+
+        if (utility.getHspPath().isEmpty() && isAppService) {
+            LOG.warning("CompressVerify::CheckInputModulePath hsp-path is empty.");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -538,6 +616,36 @@ public class CompressVerify {
             for (String pathItem : pathList) {
                 formattedPathItem = utility.getFormattedPath(pathItem);
                 if (!isPathValid(formattedPathItem, TYPE_FILE, suffix)) {
+                    return false;
+                }
+                fileList.add(formattedPathItem);
+            }
+            return true;
+        }
+    }
+
+    private static boolean handleHapAndHspInput(Utility utility, String inputPath, List<String> fileList) {
+        if (isPathValid(inputPath, TYPE_DIR, null)) {
+            File inputFile = new File(inputPath);
+            File[] files = inputFile.listFiles();
+            if (files == null) {
+                return true;
+            }
+            for (File fileItem : files) {
+                if (fileItem.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX) ||
+                    fileItem.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                    fileList.add(fileItem.toString());
+                }
+            }
+            return true;
+        } else {
+            String formattedPathItem = "";
+            List<String> pathList = removeDuplicatePath(inputPath);
+            for (String pathItem : pathList) {
+                formattedPathItem = utility.getFormattedPath(pathItem);
+                if (!isPathValid(formattedPathItem, TYPE_FILE, HSP_SUFFIX) &&
+                    !isPathValid(formattedPathItem, TYPE_FILE, HAP_SUFFIX)) {
+                    LOG.error("input file " + formattedPathItem + " not valid");
                     return false;
                 }
                 fileList.add(formattedPathItem);
@@ -729,6 +837,79 @@ public class CompressVerify {
         return isOutPathValid(utility, HSP_SUFFIX);
     }
 
+    private static boolean isVerifyValidInHapAdditionMode(Utility utility) {
+        if (utility.getHapPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath is empty.");
+            return false;
+        }
+        String hapPath = utility.getAbsoluteHapPath();
+        File hapFile = new File(hapPath);
+        if (hapFile.isDirectory()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath cannot be a folder.");
+            return false;
+        }
+        if (!(hapPath.endsWith(HAP_SUFFIX) || hapPath.endsWith(HSP_SUFFIX))) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath is invalid.");
+            return false;
+        }
+        if (!hapFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hap file does not exist.");
+            return false;
+        }
+        if (utility.getJsonPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode jsonPath is empty.");
+            return false;
+        }
+        if (!utility.getJsonPath().endsWith(JSON_SUFFIX)) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode jsonPath is invalid.");
+            return false;
+        }
+        File jsonFile = new File(utility.getJsonPath());
+        if (!jsonFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json file does not exist.");
+            return false;
+        }
+        if (!checkJsonIsValid(jsonFile)) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json format is incorrect.");
+            return false;
+        }
+
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is empty.");
+            return false;
+        }
+        File dir = new File(utility.getOutPath());
+        if (dir.exists() && dir.isFile()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is file.");
+            return false;
+        }
+        File absoluteHapFile = new File(utility.getAbsoluteHapPath());
+        String hapFileName = absoluteHapFile.getName();
+        String destPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName;
+        File destFile = new File(destPath);
+        if ("false".equals(utility.getForceRewrite()) && destFile.exists()) {
+            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode target file already exists.");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkJsonIsValid(File jsonFile) {
+        StringBuffer jsonData = new StringBuffer();
+        try (FileReader fileReader = new FileReader(jsonFile);
+             Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8)) {
+            int ch = 0;
+            while ((ch = reader.read()) != -1) {
+                jsonData.append((char) ch);
+            }
+        } catch (IOException e) {
+            LOG.error("CompressVerify::CheckJsonIsValid failed.");
+            return false;
+        }
+        JSONValidator validator = JSONValidator.from(jsonData.toString());
+        return validator.validate();
+    }
+
     private static boolean isSharedApp(Utility utility) {
         if (!utility.getHapPath().isEmpty()) {
             return false;
@@ -737,10 +918,59 @@ public class CompressVerify {
             return false;
         }
         List<String> tmpHspPathList = new ArrayList<>();
-        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)) {
+        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)
+            && verifyIsSharedApp(tmpHspPathList)) {
             utility.setIsSharedApp(true);
             return true;
         }
         return false;
+    }
+
+    private static boolean isAppService(Utility utility) {
+        if (!utility.getHapPath().isEmpty()) {
+            List<String> tmpHapPathList = new ArrayList<>();
+            if (compatibleProcess(utility, utility.getHapPath(), tmpHapPathList, HSP_SUFFIX)
+                    && verifyIsAppService(tmpHapPathList)) {
+                utility.setIsAppService(true);
+                return true;
+            }
+        }
+        if (utility.getHspPath().isEmpty()) {
+            return false;
+        }
+        List<String> tmpHspPathList = new ArrayList<>();
+        if (compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)
+                && verifyIsAppService(tmpHspPathList)) {
+            utility.setIsAppService(true);
+            return true;
+        }
+        return false;
+    }
+    private static boolean verifyIsAppService(List<String> modulePathList) {
+        if (modulePathList.isEmpty()) {
+            return false;
+        }
+        try {
+            for (String modulePath : modulePathList) {
+                HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(modulePath);
+                if (!hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_APP_SERVICE)) {
+                    return false;
+                }
+            }
+        } catch (BundleException e) {
+            return false;
+        }
+        return true;
+    }
+    private static boolean verifyIsSharedApp(List<String> hspPath) {
+        if (hspPath.size() != 1) {
+            return false;
+        }
+        try {
+            HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath.get(0));
+            return hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_SHARE);
+        } catch (BundleException e) {
+            return false;
+        }
     }
 }

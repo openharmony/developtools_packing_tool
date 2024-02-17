@@ -183,6 +183,25 @@ java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-
 | --ap-path        | 否     | NA                   | 存放ap文件的路径。                                                |
 | --dir-list       | 否     | 可指定目标文件夹列表，将其打入hap包内 | NA                                                        |
 
+### 1.8 versionNormalize模式指令
+
+如果一个应用由多个团队开发，当只有一个hap或hsp需要修改升级时，可以调用此命令，将多个hap、hsp的版本统一。本命令会修改所传入的hap、hsp的版本号和版本名称，并在指定目录生成修改后的同名hap、hsp，以及一个version_record.json文件，用于记录所有hap、hsp原有的版本号、版本名称。
+
+#### 1.8.1 示例
+```
+java -jar path\app_packing_tool.jar --mode versionNormalize --input-list 1.hap,2.hsp --version-code 1000001 --version-name 1.0.1 --out-path path\out\
+```
+
+#### 1.8.2 参数含义及规范
+
+| 指令             | 是否必选项 | 选项               | 描述                                                                |
+|----------------|-------|------------------|-------------------------------------------------------------------|
+| --mode         | 是     | versionNormalize | 命令类型。                                                             |
+| --input-list   | 是     | hap或hsp的路径       | 1.hap或hsp包文件路径，文件名必须以.hap或.hsp为后缀。如果是多个hap包需要”，“分隔。2.hap包或hsp包目录。 |
+| --version-code | 是     | 版本号              | 指定的版本号，hap、hsp的版本号会被修改为该版本。需要为整数，且不小于所有传入的hap、hsp的版本号。            |
+| --version-name | 是     | 版本名称             | 指定的版本名称，hap、hsp的版本名称会被修改为该版本名称。                                   |                                  
+| --out-path     | 是     | NA               | 目标文件路径，需要为一个目录。                                                   |
+
 
 ## 2. 拆包指令说明
 
@@ -336,34 +355,34 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 
 ### 4.4 AppInfo结构体信息
 
-| 字段                             | 类型      | 描述                                                                            | 备注          |
-|--------------------------------|---------|-------------------------------------------------------------------------------|-------------|
-| bundleName                     | String  | 标识app的包名称                                                                     | NA          |
-| vendor                         | String  | 标识app的供应商信息                                                                   | NA          |
-| relatedBundleName              | String  | 标识app相关bundle的包名                                                              | NA          |
-| versionName                    | String  | 标识app中的versionName信息                                                          | NA          |
-| versionCode                    | String  | 标识app中的versionCode信息                                                          | NA          |
-| targetApiVersion               | int     | 标识应用运行需要的API目标版本                                                              | NA          |
-| compatibleApiVersion           | int     | 标识应用兼容的API版本                                                                  | NA          |
-| appName                        | String  | 标识显示在桌面上的ability的label                                                        | NA          |
-| appNameEN                      | String  | 标识显示在桌面上的ability的label                                                        | NA          |
-| releaseType                    | String  | 标识应用运行需要的API目标版本的类型                                                           | NA          |
-| shellVersionCode               | String  | 标识HarmonyOS中的API版本                                                            | NA          |
-| shellVersionName               | String  | 标识HarmonyOS中的API版本名称                                                          | NA          |
-| multiFrameworkBundle           | String  | 标识双框架下app的bundleName                                                          | NA          |
-| debug                          | boolean | 标识应用是否可调试                                                                     | NA          |
-| icon                           | String  | 标识应用的图标路径                                                                     | NA          |
-| label                          | String  | 标识应用的label                                                                    | NA          |
-| description                    | String  | 标识应用的描述信息                                                                     | stage模型新增   |
-| minCompatibleVersionCode       | int     | 标识应用能够兼容的最低版本号                                                                | NA          |
+| 字段                             | 类型      | 描述                                                                          | 备注          |
+|--------------------------------|---------|-----------------------------------------------------------------------------|-------------|
+| bundleName                     | String  | 标识app的包名称                                                                   | NA          |
+| vendor                         | String  | 标识app的供应商信息                                                                 | NA          |
+| relatedBundleName              | String  | 标识app相关bundle的包名                                                            | NA          |
+| versionName                    | String  | 标识app中的versionName信息                                                        | NA          |
+| versionCode                    | String  | 标识app中的versionCode信息                                                        | NA          |
+| targetApiVersion               | int     | 标识应用运行需要的API目标版本                                                            | NA          |
+| compatibleApiVersion           | int     | 标识应用兼容的API版本                                                                | NA          |
+| appName                        | String  | 标识显示在桌面上的ability的label                                                      | NA          |
+| appNameEN                      | String  | 标识显示在桌面上的ability的label                                                      | NA          |
+| releaseType                    | String  | 标识应用运行需要的API目标版本的类型                                                         | NA          |
+| shellVersionCode               | String  | 标识HarmonyOS中的API版本                                                          | NA          |
+| shellVersionName               | String  | 标识HarmonyOS中的API版本名称                                                        | NA          |
+| multiFrameworkBundle           | String  | 标识bundleName                                                                | NA          |
+| debug                          | boolean | 标识应用是否可调试                                                                   | NA          |
+| icon                           | String  | 标识应用的图标路径                                                                   | NA          |
+| label                          | String  | 标识应用的label                                                                  | NA          |
+| description                    | String  | 标识应用的描述信息                                                                   | stage模型新增   |
+| minCompatibleVersionCode       | int     | 标识应用能够兼容的最低版本号                                                              | NA          |
 | distributedNotificationEnabled | boolean | 标记该应用是否开启分布式通知                                                              | stage模型新增   |
 | bundleType                     | String  | 标识bundle的类型，取值：<br/>- app：普通应用<br/>- atomicService：元服务 <br/>- shared：应用间共享库 | NA   |
-| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                              | stage模型新增   |
-| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                              | stage模型新增   |
-| labels                         | HashMap\<String, String> | 标识多语言应用程序AppJson的标签。 | NA          |
-| descriptions                   | HashMap\<String, String> | 标识多语言应用程序AppJson的说明。 | NA          |
-| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                              | NA        |
-| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                              | NA        |
+| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                            | stage模型新增   |
+| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                            | stage模型新增   |
+| labels                         | HashMap\<String, String> | 标识多语言应用程序AppJson的标签。                                                        | NA          |
+| descriptions                   | HashMap\<String, String> | 标识多语言应用程序AppJson的说明。                                                        | NA          |
+| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                            | NA        |
+| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                            | NA        |
 
 ### 4.5 HapInfo结构体信息
 

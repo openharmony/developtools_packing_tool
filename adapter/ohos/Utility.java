@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,7 +35,10 @@ public class Utility {
     static final String MODE_APPQF = "appqf";
     static final String MODE_RES = "res";
     static final String MODE_HSP = "hsp";
+    static final String MODE_HAPADDITION = "hapAddition";
+    static final String VERSION_NORMALIZE = "versionNormalize";
     static final String FALSE_STRING = "false";
+    static final String TRUE_STRING = "true";
 
     private static final String CMD_PREFIX = "--";
     private static final Log LOG = new Log(Utility.class.toString());
@@ -62,7 +65,7 @@ public class Utility {
     private String outPath = "";
     private String packInfoPath = "";
     private String binPath = "";
-    private boolean isCompressNativeLibs = true;
+    private boolean isCompressNativeLibs = false;
     private String moduleName = "";
     private String harPath = "";
     private String hspPath = "";
@@ -90,9 +93,11 @@ public class Utility {
     private String anPath = "";
     private String apPath = "";
     private Boolean isSharedApp = false;
+    private Boolean isAppService = false;
     private String mainModuleLimit = "";
     private String normalModuleLimit = "";
     private String totalLimit = "";
+    private String absoluteHapPath = "";
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
 
@@ -120,6 +125,11 @@ public class Utility {
     private String dirList = "";
     private String hqfList = "";
     private String hspList = "";
+    private String inputList = "";
+    private String input = "";
+    private boolean statDuplicate = false;
+    private boolean statSuffix = false;
+    private String statFileSize = "";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -266,6 +276,9 @@ public class Utility {
     public void setHapPath(String hapPath) {
         if (!hapPath.startsWith(CMD_PREFIX)) {
             this.hapPath = hapPath;
+            if (MODE_HAPADDITION.equals(this.getMode())) {
+                this.absoluteHapPath = getFormattedPath(hapPath);
+            }
         }
     }
 
@@ -726,12 +739,30 @@ public class Utility {
         return this.apPath;
     }
 
+    public String getAbsoluteHapPath() {
+        return this.absoluteHapPath;
+    }
+
+    public void setAbsoluteHapPath(String absoluteHapPath) {
+        if (!absoluteHapPath.startsWith(CMD_PREFIX)) {
+            this.absoluteHapPath = getFormattedPath(absoluteHapPath);
+        }
+    }
+
     public void setIsSharedApp(boolean isSharedApp) {
         this.isSharedApp = isSharedApp;
     }
 
     public Boolean getSharedApp() {
         return isSharedApp;
+    }
+
+    public void setIsAppService(boolean isAppService) {
+        this.isAppService = isAppService;
+    }
+
+    public Boolean getIsAppService() {
+        return isAppService;
     }
 
     public void setMainModuleLimit(String limit) {
@@ -780,5 +811,44 @@ public class Utility {
 
     public boolean isBuildHashFinish() {
         return buildHashFinish;
+    }
+
+    public String getInputList() {
+        return inputList;
+    }
+
+    public void setInputList(String inputList) {
+        this.inputList = inputList;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = getFormattedPath(input);
+    }
+
+    public boolean getStatDuplicate() {
+        return statDuplicate;
+    }
+
+    public void setStatDuplicate(boolean statDuplicate) {
+        this.statDuplicate = statDuplicate;
+    }
+
+    public boolean getStatSuffix() {
+        return statSuffix;
+    }
+
+    public void setStatSuffix(boolean statSuffix) {
+        this.statSuffix = statSuffix;
+    }
+    public String getStatFileSize() {
+        return statFileSize;
+    }
+
+    public void setStatFileSize(String statFileSize) {
+        this.statFileSize = statFileSize;
     }
 }

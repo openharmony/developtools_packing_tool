@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -83,6 +83,17 @@ public class CommandParser {
     private static final String MAIN_MODULE_LIMIT = "--main-module-limit";
     private static final String NORMAL_MODULE_LIMIT = "--normal-module-limit";
     private static final String TOTAL_LIMIT = "--total-limit";
+    private static final String VERSION_CODE = "--version-code";
+    private static final String VERSION_NAME = "--version-name";
+    private static final String INPUT_LIST = "--input-list";
+    private static final String INPUT = "--input";
+    private static final String STAT_DUPLICATE = "--stat-duplicate";
+    private static final String STAT_SUFFIX = "--stat-suffix";
+    private static final String STAT_FILE_SIZE = "--stat-file-size";
+    private static final String PARSER_STAT_DUPLICATE_ERROR = "code:9132600 " +
+            "error:statDuplicate is invalid! Must be true or false.";
+    private static final String PARSER_STAT_SUFFIX_ERROR = "code:9132601 " +
+            "error:statSuffix is invalid! Must be true or false.";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -278,6 +289,44 @@ public class CommandParser {
         });
         commandFuncs.put(TOTAL_LIMIT, entry -> {
             entry.getKey().setTotalLimit(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(VERSION_CODE, entry -> {
+            entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
+            return true;
+        });
+        commandFuncs.put(VERSION_NAME, entry -> {
+            entry.getKey().setVersionName(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(INPUT_LIST, entry -> {
+            entry.getKey().setInputList(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(INPUT, entry -> {
+            entry.getKey().setInput(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(STAT_DUPLICATE, entry -> {
+            if (Boolean.TRUE.toString().equals(entry.getValue()) || Boolean.FALSE.toString().equals(entry.getValue())) {
+                entry.getKey().setStatDuplicate(Boolean.parseBoolean(entry.getValue()));
+                return true;
+            } else {
+                LOG.error(PARSER_STAT_DUPLICATE_ERROR);
+                return false;
+            }
+        });
+        commandFuncs.put(STAT_SUFFIX, entry -> {
+            if (Boolean.TRUE.toString().equals(entry.getValue()) || Boolean.FALSE.toString().equals(entry.getValue())) {
+                entry.getKey().setStatSuffix(Boolean.parseBoolean(entry.getValue()));
+                return true;
+            } else {
+                LOG.error(PARSER_STAT_SUFFIX_ERROR);
+                return false;
+            }
+        });
+        commandFuncs.put(STAT_FILE_SIZE, entry -> {
+            entry.getKey().setStatFileSize(entry.getValue());
             return true;
         });
     }
