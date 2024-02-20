@@ -2575,7 +2575,8 @@ public class Compressor {
             for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
                 String bundleType = hapVerifyInfo.getBundleType();
                 if (TYPE_SHARED.equals(bundleType)) {
-                    LOG.error("Compressor::checkHapIsValid shared app should not be included in --hsp-path.");
+                    LOG.error("Compressor::checkHapIsValid only one item can be entered in the -hsp-path" +
+                            " when bundleType is shared.");
                     return false;
                 }
             }

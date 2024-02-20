@@ -64,6 +64,7 @@ public class CompressVerify {
     private static final String VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String BUNDLE_TYPE_SHARE = "shared";
+    private static final String BUNDLE_TYPE_APP = "app";
     private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
@@ -400,6 +401,11 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
+        if (!checkBundleTypeConsistency(utility)) {
+            LOG.error("CompressVerify::isArgsValidInAppMode bundleType is inconsistent.");
+            return false;
+        }
+
         if (!checkInputModulePath(utility)) {
             LOG.warning("CompressVerify::isArgsValidInAppMode input hap-path or hspPath is invalid.");
         }
@@ -449,6 +455,41 @@ public class CompressVerify {
         }
 
         return isOutPathValid(utility, APP_SUFFIX);
+    }
+
+    private static boolean checkBundleTypeConsistency(Utility utility) {
+        String bundleType = new String();
+        List<String> tmpHapPathList = new ArrayList<>();
+        List<String> tmpHspPathList = new ArrayList<>();
+        compatibleProcess(utility, utility.getHapPath(), tmpHapPathList, HAP_SUFFIX);
+        compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX);
+        try {
+            if (!tmpHapPathList.isEmpty()) {
+                HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(tmpHapPathList.get(0));
+                bundleType = hapVerifyInfo.getBundleType();
+            } else {
+                HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(tmpHspPathList.get(0));
+                bundleType = hapVerifyInfo.getBundleType();
+            }
+            for (String hapPath : tmpHapPathList) {
+                HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hapPath);
+                if (!bundleType.equals(hapVerifyInfo.getBundleType())) {
+                    LOG.error("bundleType is not same");
+                    return false;
+                }
+            }
+            for (String hspPath : tmpHspPathList) {
+                HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath);
+                if (!bundleType.equals(hapVerifyInfo.getBundleType())) {
+                    LOG.error("bundleType is not same");
+                    return false;
+                }
+            }
+        } catch (BundleException e) {
+            LOG.warning("parseStageHapVerifyInfo failed");
+            return true;
+        }
+        return true;
     }
 
     private static boolean checkInputModulePath(Utility utility) {
@@ -963,9 +1004,6 @@ public class CompressVerify {
         return true;
     }
     private static boolean verifyIsSharedApp(List<String> hspPath) {
-        if (hspPath.size() != 1) {
-            return false;
-        }
         try {
             HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath.get(0));
             return hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_SHARE);
