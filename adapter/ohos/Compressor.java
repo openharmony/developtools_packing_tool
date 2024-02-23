@@ -660,8 +660,8 @@ public class Compressor {
     private static boolean checkStageHap(Utility utility) throws BundleException {
         Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
         String jsonString = optional.get();
-        if (!checkStageAsanEnabledValid(jsonString)) {
-            LOG.error("checkStageAsanEnabledValid failed.");
+        if (!checkStageAsanTsanEnabledValid(jsonString)) {
+            LOG.error("checkStageAsanTsanEnabledValid failed.");
             return false;
         }
         // check atomicService in module.json
@@ -672,11 +672,11 @@ public class Compressor {
         return true;
     }
 
-    private static boolean checkStageAsanEnabledValid(String jsonString) throws BundleException {
+    private static boolean checkStageAsanTsanEnabledValid(String jsonString) throws BundleException {
         boolean asanEnabled = ModuleJsonUtil.getStageAsanEnabled(jsonString);
-        boolean debug = ModuleJsonUtil.getDebug(jsonString);
-        if (asanEnabled && !debug) {
-            LOG.error("asanEnabled is not supported for Release.");
+        boolean tsanEnabled = ModuleJsonUtil.getStageTsanEnabled(jsonString);
+        if (asanEnabled && tsanEnabled) {
+            LOG.error("asanEnabled and tsanEnabled cannot be true at the same time.");
             return false;
         }
         return true;
