@@ -77,6 +77,7 @@ class ModuleJsonUtil {
     private static final String EMPTY_STRING = "";
     private static final String COMPRESS_NATIVE_LIBS = "compressNativeLibs";
     private static final String ASAN_ENABLED = "asanEnabled";
+    private static final String TSAN_ENABLED = "tsanEnabled";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String SPLIT = "split";
     private static final String MAIN = "main";
@@ -1380,6 +1381,20 @@ class ModuleJsonUtil {
         JSONObject appObj = getAppObj(jsonString);
         if (appObj.containsKey(ASAN_ENABLED)) {
             return appObj.getBoolean(ASAN_ENABLED);
+        }
+        return false;
+    }
+
+    /**
+     * get tsanEnabled in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the value of tsanEnabled
+     */
+    public static boolean getStageTsanEnabled(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+        if (appObj.containsKey(TSAN_ENABLED)) {
+            return appObj.getBoolean(TSAN_ENABLED);
         }
         return false;
     }
