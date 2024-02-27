@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -24,6 +24,183 @@ import subprocess
 import re
 
 
+def run_cmd(title, cmd, time_out):
+    child_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd_out, cmd_err = child_process.communicate(timeout=time_out)
+    if child_process.returncode != 0:
+        print(cmd_out.decode('utf-8'))
+        print(cmd_err.decode('utf-8'))
+        raise Exception('compile module: ' + title + ' failed!')
+
+def compile_haptobin_tool(root_path, src_path, jar_output, out_path, 
+                          toolchain, fastjson_jar):
+    java_sources = [
+        'BinaryTool.java',
+        'BundleException.java',
+        'ConvertHapToBin.java',
+        'FileUtils.java',
+        'Log.java',
+        'PackFormatter.java', 
+        'Utility.java'
+    ]
+    compile_java = ''
+    for src in java_sources:
+        compile_java += os.path.join(src_path, src) + ' '
+
+    shell_path = os.path.join(root_path, "haptobin.sh")
+    command = ['bash', shell_path, root_path, jar_output, out_path, 
+               toolchain, compile_java, fastjson_jar]
+    print('command: ', command)
+    run_cmd('haptobin_tool', command, 5000)
+    return
+
+def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_version, 
+                           toolchain, fastjson_jar):
+    java_sources = [
+        'AbilityFormInfo.java',
+        'AbilityInfo.java',
+        'ApiVersion.java',
+        'AppInfo.java',
+        'AppModel.java',
+        'APPQFResult.java',
+        'BundleException.java',
+        'CommandParser.java',
+        'CommonEvent.java',
+        'CountryCode.java',
+        'CustomizeData.java',
+        'DefinePermission.java',
+        'DefPermissionGroup.java',
+        'DefPermission.java',
+        'DependencyItem.java',
+        'DeviceConfig.java',
+        'DistroFilter.java',
+        'Distro.java',
+        'ExtensionAbilityInfo.java',
+        'FileUtils.java',
+        'FormInfo.java',
+        'HapInfo.java',
+        'HapZipInfo.java',
+        'HQFInfo.java',
+        'IntentInfo.java',
+        'JsInfo.java',
+        'JsonUtil.java',
+        'Log.java',
+        'MetaDataInfo.java',
+        'MetaData.java',
+        'ModuleAbilityInfo.java',
+        'ModuleAdaption.java',
+        'ModuleAppInfo.java',
+        'ModuleAtomicService.java',
+        'ModuleDeviceType.java',
+        'ModuleInfo.java',
+        'ModuleMetadataInfo.java',
+        'ModuleProfileInfo.java',
+        'ModuleResult.java',
+        'ModuleShortcut.java',
+        'PackFormatter.java',
+        'PackInfo.java',
+        'PreloadItem.java',
+        'ProfileInfo.java',
+        'ReqPermission.java',
+        'ResourceIndexResult.java',
+        'ResourcesParser.java',
+        'ScreenDensity.java',
+        'ScreenShape.java',
+        'ScreenWindow.java',
+        'Shortcut.java',
+        'ShowHelp.java',
+        'SkillInfo.java',
+        'UncompressEntrance.java',
+        'Uncompress.java',
+        'UncompressResult.java',
+        'UncompressVerify.java',
+        'UriInfo.java',
+        'UsedScene.java',
+        'Utility.java',
+        'Want.java'
+    ]
+    compile_java = ''
+    for src in java_sources:
+        compile_java += os.path.join(src_path, src) + ' '
+
+    shell_path = os.path.join(root_path, "unpackingTool.sh")
+    command = ['bash', shell_path, root_path, jar_output, out_path, big_version, 
+               toolchain, compile_java, fastjson_jar]
+    print('command: ', command)
+    run_cmd('app_unpacking_tool', command, 5000)
+    return
+
+def compile_packing_tool(root_path, src_path, jar_output, out_path, 
+                         toolchain, fastjson_jar, compress_jar):
+    java_sources = [
+        'ApiVersion.java',
+        'BundleException.java',
+        'CommandParser.java',
+        'CompressEntrance.java',
+        'Compressor.java',
+        'CompressVerify.java',
+        'CountryCode.java',
+        'DependencyItem.java',
+        'DistroFilter.java',
+        'FileUtils.java',
+        'HapVerify.java',
+        'HapVerifyInfo.java',
+        'HQFInfo.java',
+        'HQFVerify.java',
+        'Log.java',
+        'ModuleApiVersion.java',
+        'ModuleJsonUtil.java',
+        'ModuleMetadataInfo.java',
+        'PackFormatter.java',
+        'PreloadItem.java',
+        'ScreenDensity.java',
+        'ScreenShape.java',
+        'ScreenWindow.java',
+        'ShowHelp.java',
+        'Utility.java',
+        'VerifyCollection.java',
+        'Version.java'
+    ]
+    compile_java = ''
+    for src in java_sources:
+        compile_java += os.path.join(src_path, src) + ' '
+
+    shell_path = os.path.join(root_path, "packingTool.sh")
+    command = ['bash', shell_path, root_path, jar_output, out_path, 
+               toolchain, compile_java, fastjson_jar, compress_jar]
+    print('command: ', command)
+    run_cmd('app_packing_tool', command, 5000)
+    return
+
+def compile_check_tool(root_path, src_path, jar_output, out_path, 
+                       toolchain, fastjson_jar):
+    java_sources = [
+        'BundleException.java',
+        'CommandParser.java',
+        'FileUtils.java',
+        'Log.java',
+        'PackFormatter.java',
+        'Scan.java',
+        'ScanEntrance.java',
+        'ScanErrorEnum.java',
+        'ScanStatDuplicate.java',
+        'ScanStatFileSize.java',
+        'ScanStatSuffix.java',
+        'ScanVerify.java',
+        'ShowHelp.java',
+        'Utility.java'
+    ]
+    compile_java = ''
+    for src in java_sources:
+        compile_java += os.path.join(src_path, src) + ' '
+
+    shell_path = os.path.join(root_path, "checkTool.sh")
+    command = ['bash', shell_path, root_path, jar_output, out_path, 
+               toolchain, compile_java, fastjson_jar]
+    print('command: ', command)
+    run_cmd('app_check_tool', command, 5000)
+    return
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--haptobin', required=True)
@@ -35,28 +212,21 @@ def main():
     parser.add_argument('--toolchain', required=True)
     parser.add_argument('--compileTarget', required=True)
     args = parser.parse_args()
-    print(args.haptobinOutput)
-    print(args.unpackOutput)
-    print(args.packOutput)
-    print(args.checkOutput)
-    print(args.outpath)
-    print(args.compileTarget)
+    print('packingTool args: ', args)
     root_dir = os.path.dirname(os.path.realpath(__file__))
+    src_dir = os.path.join(root_dir, "./adapter/ohos/")
     toolchain = args.toolchain
     tool_list = toolchain.split(':')
     toolchain = tool_list[-1]
     toolchain += "_" + args.compileTarget
-    time_out = 5000
+    
+    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson-1.2.83.jar')
+    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/commons-compress-1.24.0.jar')
+    print('packingTool: ', toolchain, fastjson_jar, compress_jar)
 
     # compile haptobin_tool.jar
-    hap_to_bin_shell_path = os.path.join(root_dir, "haptobin.sh")
-    command_haptobin = ['bash', hap_to_bin_shell_path, root_dir, args.haptobinOutput, args.outpath, toolchain]
-    child_haptobin = subprocess.Popen(command_haptobin, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    haptobin_out, haptobin_err = child_haptobin.communicate(timeout=time_out)
-    if child_haptobin.returncode != 0:
-        print(haptobin_out.decode('utf-8'))
-        print(haptobin_err.decode('utf-8'))
-        raise Exception("compile haptobin java class failed!")
+    compile_haptobin_tool(root_dir, src_dir, args.haptobinOutput, args.outpath, 
+                          toolchain, fastjson_jar)
 
     # compile app_unpacking_tool.jar
     version = subprocess.check_output(['javac', '-version'], stderr=subprocess.STDOUT)
@@ -68,35 +238,16 @@ def main():
         big_version = 'true'
     else:
         big_version = 'false'
-    
-    unpack_tool_shell_path = os.path.join(root_dir, "unpackingTool.sh")
-    command_unpack = ['bash', unpack_tool_shell_path, root_dir, args.unpackOutput, args.outpath, big_version, toolchain]
-    child_unpack = subprocess.Popen(command_unpack, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    unpack_out, unpack_err = child_unpack.communicate(timeout=time_out)
-    if child_unpack.returncode != 0:
-        print(unpack_out.decode('utf-8'))
-        print(unpack_err.decode('utf-8'))
-        raise Exception("compile unapcking tool java class failed!")
-    
+    compile_unpacking_tool(root_dir, src_dir, args.unpackOutput, args.outpath, big_version, 
+                           toolchain, fastjson_jar)
+
     #compile app_packing_tool.jar
-    pack_tool_shell_path = os.path.join(root_dir, "packingTool.sh")
-    command_pack = ['bash', pack_tool_shell_path, root_dir, args.packOutput, args.outpath, toolchain]
-    child_pack = subprocess.Popen(command_pack, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    pack_out, pack_err = child_pack.communicate(timeout=time_out)
-    if child_pack.returncode != 0:
-        print(pack_out.decode('utf-8'))
-        print(pack_err.decode('utf-8'))
-        raise Exception("compile packing tool java class failed!")
-    
+    compile_packing_tool(root_dir, src_dir, args.packOutput, args.outpath, 
+                         toolchain, fastjson_jar, compress_jar)
+
     #compile app_check_tool.jar
-    check_tool_shell_path = os.path.join(root_dir, "checkTool.sh")
-    command_check = ['bash', check_tool_shell_path, root_dir, args.checkOutput, args.outpath, toolchain]
-    child_check = subprocess.Popen(command_check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    check_out, check_err = child_check.communicate(timeout=time_out)
-    if child_check.returncode != 0:
-        print(check_out.decode('utf-8'))
-        print(check_err.decode('utf-8'))
-        raise Exception("compile check tool java class failed!")
+    compile_check_tool(root_dir, src_dir, args.checkOutput, args.outpath, 
+                       toolchain, fastjson_jar)
 
 if __name__ == '__main__':
     sys.exit(main())
