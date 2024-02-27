@@ -33,8 +33,11 @@
       },
       "properties": {
         "designWidth": {
-          "description": "Indicates the baseline width for page design, in pixels. The size of an element is scaled by the actual device width. This label is an integer.",
-          "type": "integer",
+          "description": "Indicates the baseline width for page design, in pixels. The size of an element is scaled by the actual device width. This label is an integer or resource string.",
+          "type": [
+            "integer",
+            "string"
+          ],
           "minimum": 0
         },
         "autoDesignWidth": {
