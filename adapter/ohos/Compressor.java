@@ -1950,7 +1950,17 @@ public class Compressor {
             ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(
                     executorService, new DefaultBackingStoreSupplier(null), Deflater.BEST_SPEED);
             File file = new File(path);
-            addArchiveEntry(file, baseDir, zipCreator);
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files == null) {
+                    return;
+                }
+                for (File f : files) {
+                    addArchiveEntry(f, baseDir, zipCreator);
+                }
+            } else {
+                addArchiveEntry(file, baseDir, zipCreator);
+            }
             zipCreator.writeTo(zipOut);
         } catch (IOException | InterruptedException | ExecutionException e) {
             String errMsg = "Compressor::compressNativeLibsParallel exception: " + e.getMessage();
