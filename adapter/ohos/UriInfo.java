@@ -47,4 +47,16 @@ public class UriInfo {
      * Indicates the type of ModuleUriInfo.
      */
     public String type = "";
+    /**
+     * Indicates the uniform file type supported by the ability.
+     */
+    public String utd = "";
+    /**
+     * Indicates the maximum number of files that can be received.
+     */
+    public Integer maxFileSupported = 0;
+    /**
+     * Indicates the uri feature.
+     */
+    public String linkFeature = "";
 }
