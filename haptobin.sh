@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2022 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,8 +16,6 @@ root_path=$1
 haptobin_build_jar_path=$2
 out_build_path=$3
 toolchain=$4
-compile_java=$5
-fastjson_jar=$6
 final_path=$(pwd)
 
 temp_path="."
@@ -25,6 +23,7 @@ jar_dir="jar"
 haptobin_jar_file="haptobin_tool.jar"
 haptobin_jar_path="${final_path}/${out_build_path}"
 haptobin_jar_file_path="${final_path}/${haptobin_build_jar_path}"
+fastjson_jar_path="${root_path}/jar/fastjson-1.2.83.jar"
 # make out dir
 if [ -d "${haptobin_jar_path}" ]
     then
@@ -43,8 +42,26 @@ if [ -d "${out_dir}/ohos" ]
     else
         mkdir -p "${out_dir}/ohos"
 fi
+java_suffix=".java"
+class_suffix=".class"
+out_class="${temp_path}/${out_dir}"
+java_collection=""
+declare -a compile_class=(
+    "Log"
+    "PackFormatter"
+    "BinaryTool"
+    "FileUtils"
+    "ConvertHapToBin"
+    "BundleException"
+    "Utility"
+)
+compile_class_length=${#compile_class[@]}
+for ((i=0; i<${compile_class_length};++i))
+do
+    java_collection="${java_collection} ${root_path}/adapter/ohos/${compile_class[$i]}${java_suffix}"
+done
 
-compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar} -d ${out_dir} ${compile_java}"
+compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar_path} -d ${out_dir} ${java_collection}"
 eval ${compile_command}
 cd ${out_dir}
 temp_jar_path="${root_path}/jar/haptobin_${toolchain}/${haptobin_jar_file}"
