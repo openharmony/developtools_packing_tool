@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2022 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,15 +16,11 @@ root_path=$1
 pack_build_out_jar_path=$2
 pack_build_out_path=$3
 toolchain=$4
-compile_java=$5
-fastjson_jar=$6
-compress_jar=$7
 final_path=$(pwd)
 
 jar_dir="jar"
 pack_jar_file="app_packing_tool.jar"
 fastjson_jar_file="fastjson-1.2.83.jar"
-compress_jar_file="commons-compress-1.24.0.jar"
 jar_directory="${root_path}/jar"
 pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
 manifest_path="${root_path}/META-INF/packing_tool/MANIFEST.MF"
@@ -37,7 +33,45 @@ if [ -d "${out_dir}/ohos" ]
         mkdir -p "${out_dir}/ohos"
 fi
 
-compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar}:${compress_jar}  -d ${out_dir} ${compile_java}"
+jar_path="${root_path}/jar"
+fastjson_jar_path="${root_path}/jar/fastjson-1.2.83.jar"
+java_suffix=".java"
+java_collection=""
+declare -a compile_class=(
+            "BundleException"
+            "CommandParser"
+            "CompressEntrance"
+            "Compressor"
+            "CompressVerify"
+            "Log"
+            "PackFormatter"
+            "ShowHelp"
+            "Utility"
+            "ModuleJsonUtil"
+            "Version"
+            "FileUtils"
+            "ModuleApiVersion"
+            "VerifyCollection"
+            "DistroFilter"
+            "ApiVersion"
+            "ScreenShape"
+            "ScreenDensity"
+            "ScreenWindow"
+            "CountryCode"
+            "ModuleMetadataInfo"
+            "HapVerify"
+            "HapVerifyInfo"
+            "HQFVerify"
+            "HQFInfo"
+            "DependencyItem"
+            "PreloadItem"
+            )
+compile_class_length=${#compile_class[@]}
+for ((i=0; i<${compile_class_length};++i))
+do
+  java_collection="${java_collection} ${root_path}/adapter/ohos/${compile_class[$i]}${java_suffix}"
+done
+compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar_path}  -d ${out_dir} ${java_collection}"
 eval ${compile_command}
 
 temp_dir="$root_path/jar/temp_${toolchain}"
@@ -53,18 +87,14 @@ product_pack_jar_command="jar -cvfm ${temp_dir}/${pack_jar_file} ${manifest_path
 eval ${product_pack_jar_command}
 
 # merge app_packing_tool.jar and fastjson
-cp ${fastjson_jar} "${temp_dir}/${fastjson_jar_file}"
-cp ${compress_jar} "${temp_dir}/${compress_jar_file}"
+cp ${fastjson_jar_path} "${temp_dir}/${fastjson_jar_file}"
 detach_pack_jar_command="jar -xvf ${pack_jar_file}"
 detach_fastjson_jar_command="jar -xvf ${fastjson_jar_file}"
-detach_compress_jar_command="jar -xvf ${compress_jar_file}"
 cd ${temp_dir}
 eval ${detach_pack_jar_command}
 eval ${detach_fastjson_jar_command}
-eval ${detach_compress_jar_command}
 rm ${pack_jar_file}
 rm ${fastjson_jar_file}
-rm ${compress_jar_file}
 
 cd ${jar_directory}
 temp_pack_jar_dir="${root_path}/jar/packtool_${toolchain}"
