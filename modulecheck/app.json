@@ -111,7 +111,8 @@
           "targetPriority",
           "generateBuildHash",
           "2in1",
-          "GWPAsanEnabled"
+          "GWPAsanEnabled",
+          "tsanEnabled"
         ]
       },
       "properties": {
@@ -292,6 +293,11 @@
         },
         "GWPAsanEnabled": {
           "description": "Indicates whether to support GWP asan.",
+          "type": "boolean",
+          "default": false
+        },
+        "tsanEnabled": {
+          "description": "Indicates whether to support tsan.",
           "type": "boolean",
           "default": false
         }
