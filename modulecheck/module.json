@@ -373,6 +373,7 @@
                 "recoverable",
                 "unclearableMission",
                 "excludeFromDock",
+                "preferMultiWindowOrientation",
                 "isolationProcess"
               ]
             },
@@ -718,6 +719,18 @@
                 "description": "Specify whether to hide the application icon from the dock area.",
                 "type": "boolean",
                 "default": false
+              },
+              "preferMultiWindowOrientation": {
+                "description": "Indicates the prefered multi window orientation.",
+                "type": "string",
+                "enum": [
+                  "default",
+                  "portrait",
+                  "landscape",
+                  "landscape_auto"
+                  
+                ],
+                "default": "default"
               },
               "isolationProcess": {
                 "description": "Specifies whether the ability can run in an independent process",
