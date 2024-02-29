@@ -1949,7 +1949,7 @@ public class Compressor {
         try {
             int cores = Runtime.getRuntime().availableProcessors();
             ThreadPoolExecutor executorService = new ThreadPoolExecutor(cores, cores, 60L,
-                    TimeUnit.SECONDS, new LinkedBlockingQueue<>(256));
+                    TimeUnit.SECONDS, new LinkedBlockingQueue<>());
             ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(
                     executorService, new DefaultBackingStoreSupplier(null), Deflater.BEST_SPEED);
             File file = new File(path);
