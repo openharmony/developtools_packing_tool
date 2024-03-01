@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,11 +38,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.UUID;
@@ -58,6 +62,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.apache.commons.compress.archivers.zip.DefaultBackingStoreSupplier;
+import org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.parallel.InputStreamSupplier;
 
 /**
  * bundle compressor class, compress file and directory.
@@ -172,7 +181,8 @@ public class Compressor {
     private static int sumModuleSizeLimit = 10;
     private static final int INVALID_VERSION = -1;
     private static boolean isOverlay = false;
-    private ZipOutputStream zipOut = null;
+
+    private ZipArchiveOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private List<String> list = new ArrayList<String>();
     private List<String> formNamesList = new ArrayList<String>();
@@ -335,7 +345,7 @@ public class Compressor {
         try {
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
-            zipOut = new ZipOutputStream(checkedOut);
+            zipOut = new ZipArchiveOutputStream(checkedOut);
             zipOut.setLevel(Deflater.BEST_SPEED);
             compressExcute(utility);
         } catch (FileNotFoundException exception) {
@@ -1161,7 +1171,7 @@ public class Compressor {
             copyHapFile(utility, backName);
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
-            zipOut = new ZipOutputStream(checkedOut);
+            zipOut = new ZipArchiveOutputStream(checkedOut);
 
             compressHapAddition(utility, hapAdditionPath);
         } catch (BundleException | IOException exception) {
@@ -1910,6 +1920,10 @@ public class Compressor {
         if (path.isEmpty()) {
             return;
         }
+        if (isCompression && LIBS_DIR_NAME.equals(baseDir)) {
+            compressNativeLibsParallel(path, baseDir);
+            return;
+        }
         File fileItem = new File(path);
         if (fileItem.isDirectory()) {
             File[] files = fileItem.listFiles();
@@ -1927,6 +1941,63 @@ public class Compressor {
             }
         } else {
             compressFile(utility, fileItem, baseDir, isCompression);
+        }
+    }
+
+    private void compressNativeLibsParallel(String path, String baseDir)
+            throws BundleException {
+        try {
+            int cores = Runtime.getRuntime().availableProcessors();
+            ThreadPoolExecutor executorService = new ThreadPoolExecutor(cores, cores, 60L,
+                    TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+            ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(
+                    executorService, new DefaultBackingStoreSupplier(null), Deflater.BEST_SPEED);
+            File file = new File(path);
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files == null) {
+                    return;
+                }
+                for (File f : files) {
+                    addArchiveEntry(f, baseDir, zipCreator);
+                }
+            } else {
+                addArchiveEntry(file, baseDir, zipCreator);
+            }
+            zipCreator.writeTo(zipOut);
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            String errMsg = "Compressor::compressNativeLibsParallel exception: " + e.getMessage();
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+    }
+
+    private void addArchiveEntry(File file, String baseDir, ParallelScatterZipCreator zipCreator)
+            throws IOException {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (File f : files) {
+                addArchiveEntry(f, baseDir + file.getName() + File.separator, zipCreator);
+            }
+        } else {
+            String entryName = (baseDir + file.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
+            zipEntry.setMethod(ZipArchiveEntry.DEFLATED);
+            FileTime fileTime = FileTime.fromMillis(FILE_TIME);
+            zipEntry.setLastAccessTime(fileTime);
+            zipEntry.setLastModifiedTime(fileTime);
+            InputStreamSupplier supplier = () -> {
+                try {
+                    return Files.newInputStream(file.toPath());
+                } catch (IOException e) {
+                    LOG.error("Compressor::compressNativeLibsParallel exception: " + e.getMessage());
+                    return null;
+                }
+            };
+            zipCreator.addArchiveEntry(zipEntry, supplier);
         }
     }
 
@@ -2115,7 +2186,7 @@ public class Compressor {
         FileInputStream fileInputStream = null;
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
-            ZipEntry zipEntry = new ZipEntry(entryName);
+            ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
             if (!entryName.contains(RAW_FILE_PATH) &&
                     srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
@@ -2142,7 +2213,7 @@ public class Compressor {
             zipEntry.setLastAccessTime(fileTime);
             zipEntry.setLastModifiedTime(fileTime);
 
-            zipOut.putNextEntry(zipEntry);
+            zipOut.putArchiveEntry(zipEntry);
             byte[] data = new byte[BUFFER_SIZE];
             fileInputStream = new FileInputStream(srcFile);
             bufferedInputStream = new BufferedInputStream(fileInputStream);
@@ -2273,7 +2344,7 @@ public class Compressor {
      * @param entry   zip file entry
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private void jsonSpecialProcess(Utility utility, File srcFile, ZipEntry entry)
+    private void jsonSpecialProcess(Utility utility, File srcFile, ZipArchiveEntry entry)
             throws BundleException {
         FileInputStream fileInputStream = null;
         BufferedReader bufferedReader = null;
@@ -2328,7 +2399,7 @@ public class Compressor {
             entry.setLastModifiedTime(fileTime);
 
             // compress data
-            zipOut.putNextEntry(entry);
+            zipOut.putArchiveEntry(entry);
             zipOut.write(trimJson);
         } catch (IOException exception) {
             LOG.error("Compressor::jsonSpecialProcess io exception: " + exception.getMessage());
@@ -2487,7 +2558,7 @@ public class Compressor {
         }
         try {
             if (zipOut != null) {
-                zipOut.closeEntry();
+                zipOut.closeArchiveEntry();
             }
         } catch (IOException exception) {
             LOG.error("Compressor::closeZipOutputStream close entry io exception " + exception.getMessage());
