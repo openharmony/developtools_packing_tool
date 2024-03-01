@@ -133,7 +133,8 @@
                 "proxyData",
                 "fileContextMenu",
                 "querySchemes",
-                "routerMap"
+                "routerMap",
+                "appEnvironments"
               ]
             },
             "required": [
@@ -181,7 +182,8 @@
                 "generateBuildHash",
                 "isolationMode",
                 "proxyData",
-                "routerMap"
+                "routerMap",
+                "appEnvironments"
               ]
             },
             "required": [
@@ -1415,6 +1417,31 @@
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
+        },
+        "appEnvironments": {
+          "description": "Indicates the environment value of app.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "name",
+                "value"
+              ]
+            },
+            "properties": {
+              "name": {
+                "description": "Indicates the key of a environment element. The value is a string with a maximum of 4096 bytes.",
+                "type": "string",
+                "maxLength": 4096
+              },
+              "value": {
+                "description": "Indicates the value of a environment element. The value is a string with a maximum of 4096 bytes.",
+                "type": "string",
+                "maxLength": 4096
+              }
+            }
+          }
         }
       }
     }
