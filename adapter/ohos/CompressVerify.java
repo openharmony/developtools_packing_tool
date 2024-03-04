@@ -581,9 +581,11 @@ public class CompressVerify {
             LOG.error("must input patch.json file when pack hqf file.");
             return false;
         }
-        if (utility.getEtsPath().isEmpty() || !isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
-            LOG.error("must input valid ets path when pack hqf file.");
-            return false;
+        if (!utility.getEtsPath().isEmpty()) {
+            if (!isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
+                LOG.error("must input valid ets path when pack hqf file.");
+                return false;
+            }
         }
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, PATCH_PROFILE)) {
             LOG.error("input patch.json is invalid when pack hqf file.");
