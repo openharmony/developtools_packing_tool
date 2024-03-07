@@ -491,7 +491,8 @@
                     "enum": [
                       "actions",
                       "entities",
-                      "uris"
+                      "uris",
+                      "domainVerify"
                     ]
                   },
                   "properties": {
@@ -596,6 +597,11 @@
                           }
                         ]
                       }
+                    },
+                    "domainVerify": {
+                      "description": "Specifies whether the ability support domain verification. The \"true\" indicates the ability support domain verification. The \"false\" indicates the ability does not support domain verification. This tag is optional. The default value is false.",
+                      "type": "boolean",
+                      "default": false
                     }
                   }
                 }
