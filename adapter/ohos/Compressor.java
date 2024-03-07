@@ -1554,7 +1554,8 @@ public class Compressor {
                 if (PACKINFO_NAME.equals(zipEntry.getName())) {
                     continue;
                 }
-                ZipEntry newEntry = new ZipEntry(zipEntry);
+                ZipEntry newEntry = zipEntry.getMethod() ==
+                        ZipEntry.STORED ? new ZipEntry(zipEntry) : new ZipEntry(zipEntry.getName());
                 append.putNextEntry(newEntry);
                 if (!zipEntry.isDirectory()) {
                     copy(sourceHapFile.getInputStream(zipEntry), append);
