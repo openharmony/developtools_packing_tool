@@ -1241,10 +1241,6 @@ class HapVerify {
         Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
         for (String device : deviceInfoMap.keySet()) {
             List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
-            if (!checkAtomicServiceSumLimit(hapVerifyInfos)) {
-                LOG.error("checkAtomicServiceSumLimit failed on device: " + device);
-                return false;
-            }
             if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
                 LOG.error("checkAtomicServicePreloadsIsValid failed on device " + device + ".");
                 return false;
