@@ -52,7 +52,6 @@ import java.util.regex.Pattern;
 import java.util.UUID;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
-import java.util.zip.Deflater;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -346,7 +345,7 @@ public class Compressor {
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipArchiveOutputStream(checkedOut);
-            zipOut.setLevel(Deflater.BEST_SPEED);
+            zipOut.setLevel(utility.getCompressLevel());
             compressExcute(utility);
         } catch (FileNotFoundException exception) {
             compressResult = false;
@@ -1921,7 +1920,7 @@ public class Compressor {
             return;
         }
         if (isCompression && LIBS_DIR_NAME.equals(baseDir)) {
-            compressNativeLibsParallel(path, baseDir);
+            compressNativeLibsParallel(path, baseDir, utility.getCompressLevel());
             return;
         }
         File fileItem = new File(path);
@@ -1944,14 +1943,14 @@ public class Compressor {
         }
     }
 
-    private void compressNativeLibsParallel(String path, String baseDir)
+    private void compressNativeLibsParallel(String path, String baseDir, int compressLevel)
             throws BundleException {
         try {
             int cores = Runtime.getRuntime().availableProcessors();
             ThreadPoolExecutor executorService = new ThreadPoolExecutor(cores, cores, 60L,
                     TimeUnit.SECONDS, new LinkedBlockingQueue<>());
             ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(
-                    executorService, new DefaultBackingStoreSupplier(null), Deflater.BEST_SPEED);
+                    executorService, new DefaultBackingStoreSupplier(null), compressLevel);
             File file = new File(path);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
