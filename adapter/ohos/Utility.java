@@ -97,6 +97,7 @@ public class Utility {
     private String mainModuleLimit = "";
     private String normalModuleLimit = "";
     private String totalLimit = "";
+    private int compressLevel = 1;
     private String absoluteHapPath = "";
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
@@ -787,6 +788,14 @@ public class Utility {
 
     public void setTotalLimit(String limit) {
         this.totalLimit = limit;
+    }
+
+    public int getCompressLevel() {
+        return compressLevel;
+    }
+
+    public void setCompressLevel(int compressLevel) {
+        this.compressLevel = compressLevel;
     }
 
     public String getHspList() {
