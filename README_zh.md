@@ -76,7 +76,7 @@ java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [optio
 #### 1.3.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info [option]--force [option]
+java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info-path [option]--force [option]
 ```
 
 #### 1.3.2 参数含义及规范
