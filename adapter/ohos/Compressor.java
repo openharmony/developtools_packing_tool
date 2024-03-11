@@ -403,6 +403,10 @@ public class Compressor {
         if (isModuleJSON(utility.getJsonPath())) {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
+            if (!checkStageAsanTsanEnabledValid(jsonString)) {
+                LOG.error("checkStageAsanTsanEnabledValid failed.");
+                throw new BundleException("compressHsp failed.");
+            }
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("checkStageAtomicService failed.");
                 throw new BundleException("checkStageAtomicService failed.");
@@ -447,10 +451,6 @@ public class Compressor {
             compressHapModeForModule(utility);
             buildHash(utility);
         } else {
-            if (!checkFAHap(utility)) {
-                LOG.error("checkFAHap failed.");
-                throw new BundleException("checkStageHap failed.");
-            }
             compressHapMode(utility);
             buildHash(utility);
         }
@@ -1054,7 +1054,6 @@ public class Compressor {
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hsp failed.");
                 }
             }
-            parseFileSizeLimit(utility);
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
