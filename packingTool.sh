@@ -52,7 +52,7 @@ cd ${out_dir}
 product_pack_jar_command="jar -cvfm ${temp_dir}/${pack_jar_file} ${manifest_path} ./ohos"
 eval ${product_pack_jar_command}
 
-# merge app_packing_tool.jar and fastjson
+# merge app_packing_tool.jar and fastjson/commons-compress
 cp ${fastjson_jar} "${temp_dir}/${fastjson_jar_file}"
 cp ${compress_jar} "${temp_dir}/${compress_jar_file}"
 detach_pack_jar_command="jar -xvf ${pack_jar_file}"
@@ -62,6 +62,7 @@ cd ${temp_dir}
 eval ${detach_pack_jar_command}
 eval ${detach_fastjson_jar_command}
 eval ${detach_compress_jar_command}
+cp "$root_path/jar/NOTICE" "META-INF/NOTICE.txt"
 rm ${pack_jar_file}
 rm ${fastjson_jar_file}
 rm ${compress_jar_file}
