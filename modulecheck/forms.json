@@ -105,7 +105,7 @@
             "default": "auto"
           },
           "supportDimensions": {
-            "description": "This label identifies the card appearance specification. The value is \"1*2\", \" 2*2\", \"2*4\", \"4*4\", \"1*1\", \"4*6\" and cannot be default. At least one card specification must be specified when defining a card.",
+            "description": "This label identifies the card appearance specification. The value is \"1*2\", \" 2*2\", \"2*4\", \"4*4\", \"1*1\", \"6*4\" and cannot be default. At least one card specification must be specified when defining a card.",
             "type": "array",
             "uniqueItems": true,
             "items": {
@@ -116,7 +116,7 @@
                 "2*4",
                 "4*4",
                 "1*1",
-                "4*6"
+                "6*4"
               ]
             }
           },
@@ -130,7 +130,7 @@
               "2*4",
               "4*4",
               "1*1",
-              "4*6"
+              "6*4"
             ]
           },
           "updateEnabled": {
