@@ -865,7 +865,8 @@
                   "sysPicker/meetimeCallLog",
                   "sysPicker/photoPicker",
                   "sys/commonUI",
-                  "fileAccess"
+                  "fileAccess",
+                  "sysPicker/camera"
                 ]
               },
               "permissions": {
