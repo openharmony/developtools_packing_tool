@@ -872,6 +872,7 @@
                   "remoteNotification",
                   "remoteLocation",
                   "voip",
+                  "accountLogout",
                   "sysDialog/userAuth",
                   "sysDialog/common",
                   "sysDialog/atomicServicePanel",
