@@ -169,7 +169,7 @@
           "type": "boolean"
         },
         "asanEnabled": {
-          "description": "Indicates whether to support asan. Release version is not configurable",
+          "description": "Indicates whether to support asan.",
           "type": "boolean",
           "default": false
         }
