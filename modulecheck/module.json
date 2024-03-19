@@ -325,23 +325,11 @@
           "uniqueItems": true,
           "items": {
             "type": "object",
-            "oneOf": [
-              {
-                "required": [
-                  "name",
-                  "srcEntrance",
-                  "startWindowIcon",
-                  "startWindowBackground"
-                ]
-              },
-              {
-                "required": [
-                  "name",
-                  "srcEntry",
-                  "startWindowIcon",
-                  "startWindowBackground"
-                ]
-              }
+            "required": [
+              "name",
+              "srcEntry",
+              "startWindowIcon",
+              "startWindowBackground"
             ],
             "propertyNames": {
               "enum": [
