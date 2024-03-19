@@ -890,7 +890,8 @@
                   "sysPicker/navigation",
                   "sys/commonUI",
                   "fileAccess",
-                  "sysPicker/camera"
+                  "sysPicker/camera",
+		  "autoFill/smart"
                 ]
               },
               "permissions": {
