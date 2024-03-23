@@ -62,3 +62,8 @@ ohos_prebuilt_etc("routerMapSchema_json") {
   source = "routerMap.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("appStartupSchema_json") {
+  source = "appStartup.json"
+  install_enable = false
+}
