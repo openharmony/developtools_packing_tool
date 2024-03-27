@@ -917,6 +917,9 @@ public class Compressor {
                 pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
             }
         }
+        if (!utility.getPkgContextPath().isEmpty()) {
+            pathToFile(utility, utility.getPkgContextPath(), NULL_DIR_NAME, false);
+        }
 
         compressHapModeMultiple(utility);
     }
@@ -2876,6 +2879,9 @@ public class Compressor {
                 String baseDir = new File(utility.getFormatedDirList().get(i)).getName() + File.separator;
                 pathToFile(utility, utility.getFormatedDirList().get(i), baseDir, false);
             }
+        }
+        if (!utility.getPkgContextPath().isEmpty()) {
+            pathToFile(utility, utility.getPkgContextPath(), NULL_DIR_NAME, false);
         }
 
         compressHapModeMultiple(utility);
