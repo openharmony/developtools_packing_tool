@@ -134,7 +134,8 @@
                 "fileContextMenu",
                 "querySchemes",
                 "routerMap",
-                "appEnvironments"
+                "appEnvironments",
+                "appStartup"
               ]
             },
             "required": [
@@ -1449,6 +1450,12 @@
               }
             }
           }
+        },
+        "appStartup": {
+          "description": "Startup framework configuration file. The value is startup framework configuration file path.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         }
       }
     }
