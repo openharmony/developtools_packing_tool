@@ -18,7 +18,7 @@ packing_tool子系统用于生成打包工具和拆包工具，其中打包工�
 
 
 ```
-java -jar app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true --compress-level 5
+java -jar app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true --compress-level 5 --pkg-context-path <option>
 ```
 
 - FA模型的打包命令示例：
@@ -51,6 +51,7 @@ java -jar app_packing_tool.jar --mode hap --json-path <option> --maple-so-path [
 | --ap-path        | 否     | NA                   | 存放ap文件的路径。                                                | 仅stage模型生效 |
 | --dir-list       | 否     | NA                   | 可指定目标文件夹列表，将其打入hap包内。                                   | NA         |
 | --compress-level | 否     | number               | 压缩等级，默认值1，可选等级1-9。在应用配置compressNativeLibs参数为true的情况下生效，数值越大压缩率越高、压缩速度越慢。  | NA    |
+| --pkg-context-path      | 否         | NA            | 可指定语境信息表文件路径，文件名必须为pkgContextInfo.json。 | 仅stage模型生效              |
 
 ### 1.2 har包模式打包指令
 
@@ -161,7 +162,7 @@ java -jar app_packing_tool.jar --mode appqf --hqf-list <option> --out-path <opti
 
 #### 1.7.1 示例
 ```
-java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\library.hsp --force true --compress-level 5
+java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\library.hsp --force true --compress-level 5 --pkg-context-path <option>
 ```
 
 #### 1.7.2 参数含义及规范
@@ -184,6 +185,7 @@ java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-
 | --ap-path        | 否     | NA                   | 存放ap文件的路径。                                                |
 | --dir-list       | 否     | NA                   | 可指定目标文件夹列表，将其打入hap包内                               |
 | --compress-level | 否     | number               | 压缩等级，默认值1，可选等级1-9。在应用配置compressNativeLibs参数为true的情况下生效，数值越大压缩率越高、压缩速度越慢。  |
+| --pkg-context-path      | 否         | NA            | 可指定语境信息表文件路径，文件名必须为pkgContextInfo.json。 |
 
 ### 1.8 versionNormalize模式指令
 
