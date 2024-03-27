@@ -39,6 +39,7 @@ public class CompressVerify {
     private static final String JSON_PROFILE = "config.json";
     private static final String MODULE_PROFILE = "module.json";
     private static final String PATCH_PROFILE = "patch.json";
+    private static final String PKG_CONTEXT_INFO = "pkgContextInfo.json";
     private static final String PROFILE_NAME = "CAPABILITY.profile";
     private static final String INDEX_PROFILE = "resources.index";
     private static final String RPCID_PROFILE = "rpcid.sc";
@@ -252,6 +253,13 @@ public class CompressVerify {
                 utility.getFormatedDirList())) {
             LOG.error("CompressVerify::isArgsValidInHapMode --dir-list is invalid.");
             return false;
+        }
+        if (!utility.getPkgContextPath().isEmpty()) {
+            File file = new File(utility.getPkgContextPath());
+            if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
+                LOG.error("CompressVerify::isArgsValidInHapMode --pkg-context-path file must be " + PKG_CONTEXT_INFO);
+                return false;
+            }
         }
         return true;
     }
@@ -875,6 +883,14 @@ public class CompressVerify {
         if (isHapPathValid(utility.getANPath())) {
             LOG.error("CompressVerify::isArgsValidInHapMode an-path is invalid.");
             return false;
+        }
+
+        if (!utility.getPkgContextPath().isEmpty()) {
+            File file = new File(utility.getPkgContextPath());
+            if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
+                LOG.error("CompressVerify::isArgsValidInHspMode --pkg-context-path file must be " + PKG_CONTEXT_INFO);
+                return false;
+            }
         }
 
         return isOutPathValid(utility, HSP_SUFFIX);

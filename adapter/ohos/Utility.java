@@ -98,6 +98,7 @@ public class Utility {
     private String normalModuleLimit = "";
     private String totalLimit = "";
     private int compressLevel = 1;
+    private String pkgContextPath = "";
     private String absoluteHapPath = "";
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
@@ -796,6 +797,14 @@ public class Utility {
 
     public void setCompressLevel(int compressLevel) {
         this.compressLevel = compressLevel;
+    }
+
+    public String getPkgContextPath() {
+        return pkgContextPath;
+    }
+
+    public void setPkgContextPath(String pkgContextPath) {
+        this.pkgContextPath = pkgContextPath;
     }
 
     public String getHspList() {
