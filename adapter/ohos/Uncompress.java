@@ -1075,7 +1075,6 @@ public class Uncompress {
                 zipEntry.setCrc(crc.getValue());
             }
             FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastAccessTime(fileTime);
             zipEntry.setLastModifiedTime(fileTime);
             zipOut.putNextEntry(zipEntry);
             byte[] data = new byte[BUFFER_SIZE];
