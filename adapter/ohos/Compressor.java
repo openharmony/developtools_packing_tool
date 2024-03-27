@@ -1989,7 +1989,6 @@ public class Compressor {
             ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
             zipEntry.setMethod(ZipArchiveEntry.DEFLATED);
             FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastAccessTime(fileTime);
             zipEntry.setLastModifiedTime(fileTime);
             InputStreamSupplier supplier = () -> {
                 try {
@@ -2128,7 +2127,6 @@ public class Compressor {
         CRC32 crc = getCrcFromFile(sourceFile);
         zipEntry.setCrc(crc.getValue());
         FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-        zipEntry.setLastAccessTime(fileTime);
         zipEntry.setLastModifiedTime(fileTime);
         return zipEntry;
     }
@@ -2212,7 +2210,6 @@ public class Compressor {
 
             // update fileTime
             FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastAccessTime(fileTime);
             zipEntry.setLastModifiedTime(fileTime);
 
             zipOut.putArchiveEntry(zipEntry);
@@ -2397,7 +2394,6 @@ public class Compressor {
 
             // update fileTime
             FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            entry.setLastAccessTime(fileTime);
             entry.setLastModifiedTime(fileTime);
 
             // compress data
