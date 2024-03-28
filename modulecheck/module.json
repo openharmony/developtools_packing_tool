@@ -867,6 +867,7 @@
                   "action", 
                   "adsService",
                   "embeddedUI",
+                  "insightIntentUI",
                   "accessView",
                   "autoFill/password",
                   "hms/account",
