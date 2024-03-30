@@ -719,7 +719,7 @@
                   "portrait",
                   "landscape",
                   "landscape_auto"
-                  
+
                 ],
                 "default": "default"
               },
@@ -864,7 +864,7 @@
                   "share",
                   "push",
                   "driver",
-                  "action", 
+                  "action",
                   "adsService",
                   "embeddedUI",
                   "accessView",
@@ -894,7 +894,8 @@
                   "sys/commonUI",
                   "fileAccess",
                   "sysPicker/camera",
-		  "autoFill/smart"
+                  "autoFill/smart",
+                  "liveViewLockScreen"
                 ]
               },
               "permissions": {
