@@ -494,7 +494,6 @@ public class CompressVerify {
                 }
             }
         } catch (BundleException e) {
-            LOG.warning("parseStageHapVerifyInfo failed");
             return true;
         }
         return true;
