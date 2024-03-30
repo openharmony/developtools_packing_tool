@@ -14,7 +14,6 @@
           "enum": [
             "name",
             "pageSourceFile",
-            "pageModule",
             "buildFunction",
             "data"
           ]
@@ -29,11 +28,6 @@
             "description": "Indicates the file path of the current page within the module",
             "type": "string",
             "maxLength": 255
-          },
-          "pageModule": {
-            "description": "Indicates the name of the module to which the current page belongs",
-            "type": "string",
-            "maxLength": 31
           },
           "buildFunction": {
             "description": "Indicates the name of the function @Builder decorated. The function describe UI of current page",
