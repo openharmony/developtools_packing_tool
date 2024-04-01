@@ -158,7 +158,6 @@ public class Compressor {
     private static final String BACKUP_PREFIX = "backup";
 
     // set timestamp to get fixed MD5
-    private static final long FILE_TIME = 1546272000000L;
     private static final int ENTRY_FILE_LIMIT_DEFAULT = 2;
     private static final int NOT_ENTRY_FILE_LIMIT_DEFAULT = 2;
     private static final int TOTAL_FILE_LIMIT_DEFAULT = 10;
@@ -1988,8 +1987,6 @@ public class Compressor {
             String entryName = (baseDir + file.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
             zipEntry.setMethod(ZipArchiveEntry.DEFLATED);
-            FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastModifiedTime(fileTime);
             InputStreamSupplier supplier = () -> {
                 try {
                     return Files.newInputStream(file.toPath());
@@ -2126,8 +2123,6 @@ public class Compressor {
         zipEntry.setSize(sourceFile.length());
         CRC32 crc = getCrcFromFile(sourceFile);
         zipEntry.setCrc(crc.getValue());
-        FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-        zipEntry.setLastModifiedTime(fileTime);
         return zipEntry;
     }
 
@@ -2207,10 +2202,6 @@ public class Compressor {
                 CRC32 crc = getCrcFromFile(utility, srcFile);
                 zipEntry.setCrc(crc.getValue());
             }
-
-            // update fileTime
-            FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastModifiedTime(fileTime);
 
             zipOut.putArchiveEntry(zipEntry);
             byte[] data = new byte[BUFFER_SIZE];
@@ -2391,10 +2382,6 @@ public class Compressor {
             // update size
             entry.setSize(trimJson.length);
             entry.setCompressedSize(trimJson.length);
-
-            // update fileTime
-            FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            entry.setLastModifiedTime(fileTime);
 
             // compress data
             zipOut.putArchiveEntry(entry);
