@@ -65,7 +65,6 @@ public class Uncompress {
     private static final String SYSTEM_ENTITY = "entity.system.home";
     private static final int READ_BUFFER_SIZE = 1024;
     private static final int BUFFER_SIZE = 10 * 1024;
-    private static final long FILE_TIME = 1546272000000L;
     private static final String LIBS_DIR_NAME = "libs";
     private static final String CUT_ENTRY_FILENAME = "cut_entry.apk";
     private static final String SO_SUFFIX = ".so";
@@ -1074,8 +1073,6 @@ public class Uncompress {
                 CRC32 crc = getCrcFromFile(srcFile);
                 zipEntry.setCrc(crc.getValue());
             }
-            FileTime fileTime = FileTime.fromMillis(FILE_TIME);
-            zipEntry.setLastModifiedTime(fileTime);
             zipOut.putNextEntry(zipEntry);
             byte[] data = new byte[BUFFER_SIZE];
             fileInputStream = new FileInputStream(srcFile);
