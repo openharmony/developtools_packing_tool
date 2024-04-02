@@ -38,7 +38,8 @@
             "defaultDimension",
             "supportDimensions",
             "dataProxyEnabled",
-            "metadata"
+            "metadata",
+            "fontScaleFollowSystem"
           ]
         },
         "required": [
@@ -219,6 +220,11 @@
             "description": "This tag identifies whether the form can be set as a transparent background",
             "type": "boolean",
             "default": false
+          },
+          "fontScaleFollowSystem": {
+            "description": "This tag identifies whether the form font scale can be set with system config",
+            "type": "boolean",
+            "default": true
           },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
