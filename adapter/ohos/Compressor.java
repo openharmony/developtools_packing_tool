@@ -353,7 +353,7 @@ public class Compressor {
             compressExcute(utility);
         } catch (FileNotFoundException exception) {
             compressResult = false;
-            LOG.error("Compressor::compressProcess file not found exception" + exception.getMessage());
+            LOG.error("Compressor::compressProcess file not found exception.");
         } catch (BundleException ignored) {
             compressResult = false;
             LOG.error("Compressor::compressProcess Bundle exception.");
