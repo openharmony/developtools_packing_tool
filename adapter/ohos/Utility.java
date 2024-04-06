@@ -37,6 +37,7 @@ public class Utility {
     static final String MODE_HSP = "hsp";
     static final String MODE_HAPADDITION = "hapAddition";
     static final String VERSION_NORMALIZE = "versionNormalize";
+    static final String PACKAGE_NORMALIZE = "packageNormalize";
     static final String FALSE_STRING = "false";
     static final String TRUE_STRING = "true";
 
@@ -99,6 +100,7 @@ public class Utility {
     private String totalLimit = "";
     private int compressLevel = 1;
     private String pkgContextPath = "";
+    private String bundleName = "";
     private String absoluteHapPath = "";
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
@@ -805,6 +807,14 @@ public class Utility {
 
     public void setPkgContextPath(String pkgContextPath) {
         this.pkgContextPath = pkgContextPath;
+    }
+
+    public String getBundleName() {
+        return bundleName;
+    }
+
+    public void setBundleName(String bundleName) {
+        this.bundleName = bundleName;
     }
 
     public String getHspList() {
