@@ -33,7 +33,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -319,16 +318,22 @@ public class Compressor {
      * @return compressProcess if compress succeed
      */
     public boolean compressProcess(Utility utility) {
-        if (Utility.VERSION_NORMALIZE.equals(utility.getMode())) {
-            versionNormalize(utility);
-            return true;
+        switch (utility.getMode()) {
+            case Utility.VERSION_NORMALIZE:
+                versionNormalize(utility);
+                return true;
+            case Utility.MODE_HAPADDITION:
+                hapAddition(utility);
+                return true;
+            case Utility.PACKAGE_NORMALIZE:
+                return PackageNormalize.normalize(utility);
+            default:
+                return defaultProcess(utility);
         }
-        if (Utility.MODE_HAPADDITION.equals(utility.getMode())) {
-            hapAddition(utility);
-            return true;
-        }
-        File destFile = new File(utility.getOutPath());
+    }
 
+    private boolean defaultProcess(Utility utility) {
+        File destFile = new File(utility.getOutPath());
         // if out file directory not exist, mkdirs.
         File outParentFile = destFile.getParentFile();
         if ((outParentFile != null) && (!outParentFile.exists())) {

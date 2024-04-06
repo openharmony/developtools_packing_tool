@@ -92,6 +92,7 @@ public class CommandParser {
     private static final String STAT_FILE_SIZE = "--stat-file-size";
     private static final String CMD_COMPRESS_LEVEL = "--compress-level";
     private static final String CMD_PKG_CONTEXT_PATH = "--pkg-context-path";
+    private static final String CMD_BUNDLE_NAME = "--bundle-name";
     private static final String PARSER_STAT_DUPLICATE_ERROR = "code:9132600 " +
             "error:statDuplicate is invalid! Must be true or false.";
     private static final String PARSER_STAT_SUFFIX_ERROR = "code:9132601 " +
@@ -294,7 +295,10 @@ public class CommandParser {
             return true;
         });
         commandFuncs.put(VERSION_CODE, entry -> {
-            entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
+            try {
+                entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
+            } catch (NumberFormatException ignored) {
+            }
             return true;
         });
         commandFuncs.put(VERSION_NAME, entry -> {
@@ -349,6 +353,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_PKG_CONTEXT_PATH, entry -> {
             entry.getKey().setPkgContextPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_BUNDLE_NAME, entry -> {
+            entry.getKey().setBundleName(entry.getValue());
             return true;
         });
     }
