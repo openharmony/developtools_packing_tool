@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +69,9 @@ public class CompressVerify {
     private static final String BUNDLE_TYPE_SHARE = "shared";
     private static final String BUNDLE_TYPE_APP = "app";
     private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
+    private static final String BUNDLE_NAME_PATTERN = "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
+    private static final int BUNDLE_NAME_LEN_MIN = 7;
+    private static final int BUNDLE_NAME_LEN_MAX = 128;
 
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
@@ -126,10 +131,52 @@ public class CompressVerify {
                 return isVerifyValidInHapAdditionMode(utility);
             case Utility.VERSION_NORMALIZE:
                 return validateVersionNormalizeMode(utility);
+            case Utility.PACKAGE_NORMALIZE:
+                return validatePackageNormalizeMode(utility);
             default:
                 LOG.error("CompressVerify::commandVerify mode is invalid.");
                 return false;
         }
+    }
+
+    private static boolean isBundleNameValid(String bundleName) {
+        if (bundleName != null &&
+                bundleName.length() >= BUNDLE_NAME_LEN_MIN &&
+                bundleName.length() <= BUNDLE_NAME_LEN_MAX) {
+            Pattern pattern = Pattern.compile(BUNDLE_NAME_PATTERN);
+            return pattern.matcher(bundleName).matches();
+        }
+        return false;
+    }
+
+    private static boolean validatePackageNormalizeMode(Utility utility) {
+        if (utility.getHspList().isEmpty()) {
+            LOG.error("CompressVerify::validatePackageNormalizeMode hsp-list is empty.");
+            return false;
+        } else {
+            if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
+                LOG.error("CompressVerify::validatePackageNormalizeMode hsp-list is invalid.");
+                return false;
+            }
+        }
+        if (!isBundleNameValid(utility.getBundleName())) {
+            LOG.error("CompressVerify::validatePackageNormalizeMode bundle-name is invalid.");
+            return false;
+        }
+        if (utility.getVersionCode() <= 0) {
+            LOG.error("CompressVerify::validatePackageNormalizeMode version-code is invalid.");
+            return false;
+        }
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("CompressVerify::validatePackageNormalizeMode out-path is empty.");
+            return false;
+        }
+        File outDir = new File(utility.getOutPath());
+        if (!outDir.isDirectory()) {
+            LOG.error("CompressVerify::validatePackageNormalizeMode out-path is not a directory.");
+            return false;
+        }
+        return true;
     }
 
     private static boolean validateVersionNormalizeMode(Utility utility) {
