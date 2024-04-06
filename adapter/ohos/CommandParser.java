@@ -298,6 +298,8 @@ public class CommandParser {
             try {
                 entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ignored) {
+                LOG.error("CommandParser::--version-code value must be number.");
+                return false;
             }
             return true;
         });

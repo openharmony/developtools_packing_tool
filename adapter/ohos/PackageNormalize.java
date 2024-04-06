@@ -35,10 +35,16 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Enumeration;
 import java.util.zip.CRC32;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * PackageNormalize, normalize HSP bundleName and versionCode
+ *
+ * @since 2024-04-06
+ */
 public class PackageNormalize {
     private static final Log LOG = new Log(PackageNormalize.class.toString());
     private static final int BUFFER_SIZE = 10 * 1024;
@@ -48,6 +54,12 @@ public class PackageNormalize {
     private static final String VERSION_CODE = "versionCode";
     private static final String TMP = "tmp";
 
+    /**
+     * normalize HSP bundleName and versionCode
+     *
+     * @param utility common data
+     * @return true if normalize succeed
+     */
     public static boolean normalize(Utility utility) {
         Path outPath = Paths.get(utility.getOutPath());
         for (String hspPath : utility.getFormattedHspPathList()) {
@@ -72,29 +84,32 @@ public class PackageNormalize {
         try (ZipFile hspFile = new ZipFile(hspPath.toFile());
              OutputStream output = Files.newOutputStream(outHspPath);
              ZipOutputStream zipOut = new ZipOutputStream(output)) {
-            //1.unzip module.json, copy to tmp
+            // 1.unzip module.json, copy to tmp
             ZipEntry moduleEntry = hspFile.getEntry(MODULE_JSON);
             if (moduleEntry != null) {
                 try (OutputStream out = Files.newOutputStream(moduleJson)) {
                     IOUtils.copy(hspFile.getInputStream(moduleEntry), out);
                 }
             }
-            //2.update bundleName, versionCode to module.json
+
+            // 2.update bundleName, versionCode to module.json
             updateModuleJson(moduleJson, bundleName, versionCode);
-            //3.zip hsp and module.json to outPath
+
+            // 3.zip hsp and module.json to outPath
             copyHsp(hspFile, moduleJson, zipOut);
         } finally {
             rmdir(tmpDir);
         }
     }
 
-    public static void rmdir(Path dir) throws IOException {
+    private static void rmdir(Path dir) throws IOException {
         Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);
                 return FileVisitResult.CONTINUE;
             }
+
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException ex) throws IOException {
                 Files.delete(dir);
@@ -126,36 +141,39 @@ public class PackageNormalize {
 
     private static void copyHsp(ZipFile hspFile, Path moduleJson, ZipOutputStream zipOut)
             throws BundleException, IOException {
-        try (InputStream input = Files.newInputStream(moduleJson)) {
-            Enumeration<? extends ZipEntry> entries = hspFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry zipEntry = entries.nextElement();
-                if (MODULE_JSON.equals(zipEntry.getName())) {
-                    if (zipEntry.getMethod() == ZipEntry.STORED) {
-                        ZipEntry newEntry = new ZipEntry(zipEntry.getName());
-                        newEntry.setMethod(ZipEntry.STORED);
-                        File moduleJsonFile = moduleJson.toFile();
-                        newEntry.setCompressedSize(moduleJsonFile.length());
-                        CRC32 crc = getCrcFromFile(moduleJsonFile);
-                        newEntry.setCrc(crc.getValue());
-                        zipOut.putNextEntry(newEntry);
-                    } else {
-                        ZipEntry newEntry = new ZipEntry(zipEntry.getName());
-                        newEntry.setMethod(zipEntry.getMethod());
-                        zipOut.putNextEntry(newEntry);
-                    }
-                    IOUtils.copy(input, zipOut);
-                    zipOut.closeEntry();
-                } else {
-                    ZipEntry newEntry = zipEntry.getMethod() ==
-                            ZipEntry.STORED ? new ZipEntry(zipEntry) : new ZipEntry(zipEntry.getName());
-                    zipOut.putNextEntry(newEntry);
-                    if (!zipEntry.isDirectory()) {
-                        IOUtils.copy(hspFile.getInputStream(zipEntry), zipOut);
-                    }
-                    zipOut.closeEntry();
-                }
+        zipOut.setLevel(Deflater.BEST_SPEED);
+        boolean isStored = true;
+        Enumeration<? extends ZipEntry> entries = hspFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = entries.nextElement();
+            if (MODULE_JSON.equals(zipEntry.getName())) {
+                isStored = zipEntry.getMethod() == ZipEntry.STORED;
+                continue;
             }
+            ZipEntry newEntry = zipEntry.getMethod() ==
+                    ZipEntry.STORED ? new ZipEntry(zipEntry) : new ZipEntry(zipEntry.getName());
+            zipOut.putNextEntry(newEntry);
+            if (!zipEntry.isDirectory()) {
+                IOUtils.copy(hspFile.getInputStream(zipEntry), zipOut);
+            }
+            zipOut.closeEntry();
+        }
+        try (InputStream input = Files.newInputStream(moduleJson)) {
+            if (isStored) {
+                ZipEntry newEntry = new ZipEntry(MODULE_JSON);
+                newEntry.setMethod(ZipEntry.STORED);
+                File moduleJsonFile = moduleJson.toFile();
+                newEntry.setCompressedSize(moduleJsonFile.length());
+                CRC32 crc = getCrcFromFile(moduleJsonFile);
+                newEntry.setCrc(crc.getValue());
+                zipOut.putNextEntry(newEntry);
+            } else {
+                ZipEntry newEntry = new ZipEntry(MODULE_JSON);
+                newEntry.setMethod(ZipEntry.DEFLATED);
+                zipOut.putNextEntry(newEntry);
+            }
+            IOUtils.copy(input, zipOut);
+            zipOut.closeEntry();
         }
     }
 

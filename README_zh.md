@@ -206,6 +206,25 @@ java -jar path\app_packing_tool.jar --mode versionNormalize --input-list 1.hap,2
 | --version-name | 是     | 版本名称             | 指定的版本名称，hap、hsp的版本名称会被修改为该版本名称。                                   |                                  
 | --out-path     | 是     | NA               | 目标文件路径，需要为一个目录。                                                   |
 
+### 1.9 packageNormalize模式指令
+
+内部多个应用共享一个基建HSP时，为了便于集成，HSP的包名会被设置为空。可以调用此命令，将集成态HSP的包名和版本号设置成应用侧的包名和版本号，并在指定目录生成修改后的同名HSP。
+
+#### 1.9.1 示例
+```
+java -jar path\app_packing_tool.jar --mode packageNormalize --hsp-list path\1.hsp,path\2.hsp --bundle-name com.example.myapplication --version-code 1000001 --out-path path\out\
+```
+
+#### 1.9.2 参数含义及规范
+
+| 指令             | 是否必选项 | 选项               | 描述                                                  |
+|----------------|-------|------------------|-----------------------------------------------------|
+| --mode         | 是     | packageNormalize | 命令类型。                                               |
+| --hsp-list     | 是     | HSP的路径           | 1.HSP包文件路径，文件名必须以.hsp为后缀。如果是多个HSP包需要”，“分隔。2.HSP包目录。 |
+| --bundle-name  | 是     | 包名               | 指定的包名，HSP的包名会被修改为指定的包名。                             |
+| --version-code | 是     | 版本号              | 指定的版本号，HSP的版本号会被修改为该版本号。需要为整数，且大于0。                 |                                  
+| --out-path     | 是     | NA               | 目标文件路径，需要为一个目录。                                     |
+
 
 ## 2. 拆包指令说明
 
