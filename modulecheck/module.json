@@ -43,7 +43,8 @@
                 "targetModuleName",
                 "targetPriority",
                 "generateBuildHash",
-                "routerMap"
+                "routerMap",
+                "menu"
               ]
             },
             "required": [
@@ -84,7 +85,8 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "routerMap"
+                "routerMap",
+                "menu"
               ]
             },
             "required": [
@@ -135,7 +137,8 @@
                 "querySchemes",
                 "routerMap",
                 "appEnvironments",
-                "appStartup"
+                "appStartup",
+                "menu"
               ]
             },
             "required": [
@@ -184,7 +187,8 @@
                 "isolationMode",
                 "proxyData",
                 "routerMap",
-                "appEnvironments"
+                "appEnvironments",
+                "menu"
               ]
             },
             "required": [
