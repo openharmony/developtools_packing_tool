@@ -49,7 +49,11 @@ public class PackageNormalize {
     private static final Log LOG = new Log(PackageNormalize.class.toString());
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final String MODULE_JSON = "module.json";
+    private static final String PACK_INFO = "pack.info";
     private static final String APP = "app";
+    private static final String SUMMARY = "summary";
+    private static final String VERSION = "version";
+    private static final String CODE = "code";
     private static final String BUNDLE_NAME = "bundleName";
     private static final String VERSION_CODE = "versionCode";
     private static final String TMP = "tmp";
@@ -81,22 +85,30 @@ public class PackageNormalize {
         Path outHspPath = outPath.resolve(hspPath.getFileName());
         Path tmpDir = Files.createTempDirectory(outPath, TMP);
         Path moduleJson = Files.createFile(tmpDir.resolve(MODULE_JSON));
+        Path packInfo = Files.createFile(tmpDir.resolve(PACK_INFO));
         try (ZipFile hspFile = new ZipFile(hspPath.toFile());
              OutputStream output = Files.newOutputStream(outHspPath);
              ZipOutputStream zipOut = new ZipOutputStream(output)) {
-            // 1.unzip module.json, copy to tmp
+            // 1.unzip module.json and pack.info, copy to tmp
             ZipEntry moduleEntry = hspFile.getEntry(MODULE_JSON);
             if (moduleEntry != null) {
                 try (OutputStream out = Files.newOutputStream(moduleJson)) {
                     IOUtils.copy(hspFile.getInputStream(moduleEntry), out);
                 }
             }
+            ZipEntry packEntry = hspFile.getEntry(PACK_INFO);
+            if (moduleEntry != null) {
+                try (OutputStream out = Files.newOutputStream(packInfo)) {
+                    IOUtils.copy(hspFile.getInputStream(packEntry), out);
+                }
+            }
 
-            // 2.update bundleName, versionCode to module.json
+            // 2.update bundleName, versionCode to module.json, pack.info
             updateModuleJson(moduleJson, bundleName, versionCode);
+            updatePackInfo(packInfo, bundleName, versionCode);
 
-            // 3.zip hsp and module.json to outPath
-            copyHsp(hspFile, moduleJson, zipOut);
+            // 3.zip hsp, module.json, pack.info to outPath
+            copyHsp(hspFile, moduleJson, packInfo, zipOut);
         } finally {
             rmdir(tmpDir);
         }
@@ -128,7 +140,7 @@ public class PackageNormalize {
             }
             if (!jsonObject.containsKey(APP)) {
                 LOG.error("updateModuleJson failed, json format not invalid.");
-                throw new BundleException("updateModuleJson failed, json format not invalid.");
+                throw new BundleException("updateModuleJson failed, json format invalid.");
             }
             JSONObject appObject = jsonObject.getJSONObject(APP);
             appObject.put(BUNDLE_NAME, bundleName);
@@ -139,14 +151,45 @@ public class PackageNormalize {
         }
     }
 
-    private static void copyHsp(ZipFile hspFile, Path moduleJson, ZipOutputStream zipOut)
+    private static void updatePackInfo(Path packInfo, String bundleName, int versionCode)
+            throws BundleException, IOException {
+        try (FileInputStream input = new FileInputStream(packInfo.toFile())) {
+            JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
+            if (jsonObject == null) {
+                LOG.error("updatePackInfo failed, json format invalid.");
+                throw new BundleException("updatePackInfo failed, json format invalid.");
+            }
+            JSONObject summaryObject = jsonObject.getJSONObject(SUMMARY);
+            if (summaryObject == null) {
+                LOG.error("updatePackInfo failed, json format invalid.");
+                throw new BundleException("updatePackInfo failed, json format invalid.");
+            }
+            JSONObject appObject = summaryObject.getJSONObject(APP);
+            if (appObject == null) {
+                LOG.error("updatePackInfo failed, json format invalid.");
+                throw new BundleException("updatePackInfo failed, json format invalid.");
+            }
+            appObject.put(BUNDLE_NAME, bundleName);
+            JSONObject versionObject = appObject.getJSONObject(VERSION);
+            if (versionObject == null) {
+                LOG.error("updatePackInfo failed, json format invalid.");
+                throw new BundleException("updatePackInfo failed, json format invalid.");
+            }
+            versionObject.put(CODE, versionCode);
+            Files.write(packInfo, JSON.toJSONBytes(jsonObject, SerializerFeature.WriteMapNullValue,
+                            SerializerFeature.WriteDateUseDateFormat, SerializerFeature.SortField),
+                    StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+        }
+    }
+
+    private static void copyHsp(ZipFile hspFile, Path moduleJson, Path packInfo, ZipOutputStream zipOut)
             throws BundleException, IOException {
         zipOut.setLevel(Deflater.BEST_SPEED);
         boolean isStored = true;
         Enumeration<? extends ZipEntry> entries = hspFile.entries();
         while (entries.hasMoreElements()) {
             ZipEntry zipEntry = entries.nextElement();
-            if (MODULE_JSON.equals(zipEntry.getName())) {
+            if (MODULE_JSON.equals(zipEntry.getName()) || PACK_INFO.equals(zipEntry.getName())) {
                 isStored = zipEntry.getMethod() == ZipEntry.STORED;
                 continue;
             }
@@ -158,17 +201,23 @@ public class PackageNormalize {
             }
             zipOut.closeEntry();
         }
-        try (InputStream input = Files.newInputStream(moduleJson)) {
+        compressFile(moduleJson, isStored, MODULE_JSON, zipOut);
+        compressFile(packInfo, isStored, PACK_INFO, zipOut);
+    }
+
+    private static void compressFile(Path file, boolean isStored, String entryName, ZipOutputStream zipOut)
+            throws BundleException, IOException {
+        try (InputStream input = Files.newInputStream(file)) {
             if (isStored) {
-                ZipEntry newEntry = new ZipEntry(MODULE_JSON);
+                ZipEntry newEntry = new ZipEntry(entryName);
                 newEntry.setMethod(ZipEntry.STORED);
-                File moduleJsonFile = moduleJson.toFile();
-                newEntry.setCompressedSize(moduleJsonFile.length());
-                CRC32 crc = getCrcFromFile(moduleJsonFile);
+                File jsonFile = file.toFile();
+                newEntry.setCompressedSize(jsonFile.length());
+                CRC32 crc = getCrcFromFile(jsonFile);
                 newEntry.setCrc(crc.getValue());
                 zipOut.putNextEntry(newEntry);
             } else {
-                ZipEntry newEntry = new ZipEntry(MODULE_JSON);
+                ZipEntry newEntry = new ZipEntry(entryName);
                 newEntry.setMethod(ZipEntry.DEFLATED);
                 zipOut.putNextEntry(newEntry);
             }
