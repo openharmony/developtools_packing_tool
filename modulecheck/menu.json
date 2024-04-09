@@ -35,7 +35,7 @@
           "abilityName": {
             "description": "Indicates the name of the ability.",
             "type": "string",
-            "pattern": "^[0-9a-zA-Z_.]*$",
+            "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
             "maxLength": 255
           },
           "menuItem": {
@@ -47,7 +47,7 @@
           "menuHandler": {
             "description": "Indicates the name of the menuHandler.",
             "type": "string",
-            "pattern": "^[0-9a-zA-Z_.]*$",
+            "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
             "maxLength": 255
           },
           "menuContext": {
