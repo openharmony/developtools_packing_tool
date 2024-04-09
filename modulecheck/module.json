@@ -481,7 +481,8 @@
                     "enum": [
                       "actions",
                       "entities",
-                      "uris"
+                      "uris",
+                      "permissions"
                     ]
                   },
                   "properties": {
@@ -585,6 +586,15 @@
                             }
                           }
                         ]
+                      }
+                    },
+                    "permissions": {
+                      "description": "Indicates the permissions required for abilities of another application to call the current ability, generally in the format of a reverse domain name. The value can be either the permissions predefined in the OS or those customized by your application. If a custom permission is used, the value must be the same as the name value of a specific permission defined in the definePermissions attribute.",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "maxLength": 255
                       }
                     }
                   }
@@ -944,7 +954,8 @@
                     "enum": [
                       "actions",
                       "entities",
-                      "uris"
+                      "uris",
+                      "permissions"
                     ]
                   },
                   "properties": {
@@ -1042,6 +1053,15 @@
                             }
                           }
                         ]
+                      }
+                    },
+                    "permissions": {
+                      "description": "Indicates the permissions required for extensionAbilities of another application to call the current extension.",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "maxLength": 255
                       }
                     }
                   }
