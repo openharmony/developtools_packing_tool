@@ -183,6 +183,22 @@ class HapVerify {
                 LOG.error("input module versionCode is different.");
                 return false;
             }
+            if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
+                LOG.error("input module minCompatibleVersionCode is different.");
+                return false;
+            }
+            if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
+                LOG.error("input module minApiVersion is different.");
+                return false;
+            }
+            if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
+                LOG.error("input module targetApiVersion is different.");
+                return false;
+            }
+            if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
+                LOG.error("input module releaseType is different.");
+                return false;
+            }
             if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
                 LOG.error("targetBundleName is different.");
                 return false;
