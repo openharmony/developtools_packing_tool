@@ -240,6 +240,17 @@
                 "type": "boolean"
               }
             }
+          },
+		  "supportDimensions": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "Rect",
+                "Circle"
+              ]
+            }
           }
         }
       }
