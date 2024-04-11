@@ -38,7 +38,8 @@
             "defaultDimension",
             "supportDimensions",
             "dataProxyEnabled",
-            "metadata"
+            "metadata",
+            "supportShapes"
           ]
         },
         "required": [
@@ -241,7 +242,7 @@
               }
             }
           },
-		  "supportShapes": {
+          "supportShapes": {
             "description": "",
             "type": "array",
             "items": {
