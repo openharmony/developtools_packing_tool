@@ -604,9 +604,9 @@ public class CompressVerify {
                 return false;
             }
         }
-        if (!utility.getResPath().isEmpty()) {
-            if (!isPathValid(utility.getResPath(), TYPE_DIR, null)) {
-                LOG.error("input res path is invalid when pack hqf file.");
+        if (!utility.getResourcesPath().isEmpty()) {
+            if (!isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
+                LOG.error("input resources path is invalid when pack hqf file.");
                 return false;
             }
         }
