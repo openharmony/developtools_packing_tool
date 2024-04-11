@@ -84,7 +84,6 @@ public class Compressor {
     private static final String NULL_DIR_NAME = "";
     private static final String RES_DIR_NAME = "res/";
     private static final String RESOURCES_DIR_NAME = "resources/";
-    private static final String RES_FILE_DIR_NAME = "resources/resfile/";
     private static final String LIBS_DIR_NAME = "libs/";
     private static final String AN_DIR_NAME = "an/";
     private static final String AP_PATH_NAME = "ap/";
@@ -2751,8 +2750,8 @@ public class Compressor {
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, false);
         }
-        if (!utility.getResPath().isEmpty()) {
-            pathToFile(utility, utility.getResPath(), RES_FILE_DIR_NAME, false);
+        if (!utility.getResourcesPath().isEmpty()) {
+            pathToFile(utility, utility.getResourcesPath(), RESOURCES_DIR_NAME, false);
         }
     }
 
