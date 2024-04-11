@@ -241,7 +241,7 @@
               }
             }
           },
-		  "supportDimensions": {
+		  "supportShapes": {
             "description": "",
             "type": "array",
             "items": {
