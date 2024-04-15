@@ -636,6 +636,7 @@
                   "unspecified",
                   "landscape",
                   "portrait",
+                  "follow_recent",
                   "landscape_inverted",
                   "portrait_inverted",
                   "auto_rotation",
@@ -645,8 +646,7 @@
                   "auto_rotation_landscape_restricted",
                   "auto_rotation_portrait_restricted",
                   "locked",
-                  "auto_rotation_unspecified",
-                  "follow_behind"
+                  "auto_rotation_unspecified"
                 ],
                 "type": "string"
               },
