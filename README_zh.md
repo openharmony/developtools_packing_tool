@@ -126,7 +126,7 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list 1.hap,2.hap --app-list
 #### 1.5.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode hqf --json-path <option> --lib-path <option> --ets-path <option> --out-path <option>
+java -jar app_packing_tool.jar --mode hqf --json-path <option> --lib-path <option> --ets-path <option> --resources-path <option> --out-path <option>
 ```
 
 #### 1.5.2 参数含义及规范
@@ -137,6 +137,7 @@ java -jar app_packing_tool.jar --mode hqf --json-path <option> --lib-path <optio
 | --json-path | 是     | NA          | .json文件路径，文件名必须为patch.json。        |
 | --lib-path  | 否     | NA          | lib库文件的路径。                         |
 | --ets-path  | 否     | NA          | 存放ets文件目录路径。                       |
+| --resources-path  | 否     | NA          | resources资源包路径。                       |
 | --out-path  | 是     | NA          | 目标文件路径，文件名必须以.hqf为后缀。              |
 | --force     | 否     | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
