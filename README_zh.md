@@ -96,7 +96,7 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option
 
 #### 1.3.3 打包app时hap的合法性校验
 
-在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode和versionName，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
+在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
 
 ### 1.4 多工程打包
 
@@ -119,7 +119,7 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list 1.hap,2.hap --app-list
 
 #### 1.4.3 多工程打包hap合法性校验
 
-需要保证被打包的每个hap在json文件中配置的bundleName，versionCode和versionName，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。
+需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。
 
 ### 1.5 hqf模式打包指令
 
