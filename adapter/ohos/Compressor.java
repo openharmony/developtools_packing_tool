@@ -2755,6 +2755,9 @@ public class Compressor {
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, false);
         }
+        if (!utility.getResourcesPath().isEmpty()) {
+            pathToFile(utility, utility.getResourcesPath(), RESOURCES_DIR_NAME, false);
+        }
     }
 
     /**

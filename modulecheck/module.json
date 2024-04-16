@@ -483,6 +483,7 @@
                       "entities",
                       "uris",
                       "permissions"
+                      "domainVerify"
                     ]
                   },
                   "properties": {
@@ -595,7 +596,11 @@
                       "items": {
                         "type": "string",
                         "maxLength": 255
-                      }
+                      },
+                    "domainVerify": {
+                      "description": "Specifies whether the ability support domain verification. The \"true\" indicates the ability support domain verification. The \"false\" indicates the ability does not support domain verification. This tag is optional. The default value is false.",
+                      "type": "boolean",
+                      "default": false
                     }
                   }
                 }
@@ -878,7 +883,7 @@
                   "adsService",
                   "embeddedUI",
                   "insightIntentUI",
-                  "accessView",
+                  "statusBarView",
                   "autoFill/password",
                   "hms/account",
                   "appAccountAuthorization",
