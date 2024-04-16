@@ -424,12 +424,6 @@ class ModuleJsonUtil {
             LOG.error("ModuleJsonUtil:verifyAppInPackInfo version object is empty.");
             return false;
         }
-        String finalVersionName = finalVersionObj.getString(NAME);
-        String srcVersionName = srcVersionObj.getString(NAME);
-        if (!finalVersionName.equals(srcVersionName)) {
-            LOG.error("ModuleJsonUtil:verifyAppInPackInfo versionName is different.");
-            return false;
-        }
         int finalVersionCode = finalVersionObj.getIntValue(CODE);
         int srcVersionCode = srcVersionObj.getIntValue(CODE);
         if (finalVersionCode != srcVersionCode) {

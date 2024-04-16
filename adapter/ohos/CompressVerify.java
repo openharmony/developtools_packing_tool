@@ -650,6 +650,12 @@ public class CompressVerify {
                 return false;
             }
         }
+        if (!utility.getResourcesPath().isEmpty()) {
+            if (!isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
+                LOG.error("input resources path is invalid when pack hqf file.");
+                return false;
+            }
+        }
         File outFile = new File(utility.getOutPath());
         if ((FALSE.equals(utility.getForceRewrite())) && (outFile.exists())) {
             LOG.error(outFile.getName() + " already exist.");
