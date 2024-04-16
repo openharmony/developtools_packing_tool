@@ -243,7 +243,7 @@
             }
           },
           "supportShapes": {
-            "description": "This label identifies the card shape specification. The default value is \"rect\"".
+            "description": "This label identifies the card shape specification. The default value is \"rect\"",
             "type": "array",
             "items": {
               "type": "string",
