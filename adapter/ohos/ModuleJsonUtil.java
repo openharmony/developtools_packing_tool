@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 
 class ModuleJsonUtil {
     private static final String APP = "app";
@@ -95,6 +96,7 @@ class ModuleJsonUtil {
     private static final String PROXY_DATAS = "proxyDatas";
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_URI = "uri";
+    private static final String CONTINUE_TYPE = "continueType";
 
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
@@ -850,6 +852,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setCompileSdkType(getCompileSdkType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkVersion(getCompileSdkVersion(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setProxyDataUris(parseProxyDataUri(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setContinueTypeMap(parseAbilityContinueTypeMap(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -1019,6 +1022,32 @@ class ModuleJsonUtil {
         }
 
         return abilityNames;
+    }
+
+    /**
+     * get ability continueType map from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return continueType map
+     */
+    public static Map<String, List<String>> parseAbilityContinueTypeMap(String jsonString)
+            throws BundleException {
+        Map<String, List<String>> continueTypeMap = new HashMap<>();
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(ABILITIES)) {
+            JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
+            for (int i = 0; i < abilityObjs.size(); ++i) {
+                JSONObject abilityObj = abilityObjs.getJSONObject(i);
+                String abilityName = getJsonString(abilityObj, NAME);
+                if (abilityObj.containsKey(CONTINUE_TYPE)) {
+                    JSONArray typeArray = abilityObj.getJSONArray(CONTINUE_TYPE);
+                    continueTypeMap.put(abilityName, typeArray.toJavaList(String.class));
+                } else {
+                    continueTypeMap.put(abilityName, new ArrayList<>());
+                }
+            }
+        }
+        return continueTypeMap;
     }
 
     /**
