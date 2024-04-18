@@ -365,7 +365,8 @@
                 "unclearableMission",
                 "excludeFromDock",
                 "preferMultiWindowOrientation",
-                "isolationProcess"
+                "isolationProcess",
+                "continueType"
               ]
             },
             "properties": {
@@ -733,6 +734,17 @@
                 "description": "Specifies whether the ability can run in an independent process",
                 "type": "boolean",
                 "default": false
+              },
+              "continueType": {
+                "description": "Identifies the type of the ability can be migrated.",
+                "type": "array",
+                "uniqueItems": true,
+                "maxLength": 100,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+                  "maxLength": 127
+                }
               }
             }
           }
