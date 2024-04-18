@@ -482,7 +482,7 @@
                       "actions",
                       "entities",
                       "uris",
-                      "permissions"
+                      "permissions",
                       "domainVerify"
                     ]
                   },
