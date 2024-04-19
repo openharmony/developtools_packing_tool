@@ -597,7 +597,8 @@
                         "type": "string",
                         "pattern": "^[a-zA-Z][a-zA-Z_.]*$",
                         "maxLength": 255    
-                      },
+                      }
+                    },
                     "domainVerify": {
                       "description": "Specifies whether the ability support domain verification. The \"true\" indicates the ability support domain verification. The \"false\" indicates the ability does not support domain verification. This tag is optional. The default value is false.",
                       "type": "boolean",
