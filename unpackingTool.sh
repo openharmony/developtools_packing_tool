@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -e
+set -eux
+set -o pipefail
 root_path=$1
 unpack_build_out_jar_path=$2
 unpack_build_out_path=$3
