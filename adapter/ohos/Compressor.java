@@ -2340,7 +2340,6 @@ public class Compressor {
             bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.mark((int) srcFile.length() + 1);
             bufferedReader.reset();
-            String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
             String jsonName = new File(utility.getJsonPath()).getName().toLowerCase(Locale.ENGLISH);
@@ -2366,7 +2365,7 @@ public class Compressor {
                 builder.append(dest);
                 str = bufferedReader.readLine();
             }
-            JSONObject jsonObject = JSON.parseObject(builder.toString());
+            Object jsonObject = JSON.parse(builder.toString());
             byte[] trimJson = JSON.toJSONBytes(jsonObject,
                     SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
 
