@@ -193,7 +193,7 @@
         "apiReleaseType": {
           "description": "This tag identifies the type of the target API version required for application running. The tag is a string.",
           "type": "string",
-          "pattern": "^(Canary[1-9]d*)|(Beta[1-9]d*)|(Release[1-9]d*)$"
+          "pattern": "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$"
         },
         "distributedNotificationEnabled": {
           "description": "Describes whether the application has distributed notifications.",
