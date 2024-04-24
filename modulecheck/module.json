@@ -653,7 +653,8 @@
                   "auto_rotation_landscape_restricted",
                   "auto_rotation_portrait_restricted",
                   "locked",
-                  "auto_rotation_unspecified"
+                  "auto_rotation_unspecified",
+                  "follow_desktop"
                 ],
                 "type": "string"
               },
