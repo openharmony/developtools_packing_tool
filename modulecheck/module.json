@@ -596,7 +596,7 @@
                       "items": {
                         "type": "string",
                         "pattern": "^[a-zA-Z][a-zA-Z_.]*$",
-                        "maxLength": 255    
+                        "maxLength": 255
                       }
                     },
                     "domainVerify": {
