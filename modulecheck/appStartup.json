@@ -63,7 +63,8 @@
             "description": "Indicates the running thread of the startup task.",
             "type": "string",
             "enum": [
-              "mainThread"
+              "mainThread",
+              "taskpool"
             ],
             "default": "mainThread"
           },
