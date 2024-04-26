@@ -135,7 +135,8 @@
                 "querySchemes",
                 "routerMap",
                 "appEnvironments",
-                "appStartup"
+                "appStartup",
+                "hnp_packages"
               ]
             },
             "required": [
@@ -1464,6 +1465,35 @@
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
+        },
+        "hnp_packages": {
+          "description": "Native package configuration file.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "package",
+                "type"
+              ]
+            },
+            "properties": {
+              "package": {
+                "description": "Indicates the file name of native package.",
+                "type": "string",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_./]+$",
+                "maxLength": 255
+              },
+              "type": {
+                "description": "Indicates the type of native package.",
+                "type": "string",
+                "enum": [
+                  "public",
+                  "private"
+                ]
+              }
+            }
+          }
         }
       }
     }
