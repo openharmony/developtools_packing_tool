@@ -917,7 +917,8 @@
                   "fileAccess",
                   "sysPicker/camera",
                   "autoFill/smart",
-                  "liveViewLockScreen"
+                  "liveViewLockScreen",
+                  "sysPicker/FilePicker"
                 ]
               },
               "permissions": {
