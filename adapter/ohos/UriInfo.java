@@ -50,13 +50,55 @@ public class UriInfo {
     /**
      * Indicates the uniform file type supported by the ability.
      */
-    public String utd = "";
+    private String utd = "";
     /**
      * Indicates the maximum number of files that can be received.
      */
-    public Integer maxFileSupported = 0;
+    private Integer maxFileSupported = 0;
     /**
      * Indicates the uri feature.
      */
-    public String linkFeature = "";
+    private String linkFeature = "";
+
+    /**
+     * get the uniform file type supported by the ability.
+     */
+    public String getUtd() {
+        return utd;
+    }
+
+    /**
+     * set the uniform file type supported by the ability.
+     */
+    public void setUtd(String utd) {
+        this.utd = utd;
+    }
+
+    /**
+     * get the maximum number of files that can be received.
+     */
+    public Integer getMaxFileSupported() {
+        return maxFileSupported;
+    }
+
+    /**
+     * set the maximum number of files that can be received.
+     */
+    public void setMaxFileSupported(Integer maxFileSupported) {
+        this.maxFileSupported = maxFileSupported;
+    }
+
+    /**
+     * get the uri feature.
+     */
+    public String getLinkFeature() {
+        return linkFeature;
+    }
+
+    /**
+     * set the uri feature.
+     */
+    public void setLinkFeature(String linkFeature) {
+        this.linkFeature = linkFeature;
+    }
 }

@@ -67,3 +67,8 @@ ohos_prebuilt_etc("appStartupSchema_json") {
   source = "appStartup.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("menuSchema_json") {
+  source = "menu.json"
+  install_enable = false
+}

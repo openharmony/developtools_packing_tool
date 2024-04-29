@@ -365,7 +365,8 @@
                 "unclearableMission",
                 "excludeFromDock",
                 "preferMultiWindowOrientation",
-                "isolationProcess"
+                "isolationProcess",
+                "continueType"
               ]
             },
             "properties": {
@@ -481,7 +482,9 @@
                     "enum": [
                       "actions",
                       "entities",
-                      "uris"
+                      "uris",
+                      "permissions",
+                      "domainVerify"
                     ]
                   },
                   "properties": {
@@ -586,6 +589,21 @@
                           }
                         ]
                       }
+                    },
+                    "permissions": {
+                      "description": "Indicates the permissions required for abilities of another application to call the current ability, generally in the format of a reverse domain name. The value can be either the permissions predefined in the OS or those customized by your application. If a custom permission is used, the value must be the same as the name value of a specific permission defined in the definePermissions attribute.",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z][a-zA-Z_.]*$",
+                        "maxLength": 255
+                      }
+                    },
+                    "domainVerify": {
+                      "description": "Specifies whether the ability support domain verification. The \"true\" indicates the ability support domain verification. The \"false\" indicates the ability does not support domain verification. This tag is optional. The default value is false.",
+                      "type": "boolean",
+                      "default": false
                     }
                   }
                 }
@@ -636,6 +654,7 @@
                   "unspecified",
                   "landscape",
                   "portrait",
+                  "follow_recent",
                   "landscape_inverted",
                   "portrait_inverted",
                   "auto_rotation",
@@ -644,7 +663,9 @@
                   "auto_rotation_restricted",
                   "auto_rotation_landscape_restricted",
                   "auto_rotation_portrait_restricted",
-                  "locked"
+                  "locked",
+                  "auto_rotation_unspecified",
+                  "follow_desktop"
                 ],
                 "type": "string"
               },
@@ -727,6 +748,17 @@
                 "description": "Specifies whether the ability can run in an independent process",
                 "type": "boolean",
                 "default": false
+              },
+              "continueType": {
+                "description": "Identifies the type of the ability can be migrated.",
+                "type": "array",
+                "uniqueItems": true,
+                "maxLength": 100,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+                  "maxLength": 127
+                }
               }
             }
           }
@@ -799,7 +831,8 @@
                 "exported",
                 "skills",
                 "metadata",
-                "extensionProcessMode"
+                "extensionProcessMode",
+                "dataGroupIds"
               ]
             },
             "properties": {
@@ -868,7 +901,7 @@
                   "adsService",
                   "embeddedUI",
                   "insightIntentUI",
-                  "accessView",
+                  "statusBarView",
                   "autoFill/password",
                   "hms/account",
                   "appAccountAuthorization",
@@ -944,7 +977,8 @@
                     "enum": [
                       "actions",
                       "entities",
-                      "uris"
+                      "uris",
+                      "permissions"
                     ]
                   },
                   "properties": {
@@ -1043,6 +1077,16 @@
                           }
                         ]
                       }
+                    },
+                    "permissions": {
+                      "description": "Indicates the permissions required for extensionAbilities of another application to call the current extension.",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z][a-zA-Z_.]*$",
+                        "maxLength": 255
+                      }
                     }
                   }
                 }
@@ -1088,6 +1132,17 @@
                   "bundle"
                 ],
                 "default": "instance"
+              },
+              "dataGroupIds": {
+                "description": "Indicates the data group IDs associated with the extension ability.",
+                "type": "array",
+                "maxItems": 1024,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024,
+                  "pattern": "^[\\x00-\\x7F]*$"
+                }
               }
             }
           }

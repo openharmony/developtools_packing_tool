@@ -38,7 +38,9 @@
             "defaultDimension",
             "supportDimensions",
             "dataProxyEnabled",
-            "metadata"
+            "metadata",
+            "fontScaleFollowSystem",
+            "supportShapes"
           ]
         },
         "required": [
@@ -220,6 +222,11 @@
             "type": "boolean",
             "default": false
           },
+          "fontScaleFollowSystem": {
+            "description": "This tag identifies whether the form font scale can be set with system config",
+            "type": "boolean",
+            "default": true
+          },
           "window": {
             "description": "Defines window-related configurations. This attribute is not supported by devices running the OHOS.",
             "type": "object",
@@ -239,6 +246,17 @@
                 "description": "Specifies whether to automatically calculate the baseline width for page design. If it is set to true, the designWidth attribute becomes invalid. The baseline width is calculated based on the device width and screen density.",
                 "type": "boolean"
               }
+            }
+          },
+          "supportShapes": {
+            "description": "This label identifies the card shape specification. The default value is \"rect\"",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "rect",
+                "circle"
+              ]
             }
           }
         }
