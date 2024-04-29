@@ -114,6 +114,7 @@
           "GWPAsanEnabled",
           "tsanEnabled",
           "appEnvironments",
+          "maxChildProcess",
           "multiAppMode"
         ]
       },
@@ -194,7 +195,7 @@
         "apiReleaseType": {
           "description": "This tag identifies the type of the target API version required for application running. The tag is a string.",
           "type": "string",
-          "pattern": "^(Canary[1-9]d*)|(Beta[1-9]d*)|(Release[1-9]d*)$"
+          "pattern": "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$"
         },
         "distributedNotificationEnabled": {
           "description": "Describes whether the application has distributed notifications.",
@@ -327,6 +328,12 @@
               }
             }
           }
+        },
+        "maxChildProcess": {
+          "description": "Indicates the max number of child process that can be created. 0 to 512.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
         },
         "multiAppMode": {
           "description": "Indicates the application multiple open mode.",

@@ -22,13 +22,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.UUID;
+import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipInputStream;
@@ -1213,21 +1212,12 @@ public class Compressor {
     }
 
     private static String readerFile(String jsonPath) throws IOException {
-        File jsonFile = new File(jsonPath);
-        FileReader fileReader = new FileReader(jsonFile);
-        Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8);
-        int ch = 0;
-        StringBuffer sb = new StringBuffer();
-        while ((ch = reader.read()) != -1) {
-            sb.append((char) ch);
-        }
-        fileReader.close();
-        reader.close();
-        return sb.toString();
+        byte[] bytes = Files.readAllBytes(Paths.get(jsonPath));
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     private static void writeJsonFile(String dataJson, String targetPath) throws BundleException {
-        try {
+        try (FileWriter fileWriter = new FileWriter(targetPath)) {
             Object object = JSON.parse(dataJson);
             String jsonString = new String();
             if (object instanceof JSONArray) {
@@ -1239,11 +1229,8 @@ public class Compressor {
                 jsonString = JSON.toJSONString(
                         jsonObject, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
             }
-
-            FileWriter fileWriter = new FileWriter(targetPath);
             fileWriter.write(jsonString);
             fileWriter.flush();
-            fileWriter.close();
         } catch (IOException exception) {
             LOG.error("writeJsonFile failed, " + exception.getMessage());
             throw new BundleException(exception.getMessage());
@@ -1255,48 +1242,50 @@ public class Compressor {
 
     private static void setUtilityParameter(String hapAdditionPath, Utility utility) throws IOException {
         Path basePath = Paths.get(hapAdditionPath);
-        Files.walk(basePath, 1).forEach(path -> {
-            String fileName = path.getFileName().toString();
-            String filePath = path.toString();
-            switch (fileName) {
-                case ETS_FILE_NAME:
-                    utility.setEtsPath(filePath);
-                    break;
-                case DIR_FILE_NAME:
-                    utility.setLibPath(filePath);
-                    break;
-                case AN_FILE_NAME:
-                    utility.setANPath(filePath);
-                    break;
-                case AP_FILE_NAME:
-                    utility.setAPPath(filePath);
-                    break;
-                case RESOURCE_FILE_NAME:
-                    utility.setResourcesPath(filePath);
-                    break;
-                case JS_FILE_NAME:
-                    utility.setJsPath(filePath);
-                    break;
-                case ASSETS_FILE_NAME:
-                    utility.setAssetsPath(filePath);
-                    break;
-                case MAPLE_FILE_NAME:
-                    utility.setSoDir(filePath);
-                    break;
-                case SHARED_LIBS_FILE_NAME:
-                    utility.setSharedLibsPath(filePath);
-                    break;
-                case MODULE_JSON:
-                    utility.setJsonPath(filePath);
-                    break;
-                case RES_INDEX:
-                    utility.setIndexPath(filePath);
-                    break;
-                case PACKINFO_NAME:
-                    utility.setPackInfoPath(filePath);
-                    break;
-            }
-        });
+        try (Stream<Path> pathStream = Files.walk(basePath, 1)) {
+            pathStream.forEach(path -> {
+                String fileName = path.getFileName().toString();
+                String filePath = path.toString();
+                switch (fileName) {
+                    case ETS_FILE_NAME:
+                        utility.setEtsPath(filePath);
+                        break;
+                    case DIR_FILE_NAME:
+                        utility.setLibPath(filePath);
+                        break;
+                    case AN_FILE_NAME:
+                        utility.setANPath(filePath);
+                        break;
+                    case AP_FILE_NAME:
+                        utility.setAPPath(filePath);
+                        break;
+                    case RESOURCE_FILE_NAME:
+                        utility.setResourcesPath(filePath);
+                        break;
+                    case JS_FILE_NAME:
+                        utility.setJsPath(filePath);
+                        break;
+                    case ASSETS_FILE_NAME:
+                        utility.setAssetsPath(filePath);
+                        break;
+                    case MAPLE_FILE_NAME:
+                        utility.setSoDir(filePath);
+                        break;
+                    case SHARED_LIBS_FILE_NAME:
+                        utility.setSharedLibsPath(filePath);
+                        break;
+                    case MODULE_JSON:
+                        utility.setJsonPath(filePath);
+                        break;
+                    case RES_INDEX:
+                        utility.setIndexPath(filePath);
+                        break;
+                    case PACKINFO_NAME:
+                        utility.setPackInfoPath(filePath);
+                        break;
+                }
+            });
+        }
     }
 
     private void compressHapAddition(Utility utility, String hapAdditionPath) throws BundleException {
@@ -2351,7 +2340,6 @@ public class Compressor {
             bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.mark((int) srcFile.length() + 1);
             bufferedReader.reset();
-            String srcName = srcFile.getName().toLowerCase(Locale.ENGLISH);
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
             String jsonName = new File(utility.getJsonPath()).getName().toLowerCase(Locale.ENGLISH);
@@ -2377,7 +2365,9 @@ public class Compressor {
                 builder.append(dest);
                 str = bufferedReader.readLine();
             }
-            byte[] trimJson = builder.toString().getBytes(StandardCharsets.UTF_8);
+            Object jsonObject = JSON.parse(builder.toString());
+            byte[] trimJson = JSON.toJSONBytes(jsonObject,
+                    SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
 
             // update crc
             CRC32 crc = new CRC32();
@@ -2755,6 +2745,9 @@ public class Compressor {
         if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, false);
         }
+        if (!utility.getResourcesPath().isEmpty()) {
+            pathToFile(utility, utility.getResourcesPath(), RESOURCES_DIR_NAME, false);
+        }
     }
 
     /**
@@ -3019,8 +3012,6 @@ public class Compressor {
                 throw new BundleException("parseAndModifyModuleJson failed, json file not valid.");
             }
             util.setOriginVersionName(versionObj.getString(NAME));
-            InputStreamReader inputStreamReader = new InputStreamReader(jsonStream, StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
             if (!moduleObject.containsKey(NAME)) {
@@ -3048,55 +3039,57 @@ public class Compressor {
         } else if (zipFilePath.endsWith(HSP_SUFFIX)) {
             utility.setMode(Utility.MODE_HSP);
         }
-        Files.walk(sourceDir, 1).forEach(path -> {
-            String fileName = path.getFileName().toString();
-            String filePath = path.toString();
+        try (Stream<Path> pathStream = Files.walk(sourceDir, 1)) {
+            pathStream.forEach(path -> {
+                String fileName = path.getFileName().toString();
+                String filePath = path.toString();
 
-            switch (fileName) {
-                case ETS_FILE_NAME:
-                    utility.setEtsPath(filePath);
-                    break;
-                case LIBS_DIR:
-                    utility.setLibPath(filePath);
-                    break;
-                case AN_FILE_NAME:
-                    utility.setANPath(filePath);
-                    break;
-                case AP_FILE_NAME:
-                    utility.setAPPath(filePath);
-                    break;
-                case RESOURCE_FILE_NAME:
-                    utility.setResourcesPath(filePath);
-                    break;
-                case JS_FILE_NAME:
-                    utility.setJsPath(filePath);
-                    break;
-                case ASSETS_FILE_NAME:
-                    utility.setAssetsPath(filePath);
-                    break;
-                case MAPLE_FILE_NAME:
-                    utility.setSoDir(filePath);
-                    break;
-                case SHARED_LIBS_FILE_NAME:
-                    utility.setSharedLibsPath(filePath);
-                    break;
-                case CONFIG_JSON:
-                    utility.setJsonPath(filePath);
-                    break;
-                case MODULE_JSON:
-                    utility.setJsonPath(filePath);
-                    break;
-                case RES_INDEX:
-                    utility.setIndexPath(filePath);
-                    break;
-                case PACKINFO_NAME:
-                    utility.setPackInfoPath(filePath);
-                    break;
-                case RPCID:
-                    utility.setRpcid(filePath);
-                    break;
-            }
-        });
+                switch (fileName) {
+                    case ETS_FILE_NAME:
+                        utility.setEtsPath(filePath);
+                        break;
+                    case LIBS_DIR:
+                        utility.setLibPath(filePath);
+                        break;
+                    case AN_FILE_NAME:
+                        utility.setANPath(filePath);
+                        break;
+                    case AP_FILE_NAME:
+                        utility.setAPPath(filePath);
+                        break;
+                    case RESOURCE_FILE_NAME:
+                        utility.setResourcesPath(filePath);
+                        break;
+                    case JS_FILE_NAME:
+                        utility.setJsPath(filePath);
+                        break;
+                    case ASSETS_FILE_NAME:
+                        utility.setAssetsPath(filePath);
+                        break;
+                    case MAPLE_FILE_NAME:
+                        utility.setSoDir(filePath);
+                        break;
+                    case SHARED_LIBS_FILE_NAME:
+                        utility.setSharedLibsPath(filePath);
+                        break;
+                    case CONFIG_JSON:
+                        utility.setJsonPath(filePath);
+                        break;
+                    case MODULE_JSON:
+                        utility.setJsonPath(filePath);
+                        break;
+                    case RES_INDEX:
+                        utility.setIndexPath(filePath);
+                        break;
+                    case PACKINFO_NAME:
+                        utility.setPackInfoPath(filePath);
+                        break;
+                    case RPCID:
+                        utility.setRpcid(filePath);
+                        break;
+                }
+            });
+        }
         compressProcess(utility);
     }
 
@@ -3161,18 +3154,23 @@ public class Compressor {
                     parent.mkdirs();
                 }
 
-                FileOutputStream fos = new FileOutputStream(entryFile);
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int bytesRead;
-                while ((bytesRead = zipInputStream.read(buffer)) != -1) {
-                    fos.write(buffer, 0, bytesRead);
-                }
-                fos.close();
+                writeToFile(zipInputStream, entryFile);
+
                 zipInputStream.closeEntry();
             }
         } catch (IOException e) {
             LOG.error("unpack hap failed IOException " + e.getMessage());
             throw new BundleException("unpack hap failed IOException " + e.getMessage());
+        }
+    }
+
+    private static void writeToFile(ZipInputStream zipInputStream, File entryFile) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(entryFile)) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead;
+            while ((bytesRead = zipInputStream.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
         }
     }
 }
