@@ -2381,8 +2381,9 @@ public class Compressor {
             // compress data
             zipOut.putArchiveEntry(entry);
             zipOut.write(trimJson);
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             LOG.error("Compressor::jsonSpecialProcess io exception: " + exception.getMessage());
+            LOG.warning("Json format err: " + srcFile.getAbsolutePath());
             throw new BundleException("Json special process failed.");
         } finally {
             Utility.closeStream(bufferedReader);
