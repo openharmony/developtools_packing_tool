@@ -139,6 +139,8 @@ class HapVerifyInfo {
 
     private Map<String, List<String>> continueTypeMap = new HashMap<>();
 
+    private MultiAppMode multiAppMode = new MultiAppMode();
+
     /**
      * get bundle name form HapVerifyInfo.
      */
@@ -511,5 +513,13 @@ class HapVerifyInfo {
      */
     public void setContinueTypeMap(Map<String, List<String>> continueTypeMap) {
         this.continueTypeMap = continueTypeMap;
+    }
+
+    public MultiAppMode getMultiAppMode() {
+        return multiAppMode;
+    }
+
+    public void setMultiAppMode(MultiAppMode multiAppMode) {
+        this.multiAppMode = multiAppMode;
     }
 }

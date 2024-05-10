@@ -236,48 +236,63 @@ class HapVerify {
         verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
         verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
+        verifyCollection.setModuleName(hapVerifyInfos.get(0).getModuleName());
+        verifyCollection.setMultiAppMode(hapVerifyInfos.get(0).getMultiAppMode());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
-            if (hapVerifyInfo.getBundleName().isEmpty() ||
-                    !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
-                LOG.error("input module bundleName is different.");
+            if (!appFieldsIsSame(verifyCollection, hapVerifyInfo)) {
+                LOG.warning("Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
+                        hapVerifyInfo.getModuleName() + ") has different values.");
                 return false;
             }
-            if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
-                LOG.error("input module bundleType is different.");
-                return false;
-            }
-            if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
-                LOG.error("input module versionCode is different.");
-                return false;
-            }
-            if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
-                LOG.error("input module minCompatibleVersionCode is different.");
-                return false;
-            }
-            if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
-                LOG.error("input module minApiVersion is different.");
-                return false;
-            }
-            if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
-                LOG.error("input module targetApiVersion is different.");
-                return false;
-            }
-            if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
-                LOG.error("input module releaseType is different.");
-                return false;
-            }
-            if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
-                LOG.error("targetBundleName is different.");
-                return false;
-            }
-            if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
-                LOG.error("targetPriority is different.");
-                return false;
-            }
-            if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
-                LOG.error("debug is different.");
-                return false;
-            }
+        }
+        return true;
+    }
+
+    private static boolean appFieldsIsSame(VerifyCollection verifyCollection, HapVerifyInfo hapVerifyInfo) {
+        if (hapVerifyInfo.getBundleName().isEmpty() ||
+                !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
+            LOG.error("input module bundleName is different.");
+            return false;
+        }
+        if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
+            LOG.error("input module bundleType is different.");
+            return false;
+        }
+        if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
+            LOG.error("input module versionCode is different.");
+            return false;
+        }
+        if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
+            LOG.error("input module minCompatibleVersionCode is different.");
+            return false;
+        }
+        if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
+            LOG.error("input module minApiVersion is different.");
+            return false;
+        }
+        if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
+            LOG.error("input module targetApiVersion is different.");
+            return false;
+        }
+        if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
+            LOG.error("input module releaseType is different.");
+            return false;
+        }
+        if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
+            LOG.error("targetBundleName is different.");
+            return false;
+        }
+        if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
+            LOG.error("targetPriority is different.");
+            return false;
+        }
+        if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
+            LOG.error("debug is different.");
+            return false;
+        }
+        if (!verifyCollection.getMultiAppMode().equals(hapVerifyInfo.getMultiAppMode())) {
+            LOG.error("multiAppMode is different.");
+            return false;
         }
         return true;
     }
