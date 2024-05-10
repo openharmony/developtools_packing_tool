@@ -41,6 +41,7 @@ public class Utility {
     static final String FALSE_STRING = "false";
     static final String TRUE_STRING = "true";
 
+    private static final String INVALID_PATH = "invalid";
     private static final String CMD_PREFIX = "--";
     private static final Log LOG = new Log(Utility.class.toString());
 
@@ -664,7 +665,7 @@ public class Utility {
         try {
             canonicalPath = file.getCanonicalPath();
         } catch (IOException exception) {
-            canonicalPath = "";
+            canonicalPath = INVALID_PATH;
             LOG.error("Utility::getFormattedPath exception," + exception.getMessage());
         }
         return canonicalPath;
