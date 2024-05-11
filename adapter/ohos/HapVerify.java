@@ -237,6 +237,7 @@ class HapVerify {
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
         verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
         verifyCollection.setModuleName(hapVerifyInfos.get(0).getModuleName());
+        verifyCollection.setModuleType(hapVerifyInfos.get(0).getModuleType());
         verifyCollection.setMultiAppMode(hapVerifyInfos.get(0).getMultiAppMode());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (!appFieldsIsSame(verifyCollection, hapVerifyInfo)) {
@@ -290,11 +291,17 @@ class HapVerify {
             LOG.error("debug is different.");
             return false;
         }
-        if (!verifyCollection.getMultiAppMode().equals(hapVerifyInfo.getMultiAppMode())) {
-            LOG.error("multiAppMode is different.");
-            return false;
+        if (isEntryOrFeature(verifyCollection.getModuleType()) && isEntryOrFeature(hapVerifyInfo.getModuleType())) {
+            if (!verifyCollection.getMultiAppMode().equals(hapVerifyInfo.getMultiAppMode())) {
+                LOG.error("multiAppMode is different.");
+                return false;
+            }
         }
         return true;
+    }
+
+    private static boolean isEntryOrFeature(String moduleType) {
+        return ENTRY.equals(moduleType) || FEATURE.equals(moduleType);
     }
 
     /**
