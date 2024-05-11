@@ -1530,12 +1530,16 @@ public class JsonUtil {
             if (jsonStr.isEmpty()) {
                 continue;
             }
-            JSONObject jsonObj = JSON.parseObject(jsonStr);
-            if (jsonObj.containsKey("shortcuts")) {
-                JSONArray shortcutObjs = jsonObj.getJSONArray("shortcuts");
-                for (int j = 0; j < shortcutObjs.size(); ++j) {
-                    shortcuts.add(parseModuleShortcutObj(shortcutObjs.getJSONObject(j), data));
+            try {
+                JSONObject jsonObj = JSON.parseObject(jsonStr);
+                if (jsonObj.containsKey("shortcuts")) {
+                    JSONArray shortcutObjs = jsonObj.getJSONArray("shortcuts");
+                    for (int j = 0; j < shortcutObjs.size(); ++j) {
+                        shortcuts.add(parseModuleShortcutObj(shortcutObjs.getJSONObject(j), data));
+                    }
                 }
+            } catch (JSONException ignore) {
+                LOG.warning("ignored metadata: " + moduleMetadataInfo.name);
             }
         }
         return shortcuts;
