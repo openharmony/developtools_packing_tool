@@ -110,6 +110,8 @@ class VerifyCollection {
 
     private String moduleName;
 
+    private String moduleType;
+
     private MultiAppMode multiAppMode = new MultiAppMode();
 
     public String getMain() {
@@ -150,6 +152,14 @@ class VerifyCollection {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    public String getModuleType() {
+        return moduleType;
+    }
+
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
     }
 
     public MultiAppMode getMultiAppMode() {
