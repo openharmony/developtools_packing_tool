@@ -108,6 +108,12 @@ class VerifyCollection {
      */
     private String bundleType = "app";
 
+    private String moduleName;
+
+    private String moduleType;
+
+    private MultiAppMode multiAppMode = new MultiAppMode();
+
     public String getMain() {
         return main;
     }
@@ -138,5 +144,29 @@ class VerifyCollection {
 
     public String getBundleType() {
         return bundleType;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getModuleType() {
+        return moduleType;
+    }
+
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
+    }
+
+    public MultiAppMode getMultiAppMode() {
+        return multiAppMode;
+    }
+
+    public void setMultiAppMode(MultiAppMode multiAppMode) {
+        this.multiAppMode = multiAppMode;
     }
 }
