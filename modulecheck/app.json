@@ -340,12 +340,12 @@
           "type": "object",
           "propertyNames": {
             "enum": [
-              "type",
-              "maxAdditionalNumber"
+              "multiAppModeType",
+              "maxCount"
             ]
           },
           "properties": {
-            "type": {
+            "multiAppModeType": {
               "description": "Indicates the type of application multiple open mode.",
               "type": "string",
               "enum": [
@@ -356,15 +356,15 @@
           },
           "if": {
             "properties": {
-              "type": {
+              "multiAppModeType": {
                 "const": "multiInstance"
               }
             }
           },
           "then": {
             "properties": {
-              "maxAdditionalNumber": {
-                "description": "Indicates the max additional number of multiple open application.",
+              "maxCount": {
+                "description": "Indicates the max count of multiple open application.",
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 10
@@ -373,8 +373,8 @@
           },
           "else": {
             "properties": {
-              "maxAdditionalNumber": {
-                "description": "Indicates the max additional number of multiple open application.",
+              "maxCount": {
+                "description": "Indicates the max count of multiple open application.",
                 "type": "integer",
                 "minimum": 1,
                 "maximum": 5
