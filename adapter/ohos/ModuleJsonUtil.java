@@ -97,6 +97,9 @@ class ModuleJsonUtil {
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_URI = "uri";
     private static final String CONTINUE_TYPE = "continueType";
+    private static final String MULTI_APP_MODE = "multiAppMode";
+    private static final String MULTI_APP_MODE_TYPE = "multiAppModeType";
+    private static final String MULTI_APP_MODE_NUMBER = "maxCount";
 
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
@@ -853,6 +856,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setCompileSdkVersion(getCompileSdkVersion(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setProxyDataUris(parseProxyDataUri(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setContinueTypeMap(parseAbilityContinueTypeMap(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setMultiAppMode(parseMultiAppMode(hapVerifyInfo.getProfileStr()));
     }
 
     /**
@@ -883,6 +887,19 @@ class ModuleJsonUtil {
         hapVerifyInfo.setDebug(getFADebug(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkType(getFACompileSdkType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkVersion(getFACompileSdkVersion(hapVerifyInfo.getProfileStr()));
+    }
+
+    private static MultiAppMode parseMultiAppMode(String jsonString) throws BundleException {
+        MultiAppMode multiAppMode = new MultiAppMode();
+        JSONObject appObj = getAppObj(jsonString);
+        JSONObject modeObj = appObj.getJSONObject(MULTI_APP_MODE);
+        if (modeObj != null) {
+            String type = modeObj.getString(MULTI_APP_MODE_TYPE);
+            Integer number = modeObj.getInteger(MULTI_APP_MODE_NUMBER);
+            multiAppMode.setMultiAppModeType(type != null ? type : "");
+            multiAppMode.setMaxCount(number != null ? number : 0);
+        }
+        return multiAppMode;
     }
 
     /**
