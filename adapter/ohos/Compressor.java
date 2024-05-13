@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -524,7 +525,8 @@ public class Compressor {
             String pretty = JSON.toJSONString(jsonObject, new SerializerFeature[]{
                     SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
                     SerializerFeature.WriteDateUseDateFormat});
-            bw = new BufferedWriter(new FileWriter(utility.getJsonPath()));
+            bw = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(utility.getJsonPath()), StandardCharsets.UTF_8));
             bw.write(pretty);
         } catch (BundleException | IOException | JSONException exception) {
             LOG.error("Compressor::setGenerateBuildHash failed.");
@@ -651,7 +653,7 @@ public class Compressor {
             moduleJson.put(BUILD_HASH, hash);
             String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
                     SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
-            bw = new BufferedWriter(new FileWriter(jsonPath));
+            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(jsonPath), StandardCharsets.UTF_8));
             bw.write(pretty);
         } catch (IOException e) {
             LOG.error("Compressor::putBuildHash failed, IOException: " + e.getMessage());
@@ -2974,7 +2976,8 @@ public class Compressor {
         try {
             String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
                 SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
-            bw = new BufferedWriter(new FileWriter(jsonFilePath));
+            bw = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(jsonFilePath), StandardCharsets.UTF_8));
             bw.write(pretty);
         } catch (IOException exception) {
             LOG.error("Compressor::writeJson failed for IOException " + exception.getMessage());
