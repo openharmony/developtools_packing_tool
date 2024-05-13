@@ -382,6 +382,11 @@ public class CompressVerify {
             return false;
         }
 
+        if (!utility.getEtsPath().isEmpty() && !isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
+            LOG.error("CompressVerify::isArgsValidInHapMode ets-path is invalid.");
+            return false;
+        }
+
         return isOutPathValid(utility, HAP_SUFFIX);
     }
 
@@ -942,6 +947,11 @@ public class CompressVerify {
                 LOG.error("CompressVerify::isArgsValidInHspMode --pkg-context-path file must be " + PKG_CONTEXT_INFO);
                 return false;
             }
+        }
+
+        if (!utility.getEtsPath().isEmpty() && !isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
+            LOG.error("CompressVerify::isArgsValidInHspMode ets-path is invalid.");
+            return false;
         }
 
         return isOutPathValid(utility, HSP_SUFFIX);
