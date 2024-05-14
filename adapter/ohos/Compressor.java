@@ -119,6 +119,7 @@ public class Compressor {
     private static final String REGEX_SHAPE = "^circle$";
     private static final String JS_PATH = "js/";
     private static final String ETS_PATH = "ets/";
+    private static final String HNP_PATH = "hnp/";
     private static final String TEMP_HAP_DIR = "tempHapDir";
     private static final String TEMP_HSP_DIR = "tempHspDir";
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
@@ -141,6 +142,7 @@ public class Compressor {
     private static final String VERSION_RECORD = "version_record.json";
     private static final String RES_INDEX = "resources.index";
     private static final String ETS_FILE_NAME = "ets";
+    private static final String HNP_FILE_NAME = "hnp";
     private static final String DIR_FILE_NAME = "dir";
     private static final String AN_FILE_NAME = "an";
     private static final String AP_FILE_NAME = "ap";
@@ -896,6 +898,11 @@ public class Compressor {
         if (!utility.getEtsPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String etsPath = ETS_PATH;
             pathToFile(utility, utility.getEtsPath(), etsPath, false);
+        }
+
+        if (!utility.getHnpPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
+            String hnpPath = HNP_PATH;
+            pathToFile(utility, utility.getHnpPath(), hnpPath, false);
         }
 
         if (!utility.getRpcidPath().isEmpty()) {
@@ -3051,6 +3058,9 @@ public class Compressor {
                 switch (fileName) {
                     case ETS_FILE_NAME:
                         utility.setEtsPath(filePath);
+                        break;
+                    case HNP_FILE_NAME:
+                        utility.setHnpPath(filePath);
                         break;
                     case LIBS_DIR:
                         utility.setLibPath(filePath);

@@ -85,6 +85,7 @@ public class Utility {
     private String filePath = "";
     private String jsPath = "";
     private String etsPath = "";
+    private String hnpPath = "";
     private String rpcidPath = "";
     private int VersionCode = -1;
     private String VersionName = "";
@@ -537,6 +538,10 @@ public class Utility {
     public String getEtsPath() { return etsPath; }
 
     public void setEtsPath(String etsPath) { this.etsPath = etsPath; }
+
+    public String getHnpPath() { return hnpPath; }
+
+    public void setHnpPath(String hnpPath) { this.hnpPath = hnpPath; }
 
     public String getRpcidPath() {
         return rpcidPath;
