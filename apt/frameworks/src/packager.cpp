@@ -34,10 +34,6 @@ Packager::~Packager() {}
 
 std::string Packager::MakePackage()
 {
-//    for (const auto &pair : parameterMap_) {
-//        std::cout << "** key: " << pair.first << ", value: " << pair.second << std::endl;
-//    }
-//    std::cout << "** resultReceiver: " << resultReceiver_ << std::endl;
     if (InitAllowedParam() != OHOS::ERR_OK) {
         std::cout << "PreCheck err" << std::endl;
     }
@@ -83,32 +79,34 @@ void Packager::AddFileToZip(zipFile zf, const fs::path &filePath, const fs::path
     if (fs::is_directory(filePath)) {
         for (const auto &entry : fs::directory_iterator(filePath)) {
             fs::path tmpPath = zipPath / entry.path().filename();
-            //std::cout << "zipPath: " << tmpPath << ", entry.path: " << entry.path() << ", tmpPath: " << tmpPath
-            //          << std::endl;
             AddFileToZip(zf, entry.path(), tmpPath, zipfi);
         }
     } else if (fs::is_regular_file(filePath)) {
         std::ifstream file(filePath, std::ios::binary);
         if (!file.is_open()) {
-            std::cout << "2 err opening file for read: " << filePath << std::endl;
+            std::cout << "err opening file for read: " << filePath << std::endl;
         }
-        if (zipOpenNewFileInZip(zf, zipPath.string().c_str(), &zipfi, nullptr, 0, nullptr, 0, nullptr, 0,
-                                Z_DEFAULT_COMPRESSION) == ZIP_OK) {
-            char buffer[Constants::BUF_SIZE];
-            while (file.good()) {
-                file.read(buffer, sizeof(buffer));
-                auto bytesRead = file.gcount();
-                if (bytesRead > 0) {
-                    if (zipWriteInFileInZip(zf, buffer, bytesRead) < 0) {
-                        std::cout << "3 err write to zip file: " << filePath << std::endl;
-                        break;
-                    }
-                }
+        int ret = zipOpenNewFileInZip(zf, zipPath.string().c_str(), &zipfi, nullptr, 0,
+            nullptr, 0, nullptr, 0, Z_DEFAULT_COMPRESSION);
+        if (ret != ZIP_OK) {
+            std::cout << "zipOpenNewFileInZip err: " << ret << ", " << filePath << std::endl;
+            file.close();
+            return ;
+        }
+        char buffer[Constants::BUF_SIZE];
+        while (file.good()) {
+            file.read(buffer, sizeof(buffer));
+            auto bytesRead = file.gcount();
+            if (bytesRead <= 0) {
+                std::cout << "read file: " << filePath << " err, bytesRead: " << bytesRead << std::endl;
+                break;
             }
-            zipCloseFileInZip(zf);
-        } else {
-            std::cout << "4 err add file to zip: " << filePath << std::endl;
+            if (zipWriteInFileInZip(zf, buffer, bytesRead) < 0) {
+                std::cout << "err write to zip file: " << filePath << std::endl;
+                break;
+            }
         }
+        zipCloseFileInZip(zf);
         file.close();
     }
 }
@@ -118,8 +116,7 @@ void Packager::WriteStringToZip(zipFile zf, const std::string &content, const fs
     if (zipOpenNewFileInZip(zf, zipPath.string().c_str(), &zipfi, nullptr, 0, nullptr, 0, nullptr, 0,
                             Z_DEFAULT_COMPRESSION) == ZIP_OK) {
         if (zipWriteInFileInZip(zf, content.data(), content.length()) < 0) {
-            std::cout << "zipWriteInFileInZip err" << std::endl;
-            return;
+            std::cout << "zipWriteInFileInZip err: " << errno << std::endl;
         }
         zipCloseFileInZip(zf);
     }
@@ -150,14 +147,15 @@ bool Packager::ParseJsonFile(nlohmann::json &jsonObject, std::string filePath)
     return true;
 }
 
-bool Packager::endWith(const std::string &str, const std::string &suffix) {
+bool Packager::endWith(const std::string &str, const std::string &suffix)
+{
     if (str.length() >= suffix.length()) {
         return str.compare(str.length() - suffix.length(), suffix.length(), suffix);
     }
     return false;
 }
 
-bool Packager::CheckFileValid(const std::string &filePath, const std::string &filename) 
+bool Packager::CheckFileValid(const std::string &filePath, const std::string &filename)
 {
     if (fs::is_regular_file(filePath)) {
         std::string name = fs::path(filePath).filename();
@@ -165,7 +163,7 @@ bool Packager::CheckFileValid(const std::string &filePath, const std::string &fi
             return true;
         }
     }
-    return false; 
+    return false;
 }
 
 

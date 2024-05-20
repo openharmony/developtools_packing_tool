@@ -63,42 +63,33 @@ ErrCode HapPackager::Process()
         if (ParseJsonFile(moduleJson, it->second)) {
             WriteStringToZip(zf, moduleJson.dump(), fs::path(Constants::MODULE_JSON), fi);
         }
-        //std::cout << "zip jsonPath: " << it->second << std::endl;
-        //std::cout << "zip jsonContent: " << moduleJson.dump() << std::endl;
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip libPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::LIB_PATH), fi);
     }
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip resourcesPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::RESOURCES_PATH), fi);
     }
     it = parameterMap_.find(Constants::PARAM_INDEX_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip indexPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::RESOURCES_INDEX), fi);
     }
     it = parameterMap_.find(Constants::PARAM_PACK_INFO_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip packInfoPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::PACK_INFO), fi);
     }
     it = parameterMap_.find(Constants::PARAM_ETS_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip etsPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::ETS_PATH), fi);
     }
     it = parameterMap_.find(Constants::PARAM_RPCID_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip rpcidPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::RPCID_SC), fi);
     }
     it = parameterMap_.find(Constants::PARAM_PKG_CONTEXT_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip pkgContextPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::PKG_CONTEXT_JSON), fi);
     }
     zipClose(zf, nullptr);
@@ -106,8 +97,6 @@ ErrCode HapPackager::Process()
 }
 ErrCode HapPackager::PostProcess()
 {
-    //std::cout << "Hap PostCheck" << std::endl;
-    //resultReceiver_.append("Hap PostCheck\n");
     return OHOS::ERR_OK;
 }
 
