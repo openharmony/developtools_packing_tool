@@ -63,3 +63,7 @@ ohos_prebuilt_etc("fastjson-1.2.83") {
   source = "//prebuilts/packing_tool/fastjson-1.2.83.jar"
   install_enable = false
 }
+
+ohos_group("ohos_packing_tool") {
+  deps = ["apt:ohos_packing_tool"]
+}
