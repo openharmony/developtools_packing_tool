@@ -24,7 +24,6 @@
 #include "packager.h"
 #include "hap_packager.h"
 #include "hsp_packager.h"
-#include "app_packager.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -128,8 +127,6 @@ ErrCode ShellCommand::RunAsPackCommand()
     std::unique_ptr<Packager> packager = getPackager();
     if (packager != nullptr) {
         packager->MakePackage();
-    } else {
-
     }
     int result = OHOS::ERR_OK;
     return result;
@@ -154,10 +151,6 @@ std::unique_ptr<Packager> ShellCommand::getPackager()
     } else if (mode == Constants::MODE_HSP) {
         std::unique_ptr<Packager> packager =
             std::make_unique<HspPackager>(parameterMap_, resultReceiver_);
-        return packager;
-    } else if (mode == Constants::MODE_APP) {
-        std::unique_ptr<Packager> packager =
-            std::make_unique<AppPackager>(parameterMap_, resultReceiver_);
         return packager;
     }
     resultReceiver_.append("not support --mode: ").append(mode).append("\n");

@@ -32,14 +32,10 @@ HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap,
 
 ErrCode HspPackager::InitAllowedParam()
 {
-//    std::cout << "Hsp Init" << std::endl;
-//    resultReceiver_.append("Hsp Init\n");
     return OHOS::ERR_OK;
 }
 ErrCode HspPackager::PreProcess()
 {
-//    std::cout << "Hsp PreCheck" << std::endl;
-//    resultReceiver_.append("Hsp PreCheck\n");
     return OHOS::ERR_OK;
 }
 ErrCode HspPackager::Process()
@@ -60,37 +56,30 @@ ErrCode HspPackager::Process()
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip libPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::LIB_PATH), fi);
     }
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip resourcesPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::RESOURCES_PATH), fi);
     }
     it = parameterMap_.find(Constants::PARAM_INDEX_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip indexPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::RESOURCES_INDEX), fi);
     }
     it = parameterMap_.find(Constants::PARAM_PACK_INFO_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip packInfoPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::PACK_INFO), fi);
     }
     it = parameterMap_.find(Constants::PARAM_ETS_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip etsPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::ETS_PATH), fi);
     }
     it = parameterMap_.find(Constants::PARAM_RPCID_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip rpcidPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::RPCID_SC), fi);
     }
     it = parameterMap_.find(Constants::PARAM_PKG_CONTEXT_PATH);
     if (it != parameterMap_.end()) {
-        //std::cout << "zip pkgContextPath: " << it->second << std::endl;
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::PKG_CONTEXT_JSON), fi);
     }
     zipClose(zf, nullptr);
@@ -98,8 +87,6 @@ ErrCode HspPackager::Process()
 }
 ErrCode HspPackager::PostProcess()
 {
-//    std::cout << "Hsp PostCheck" << std::endl;
-//    resultReceiver_.append("Hsp PostCheck\n");
     return OHOS::ERR_OK;
 }
 

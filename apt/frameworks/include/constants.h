@@ -49,7 +49,6 @@ const std::string PARAM_ETS_PATH = "ets-path";
 const std::string PARAM_OUT_PATH = "out-path";
 const std::string PARAM_MAPLE_SO_PATH = "maple-so-path";
 const std::string PARAM_MAPLE_SO_DIR = "maple-so-dir";
-const std::string PARAM_DEX_PATH = "dex-path";
 const std::string PARAM_RPCID_PATH = "rpcid-path";
 const std::string PARAM_JS_PATH = "js-path";
 const std::string PARAM_FORCE = "force";
@@ -103,7 +102,6 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_OUT_PATH.c_str(), required_argument, nullptr, 9},
     {PARAM_MAPLE_SO_PATH.c_str(), required_argument, nullptr, 10},
     {PARAM_MAPLE_SO_DIR.c_str(), required_argument, nullptr, 11},
-    {PARAM_DEX_PATH.c_str(), required_argument, nullptr, 12},
     {PARAM_RPCID_PATH.c_str(), required_argument, nullptr, 13},
     {PARAM_JS_PATH.c_str(), required_argument, nullptr, 14},
     {PARAM_FORCE.c_str(), required_argument, nullptr, 15},
