@@ -20,7 +20,6 @@
 #include <string>
 
 #include "packager.h"
-#include "errors.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -34,44 +33,44 @@ Packager::~Packager() {}
 
 std::string Packager::MakePackage()
 {
-    if (InitAllowedParam() != OHOS::ERR_OK) {
+    if (InitAllowedParam() != ERR_OK) {
         std::cout << "PreCheck err" << std::endl;
     }
 
-    if (PreProcess() != OHOS::ERR_OK) {
+    if (PreProcess() != ERR_OK) {
         std::cout << "PreCheck err" << std::endl;
     }
 
-    if (Process() != OHOS::ERR_OK) {
+    if (Process() != ERR_OK) {
         std::cout << "DoPackage err" << std::endl;
     }
 
-    if (PostProcess() != OHOS::ERR_OK) {
+    if (PostProcess() != ERR_OK) {
         std::cout << "PostCheck err" << std::endl;
     }
 
     return "OHOS::ERR_OK";
 }
 
-ErrCode Packager::PreProcess()
+int Packager::PreProcess()
 {
     std::cout << "PreCheck" << std::endl;
     resultReceiver_.append("do PreCheck\n");
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
-ErrCode Packager::Process()
+int Packager::Process()
 {
     std::cout << "DoPackage" << std::endl;
     resultReceiver_.append("do DoPackage\n");
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
-ErrCode Packager::PostProcess()
+int Packager::PostProcess()
 {
     std::cout << "PostCheck" << std::endl;
     resultReceiver_.append("do PostCheck\n");
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
 void Packager::AddFileToZip(zipFile zf, const fs::path &filePath, const fs::path &zipPath, zip_fileinfo &zipfi)

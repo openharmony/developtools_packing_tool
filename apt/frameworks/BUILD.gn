@@ -13,26 +13,22 @@
 
 import("//build/ohos.gni")
 
-if (!defined(ohos_lite)) {
-  ohos_executable("apt") {
-    include_dirs = [ "include" ]
-    sources = [
-      "src/hap_packager.cpp",
-      "src/hsp_packager.cpp",
-      "src/main.cpp",
-      "src/packager.cpp",
-      "src/shell_command.cpp",
-    ]
-    configs = []
-    cflags = []
-    external_deps = [
-      "c_utils:utils",
-      "hilog:libhilog",
-      "json:nlohmann_json_static",
-      "zlib:libz",
-    ]
-    install_enable = false
-    subsystem_name = "developtools"
-    part_name = "packing_tool"
-  }
+ohos_executable("apt") {
+  include_dirs = [ "include" ]
+  sources = [
+    "src/hap_packager.cpp",
+    "src/hsp_packager.cpp",
+    "src/main.cpp",
+    "src/packager.cpp",
+    "src/shell_command.cpp",
+  ]
+  configs = []
+  cflags = []
+  external_deps = [
+    "json:nlohmann_json_static",
+    "zlib:libz",
+  ]
+  install_enable = false
+  subsystem_name = "developtools"
+  part_name = "packing_tool"
 }

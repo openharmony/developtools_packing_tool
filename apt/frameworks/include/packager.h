@@ -27,13 +27,17 @@
 #include "constants.h"
 #include "contrib/minizip/zip.h"
 #include "contrib/minizip/unzip.h"
-#include "errors.h"
 #include "nlohmann/json.hpp"
 
 namespace fs = std::filesystem;
 
 namespace OHOS {
 namespace AppPackingTool {
+
+enum ErrCode {
+    ERR_OK = 0,
+    ERR_INVALID_VALUE,
+};
 
 struct Parameter {
     std::string paramName;
@@ -50,10 +54,10 @@ public:
 
     std::string MakePackage();
 
-    virtual ErrCode InitAllowedParam() = 0;
-    virtual ErrCode PreProcess() = 0;
-    virtual ErrCode Process() = 0;
-    virtual ErrCode PostProcess() = 0;
+    virtual int InitAllowedParam() = 0;
+    virtual int PreProcess() = 0;
+    virtual int Process() = 0;
+    virtual int PostProcess() = 0;
 
 protected:
     const std::map<std::string, std::string> &parameterMap_;
