@@ -21,7 +21,6 @@
 #include <functional>
 #include <vector>
 
-#include "errors.h"
 #include "packager.h"
 
 namespace OHOS {
@@ -44,10 +43,10 @@ public:
     ShellCommand(int argc, char *argv[], std::string name);
     virtual ~ShellCommand();
 
-    ErrCode ParseParam();
-    ErrCode OnCommand();
+    int ParseParam();
+    int OnCommand();
     std::string ExecCommand();
-    ErrCode CreateCommandMap();
+    int CreateCommandMap();
 
 protected:
     static constexpr int MIN_ARGUMENT_NUMBER = 2;
@@ -61,9 +60,9 @@ protected:
     std::map<std::string, std::string> parameterMap_;
     std::string resultReceiver_ = "";
 
-    ErrCode RunAsHelpCommand();
-    ErrCode RunAsPackCommand();
-    ErrCode RunAsUnpackCommand();
+    int RunAsHelpCommand();
+    int RunAsPackCommand();
+    int RunAsUnpackCommand();
 
 private:
     std::unique_ptr<Packager> getPackager();

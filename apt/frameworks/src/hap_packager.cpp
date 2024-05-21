@@ -24,7 +24,6 @@
 #include "constants.h"
 #include "contrib/minizip/zip.h"
 #include "nlohmann/json.hpp"
-#include "errors.h"
 #include "packager.h"
 
 namespace OHOS {
@@ -35,27 +34,27 @@ HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap,
     : Packager(parameterMap, resultReceiver)
 {}
 
-ErrCode HapPackager::InitAllowedParam()
+int HapPackager::InitAllowedParam()
 {
     allowedParameters_ = {
         {}
     };
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
-ErrCode HapPackager::PreProcess()
+int HapPackager::PreProcess()
 {
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
-ErrCode HapPackager::Process()
+int HapPackager::Process()
 {
     std::cout << "Hap DoPackage" << std::endl;
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipFile zf = zipOpen64(outPath.c_str(), APPEND_STATUS_CREATE);
     if (zf == nullptr) {
         std::cout << "err zipOpen64 null" << std::endl;
-        return OHOS::ERR_INVALID_VALUE;
+        return ERR_INVALID_VALUE;
     }
     zip_fileinfo fi = {};
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
@@ -93,11 +92,12 @@ ErrCode HapPackager::Process()
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::PKG_CONTEXT_JSON), fi);
     }
     zipClose(zf, nullptr);
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
-ErrCode HapPackager::PostProcess()
+
+int HapPackager::PostProcess()
 {
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
 } // namespace AppPackingTool

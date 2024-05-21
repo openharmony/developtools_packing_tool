@@ -20,7 +20,6 @@
 #include <map>
 #include <string>
 
-#include "errors.h"
 #include "packager.h"
 
 namespace OHOS {
@@ -32,10 +31,10 @@ public:
     ~HapPackager() override {}
 
 protected:
-    ErrCode InitAllowedParam() override;
-    ErrCode PreProcess() override;
-    ErrCode Process() override;
-    ErrCode PostProcess() override;
+    int InitAllowedParam() override;
+    int PreProcess() override;
+    int Process() override;
+    int PostProcess() override;
 };
 
 }  // namespace AppExecFwk

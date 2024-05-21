@@ -19,7 +19,6 @@
 
 #include "hsp_packager.h"
 #include "constants.h"
-#include "errors.h"
 #include "packager.h"
 
 namespace OHOS {
@@ -30,22 +29,22 @@ HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap,
     : Packager(parameterMap, resultReceiver)
 {}
 
-ErrCode HspPackager::InitAllowedParam()
+int HspPackager::InitAllowedParam()
 {
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
-ErrCode HspPackager::PreProcess()
+int HspPackager::PreProcess()
 {
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
-ErrCode HspPackager::Process()
+int HspPackager::Process()
 {
     std::cout << "Hsp DoPackage" << std::endl;
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipFile zf = zipOpen64(outPath.c_str(), APPEND_STATUS_CREATE);
     if (zf == nullptr) {
         std::cout << "err zipOpen64 null" << std::endl;
-        return OHOS::ERR_INVALID_VALUE;
+        return ERR_INVALID_VALUE;
     }
     zip_fileinfo fi = {};
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
@@ -83,11 +82,11 @@ ErrCode HspPackager::Process()
         AddFileToZip(zf, fs::path(it->second), fs::path(Constants::PKG_CONTEXT_JSON), fi);
     }
     zipClose(zf, nullptr);
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
-ErrCode HspPackager::PostProcess()
+int HspPackager::PostProcess()
 {
-    return OHOS::ERR_OK;
+    return ERR_OK;
 }
 
 } // namespace AppPackingTool
