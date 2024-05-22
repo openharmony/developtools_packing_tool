@@ -2180,8 +2180,9 @@ public class Compressor {
             if (!entryName.contains(RAW_FILE_PATH) &&
                     srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
-                jsonSpecialProcess(utility, srcFile, zipEntry);
-                return;
+                if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
+                    return;
+                }
             }
 
             if (isCompression) {
@@ -2327,9 +2328,9 @@ public class Compressor {
      * @param utility common data
      * @param srcFile file input
      * @param entry   zip file entry
-     * @throws BundleException FileNotFoundException|IOException.
+     * @return true if process success
      */
-    private void jsonSpecialProcess(Utility utility, File srcFile, ZipArchiveEntry entry)
+    private boolean jsonSpecialProcess(Utility utility, File srcFile, ZipArchiveEntry entry)
             throws BundleException {
         FileInputStream fileInputStream = null;
         BufferedReader bufferedReader = null;
@@ -2384,12 +2385,14 @@ public class Compressor {
             zipOut.write(trimJson);
         } catch (IOException exception) {
             LOG.error("Compressor::jsonSpecialProcess io exception: " + exception.getMessage());
-            throw new BundleException("Json special process failed.");
+            LOG.warning("Json format err: " + srcFile.getAbsolutePath());
+            return false;
         } finally {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(inputStreamReader);
             Utility.closeStream(fileInputStream);
         }
+        return true;
     }
 
     /**
