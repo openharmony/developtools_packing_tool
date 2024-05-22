@@ -65,5 +65,5 @@ ohos_prebuilt_etc("fastjson-1.2.83") {
 }
 
 ohos_group("ohos_packing_tool") {
-  deps = [ "apt/frameworks:apt" ]
+  deps = [ "ohos_packing_tool/frameworks:ohos_packing_tool" ]
 }
