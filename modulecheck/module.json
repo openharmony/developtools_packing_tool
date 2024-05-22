@@ -136,7 +136,7 @@
                 "routerMap",
                 "appEnvironments",
                 "appStartup",
-                "hnp_packages"
+                "hnpPackages"
               ]
             },
             "required": [
@@ -1466,9 +1466,10 @@
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
         },
-        "hnp_packages": {
+        "hnpPackages": {
           "description": "Native package configuration file.",
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "object",
             "propertyNames": {
@@ -1477,11 +1478,15 @@
                 "type"
               ]
             },
+            "required": [
+              "package",
+              "type"
+            ],
             "properties": {
               "package": {
                 "description": "Indicates the file name of native package.",
                 "type": "string",
-                "pattern": "^[a-zA-Z][0-9a-zA-Z_./]+$",
+                "pattern": "^([a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/)?[a-zA-Z0-9_-]+\.hnp$",
                 "maxLength": 255
               },
               "type": {
