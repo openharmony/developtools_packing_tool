@@ -134,8 +134,6 @@ int ShellCommand::RunAsPackCommand()
 int ShellCommand::RunAsUnpackCommand()
 {
     std::cout << "RunAsUnpackCommand " << std::endl;
-    std::unique_ptr<Packager> packager = getPackager();
-    packager->MakePackage();
     return ERR_OK;
 }
 
