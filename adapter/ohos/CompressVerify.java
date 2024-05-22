@@ -345,6 +345,11 @@ public class CompressVerify {
             return false;
         }
 
+        if (isHapPathValid(utility.getHnpPath())) {
+            LOG.error("CompressVerify::isArgsValidInHapMode hnp-path is invalid.");
+            return false;
+        }
+
         if (isHapPathValid(utility.getResPath())) {
             LOG.error("CompressVerify::isArgsValidInHapMode res-path is invalid.");
             return false;
