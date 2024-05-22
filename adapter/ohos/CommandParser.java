@@ -41,6 +41,7 @@ public class CommandParser {
     private static final String CMD_INDEX_PATH = "--index-path";
     private static final String CMD_JS_PATH = "--js-path";
     private static final String CMD_ETS_PATH = "--ets-path";
+    private static final String CMD_HNP_PATH = "--hnp-path";
     private static final String CMD_RPCID_PATH = "--rpcid-path";
     private static final String CMD_RPCID = "--rpcid";
     private static final String CMD_SO_PATH = "--maple-so-path";
@@ -128,6 +129,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_ETS_PATH, entry -> {
             entry.getKey().setEtsPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_HNP_PATH, entry -> {
+            entry.getKey().setHnpPath(entry.getValue());
             return true;
         });
         commandFuncs.put(CMD_RPCID_PATH, entry -> {
