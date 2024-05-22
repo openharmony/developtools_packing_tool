@@ -37,14 +37,12 @@
           "name": {
             "description": "Indicates the name of the startup task.",
             "type": "string",
-            "uniqueItems": true,
             "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$",
             "maxLength": 127
           },
           "srcEntry": {
             "description": "Indicates the js code path corresponding to the startup task.",
             "type": "string",
-            "uniqueItems": true,
             "maxLength": 127
           },
           "dependencies": {
@@ -59,22 +57,20 @@
           "excludeFromAutoStart": {
             "description": "Indicates whether the startup task is excluded from automatic start.",
             "type": "boolean",
-            "uniqueItems": true,
             "default": false
           },
           "runOnThread": {
             "description": "Indicates the running thread of the startup task.",
             "type": "string",
-            "uniqueItems": true,
             "enum": [
-              "mainThread"
+              "mainThread",
+              "taskpool"
             ],
             "default": "mainThread"
           },
           "waitOnMainThread": {
             "description": "Indicates whether the startup task block the main thread.",
             "type": "boolean",
-            "uniqueItems": true,
             "default": true
           }
         }
@@ -83,7 +79,6 @@
     "configEntry": {
       "description": "Indicates the js code path corresponding to the startup config.",
       "type": "string",
-      "uniqueItems": true,
       "maxLength": 127
     }
   }

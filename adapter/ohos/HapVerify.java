@@ -103,6 +103,73 @@ class HapVerify {
             LOG.error("uris in proxy data are not unique.");
             return false;
         }
+        if (!checkContinueTypeIsValid(hapVerifyInfos)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkContinueTypeIsValid(List<HapVerifyInfo> hapVerifyInfos) {
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            if (!checkContinueTypeIsValid(hapVerifyInfo)) {
+                return false;
+            }
+        }
+        for (int i = 0; i < hapVerifyInfos.size(); i++) {
+            for (int j = i + 1; j < hapVerifyInfos.size(); j++) {
+                if (!checkContinueTypeIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkContinueTypeIsValid(HapVerifyInfo hapVerifyInfo) {
+        List<String> abilityNames = hapVerifyInfo.getAbilityNames();
+        if (abilityNames.size() < 2) {
+            return true;
+        }
+        for (int i = 0; i < abilityNames.size(); i++) {
+            List<String> typeList = hapVerifyInfo.getContinueTypeMap().get(abilityNames.get(i));
+            if (typeList == null) {
+                continue;
+            }
+            for (int j = i + 1; j < abilityNames.size(); j++) {
+                List<String> typeList2 = hapVerifyInfo.getContinueTypeMap().get(abilityNames.get(j));
+                if (typeList2 == null) {
+                    continue;
+                }
+                if (!Collections.disjoint(typeList, typeList2)) {
+                    LOG.error("Module: (" + hapVerifyInfo.getModuleName() + "), Ability: (" +
+                            abilityNames.get(i) + ") and Ability: (" +
+                            abilityNames.get(j) + ") have same continueType.");
+                    LOG.error("Ability: (" + abilityNames.get(i) + ") have continueType: " + typeList);
+                    LOG.error("Another Ability: (" + abilityNames.get(j) + ") have continueType: " + typeList2);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkContinueTypeIsValid(HapVerifyInfo hapVerifyInfo, HapVerifyInfo hapVerifyInfo2) {
+        if (Collections.disjoint(hapVerifyInfo.getDeviceType(), hapVerifyInfo2.getDeviceType())) {
+            return true;
+        }
+        List<String> typeList = hapVerifyInfo.getContinueTypeMap().values().stream()
+                .flatMap(Collection::stream).collect(Collectors.toList());
+        List<String> typeList2 = hapVerifyInfo2.getContinueTypeMap().values().stream()
+                .flatMap(Collection::stream).collect(Collectors.toList());
+        if (!Collections.disjoint(typeList, typeList2)) {
+            LOG.error("Module: (" + hapVerifyInfo.getModuleName() + ") and Module: (" +
+                    hapVerifyInfo2.getModuleName() + ") have same deviceType and continueType.");
+            LOG.error("Module: (" + hapVerifyInfo.getModuleName() + ") have deviceType: " +
+                    hapVerifyInfo.getDeviceType() + " and continueType: " + typeList);
+            LOG.error("Another Module: (" + hapVerifyInfo2.getModuleName() + ") have deviceType: " +
+                    hapVerifyInfo2.getDeviceType() + " and continueType: " + typeList2);
+            return false;
+        }
         return true;
     }
 
@@ -169,50 +236,72 @@ class HapVerify {
         verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
         verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
         verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
+        verifyCollection.setModuleName(hapVerifyInfos.get(0).getModuleName());
+        verifyCollection.setModuleType(hapVerifyInfos.get(0).getModuleType());
+        verifyCollection.setMultiAppMode(hapVerifyInfos.get(0).getMultiAppMode());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
-            if (hapVerifyInfo.getBundleName().isEmpty() ||
-                    !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
-                LOG.error("input module bundleName is different.");
-                return false;
-            }
-            if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
-                LOG.error("input module bundleType is different.");
-                return false;
-            }
-            if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
-                LOG.error("input module versionCode is different.");
-                return false;
-            }
-            if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
-                LOG.error("input module minCompatibleVersionCode is different.");
-                return false;
-            }
-            if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
-                LOG.error("input module minApiVersion is different.");
-                return false;
-            }
-            if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
-                LOG.error("input module targetApiVersion is different.");
-                return false;
-            }
-            if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
-                LOG.error("input module releaseType is different.");
-                return false;
-            }
-            if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
-                LOG.error("targetBundleName is different.");
-                return false;
-            }
-            if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
-                LOG.error("targetPriority is different.");
-                return false;
-            }
-            if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
-                LOG.error("debug is different.");
+            if (!appFieldsIsSame(verifyCollection, hapVerifyInfo)) {
+                LOG.warning("Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
+                        hapVerifyInfo.getModuleName() + ") has different values.");
                 return false;
             }
         }
         return true;
+    }
+
+    private static boolean appFieldsIsSame(VerifyCollection verifyCollection, HapVerifyInfo hapVerifyInfo) {
+        if (hapVerifyInfo.getBundleName().isEmpty() ||
+                !verifyCollection.bundleName.equals(hapVerifyInfo.getBundleName())) {
+            LOG.error("input module bundleName is different.");
+            return false;
+        }
+        if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
+            LOG.error("input module bundleType is different.");
+            return false;
+        }
+        if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
+            LOG.error("input module versionCode is different.");
+            return false;
+        }
+        if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
+            LOG.error("input module minCompatibleVersionCode is different.");
+            return false;
+        }
+        if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
+            LOG.error("input module minApiVersion is different.");
+            return false;
+        }
+        if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
+            LOG.error("input module targetApiVersion is different.");
+            return false;
+        }
+        if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
+            LOG.error("input module releaseType is different.");
+            return false;
+        }
+        if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
+            LOG.error("targetBundleName is different.");
+            return false;
+        }
+        if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
+            LOG.error("targetPriority is different.");
+            return false;
+        }
+        if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
+            LOG.error("debug is different.");
+            return false;
+        }
+        if (isEntryOrFeature(verifyCollection.getModuleType()) && isEntryOrFeature(hapVerifyInfo.getModuleType())) {
+            if (!verifyCollection.getMultiAppMode().equals(hapVerifyInfo.getMultiAppMode())) {
+                LOG.error("multiAppMode is different.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isEntryOrFeature(String moduleType) {
+        return ENTRY.equals(moduleType) || FEATURE.equals(moduleType);
     }
 
     /**

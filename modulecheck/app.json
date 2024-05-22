@@ -113,7 +113,9 @@
           "2in1",
           "GWPAsanEnabled",
           "tsanEnabled",
-          "appEnvironments"
+          "appEnvironments",
+          "maxChildProcess",
+          "multiAppMode"
         ]
       },
       "properties": {
@@ -193,7 +195,7 @@
         "apiReleaseType": {
           "description": "This tag identifies the type of the target API version required for application running. The tag is a string.",
           "type": "string",
-          "pattern": "^(Canary[1-9]d*)|(Beta[1-9]d*)|(Release[1-9]d*)$"
+          "pattern": "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$"
         },
         "distributedNotificationEnabled": {
           "description": "Describes whether the application has distributed notifications.",
@@ -323,6 +325,59 @@
                 "description": "Indicates the value of a environment element. The value is a string with a maximum of 4096 bytes.",
                 "type": "string",
                 "maxLength": 4096
+              }
+            }
+          }
+        },
+        "maxChildProcess": {
+          "description": "Indicates the max number of child process that can be created. 0 to 512.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
+        },
+        "multiAppMode": {
+          "description": "Indicates the application multiple open mode.",
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "multiAppModeType",
+              "maxCount"
+            ]
+          },
+          "properties": {
+            "multiAppModeType": {
+              "description": "Indicates the type of application multiple open mode.",
+              "type": "string",
+              "enum": [
+                "multiInstance",
+                "appClone"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "multiAppModeType": {
+                "const": "multiInstance"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "maxCount": {
+                "description": "Indicates the max count of multiple open application.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "maxCount": {
+                "description": "Indicates the max count of multiple open application.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
               }
             }
           }

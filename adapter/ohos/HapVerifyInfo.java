@@ -18,6 +18,7 @@ package ohos;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * collection of HapVerifyInfo members,
@@ -135,6 +136,10 @@ class HapVerifyInfo {
     private String compileSdkType = "";
 
     private List<String> proxyDataUris = new ArrayList<>();
+
+    private Map<String, List<String>> continueTypeMap = new HashMap<>();
+
+    private MultiAppMode multiAppMode = new MultiAppMode();
 
     /**
      * get bundle name form HapVerifyInfo.
@@ -494,5 +499,27 @@ class HapVerifyInfo {
 
     public void setProxyDataUris(List<String> proxyDataUris) {
         this.proxyDataUris = proxyDataUris;
+    }
+
+    /**
+     * get continueType map for HapVerifyInfo.
+     */
+    public Map<String, List<String>> getContinueTypeMap() {
+        return continueTypeMap;
+    }
+
+    /**
+     * set continueType map for HapVerifyInfo.
+     */
+    public void setContinueTypeMap(Map<String, List<String>> continueTypeMap) {
+        this.continueTypeMap = continueTypeMap;
+    }
+
+    public MultiAppMode getMultiAppMode() {
+        return multiAppMode;
+    }
+
+    public void setMultiAppMode(MultiAppMode multiAppMode) {
+        this.multiAppMode = multiAppMode;
     }
 }

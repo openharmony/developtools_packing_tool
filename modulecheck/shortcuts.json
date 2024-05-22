@@ -76,7 +76,8 @@
                   "type": "object",
                   "maxProperties": 1024,
                   "propertyNames": {
-                    "pattern": "^[\\x00-\\x7F]+$"
+                    "pattern": "^[\\x00-\\x7F]+$",
+                    "maxLength": 1024
                   },
                   "additionalProperties": {
                     "type": "string",
