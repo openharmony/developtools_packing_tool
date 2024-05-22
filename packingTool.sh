@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -e
+set -eux
+set -o pipefail
 root_path=$1
 pack_build_out_jar_path=$2
 pack_build_out_path=$3
@@ -40,7 +41,7 @@ fi
 compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar}:${compress_jar}  -d ${out_dir} ${compile_java}"
 eval ${compile_command}
 
-temp_dir="$root_path/jar/temp_${toolchain}"
+temp_dir="$root_path/jar/packing_temp_${toolchain}"
 if [ -d "${temp_dir}" ]
     then
         echo "${temp_dir} exit"
@@ -98,4 +99,4 @@ if [ -f "${pack_jar_file}"]
 fi
 rm -rf ${temp_pack_jar_dir}
 rm -rf ${temp_dir}
-rm -rf "${root_path}/out"
+rm -rf ${out_dir}
