@@ -1536,7 +1536,7 @@
               "package": {
                 "description": "Indicates the file name of native package.",
                 "type": "string",
-                "pattern": "^([a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/)?[a-zA-Z0-9_-]+\.hnp$",
+                "pattern": "^([a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/)?[a-zA-Z0-9_-]+\\.hnp$",
                 "maxLength": 255
               },
               "type": {
