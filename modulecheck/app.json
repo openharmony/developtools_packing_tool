@@ -78,45 +78,95 @@
         "versionCode",
         "versionName"
       ],
-      "propertyNames": {
-        "enum": [
-          "bundleName",
-          "debug",
-          "bundleType",
-          "icon",
-          "label",
-          "description",
-          "vendor",
-          "versionCode",
-          "versionName",
-          "minCompatibleVersionCode",
-          "minAPIVersion",
-          "targetAPIVersion",
-          "apiReleaseType",
-          "distributedNotificationEnabled",
-          "entityType",
-          "keepAlive",
-          "removable",
-          "singleton",
-          "userDataClearable",
-          "accessible",
-          "multiProjects",
-          "asanEnabled",
-          "default",
-          "tablet",
-          "tv",
-          "wearable",
-          "car",
-          "targetBundleName",
-          "targetPriority",
-          "generateBuildHash",
-          "2in1",
-          "GWPAsanEnabled",
-          "tsanEnabled",
-          "appEnvironments",
-          "maxChildProcess",
-          "multiAppMode"
-        ]
+      "if": {
+        "properties": {
+          "bundleType": {
+            "const": "app"
+          }
+        }
+      },
+      "then": {
+        "propertyNames": {
+          "enum": [
+            "bundleName",
+            "debug",
+            "bundleType",
+            "icon",
+            "label",
+            "description",
+            "vendor",
+            "versionCode",
+            "versionName",
+            "minCompatibleVersionCode",
+            "minAPIVersion",
+            "targetAPIVersion",
+            "apiReleaseType",
+            "distributedNotificationEnabled",
+            "entityType",
+            "keepAlive",
+            "removable",
+            "singleton",
+            "userDataClearable",
+            "accessible",
+            "multiProjects",
+            "asanEnabled",
+            "default",
+            "tablet",
+            "tv",
+            "wearable",
+            "car",
+            "targetBundleName",
+            "targetPriority",
+            "generateBuildHash",
+            "2in1",
+            "GWPAsanEnabled",
+            "tsanEnabled",
+            "appEnvironments",
+            "maxChildProcess",
+            "multiAppMode"
+          ]
+        }
+      },
+      "else": {
+        "propertyNames": {
+          "enum": [
+            "bundleName",
+            "debug",
+            "bundleType",
+            "icon",
+            "label",
+            "description",
+            "vendor",
+            "versionCode",
+            "versionName",
+            "minCompatibleVersionCode",
+            "minAPIVersion",
+            "targetAPIVersion",
+            "apiReleaseType",
+            "distributedNotificationEnabled",
+            "entityType",
+            "keepAlive",
+            "removable",
+            "singleton",
+            "userDataClearable",
+            "accessible",
+            "multiProjects",
+            "asanEnabled",
+            "default",
+            "tablet",
+            "tv",
+            "wearable",
+            "car",
+            "targetBundleName",
+            "targetPriority",
+            "generateBuildHash",
+            "2in1",
+            "GWPAsanEnabled",
+            "tsanEnabled",
+            "appEnvironments",
+            "maxChildProcess"
+          ]
+        }
       },
       "properties": {
         "bundleName": {
@@ -344,6 +394,10 @@
               "maxCount"
             ]
           },
+          "required": [
+            "multiAppModeType",
+            "maxCount"
+          ],
           "properties": {
             "multiAppModeType": {
               "description": "Indicates the type of application multiple open mode.",
