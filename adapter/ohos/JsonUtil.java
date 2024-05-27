@@ -1930,7 +1930,9 @@ public class JsonUtil {
         if (jsonObject.containsKey("iconId")) {
             int resId = jsonObject.getIntValue("iconId");
             iconPath = ResourcesParser.getBaseResourceById(resId, data);
-            iconPath = iconPath.substring(iconPath.indexOf("resources"));
+            if (iconPath.contains("resources")) {
+                iconPath = iconPath.substring(iconPath.indexOf("resources"));
+            }
         }
         if (!iconPath.isEmpty()) {
             return iconPath;
