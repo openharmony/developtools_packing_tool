@@ -64,7 +64,7 @@
             "type": "string",
             "enum": [
               "mainThread",
-	      "taskPool"
+              "taskPool"
             ],
             "default": "mainThread"
           },
