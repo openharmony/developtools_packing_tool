@@ -36,7 +36,11 @@
           },
           "data": {
             "description": "Indicates the custom data",
-            "type": "object"
+            "type": "object",
+            "maxProperties": 128,
+            "additionalProperties": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": false,
