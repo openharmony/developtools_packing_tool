@@ -387,7 +387,7 @@ public class CompressVerify {
             return false;
         }
 
-        if (!utility.getEtsPath().isEmpty() && !isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
+        if (!utility.getEtsPath().isEmpty() && !isPathExists(utility.getEtsPath())) {
             LOG.error("CompressVerify::isArgsValidInHapMode ets-path is invalid.");
             return false;
         }
@@ -856,6 +856,14 @@ public class CompressVerify {
         return (!isFile) && file.isDirectory();
     }
 
+    private static boolean isPathExists(String path) {
+        if (path != null && !path.isEmpty()) {
+            File filePath = new File(path);
+            return filePath.exists();
+        }
+        return false;
+    }
+
     private static boolean isDirectoryValidStrictCase(String path, String directoryName) {
         File file = new File(path);
         if (!file.exists()) {
@@ -954,7 +962,7 @@ public class CompressVerify {
             }
         }
 
-        if (!utility.getEtsPath().isEmpty() && !isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
+        if (!utility.getEtsPath().isEmpty() && !isPathExists(utility.getEtsPath())) {
             LOG.error("CompressVerify::isArgsValidInHspMode ets-path is invalid.");
             return false;
         }
