@@ -133,6 +133,7 @@ public class Compressor {
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String RAW_FILE_PATH = "resources/rawfile";
+    private static final String SUMMARY = "summary";
     private static final String VERSION_CODE = "versionCode";
     private static final String VERSION_NAME = "versionName";
     private static final String VERSION = "version";
@@ -2179,8 +2180,9 @@ public class Compressor {
             if (!entryName.contains(RAW_FILE_PATH) &&
                     srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
-                jsonSpecialProcess(utility, srcFile, zipEntry);
-                return;
+                if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
+                    return;
+                }
             }
 
             if (isCompression) {
@@ -2326,9 +2328,9 @@ public class Compressor {
      * @param utility common data
      * @param srcFile file input
      * @param entry   zip file entry
-     * @throws BundleException FileNotFoundException|IOException.
+     * @return true if process success
      */
-    private void jsonSpecialProcess(Utility utility, File srcFile, ZipArchiveEntry entry)
+    private boolean jsonSpecialProcess(Utility utility, File srcFile, ZipArchiveEntry entry)
             throws BundleException {
         FileInputStream fileInputStream = null;
         BufferedReader bufferedReader = null;
@@ -2383,12 +2385,14 @@ public class Compressor {
             zipOut.write(trimJson);
         } catch (IOException exception) {
             LOG.error("Compressor::jsonSpecialProcess io exception: " + exception.getMessage());
-            throw new BundleException("Json special process failed.");
+            LOG.warning("Json format err: " + srcFile.getAbsolutePath());
+            return false;
         } finally {
             Utility.closeStream(bufferedReader);
             Utility.closeStream(inputStreamReader);
             Utility.closeStream(fileInputStream);
         }
+        return true;
     }
 
     /**
@@ -2899,6 +2903,8 @@ public class Compressor {
                         tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
                 File configFile = new File(
                         tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + CONFIG_JSON);
+                File packInfoFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + PACKINFO_NAME);
 
                 if (moduleFile.exists() && configFile.exists()) {
                     LOG.error("versionNormalize failed, invalid hap structure.");
@@ -2913,6 +2919,10 @@ public class Compressor {
                 } else {
                     LOG.error("versionNormalize failed, invalid hap structure.");
                     throw new BundleException("versionNormalize failed, invalid hap structure.");
+                }
+                if (packInfoFile.exists()) {
+                    String packInfoPath = tempDir.resolve(PACKINFO_NAME).toString();
+                    parseAndModifyPackInfo(packInfoPath, utility);
                 }
 
                 verifyModuleVersion(util, utility);
@@ -2967,6 +2977,37 @@ public class Compressor {
             throw new BundleException("parseAndModifyModuleJson failed, IOException." + e.getMessage());
         }
         return util;
+    }
+
+    private void parseAndModifyPackInfo(String packInfoPath, Utility utility)
+            throws BundleException {
+        try (FileInputStream jsonStream = new FileInputStream(packInfoPath)) {
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (jsonObject == null) {
+                LOG.warning("parseAndModifyPackInfo failed, json format invalid.");
+                return;
+            }
+            JSONObject summaryObject = jsonObject.getJSONObject(SUMMARY);
+            if (summaryObject == null) {
+                LOG.warning("parseAndModifyPackInfo failed, summary invalid.");
+                return;
+            }
+            JSONObject appObject = summaryObject.getJSONObject(APP);
+            if (appObject == null) {
+                LOG.warning("parseAndModifyPackInfo failed, app invalid.");
+                return;
+            }
+            JSONObject versionObject = appObject.getJSONObject(VERSION);
+            if (versionObject == null) {
+                LOG.warning("parseAndModifyPackInfo failed, version invalid.");
+                return;
+            }
+            versionObject.put(CODE, utility.getVersionCode());
+            versionObject.put(NAME, utility.getVersionName());
+            writeJson(packInfoPath, jsonObject);
+        } catch (IOException e) {
+            LOG.warning("parseAndModifyPackInfo failed, IOException." + e.getMessage());
+        }
     }
 
     private void writeJson(String jsonFilePath, JSONObject jsonObject) throws IOException, BundleException {
