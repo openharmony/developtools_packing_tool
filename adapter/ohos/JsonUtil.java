@@ -1382,10 +1382,14 @@ public class JsonUtil {
         if (!jsonObject.containsKey(META_DATA)) {
             return moduleMetadataInfos;
         }
-        JSONArray metadatas = jsonObject.getJSONArray(META_DATA);
-        for (int i = 0; i < metadatas.size(); ++i) {
-            JSONObject metadata = metadatas.getJSONObject(i);
-            moduleMetadataInfos.add(parseModuleMetadata(metadata, data, profileJsons));
+        try {
+            JSONArray metadatas = jsonObject.getJSONArray(META_DATA);
+            for (int i = 0; i < metadatas.size(); ++i) {
+                JSONObject metadata = metadatas.getJSONObject(i);
+                moduleMetadataInfos.add(parseModuleMetadata(metadata, data, profileJsons));
+            }
+        } catch (JSONException | NullPointerException ex) {
+            LOG.warning("JsonUtil::parseModuleMetadataInfos err: " + ex.getMessage());
         }
         return moduleMetadataInfos;
     }
@@ -1492,23 +1496,27 @@ public class JsonUtil {
      */
     static List<CommonEvent> parseModuleCommonEvents(JSONObject jsonObject) {
         List<CommonEvent> commonEvents = new ArrayList<>();
-        JSONArray commonEventObjs = jsonObject.getJSONArray("commonEvents");
-        for (int i = 0; i < commonEventObjs.size(); ++i) {
-            JSONObject commonEventObj = commonEventObjs.getJSONObject(i);
-            CommonEvent commonEvent = new CommonEvent();
-            if (commonEventObj.containsKey("name")) {
-                commonEvent.name = getJsonString(commonEventObj, "name");
+        try {
+            JSONArray commonEventObjs = jsonObject.getJSONArray("commonEvents");
+            for (int i = 0; i < commonEventObjs.size(); ++i) {
+                JSONObject commonEventObj = commonEventObjs.getJSONObject(i);
+                CommonEvent commonEvent = new CommonEvent();
+                if (commonEventObj.containsKey("name")) {
+                    commonEvent.name = getJsonString(commonEventObj, "name");
+                }
+                if (commonEventObj.containsKey("permission")) {
+                    commonEvent.permission = getJsonString(commonEventObj, "permission");
+                }
+                if (commonEventObj.containsKey("types")) {
+                    commonEvent.type = JSON.parseArray(getJsonString(commonEventObj, "types"), String.class);
+                }
+                if (commonEventObj.containsKey("events")) {
+                    commonEvent.events = JSON.parseArray(getJsonString(commonEventObj, "events"), String.class);
+                }
+                commonEvents.add(commonEvent);
             }
-            if (commonEventObj.containsKey("permission")) {
-                commonEvent.permission = getJsonString(commonEventObj, "permission");
-            }
-            if (commonEventObj.containsKey("types")) {
-                commonEvent.type = JSON.parseArray(getJsonString(commonEventObj, "types"), String.class);
-            }
-            if (commonEventObj.containsKey("events")) {
-                commonEvent.events = JSON.parseArray(getJsonString(commonEventObj, "events"), String.class);
-            }
-            commonEvents.add(commonEvent);
+        } catch (JSONException | NullPointerException ex) {
+            LOG.warning("JsonUtil::parseModuleCommonEvents err: " + ex.getMessage());
         }
         return commonEvents;
     }
@@ -1737,31 +1745,39 @@ public class JsonUtil {
         if (!moduleJson.containsKey(DEFINE_PERMISSIONS)) {
             return definePermissions;
         }
-        JSONArray definePermissionObjs = moduleJson.getJSONArray(DEFINE_PERMISSIONS);
-        for (int i = 0; i < definePermissionObjs.size(); ++i) {
-            definePermissions.add(parseDefinePermission(definePermissionObjs.getJSONObject(i), data));
+        try {
+            JSONArray definePermissionObjs = moduleJson.getJSONArray(DEFINE_PERMISSIONS);
+            for (int i = 0; i < definePermissionObjs.size(); ++i) {
+                definePermissions.add(parseDefinePermission(definePermissionObjs.getJSONObject(i), data));
+            }
+        } catch (JSONException | NullPointerException ex) {
+            LOG.warning("JsonUtil::parseDefinePermissions err: " + ex.getMessage());
         }
         return definePermissions;
     }
 
     static ModuleAtomicService parseModuleAtomicService(JSONObject moduleJson) {
         ModuleAtomicService moduleAtomicService = new ModuleAtomicService();
-        JSONObject atomicServiceObj = null;
-        if (!moduleJson.containsKey(ATOMIC_SERVICE)) {
-            return moduleAtomicService;
-        }
-        atomicServiceObj = moduleJson.getJSONObject(ATOMIC_SERVICE);
-        JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
-        List<PreloadItem> preloadItems = new ArrayList<>();
-        for (int i = 0; i < preloadObjs.size(); ++i) {
-            PreloadItem preloadItem = new PreloadItem();
-            JSONObject itemObj = preloadObjs.getJSONObject(i);
-            if (itemObj.containsKey(MODULE_NAME)) {
-                preloadItem.setModuleName(getJsonString(itemObj, MODULE_NAME));
+        try {
+            JSONObject atomicServiceObj = null;
+            if (!moduleJson.containsKey(ATOMIC_SERVICE)) {
+                return moduleAtomicService;
             }
-            preloadItems.add(preloadItem);
+            atomicServiceObj = moduleJson.getJSONObject(ATOMIC_SERVICE);
+            JSONArray preloadObjs = atomicServiceObj.getJSONArray(PRELOADS);
+            List<PreloadItem> preloadItems = new ArrayList<>();
+            for (int i = 0; i < preloadObjs.size(); ++i) {
+                PreloadItem preloadItem = new PreloadItem();
+                JSONObject itemObj = preloadObjs.getJSONObject(i);
+                if (itemObj.containsKey(MODULE_NAME)) {
+                    preloadItem.setModuleName(getJsonString(itemObj, MODULE_NAME));
+                }
+                preloadItems.add(preloadItem);
+            }
+            moduleAtomicService.setPreloadItems(preloadItems);
+        } catch (JSONException | NullPointerException ex) {
+            LOG.warning("JsonUtil::parseModuleAtomicService err: " + ex.getMessage());
         }
-        moduleAtomicService.setPreloadItems(preloadItems);
 
         return moduleAtomicService;
     }
@@ -1914,7 +1930,11 @@ public class JsonUtil {
         if (jsonObject.containsKey("iconId")) {
             int resId = jsonObject.getIntValue("iconId");
             iconPath = ResourcesParser.getBaseResourceById(resId, data);
-            iconPath = iconPath.substring(iconPath.indexOf("resources"));
+            if (iconPath.contains("resources")) {
+                iconPath = iconPath.substring(iconPath.indexOf("resources"));
+            } else {
+                LOG.warning("JsonUtil::parseIconById not found: " + resId);
+            }
         }
         if (!iconPath.isEmpty()) {
             return iconPath;
