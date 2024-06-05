@@ -1932,6 +1932,8 @@ public class JsonUtil {
             iconPath = ResourcesParser.getBaseResourceById(resId, data);
             if (iconPath.contains("resources")) {
                 iconPath = iconPath.substring(iconPath.indexOf("resources"));
+            } else {
+                LOG.warning("JsonUtil::parseIconById not found: " + resId);
             }
         }
         if (!iconPath.isEmpty()) {
