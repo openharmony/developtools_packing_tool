@@ -114,8 +114,7 @@
           "GWPAsanEnabled",
           "tsanEnabled",
           "appEnvironments",
-          "maxChildProcess",
-          "multiAppMode"
+          "maxChildProcess"
         ]
       },
       "properties": {
@@ -334,53 +333,6 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 512
-        },
-        "multiAppMode": {
-          "description": "Indicates the application multiple open mode.",
-          "type": "object",
-          "propertyNames": {
-            "enum": [
-              "multiAppModeType",
-              "maxCount"
-            ]
-          },
-          "properties": {
-            "multiAppModeType": {
-              "description": "Indicates the type of application multiple open mode.",
-              "type": "string",
-              "enum": [
-                "multiInstance",
-                "appClone"
-              ]
-            }
-          },
-          "if": {
-            "properties": {
-              "multiAppModeType": {
-                "const": "multiInstance"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "maxCount": {
-                "description": "Indicates the max count of multiple open application.",
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 10
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "maxCount": {
-                "description": "Indicates the max count of multiple open application.",
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 5
-              }
-            }
-          }
         }
       }
     }
