@@ -435,8 +435,8 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | srcEntrance          | String                                        | 标识应用对应的入口代码路径           | stage模型新增          |
 | process              | String                                        | 标识hap的进程名                      | stage模型新增       |
 | mainElement          | String                  | 标识hap的入口ability名称或者extension名称 | stage模型新增，FA模型将mainAbility的值赋值给mainElement |
-| uiSyntax             | String                                        | 定义该JS Component的语法类型         | stage模型新增       |
-| pages                | List\<String>                                 | 列举JS Component中每个页面信息       | stage模型新增       |
+| uiSyntax             | String                                        | 定义该ETS Component的语法类型         | stage模型新增       |
+| pages                | List\<String>                                 | 列举ETS Component中每个页面信息       | stage模型新增       |
 | extensionAbilityInfos| List\<ExtensionAbilityInfo>                   | 描述extensionAbility的配置信息       | stage模型新增        |
 | moduleAtomicService  | ModuleAtomicService结构体（见下述ModuleAtomicService） | 描述hap的元服务信息          | NA              |
 | formInfos            | List\<AbilityFormInfo>                        | 描述卡片的信息                       | NA              |
