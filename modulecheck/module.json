@@ -274,7 +274,7 @@
           "default": "default"
         },
         "uiSyntax": {
-          "description": "Indicates the syntax type of JS Component.Default is hml.",
+          "description": "Indicates the syntax type of ETS Component.Default is hml.",
           "deprecationMessage": "Deprecated since api 9",
           "type": "string",
           "enum": [
@@ -284,7 +284,7 @@
           "default": "hml"
         },
         "pages": {
-          "description": "Used to list the information of each page in JS Component.",
+          "description": "Used to list the information of each page in ETS Component.",
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
