@@ -207,6 +207,7 @@ class ModuleJsonUtil {
     public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
         JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(API_VERSION)) {
+            LOG.error("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
             throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
         }
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
@@ -359,7 +360,7 @@ class ModuleJsonUtil {
             }
             desPackInfo = mergePackInfoObj(finalPackObj, srcPackObj);
         } catch (BundleException | JSONException e) {
-            LOG.error("ModuleJsonUtil:mergeTwoPackInfo merge pack.info failed.");
+            LOG.error("ModuleJsonUtil:mergeTwoPackInfo merge pack.info failed: " + e.getMessage());
             throw new BundleException("ModuleJsonUtil:mergeTwoPackInfo merge pack.info failed.");
         }
         return desPackInfo;
@@ -627,7 +628,7 @@ class ModuleJsonUtil {
             finalPackObj = JSON.parseObject(finalPackInfo);
             srcPackObj = JSON.parseObject(srcPackInfo);
         } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed.";
+            String errMsg = "parse JSONObject failed: " + exception.getMessage();
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
@@ -995,7 +996,7 @@ class ModuleJsonUtil {
                 }
             }
         } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed.";
+            String errMsg = "parse JSONObject failed: " + exception.getMessage();
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         }
