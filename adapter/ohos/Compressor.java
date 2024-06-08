@@ -353,7 +353,7 @@ public class Compressor {
             compressExcute(utility);
         } catch (FileNotFoundException exception) {
             compressResult = false;
-            LOG.error("Compressor::compressProcess file not found exception.");
+            LOG.error("Compressor::compressProcess file not found exception: " + exception.getMessage());
         } catch (BundleException ignored) {
             compressResult = false;
             LOG.error("Compressor::compressProcess Bundle exception.");
@@ -479,12 +479,12 @@ public class Compressor {
             if (appJson.containsKey(GENERATE_BUILD_HASH) || moduleJson.containsKey(GENERATE_BUILD_HASH)) {
                 res = true;
             }
-        } catch (BundleException | IOException exception) {
+        } catch (BundleException exception) {
             LOG.error("Compressor::hasGenerateBuildHash failed.");
             throw new BundleException("Compressor::hasGenerateBuildHash failed.");
-        } catch (JSONException e) {
-            LOG.error("Compressor::hasGenerateBuildHash failed for json file is invalid.");
-            throw new BundleException("Compressor::hasGenerateBuildHash failed, " + e.getMessage());
+        } catch (JSONException | IOException e) {
+            LOG.error("Compressor::hasGenerateBuildHash failed for json file is invalid." + e.getMessage());
+            throw new BundleException("Compressor::hasGenerateBuildHash failed.");
         } finally {
             FileUtils.closeStream(json);
         }
@@ -527,10 +527,10 @@ public class Compressor {
                     SerializerFeature.WriteDateUseDateFormat});
             bw = new BufferedWriter(new FileWriter(utility.getJsonPath()));
             bw.write(pretty);
-        } catch (BundleException | IOException | JSONException exception) {
+        } catch (BundleException exception) {
             LOG.error("Compressor::setGenerateBuildHash failed.");
             throw new BundleException("Compressor::setGenerateBuildHash failed.");
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IOException | JSONException e) {
             LOG.error("Compressor::setGenerateBuildHash failed, json data err: " + e.getMessage());
             throw new BundleException("Compressor::setGenerateBuildHash failed, json data err.");
         } finally {
@@ -1040,7 +1040,7 @@ public class Compressor {
                 try {
                     compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath());
                 } catch (IOException e) {
-                    LOG.error("Compressor::compressAppMode compress pack.info into hap failed.");
+                    LOG.error("Compressor::compressAppMode compress pack.info into hap failed: " + e.getMessage());
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed.");
                 }
             }
@@ -1056,12 +1056,14 @@ public class Compressor {
                 try {
                     compressPackinfoIntoHap(hspPathItem, hspTempPath, utility.getPackInfoPath());
                 } catch (IOException e) {
-                    LOG.error("Compressor::compressAppMode compress pack.info into hsp failed.");
+                    LOG.error("Compressor::compressAppMode compress pack.info into hsp failed: " + e.getMessage());
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hsp failed.");
                 }
             }
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
+                LOG.error("Compressor::compressFile verify failed, check version, " +
+                        "apiVersion,moduleName,packageName.");
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
                         "apiVersion,moduleName,packageName.");
             }
@@ -1141,7 +1143,7 @@ public class Compressor {
             File file = new File(finalPackInfoPath);
             compressFile(utility, file, NULL_DIR_NAME, false);
         } catch (BundleException | IOException exception) {
-            String errMsg = "Compressor::compressAppModeForMultiProject file failed.";
+            String errMsg = "Compressor::compressAppModeForMultiProject file failed: " + exception.getMessage();
             LOG.error(errMsg);
             throw new BundleException(errMsg);
         } finally {
@@ -1208,7 +1210,7 @@ public class Compressor {
             File destFile = new File(dest);
             FileUtils.copyFile(sourceFile, destFile);
         } catch (IOException | BundleException e) {
-            LOG.error("copyFileSafely failed");
+            LOG.error("copyFileSafely failed: " + e.getMessage());
         }
     }
 
@@ -1236,7 +1238,7 @@ public class Compressor {
             LOG.error("writeJsonFile failed, " + exception.getMessage());
             throw new BundleException(exception.getMessage());
         } catch (JSONException e) {
-            LOG.error("json file is invalid");
+            LOG.error("json file is invalid: " + e.getMessage());
             throw new BundleException(e.getMessage());
         }
     }

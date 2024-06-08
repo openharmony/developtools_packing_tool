@@ -220,6 +220,7 @@ class FileUtils {
                 }
                 String filePath = destDir + File.separator + entry.getName();
                 if (!matchPattern(filePath)) {
+                    LOG.error("Input invalid file: " + filePath);
                     throw new BundleException("Input invalid file " + filePath);
                 }
                 if (entry.isDirectory()) {
@@ -444,7 +445,7 @@ class FileUtils {
                 }
             }
         } catch (IOException e) {
-            LOG.error("FileUtil::getProfileJson IOException.");
+            LOG.error("FileUtil::getProfileJson IOException: " + e.getMessage());
             throw new BundleException("FileUtil::getProfileJson failed.");
         }
         return resourceMap;
@@ -499,11 +500,11 @@ class FileUtils {
             }
             sha256 = toHex(md5.digest());
         } catch (FileNotFoundException e) {
-            LOG.error("input hap file is not found.");
+            LOG.error("input hap file is not found: " + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
-            LOG.error("can not provide sha-256 algorithm.");
+            LOG.error("can not provide sha-256 algorithm: " + e.getMessage());
         } catch (IOException e) {
-            LOG.error("input hap IO exception.");
+            LOG.error("input hap IO exception: " + e.getMessage());
         } finally {
             Utility.closeStream(inputStream);
         }
@@ -562,6 +563,7 @@ class FileUtils {
         BufferedOutputStream bufferedOutputStream = null;
         try {
             if (!matchPattern(filePath)) {
+                LOG.error("input invalid file: " + filePath);
                 throw new BundleException("input invalid file " + filePath + ".");
             }
             bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath));
