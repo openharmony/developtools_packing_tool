@@ -1428,8 +1428,9 @@ public class Compressor {
                 outputStream = new FileOutputStream(file);
                 inputStream = zipFile.getInputStream(zipEntry);
                 int len;
-                while ((len = inputStream.read()) != -1) {
-                    outputStream.write(len);
+                byte[] buf = new byte[BUFFER_SIZE];
+                while ((len = inputStream.read(buf)) != -1) {
+                    outputStream.write(buf, 0, len);
                 }
                 outputStream.close();
                 inputStream.close();
