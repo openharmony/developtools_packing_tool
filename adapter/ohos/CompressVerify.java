@@ -1036,7 +1036,7 @@ public class CompressVerify {
                 jsonData.append((char) ch);
             }
         } catch (IOException e) {
-            LOG.error("CompressVerify::CheckJsonIsValid failed.");
+            LOG.error("CompressVerify::CheckJsonIsValid failed: " + e.getMessage());
             return false;
         }
         JSONValidator validator = JSONValidator.from(jsonData.toString());

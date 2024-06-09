@@ -24,7 +24,15 @@ import java.util.logging.Logger;
  *
  */
 public class Log {
-    private static Logger log;
+    private static Logger log = Logger.getLogger("PackingTool");
+    static {
+        log.setUseParentHandlers(false);
+        PackFormatter formatter = new PackFormatter();
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(formatter);
+        log.addHandler(handler);
+        log.setLevel(Level.WARNING);
+    }
 
     /**
      * A constructor used to create a Log.
@@ -32,13 +40,6 @@ public class Log {
      * @param className class name
      */
     public Log(String className) {
-        log = Logger.getLogger(className);
-        log.setUseParentHandlers(false);
-        PackFormatter formatter = new PackFormatter();
-        ConsoleHandler handler = new ConsoleHandler();
-        handler.setFormatter(formatter);
-        log.addHandler(handler);
-        log.setLevel(Level.WARNING);
     }
 
     /**
