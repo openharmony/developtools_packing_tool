@@ -236,10 +236,10 @@ public class PackageNormalize {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompressor::getCrcFromFile file not found exception.");
+            LOG.error("PackageNormalize::getCrcFromFile file not found exception: " + ignored.getMessage());
             throw new BundleException("Get Crc from file failed.");
         } catch (IOException exception) {
-            LOG.error("Uncompressor::getCrcFromFile io exception: " + exception.getMessage());
+            LOG.error("PackageNormalize::getCrcFromFile io exception: " + exception.getMessage());
             throw new BundleException("Get Crc from file failed, io exception.");
         }
         return crc;
