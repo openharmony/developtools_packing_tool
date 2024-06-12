@@ -251,7 +251,7 @@ public class JsonUtil {
             appInfo.setShellVersionName(versionJson.getString(LEGACY_VERSION_NAME));
             return true;
         } catch (JSONException msg) {
-            LOG.error("parseShellVersionInfoToAppInfo exception.");
+            LOG.error("parseShellVersionInfoToAppInfo exception: " + msg.getMessage());
             throw new BundleException("parseShellVersionInfoToAppInfo exception.");
         }
     }
@@ -1726,7 +1726,7 @@ public class JsonUtil {
                 int id = Integer.parseInt(descriptionId);
                 descriptions = ResourcesParser.getResourceMapById(id, data);
             } catch (NumberFormatException e) {
-                LOG.error("parseFormDescriptions failed: invalid descriptionId.");
+                LOG.error("parseFormDescriptions failed: invalid descriptionId: " + descriptionId);
             }
             return descriptions;
         }
