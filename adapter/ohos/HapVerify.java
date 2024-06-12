@@ -277,6 +277,7 @@ class HapVerify {
         }
         if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
             LOG.error("input module releaseType is different.");
+            LOG.error("Solutions: > Check if the releaseType is the same in different modules.");
             return false;
         }
         if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
@@ -289,6 +290,7 @@ class HapVerify {
         }
         if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
             LOG.error("debug is different.");
+            LOG.error("Solutions: > Check if the debug type is the same in different modules.");
             return false;
         }
         if (isEntryOrFeature(verifyCollection.getModuleType()) && isEntryOrFeature(hapVerifyInfo.getModuleType())) {
@@ -494,6 +496,7 @@ class HapVerify {
             for (String uri : info.getProxyDataUris()) {
                 if (uriSet.contains(uri)) {
                     LOG.error("uri " + uri + " in proxy data is duplicated");
+                    LOG.error("Solutions: > Check if the uri in proxyData is unique in different modules.");
                     return false;
                 } else {
                     uriSet.add(uri);

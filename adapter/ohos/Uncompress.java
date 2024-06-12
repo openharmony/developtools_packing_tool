@@ -142,6 +142,7 @@ public class Uncompress {
      */
     static void unpackageHapMode(Utility utility) throws BundleException {
         if (!Utility.MODE_HAP.equals(utility.getMode())) {
+            LOG.error("unpackageHapMode input wrong unpack mode: " + utility.getMode());
             throw new BundleException("Uncompress::unpackageHapMode input wrong unpack mode");
         }
         try {
@@ -225,7 +226,7 @@ public class Uncompress {
                 break;
             }
         } catch (IOException | BundleException e) {
-            LOG.error("uncompressHapFromAppPath failed!");
+            LOG.error("uncompressHapFromAppPath failed: " + e.getMessage());
             throw new BundleException("uncompressHapFromAppPath failed!");
         } finally {
             Utility.closeStream(appFile);
@@ -264,7 +265,7 @@ public class Uncompress {
             result = checkParseAllResult(result);
             result = obtainLabelAndIcon(result);
         } catch (IOException | BundleException e) {
-            LOG.error("uncompressAllAppByPath failed!");
+            LOG.error("uncompressAllAppByPath failed: " + e.getMessage());
             throw new BundleException("uncompressAllAppByPath failed!");
         } finally {
             Utility.closeStream(appFile);
@@ -322,7 +323,7 @@ public class Uncompress {
                 }
             }
         } catch (IOException e) {
-            LOG.error("uncompressHapFromAppStream failed!");
+            LOG.error("uncompressHapFromAppStream failed: " + e.getMessage());
             throw new BundleException("uncompressHapFromAppStream failed!");
         } finally {
             Utility.closeStream(zipInputStream);
@@ -357,7 +358,7 @@ public class Uncompress {
             result = checkParseAllResult(result);
             result = obtainLabelAndIcon(result);
         } catch (IOException | BundleException e) {
-            LOG.error("uncompressAllFromAppStream failed!");
+            LOG.error("uncompressAllFromAppStream failed: " + e.getMessage());
             throw new BundleException("uncompressAllFromAppStream failed!");
         } finally {
             Utility.closeStream(zipInputStream);
@@ -463,7 +464,7 @@ public class Uncompress {
                 compressResult = obtainLabelAndIcon(compressResult);
             }
         } catch (IOException e) {
-            LOG.error("uncompressHapByBigStream failed for IO exception!");
+            LOG.error("uncompressHapByBigStream failed for IO exception: " + e.getMessage());
             throw new BundleException("uncompressHapByBigStream failed for IO exception!");
         } finally {
             Utility.closeStream(fileStream);
@@ -558,6 +559,7 @@ public class Uncompress {
                 }
                 String tempPath = tempDir + LINUX_FILE_SEPARATOR + entryName;
                 if (!FileUtils.matchPattern(tempPath)) {
+                    LOG.error("Input invalid file: " + tempPath);
                     throw new BundleException("Input invalid file " + tempPath);
                 }
                 File destFile = new File(tempPath);
@@ -590,7 +592,7 @@ public class Uncompress {
         FileOutputStream fileOutStream = null;
         try {
             if (!FileUtils.matchPattern(destFile.getCanonicalPath())) {
-                LOG.error("Input invalid file " + destFile);
+                LOG.error("Input invalid file " + destFile.getCanonicalPath());
                 throw new BundleException("Input invalid file" + destFile.getCanonicalPath());
             }
             fileInputStream = zipFile.getInputStream(entry);
@@ -641,7 +643,7 @@ public class Uncompress {
                 dataTransfer(zipFile, entry, destFile);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::unzipApk file not found exception");
+            LOG.error("Uncompress::unzipApk file not found exception: " + ignored.getMessage());
             throw new BundleException("Unzip Apk failed");
         } catch (IOException exception) {
             LOG.error("Uncompress::unzipApk io exception: " + exception.getMessage());
@@ -1082,7 +1084,7 @@ public class Uncompress {
                 count = bufferedInputStream.read(data);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error("Uncompress::compressFile file not found exception");
+            LOG.error("Uncompress::compressFile file not found exception: " + ignored.getMessage());
             throw new BundleException("Compress file failed");
         } catch (IOException exception) {
             LOG.error("Uncompress::compressFile io exception: " + exception.getMessage());
