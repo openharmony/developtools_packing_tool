@@ -24,7 +24,8 @@ import java.util.logging.Logger;
  *
  */
 public class Log {
-    private static Logger log = Logger.getLogger("PackingTool");
+    private static final Logger log = Logger.getLogger("PackingTool");
+
     static {
         log.setUseParentHandlers(false);
         PackFormatter formatter = new PackFormatter();
@@ -39,8 +40,7 @@ public class Log {
      *
      * @param className class name
      */
-    public Log(String className) {
-    }
+    public Log(String className) {}
 
     /**
      * print log in DEBUG level.
