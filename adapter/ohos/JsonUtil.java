@@ -1930,8 +1930,13 @@ public class JsonUtil {
         if (jsonObject.containsKey("iconId")) {
             int resId = jsonObject.getIntValue("iconId");
             iconPath = ResourcesParser.getBaseResourceById(resId, data);
+            if (iconPath.isEmpty()) {
+                iconPath = ResourcesParser.getResourceById(resId, data);
+            }
             if (iconPath.contains("resources")) {
                 iconPath = iconPath.substring(iconPath.indexOf("resources"));
+            } else {
+                LOG.warning("JsonUtil::parseIconById not found: " + resId);
             }
         }
         if (!iconPath.isEmpty()) {
