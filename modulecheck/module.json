@@ -926,6 +926,8 @@
                   "sysPicker/photoPicker",
                   "sysPicker/appSelector",
                   "sysPicker/navigation",
+                  "sysPicker/photoEditor",
+                  "photoEditor",
                   "sys/commonUI",
                   "fileAccess",
                   "sysPicker/camera",
