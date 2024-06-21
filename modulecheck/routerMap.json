@@ -15,7 +15,8 @@
             "name",
             "pageSourceFile",
             "buildFunction",
-            "data"
+            "data",
+            "customData"
           ]
         },
         "properties": {
@@ -35,7 +36,15 @@
             "maxLength": 1023
           },
           "data": {
-            "description": "Indicates the custom data",
+            "description": "Indicates the data, which can only be configured to accommodate custom data of string type.",
+            "type": "object",
+            "maxProperties": 128,
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "customData": {
+            "description": "Indicates the custom data, which can be configured to accommodate any type of custom data.",
             "type": "object"
           }
         },
