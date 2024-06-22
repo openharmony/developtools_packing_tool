@@ -135,6 +135,7 @@ public class Compressor {
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String RAW_FILE_PATH = "resources/rawfile";
+    private static final String RES_FILE_PATH = "resources/resfile";
     private static final String SUMMARY = "summary";
     private static final String VERSION_CODE = "versionCode";
     private static final String VERSION_NAME = "versionName";
@@ -2189,7 +2190,7 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
-            if (!entryName.contains(RAW_FILE_PATH) &&
+            if (!entryName.contains(RAW_FILE_PATH) && !entryName.contains(RES_FILE_PATH) &&
                     srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
