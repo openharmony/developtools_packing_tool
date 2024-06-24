@@ -121,6 +121,8 @@ public class AbilityFormInfo {
      */
     public String providerAbility = "";
 
+    private String formExtensionAbilityName = "";
+
     /**
      * Indicates the descriptions of ability form,for Multilingual.
      */
@@ -144,5 +146,19 @@ public class AbilityFormInfo {
 
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
+    }
+
+    /**
+     * get formExtensionAbilityName.
+     */
+    public String getFormExtensionAbilityName() {
+        return formExtensionAbilityName;
+    }
+
+    /**
+     * set formExtensionAbilityName
+     */
+    public void setFormExtensionAbilityName(String formExtensionAbilityName) {
+        this.formExtensionAbilityName = formExtensionAbilityName;
     }
 }

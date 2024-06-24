@@ -1443,6 +1443,7 @@ public class JsonUtil {
             if (FORM.equals(extensionAbilityInfo.type)) {
                 for (AbilityFormInfo formInfo : formInfos) {
                     formInfo.providerAbility = serviceProviderAbility;
+                    formInfo.setFormExtensionAbilityName(extensionAbilityInfo.name);
                 }
             }
             abilityFormInfos.addAll(formInfos);
