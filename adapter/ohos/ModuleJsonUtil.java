@@ -100,6 +100,9 @@ class ModuleJsonUtil {
     private static final String MULTI_APP_MODE = "multiAppMode";
     private static final String MULTI_APP_MODE_TYPE = "multiAppModeType";
     private static final String MULTI_APP_MODE_NUMBER = "maxCount";
+    private static final String FORMS = "forms";
+    private static final String DEFAULTDIMENSION = "defaultDimension";
+    private static final String SUPPORTDIMENSIONS = "supportDimensions";
 
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
@@ -501,6 +504,48 @@ class ModuleJsonUtil {
             }
         }
         return true;
+    }
+
+
+
+    /**
+     * parse forms name in pack.info file.
+     *
+     * @param jsonString the pack.info json string
+     * @param formNameList the forms name in pack.info
+     * @param fullFormNameList the forms name and moduleName merged result in pack.info
+     */
+    public static void parsePackInfoFormsName(String jsonString, List<String> formNameList, List<String> fullFormNameList)
+            throws BundleException {
+        JSONObject jsonObject = JSONObject.parseObject(jsonString);
+        if (jsonObject == null || !jsonObject.containsKey(SUMMARY)) {
+            LOG.error("ModuleJsonUtil::parsePackInfoFormsName error: summary is null.");
+            throw new BundleException("Parse pack info forms name failed, summary is null.");
+        }
+
+        JSONObject summaryJson = jsonObject.getJSONObject(SUMMARY);
+        if (summaryJson == null || !summaryJson.containsKey("modules")) {
+            LOG.error("ModuleJsonUtil::parsePackInfoFormsName error: summary.modules is null.");
+            return;
+        }
+
+        JSONArray moduleJsonList = summaryJson.getJSONArray("modules");
+        for (int i = 0; i < moduleJsonList.size(); i++) {
+            JSONObject moduleJson = moduleJsonList.getJSONObject(i);
+            if (moduleJson == null || !moduleJson.containsKey(DISTRO)) {
+                LOG.error("ModuleJsonUtil::parsePackInfoFormsName error: summary.modules.distro is null.");
+                continue;
+            }
+
+            JSONObject distroObj = moduleJson.getJSONObject(DISTRO);
+            if (distroObj == null || !distroObj.containsKey(MODULE_NAME)) {
+                LOG.error("ModuleJsonUtil::parsePackInfoFormsName error: summary.modules.distro.moduleName is null.");
+                continue;
+            }
+
+            String moduleName = distroObj.getString(MODULE_NAME);
+            parsePackInfoExtensionAbility(moduleName, moduleJson, formNameList, fullFormNameList);
+        }
     }
 
     /**
@@ -1766,5 +1811,74 @@ class ModuleJsonUtil {
             value = jsonObject.getBooleanValue(key);
         }
         return value;
+    }
+
+    private static int getCount(String str, char targetChar) {
+        int count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == targetChar) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static void parsePackInfoExtensionAbility(String moduleName, JSONObject moduleJson, List<String> formNameList,
+                                              List<String> fullFormNameList) throws BundleException {
+        if (!moduleJson.containsKey(EXTENSION_ABILITIES)) {
+            LOG.error("ModuleJsonUtil::parsePackInfoExtensionAbility error: summary.modules.extensionAbilities is null.");
+            return;
+        }
+
+        JSONArray extensionAbilityJsonList = moduleJson.getJSONArray(EXTENSION_ABILITIES);
+        for (int j = 0; j < extensionAbilityJsonList.size(); j++) {
+            JSONObject extensionAbilityJson = extensionAbilityJsonList.getJSONObject(j);
+            if (extensionAbilityJson == null || !extensionAbilityJson.containsKey(FORMS)) {
+                LOG.error("ModuleJsonUtil::parsePackInfoExtensionAbility error: " +
+                        "summary.modules.extensionAbilities.forms is null.");
+                continue;
+            }
+
+            parsePackInfoForms(moduleName, extensionAbilityJson, formNameList, fullFormNameList);
+        }
+    }
+
+    private static void parsePackInfoForms(String moduleName, JSONObject extensionAbilityJson, List<String> formNameList,
+                                                 List<String> fullFormNameList) throws BundleException {
+        JSONArray formJsonList = extensionAbilityJson.getJSONArray(FORMS);
+        for (int i = 0; i < formJsonList.size(); i++) {
+            JSONObject formObj = formJsonList.getJSONObject(i);
+            if (formObj == null || !formObj.containsKey(NAME)) {
+                LOG.error("ModuleJsonUtil::parsePackInfoForms error: " +
+                        "summary.modules.extensionAbilities.forms.name is null.");
+                continue;
+            }
+
+            String name = formObj.getString(NAME);
+            formNameList.add(name);
+            if (!formObj.containsKey(DEFAULTDIMENSION)) {
+                LOG.error("ModuleJsonUtil::parsePackInfoForms exception: " +
+                        "summary.modules.extensionAbilities.forms.defaultDimension is null.");
+                throw new BundleException("Parse pack info defaultDimension failed, defaultDimension is null.");
+            }
+
+            String defaultDimension = formObj.getString(DEFAULTDIMENSION);
+            if (getCount(defaultDimension, '*') != 1) {
+                LOG.error("ModuleJsonUtil::parsePackInfoForms exception: " +
+                        "summary.modules.extensionAbilities.forms.defaultDimension is not only 1.");
+                throw new BundleException("Parse pack info defaultDimension failed, defaultDimension is not only 1.");
+            }
+            if (!formObj.containsKey(SUPPORTDIMENSIONS)) {
+                LOG.error("ModuleJsonUtil::parsePackInfoForms exception: " +
+                        "summary.modules.extensionAbilities.forms.supportDimensions is null.");
+                throw new BundleException("Parse pack info supportDimensions failed, supportDimensions is null.");
+            }
+
+            List<String> dimensionList = JSONObject.parseArray(getJsonString(formObj, SUPPORTDIMENSIONS), String.class);
+            for(String dimension : dimensionList) {
+                String nameWithDimension = moduleName + "/" + name + "-" + dimension.replace("*", "x");
+                fullFormNameList.add(nameWithDimension);
+            }
+        }
     }
 }

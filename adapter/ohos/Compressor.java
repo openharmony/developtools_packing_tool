@@ -109,6 +109,8 @@ public class Compressor {
     private static final String PIC_2X2 = "2x2";
     private static final String PIC_2X4 = "2x4";
     private static final String PIC_4X4 = "4x4";
+    private static final String PIC_1X1 = "1x1";
+    private static final String PIC_6X4 = "6x4";
     private static final String REGEX_LANGUAGE = "^[a-z]{2}$";
     private static final String REGEX_SCRIPT = "^[A-Z][a-z]{3}$";
     private static final String REGEX_COUNTRY = "^[A-Z]{2,3}|[0-9]{3}$";
@@ -185,10 +187,11 @@ public class Compressor {
 
     private ZipArchiveOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
+    private boolean isEntryOpen = false;
     private List<String> list = new ArrayList<String>();
     private List<String> formNamesList = new ArrayList<String>();
     private List<String> fileNameList = new ArrayList<String>();
-    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4);
+    private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4, PIC_1X1, PIC_6X4);
 
     public static int getEntryModuleSizeLimit() {
         return entryModuleSizeLimit;
@@ -1619,15 +1622,13 @@ public class Compressor {
      */
     private void compressPackResMode(Utility utility) throws BundleException {
         if (!utility.getPackInfoPath().isEmpty()) {
+            parsePackInfoJsonFile(utility, utility.getPackInfoPath());
             File file = new File(utility.getPackInfoPath());
             infoSpecialProcess(utility, file);
         }
         if (!utility.getEntryCardPath().isEmpty()) {
             getFileList(utility.getEntryCardPath());
-            if (!mIsContain2x2EntryCard) {
-                LOG.error("Compressor::compressPackResMode No 2x2 resource file exists.");
-                throw new BundleException("No 2x2 resource file exists.");
-            }
+            List<String> snapshotNameList = new ArrayList<>();
             for (String fileName : fileNameList) {
                 if (fileName.endsWith(PNG_SUFFIX) || fileName.endsWith(UPPERCASE_PNG_SUFFIX)) {
                     String fName = fileName.trim();
@@ -1652,10 +1653,22 @@ public class Compressor {
                                 + filePicturingName + ", correct format example is formName-2x2.png.");
                     }
 
+                    String fullSnapshotName = temp[temp.length - 4] + "/" +
+                            filePicturingName.substring(0, filePicturingName.lastIndexOf("."));
+                    snapshotNameList.add(fullSnapshotName);
+
                 } else {
                     LOG.error("Compressor::compressProcess compress failed No image in PNG format is found.");
                     throw new BundleException("Compress pack.res failed, compress failed No image in"
                             + " PNG format is found.");
+                }
+            }
+
+            for (String formName : formNamesList) {
+                if (!snapshotNameList.contains(formName)) {
+                    LOG.error("Compressor::compressProcess compress failed entryCard " + formName
+                            + " has no related snapshot " + snapshotNameList.toString() + ".");
+                    throw new BundleException("Compress pack.res failed, compress failed entryCard has no related snapshot.");
                 }
             }
             pathToFileResMode(utility, utility.getEntryCardPath(), ENTRYCARD_NAME, false);
@@ -1847,9 +1860,10 @@ public class Compressor {
         String dimension = name.substring(delimiterIndex + 1, name.lastIndexOf("."));
         if (!supportDimensionsList.contains(dimension)) {
             LOG.error("isPicturing: the dimension: " + dimension + " is invalid, is not in the following list: "
-                    + "{1X2, 2X2, 2X4, 4X4}.");
+                    + "{1X2, 2X2, 2X4, 4X4, 1X1, 6X4}.");
             return false;
         }
+
         return true;
     }
 
@@ -1878,7 +1892,6 @@ public class Compressor {
                         throw new BundleException("The level-4 directory of EntryCard must be named as snapshot" +
                                 ", but current is: " + snapshotDirectoryName + ".");
                     }
-                    checkContain2x2EntryCard(f.getParentFile());
                     fileNameList.add(f.getCanonicalPath());
                 } else if (f.isDirectory()) {
                     getFileList(f.getCanonicalPath());
@@ -2190,6 +2203,7 @@ public class Compressor {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
+            isEntryOpen = true;
             if (!entryName.contains(RAW_FILE_PATH) && !entryName.contains(RES_FILE_PATH) &&
                     srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
@@ -2297,6 +2311,26 @@ public class Compressor {
         return crc;
     }
 
+    private void parsePackInfoJsonFile(Utility utility, String jsonPath)
+            throws BundleException {
+        try {
+            String jsonString = FileUtils.getFileContent(jsonPath).get();
+            List<String> nameList = new ArrayList<>();
+            ModuleJsonUtil.parsePackInfoFormsName(jsonString, nameList, formNamesList);
+            for (String formName : nameList) {
+                if (formName.isEmpty()) {
+                    LOG.error("Compressor::infoSpecialJsonFileProcess form name is empty.");
+                    continue;
+                }
+
+                utility.addFormNameList(formName);
+            }
+        } catch (JSONException e) {
+            LOG.error("Compressor::infoSpecialJsonFileProcess json Path: " + jsonPath +
+                    "json exception: " + e.getMessage());
+        }
+    }
+
     private void infoSpecialProcess(Utility utility, File srcFile)
             throws BundleException {
         FileInputStream fileInputStream = null;
@@ -2310,8 +2344,6 @@ public class Compressor {
             bufferedReader.mark((int) srcFile.length() + 1);
             // parse moduleName from pack.info
             parsePackModuleName(bufferedReader, utility);
-            bufferedReader.reset();
-            parsePackFormName(bufferedReader, utility);
             bufferedReader.reset();
             parseDeviceType(bufferedReader, utility);
             bufferedReader.reset();
@@ -2553,7 +2585,7 @@ public class Compressor {
             LOG.error("Compressor::closeZipOutputStream flush exception " + exception.getMessage());
         }
         try {
-            if (zipOut != null) {
+            if (zipOut != null && isEntryOpen) {
                 zipOut.closeArchiveEntry();
             }
         } catch (IOException exception) {
