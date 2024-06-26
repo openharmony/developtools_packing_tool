@@ -34,21 +34,25 @@
         "keepAlive": {
           "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": false
         },
         "removable": {
           "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": true
         },
         "singleton": {
           "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": false
         },
         "userDataClearable": {
           "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": true
         },
         "accessible": {
@@ -276,21 +280,25 @@
         "keepAlive": {
           "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": false
         },
         "removable": {
           "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": true
         },
         "singleton": {
           "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": false
         },
         "userDataClearable": {
           "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
           "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
           "default": true
         },
         "accessible": {
