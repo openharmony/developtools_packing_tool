@@ -164,6 +164,16 @@ public class HapInfo {
     public List<AbilityFormInfo> formInfos = new ArrayList<>();
 
     /**
+     * Indicates the compressed size of hap.
+     */
+    public long compressedSize = 0;
+
+    /**
+     * Indicates the original size of hap.
+     */
+    public long originalSize = 0;
+
+    /**
      * Indicates the descriptions of HapInfo.
      */
     private HashMap<String, String> descriptions = new HashMap<>();

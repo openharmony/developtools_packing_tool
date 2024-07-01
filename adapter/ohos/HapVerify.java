@@ -1330,11 +1330,7 @@ class HapVerify {
                 return false;
             }
         }
-        // check file size is valid
-        if (!checkFileSizeIsValid(hapVerifyInfoList)) {
-            LOG.error("checkFileSizeIsValid failed.");
-            return false;
-        }
+
         return true;
     }
 
@@ -1410,7 +1406,13 @@ class HapVerify {
         return true;
     }
 
-    private static boolean checkFileSizeIsValid(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+    /**
+     * check file size is valid from List<HapVerifyInfo>
+     *
+     * @param hapVerifyInfoList is hapVerifyInfo list
+     * @return true file size is under limit
+     */
+    public static boolean checkFileSizeIsValid(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
             LOG.error("checkFileSizeIsValid failed, hapVerifyInfoList is empty.");
             throw new BundleException("checkFileSizeIsValid failed, hapVerifyInfoList is empty.");
