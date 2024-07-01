@@ -192,6 +192,7 @@ public class Compressor {
     private List<String> formNamesList = new ArrayList<String>();
     private List<String> fileNameList = new ArrayList<String>();
     private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4, PIC_1X1, PIC_6X4);
+    private HashMap<String, HapVerifyInfo> hapVerifyInfoMap = new HashMap<>();
 
     public static int getEntryModuleSizeLimit() {
         return entryModuleSizeLimit;
@@ -370,6 +371,13 @@ public class Compressor {
             Utility.closeStream(checkedOut);
             Utility.closeStream(fileOut);
         }
+
+        if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility))
+        {
+            compressResult = false;
+            LOG.error("Compressor::compressProcess check atomic service size fail.");
+        }
+
         // if compress failed, delete out file.
         if (!compressResult) {
             LOG.error("Compressor::compressProcess compress failed.");
@@ -676,6 +684,47 @@ public class Compressor {
             }
         }
         utility.setBuildHashFinish(true);
+    }
+
+    private boolean checkAppAtomicServiceCompressedSizeValid(Utility utility) {
+        if (!Utility.MODE_APP.equals(utility.getMode())) {
+            return true;
+        }
+
+        File destFile = new File(utility.getOutPath());
+        List<HapVerifyInfo> hapVerifyInfos = new ArrayList<>();
+        try (ZipFile zipApp = new ZipFile(destFile)) {
+            Enumeration<? extends ZipEntry> entries = zipApp.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry != null && hapVerifyInfoMap.containsKey(entry.getName())) {
+                    hapVerifyInfoMap.get(entry.getName()).setFileLength(entry.getCompressedSize());
+                    hapVerifyInfos.add(hapVerifyInfoMap.get(entry.getName()));
+                }
+            }
+
+            if (hapVerifyInfos.isEmpty()) {
+                LOG.error("Compressor::checkAppAtomicServiceCompressedSizeValid no hapVerifyInfo.");
+                return false;
+            }
+
+            String bundleType = hapVerifyInfos.get(0).getBundleType();
+            if (!bundleType.equals(ATOMIC_SERVICE)) {
+                return true;
+            }
+            boolean isStage = hapVerifyInfos.get(0).isStageModule();
+            if (!isStage) {
+                return true;
+            }
+
+            return HapVerify.checkFileSizeIsValid(hapVerifyInfos);
+        } catch (IOException exception) {
+            LOG.error("Compressor::checkAppAtomicServiceCompressedSizeValid file not found exception: " + exception.getMessage());
+            return false;
+        } catch (BundleException ignored) {
+            LOG.error("Compressor::checkAppAtomicServiceCompressedSizeValid Bundle exception.");
+            return false;
+        }
     }
 
     private static boolean checkStageHap(Utility utility) throws BundleException {
@@ -1080,8 +1129,14 @@ public class Compressor {
                 throw new BundleException("Compressor::compressFile verify failed, check version, " +
                         "apiVersion,moduleName,packageName.");
             }
+
             for (String hapPath : fileList) {
-                pathToFile(utility, hapPath, NULL_DIR_NAME, false);
+                HapVerifyInfo hapVerifyInfo = hapVerifyInfoMap.get(getFileNameByPath(hapPath));
+                if (hapVerifyInfo != null && !hapVerifyInfo.isDebug()) {
+                    pathToFile(utility, hapPath, NULL_DIR_NAME, true);
+                } else {
+                    pathToFile(utility, hapPath, NULL_DIR_NAME, false);
+                }
             }
 
             if (!utility.getEntryCardPath().isEmpty()) {
@@ -2661,7 +2716,12 @@ public class Compressor {
             } else {
                 hapVerifyInfos.add(parseFAHapVerifyInfo(hapPath));
             }
+
+            if (!hapVerifyInfos.isEmpty()) {
+                hapVerifyInfoMap.put(getFileNameByPath(hapPath), hapVerifyInfos.get(hapVerifyInfos.size() - 1));
+            }
         }
+
         if (isSharedApp) {
             boolean res = checkSharedAppIsValid(hapVerifyInfos);
             if (!res) {
@@ -3261,5 +3321,10 @@ public class Compressor {
                 fos.write(buffer, 0, bytesRead);
             }
         }
+    }
+
+    private static String getFileNameByPath(String path) {
+        Path filePath = Paths.get(path);
+        return filePath.getFileName().toString();
     }
 }

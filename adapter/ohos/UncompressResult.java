@@ -31,6 +31,7 @@ public class UncompressResult {
     private List<String> profileInfosStr = new ArrayList<String>();
     private String icon = "";
     private String label = "";
+    private long packageSize = 0;
 
     void setResult(boolean result) {
         this.result = result;
@@ -62,6 +63,10 @@ public class UncompressResult {
 
     void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    void setPackageSize(long size) {
+        this.packageSize = size;
     }
 
     /**
@@ -116,5 +121,9 @@ public class UncompressResult {
 
     public String getIcon() {
         return icon;
+    }
+
+    public long getPackageSize() {
+        return packageSize;
     }
 }
