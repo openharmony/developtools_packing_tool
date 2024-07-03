@@ -1328,7 +1328,7 @@
               "moduleName": {
                 "description": "Indicates the module name of the dependency shared library.",
                 "type": "string",
-                "maxLength": 31
+                "maxLength": 128
               },
               "versionCode": {
                 "description": "Indicates the versionCode number of the dependency shared library. The value is an integer greater than 0. A larger value generally represents a later version.The system determines the dependency shared library version based on the tag value.This label cannot be left blank.",
@@ -1372,7 +1372,7 @@
                   "moduleName": {
                     "description": "Indicates module is preloaded when the current module is run.",
                     "type": "string",
-                    "maxLength": 31
+                    "maxLength": 128
                   }
                 }
               }
@@ -1383,7 +1383,7 @@
           "description": "Indicates the target module name of an overlay module.",
           "type": "string",
           "pattern": "[^\u4e00-\u9fa5]+",
-          "maxLength": 31
+          "maxLength": 128
         },
         "targetPriority": {
           "description": "Indicates the priority of the overlay module. 1 to 100, default value is 1.",
