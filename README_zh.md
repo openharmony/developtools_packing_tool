@@ -2,7 +2,7 @@
 
 ## 简介
 
-packing_tool子系统用于生成打包工具和拆包工具，其中打包工具用于hap，app，hqf，appqf，har，hsp包的生成，拆包工具用于对hap，app，hqf，appqf，har，hsp包的拆包及对hap，hsp，app，appqf的解析。具体的功能介绍如下：
+packing_tool子系统用于生成打包工具和拆包工具，其中打包工具用于hap，app，hqf，appqf，hsp包的生成，拆包工具用于对hap，app，hqf，appqf，har，hsp包的拆包及对hap，hsp，app，appqf的解析。具体的功能介绍如下：
 
 打包工具子系统架构图如下：
 
@@ -54,25 +54,23 @@ java -jar app_packing_tool.jar --mode hap --json-path <option> --maple-so-path [
 | --pkg-context-path      | 否         | NA            | 可指定语境信息表文件路径，文件名必须为pkgContextInfo.json。 | 仅stage模型生效              |
 | --hnp-path | 否 | NA | 指定native软件包文件路径，将native软件包打入hap包内。 | NA |
 
-### 1.2 har包模式打包指令
+### 1.2 res模式打包指令
 
 #### 1.2.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode har --json-path [option] --jar-path [option] --lib-path [option] --resources-path [option] --out-path [option] --force [option]
+java -jar app_packing_tool.jar --mode res --entrycard-path [option] --pack-info-path [option] --out-path [option] --force [option]
 ```
 
 #### 1.2.2 参数含义及规范
 
-| 指令              | 是否必选项 | 选项          | 描述                                                        |
-|-----------------|-------|-------------|-----------------------------------------------------------|
-| --mode          | 是     | har         | 打包类型。                                                     |
-| --json-path     | 是     | NA          | .json文件路径，FA模型文件名必须为config.json；stage模型文件名必须为module.json。 |
-| --jar-path      | 否     | NA          | 1.jar文件路径，文件名必须以.jar为后缀。如果是多个jar需要用“，”分隔。2.jar文件路径也可以为目录。 |
-| --lib-path      | 否     | NA          | lib库文件路径。                                                 |
-| --resource-path | 是     | NA          | resources资源包路径。                                           |
-| --out-path      | 是     | NA          | 目标文件路径，文件名必须以.har为后缀。                                     |
-| --force         | 否     | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                        |
+| 指令               | 是否必选项 | 选项            | 描述                                 |
+|------------------|-------|---------------|------------------------------------|
+| --mode           | 是     | res           | 命令类型。                              |
+| --entrycard-path | 是     | NA            | 快照目录的路径。                           |
+| --pack-info-path | 是     | NA            | pack.info文件路径，包含卡片信息。              |
+| --out-path       | 是     | NA            | 目标文件路径，文件名必须以.res为后缀。              |
+| --force          | 否     | true或者false   | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
 ### 1.3 app包模式打包指令
 
@@ -211,7 +209,7 @@ java -jar path\app_packing_tool.jar --mode versionNormalize --input-list 1.hap,2
 
 ### 1.9 packageNormalize模式指令
 
-内部多个应用共享一个基建HSP时，为了便于集成，HSP的包名会被设置为空。可以调用此命令，将集成态HSP的包名和版本号设置成应用侧的包名和版本号，并在指定目录生成修改后的同名HSP。
+可以调用此命令，将集成态HSP的包名和版本号设置成应用侧的包名和版本号，并在指定目录生成修改后的同名HSP。
 
 #### 1.9.1 示例
 ```
@@ -227,25 +225,6 @@ java -jar path\app_packing_tool.jar --mode packageNormalize --hsp-list path\1.hs
 | --bundle-name  | 是     | 包名               | 指定的包名，HSP的包名会被修改为指定的包名。                             |
 | --version-code | 是     | 版本号              | 指定的版本号，HSP的版本号会被修改为该版本号。需要为整数，且大于0。                 |                                  
 | --out-path     | 是     | NA               | 目标文件路径，需要为一个目录。                                     |
-
-### 1.10 res模式打包指令
-
-#### 1.10.1 示例
-
-```
-java -jar app_packing_tool.jar --mode res --entrycard-path [option] --pack-info-path [option] --out-path [option] --force [option]
-```
-
-#### 1.10.2 参数含义及规范
-
-| 指令               | 是否必选项 | 选项            | 描述                                 |
-|------------------|-------|---------------|------------------------------------|
-| --mode           | 是     | res           | 命令类型。                              |
-| --entrycard-path | 是     | NA            | 快照目录的路径。                           |
-| --pack-info-path | 是     | NA            | pack.info文件路径，包含卡片信息。              |
-| --out-path       | 是     | NA            | 目标文件路径，文件名必须以.res为后缀。              |                                  
-| --force          | 否     | true或者false   | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
-
 
 ## 2. 拆包指令说明
 
