@@ -1826,7 +1826,7 @@ class ModuleJsonUtil {
     private static void parsePackInfoExtensionAbility(String moduleName, JSONObject moduleJson, List<String> formNameList,
                                               List<String> fullFormNameList) throws BundleException {
         if (!moduleJson.containsKey(EXTENSION_ABILITIES)) {
-            LOG.error("ModuleJsonUtil::parsePackInfoExtensionAbility error: summary.modules.extensionAbilities is null.");
+            LOG.warning("ModuleJsonUtil::parsePackInfoExtensionAbility error: summary.modules.extensionAbilities is null.");
             return;
         }
 
@@ -1834,7 +1834,7 @@ class ModuleJsonUtil {
         for (int j = 0; j < extensionAbilityJsonList.size(); j++) {
             JSONObject extensionAbilityJson = extensionAbilityJsonList.getJSONObject(j);
             if (extensionAbilityJson == null || !extensionAbilityJson.containsKey(FORMS)) {
-                LOG.error("ModuleJsonUtil::parsePackInfoExtensionAbility error: " +
+                LOG.warning("ModuleJsonUtil::parsePackInfoExtensionAbility error: " +
                         "summary.modules.extensionAbilities.forms is null.");
                 continue;
             }
@@ -1849,7 +1849,7 @@ class ModuleJsonUtil {
         for (int i = 0; i < formJsonList.size(); i++) {
             JSONObject formObj = formJsonList.getJSONObject(i);
             if (formObj == null || !formObj.containsKey(NAME)) {
-                LOG.error("ModuleJsonUtil::parsePackInfoForms error: " +
+                LOG.warning("ModuleJsonUtil::parsePackInfoForms error: " +
                         "summary.modules.extensionAbilities.forms.name is null.");
                 continue;
             }
