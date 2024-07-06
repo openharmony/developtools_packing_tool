@@ -188,6 +188,8 @@ public class Uncompress {
                 compressResult.setResult(false);
                 compressResult.setMessage("ParseApp parseMode is invalid");
             }
+
+            compressResult.setPackageSize(FileUtils.getFileSize(srcPath));
         } catch (BundleException e) {
             LOG.error("Uncompress::uncompressApp Bundle exception");
             compressResult.setResult(false);
@@ -220,6 +222,8 @@ public class Uncompress {
                 }
                 UncompressResult hapInfo = uncompressHapByStream("", stream, hapName);
                 if (hapInfo.getProfileInfos() != null && hapInfo.getProfileInfos().size() > 0) {
+                    hapInfo.getProfileInfos().get(0).hapInfo.originalSize = entry.getSize();
+                    hapInfo.getProfileInfos().get(0).hapInfo.compressedSize = entry.getCompressedSize();
                     result.addProfileInfo(hapInfo.getProfileInfos().get(0));
                     result.addProfileInfoStr(hapInfo.getProfileInfosStr().get(0));
                 }
@@ -257,6 +261,8 @@ public class Uncompress {
                         || entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
                     UncompressResult hapInfo = uncompressHapByStream("", stream, entry.getName());
                     if (hapInfo.getProfileInfos() != null && hapInfo.getProfileInfos().size() > 0) {
+                        hapInfo.getProfileInfos().get(0).hapInfo.originalSize = entry.getSize();
+                        hapInfo.getProfileInfos().get(0).hapInfo.compressedSize = entry.getCompressedSize();
                         result.addProfileInfo(hapInfo.getProfileInfos().get(0));
                         result.addProfileInfoStr(hapInfo.getProfileInfosStr().get(0));
                     }
@@ -321,6 +327,11 @@ public class Uncompress {
                 if (appEntry.getName().toLowerCase(Locale.ENGLISH).equals(hapFile)) {
                     result = uncompressHapByStream("", zipInputStream, appEntry.getName());
                 }
+
+                if (result.getProfileInfos().size() > 0) {
+                    result.getProfileInfos().get(0).hapInfo.originalSize = appEntry.getSize();
+                    result.getProfileInfos().get(0).hapInfo.compressedSize = appEntry.getCompressedSize();
+                }
             }
         } catch (IOException e) {
             LOG.error("uncompressHapFromAppStream failed: " + e.getMessage());
@@ -350,6 +361,8 @@ public class Uncompress {
                         || entry.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
                     UncompressResult hapResult = uncompressHapByStream("", zipInputStream, entry.getName());
                     if (hapResult.getProfileInfos() != null && hapResult.getProfileInfos().size() > 0) {
+                        hapResult.getProfileInfos().get(0).hapInfo.originalSize = entry.getSize();
+                        hapResult.getProfileInfos().get(0).hapInfo.compressedSize = entry.getCompressedSize();
                         result.addProfileInfo(hapResult.getProfileInfos().get(0));
                         result.addProfileInfoStr(hapResult.getProfileInfosStr().get(0));
                     }
