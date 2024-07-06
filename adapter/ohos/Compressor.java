@@ -1051,7 +1051,8 @@ public class Compressor {
                 String hapTempPath = tempDir + File.separator + hapFile.getName();
                 fileList.add(hapTempPath);
                 try {
-                    compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath());
+                    compressPackinfoIntoHap(hapPathItem, hapTempPath, utility.getPackInfoPath(),
+                            utility.getCompressLevel());
                 } catch (IOException e) {
                     LOG.error("Compressor::compressAppMode compress pack.info into hap failed: " + e.getMessage());
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hap failed.");
@@ -1067,7 +1068,8 @@ public class Compressor {
                 String hspTempPath = hspTempDir + File.separator + hspFile.getName();
                 fileList.add(hspTempPath);
                 try {
-                    compressPackinfoIntoHap(hspPathItem, hspTempPath, utility.getPackInfoPath());
+                    compressPackinfoIntoHap(hspPathItem, hspTempPath, utility.getPackInfoPath(),
+                            utility.getCompressLevel());
                 } catch (IOException e) {
                     LOG.error("Compressor::compressAppMode compress pack.info into hsp failed: " + e.getMessage());
                     throw new BundleException("Compressor::compressAppMode compress pack.info into hsp failed.");
@@ -1142,7 +1144,7 @@ public class Compressor {
                 File hapFile = new File(hapPathItem.trim());
                 String hapTempPath = tempHapDir.getPath() + File.separator + hapFile.getName();
                 fileList.add(hapTempPath);
-                compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath);
+                compressPackinfoIntoHap(hapPathItem, hapTempPath, finalPackInfoPath, utility.getCompressLevel());
             }
             // check hap is valid
             if (!checkHapIsValid(fileList, false)) {
@@ -1554,10 +1556,11 @@ public class Compressor {
         }
     }
 
-    private void compressPackinfoIntoHap(String hapPathItem, String outPathString, String packInfo)
+    private void compressPackinfoIntoHap(String hapPathItem, String outPathString, String packInfo, int compressLevel)
             throws IOException, BundleException {
         ZipFile sourceHapFile = new ZipFile(hapPathItem);
         ZipOutputStream append = new ZipOutputStream(new FileOutputStream(outPathString));
+        append.setLevel(compressLevel);
         try {
             Enumeration<? extends ZipEntry> entries = sourceHapFile.entries();
             while (entries.hasMoreElements()) {
