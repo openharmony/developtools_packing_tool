@@ -50,9 +50,9 @@ ShellCommand::~ShellCommand() {}
 int ShellCommand::CreateCommandMap()
 {
     commandMap_ = {
-        {"help", std::bind(&ShellCommand::RunAsHelpCommand, this)},
-        {"pack", std::bind(&ShellCommand::RunAsPackCommand, this)},
-        {"unpack", std::bind(&ShellCommand::RunAsUnpackCommand, this)},
+        {"help", [this] { return this->RunAsHelpCommand(); } },
+        {"pack", [this] { return this->RunAsPackCommand(); } },
+        {"unpack", [this] { return this->RunAsUnpackCommand(); } }
     };
     return ERR_OK;
 }
