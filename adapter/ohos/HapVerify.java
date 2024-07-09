@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -223,22 +224,29 @@ class HapVerify {
             LOG.error("HapVerify::checkAppVariableIsSame failed, hapVerifyInfos is empty.");
             return false;
         }
+        HapVerifyInfo verifyInfo = hapVerifyInfos.get(0);
+        Optional<HapVerifyInfo> optional = hapVerifyInfos.stream()
+                .filter(hapVerifyInfo -> !hapVerifyInfo.getModuleType().equals(TYPE_SHARED))
+                .findFirst();
+        if (optional.isPresent()) {
+            verifyInfo = optional.get();
+        }
         VerifyCollection verifyCollection = new VerifyCollection();
-        verifyCollection.bundleName = hapVerifyInfos.get(0).getBundleName();
-        verifyCollection.setBundleType(hapVerifyInfos.get(0).getBundleType());
-        verifyCollection.vendor = hapVerifyInfos.get(0).getVendor();
-        verifyCollection.versionCode = hapVerifyInfos.get(0).getVersion().versionCode;
-        verifyCollection.versionName = hapVerifyInfos.get(0).getVersion().versionName;
-        verifyCollection.minCompatibleVersionCode = hapVerifyInfos.get(0).getVersion().minCompatibleVersionCode;
-        verifyCollection.compatibleApiVersion = hapVerifyInfos.get(0).getApiVersion().getCompatibleApiVersion();
-        verifyCollection.targetApiVersion = hapVerifyInfos.get(0).getApiVersion().getTargetApiVersion();
-        verifyCollection.releaseType = hapVerifyInfos.get(0).getApiVersion().getReleaseType();
-        verifyCollection.targetBundleName = hapVerifyInfos.get(0).getTargetBundleName();
-        verifyCollection.targetPriority = hapVerifyInfos.get(0).getTargetPriority();
-        verifyCollection.debug = hapVerifyInfos.get(0).isDebug();
-        verifyCollection.setModuleName(hapVerifyInfos.get(0).getModuleName());
-        verifyCollection.setModuleType(hapVerifyInfos.get(0).getModuleType());
-        verifyCollection.setMultiAppMode(hapVerifyInfos.get(0).getMultiAppMode());
+        verifyCollection.bundleName = verifyInfo.getBundleName();
+        verifyCollection.setBundleType(verifyInfo.getBundleType());
+        verifyCollection.vendor = verifyInfo.getVendor();
+        verifyCollection.versionCode = verifyInfo.getVersion().versionCode;
+        verifyCollection.versionName = verifyInfo.getVersion().versionName;
+        verifyCollection.minCompatibleVersionCode = verifyInfo.getVersion().minCompatibleVersionCode;
+        verifyCollection.compatibleApiVersion = verifyInfo.getApiVersion().getCompatibleApiVersion();
+        verifyCollection.targetApiVersion = verifyInfo.getApiVersion().getTargetApiVersion();
+        verifyCollection.releaseType = verifyInfo.getApiVersion().getReleaseType();
+        verifyCollection.targetBundleName = verifyInfo.getTargetBundleName();
+        verifyCollection.targetPriority = verifyInfo.getTargetPriority();
+        verifyCollection.debug = verifyInfo.isDebug();
+        verifyCollection.setModuleName(verifyInfo.getModuleName());
+        verifyCollection.setModuleType(verifyInfo.getModuleType());
+        verifyCollection.setMultiAppMode(verifyInfo.getMultiAppMode());
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (!appFieldsIsSame(verifyCollection, hapVerifyInfo)) {
                 LOG.warning("Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
@@ -276,9 +284,15 @@ class HapVerify {
             return false;
         }
         if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {
-            LOG.error("input module releaseType is different.");
-            LOG.error("Solutions: > Check if the releaseType is the same in different modules.");
-            return false;
+            if (verifyCollection.getModuleType().equals(TYPE_SHARED) ||
+                    hapVerifyInfo.getModuleType().equals(TYPE_SHARED)) {
+                LOG.warning("Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
+                        hapVerifyInfo.getModuleName() + ") has different releaseType.");
+            } else {
+                LOG.error("input module releaseType is different.");
+                LOG.error("Solutions: > Check if the releaseType is the same in different modules.");
+                return false;
+            }
         }
         if (!verifyCollection.targetBundleName.equals(hapVerifyInfo.getTargetBundleName())) {
             LOG.error("targetBundleName is different.");
