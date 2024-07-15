@@ -651,22 +651,30 @@
               },
               "orientation": {
                 "description": "Indicates the display orientation of the ability. This attribute is valid only for abilities using the Page template.",
-                "enum": [
-                  "unspecified",
-                  "landscape",
-                  "portrait",
-                  "follow_recent",
-                  "landscape_inverted",
-                  "portrait_inverted",
-                  "auto_rotation",
-                  "auto_rotation_landscape",
-                  "auto_rotation_portrait",
-                  "auto_rotation_restricted",
-                  "auto_rotation_landscape_restricted",
-                  "auto_rotation_portrait_restricted",
-                  "locked",
-                  "auto_rotation_unspecified",
-                  "follow_desktop"
+                "oneOf": [
+                  {
+                    "enum": [
+                      "unspecified",
+                      "landscape",
+                      "portrait",
+                      "follow_recent",
+                      "landscape_inverted",
+                      "portrait_inverted",
+                      "auto_rotation",
+                      "auto_rotation_landscape",
+                      "auto_rotation_portrait",
+                      "auto_rotation_restricted",
+                      "auto_rotation_landscape_restricted",
+                      "auto_rotation_portrait_restricted",
+                      "locked",
+                      "auto_rotation_unspecified",
+                      "follow_desktop"
+                    ]
+                  },
+                  {
+                    "maxLength": 255,
+                    "pattern": "^[$]string:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
+                  }
                 ],
                 "type": "string"
               },
