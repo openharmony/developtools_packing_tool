@@ -98,6 +98,10 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option
 
 在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
 
+#### 1.3.4 打包app时的压缩规则
+
+打包app时，对release模式的hap、hsp包会进行压缩，对debug模式的hap、hsp包不会压缩。
+
 ### 1.4 多工程打包
 
 #### 1.4.1 示例
@@ -356,6 +360,7 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | profileInfosStr | List\<String>      | 应用的配置信息 | NA   |
 | icon            | String             | 返回入口组件的icon路径，如果没有入口组件，则返回第一个组件的icon信息 | NA   |
 | label           | String             | 返回入口组件的label，如果没有入口组件，则返回第一个组件的label信息 | NA   |
+| packageSize     | long               | 表示app包的大小,单位字节                   |   NA  |
 
 ### 4.2 PackInfo结构体信息
 
@@ -420,7 +425,7 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | defPermissions       | List\<DefPermission>                          | 标识hap包DefPermission信息          | NA                             |
 | definePermissions    | List\<DefinePermission>                       | 标识hap包DefinePermission信息       | NA                             |
 | defPermissionsGroups | List\<DefPermissionsGroups>                   | 标识hap包DefPermissionsGroups 信息  | NA                             |
-| distro               | Distro结构体                                  | 标识hap包的distro信息               | NA                             |
+| distro               | Distro结构体                                 | 标识hap包的distro信息               | NA                             |
 | reqCapabilities      | List\<String>                                 | 标识hap包reqCapabilities信息        | NA                           |
 | deviceType           | List\<String>                                 | 标识hap可以运行在哪类设备上         | 对应stage模型中的deviceTypes       |
 | metaData             | MetaData结构体（见下述metaData）              | 标识hap的自定义元信息                | NA           |
@@ -439,6 +444,8 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | moduleAtomicService  | ModuleAtomicService结构体（见下述ModuleAtomicService） | 描述hap的元服务信息          | NA              |
 | formInfos            | List\<AbilityFormInfo>                        | 描述卡片的信息                       | NA              |
 | descriptions         | HashMap\<String, String>                      | 标识hap的说明信息                    | NA             |
+| compressedSize       | long                                          | 标识Hap包压缩后的大小，单位字节         | NA             |
+| originalSize         | long                                          | 标识Hap包的原始大小，单位字节         | NA             |
 
 ### 4.6 AbilityInfo结构体信息
 
