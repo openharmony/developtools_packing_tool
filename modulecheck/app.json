@@ -127,7 +127,8 @@
             "tsanEnabled",
             "appEnvironments",
             "maxChildProcess",
-            "multiAppMode"
+            "multiAppMode",
+            "hwasanEnabled"
           ]
         }
       },
@@ -168,7 +169,8 @@
             "GWPAsanEnabled",
             "tsanEnabled",
             "appEnvironments",
-            "maxChildProcess"
+            "maxChildProcess",
+            "hwasanEnabled"
           ]
         }
       },
@@ -443,7 +445,12 @@
               }
             }
           }
-        }
+        },
+        "hwasanEnabled": {
+          "description": "Indicates whether to support hwasan.",
+          "type": "boolean",
+          "default": false
+         }
       }
     }
   }
