@@ -72,3 +72,8 @@ ohos_prebuilt_etc("menuSchema_json") {
   source = "menu.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("configurationSchema_json") {
+  source = "configuration.json"
+  install_enable = false
+}
