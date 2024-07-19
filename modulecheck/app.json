@@ -127,7 +127,8 @@
             "tsanEnabled",
             "appEnvironments",
             "maxChildProcess",
-            "multiAppMode"
+            "multiAppMode",
+            "cloudFileSyncEnabled"
           ]
         }
       },
@@ -168,7 +169,8 @@
             "GWPAsanEnabled",
             "tsanEnabled",
             "appEnvironments",
-            "maxChildProcess"
+            "maxChildProcess",
+            "cloudFileSyncEnabled"
           ]
         }
       },
@@ -443,6 +445,11 @@
               }
             }
           }
+        },
+        "cloudFileSyncEnabled": {
+          "description": "Indicates whether the application enables cloud file sync.",
+          "type": "boolean",
+          "default": false
         }
       }
     }
