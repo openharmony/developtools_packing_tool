@@ -128,7 +128,8 @@
             "appEnvironments",
             "maxChildProcess",
             "multiAppMode",
-            "hwasanEnabled"
+            "hwasanEnabled",
+            "cloudFileSyncEnabled"
           ]
         }
       },
@@ -170,7 +171,8 @@
             "tsanEnabled",
             "appEnvironments",
             "maxChildProcess",
-            "hwasanEnabled"
+            "hwasanEnabled",
+            "cloudFileSyncEnabled"
           ]
         }
       },
@@ -450,7 +452,12 @@
           "description": "Indicates whether to support hwasan.",
           "type": "boolean",
           "default": false
-         }
+         },
+        "cloudFileSyncEnabled": {
+          "description": "Indicates whether the application enables cloud file sync.",
+          "type": "boolean",
+          "default": false
+        }
       }
     }
   }
