@@ -175,7 +175,7 @@ public class Compressor {
     private static final int BUFFER_WRITE_SIZE = 1444;
 
     // set buffer size of each read
-    private static final int BUFFER_SIZE = 10 * 1024;
+    private static final int BUFFER_SIZE = 40 * 1024;
     private static final Log LOG = new Log(Compressor.class.toString());
     private static final int SHARED_APP_HSP_LIMIT = 1;
 
@@ -362,9 +362,9 @@ public class Compressor {
         } catch (FileNotFoundException exception) {
             compressResult = false;
             LOG.error("Compressor::compressProcess file not found exception: " + exception.getMessage());
-        } catch (BundleException ignored) {
+        } catch (BundleException ex) {
             compressResult = false;
-            LOG.error("Compressor::compressProcess Bundle exception.");
+            LOG.error("Compressor::compressProcess Bundle exception: " + ex.getMessage());
         } finally {
             closeZipOutputStream();
             Utility.closeStream(zipOut);
@@ -372,8 +372,7 @@ public class Compressor {
             Utility.closeStream(fileOut);
         }
 
-        if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility))
-        {
+        if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility)) {
             compressResult = false;
             LOG.error("Compressor::compressProcess check atomic service size fail.");
         }
@@ -398,6 +397,9 @@ public class Compressor {
                 break;
             case Utility.MODE_APP:
                 compressAppMode(utility);
+                break;
+            case Utility.MODE_FAST_APP:
+                compressFastAppMode(utility);
                 break;
             case Utility.MODE_MULTI_APP:
                 compressAppModeForMultiProject(utility);
@@ -687,7 +689,8 @@ public class Compressor {
     }
 
     private boolean checkAppAtomicServiceCompressedSizeValid(Utility utility) {
-        if (!Utility.MODE_APP.equals(utility.getMode())) {
+        if (!utility.getMode().equals(Utility.MODE_APP) &&
+                !utility.getMode().equals(Utility.MODE_FAST_APP)) {
             return true;
         }
 
@@ -1164,6 +1167,78 @@ public class Compressor {
             }
             deleteFile(tempPath);
             deleteFile(hspTempDirPath);
+        }
+    }
+
+    private void compressFastAppMode(Utility utility) throws BundleException {
+        Path appOutPath = Paths.get(utility.getOutPath().trim());
+        Path tmpDir = null;
+        try {
+            tmpDir = Files.createTempDirectory(appOutPath.getParent(), TEMP_DIR);
+            Path appPackInfo = Paths.get(utility.getPackInfoPath());
+            List<String> fileList = new ArrayList<>();
+            for (String hapPath : utility.getFormattedHapPathList()) {
+                Path path = Paths.get(hapPath);
+                Path hap = PackageUtil.pack(path, appPackInfo, tmpDir, utility.getCompressLevel());
+                if (hap != null) {
+                    fileList.add(hap.toString());
+                }
+            }
+            for (String hspPath : utility.getFormattedHspPathList()) {
+                Path path = Paths.get(hspPath);
+                Path hsp = PackageUtil.pack(path, appPackInfo, tmpDir, utility.getCompressLevel());
+                if (hsp != null) {
+                    fileList.add(hsp.toString());
+                }
+            }
+            // check hap is valid
+            if (!checkHapIsValid(fileList, utility.getSharedApp())) {
+                String msg = "Compressor::checkHapIsValid verify failed, check version, " +
+                        "apiVersion, moduleName, packageName.";
+                LOG.error(msg);
+                throw new BundleException(msg);
+            }
+            // packApp
+            packFastApp(utility, fileList);
+        } catch (IOException ex) {
+            LOG.error("Compressor::compressAppMode compress failed: " + ex.getMessage());
+            throw new BundleException("Compressor::compressAppMode compress failed.");
+        } finally {
+            if (tmpDir != null) {
+                PackageUtil.rmdir(tmpDir);
+            }
+        }
+    }
+
+    private void packFastApp(Utility utility, List<String> fileList) throws BundleException {
+        // pack.info
+        pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        // hap/hsp
+        for (String hapPath : fileList) {
+            HapVerifyInfo hapVerifyInfo = hapVerifyInfoMap.get(getFileNameByPath(hapPath));
+            if (hapVerifyInfo != null && !hapVerifyInfo.isDebug()) {
+                pathToFile(utility, hapPath, NULL_DIR_NAME, true);
+            } else {
+                pathToFile(utility, hapPath, NULL_DIR_NAME, false);
+            }
+        }
+        // form/card
+        if (!utility.getEntryCardPath().isEmpty()) {
+            String entryCardPath = ENTRYCARD_NAME + utility.getModuleName() + LINUX_FILE_SEPARATOR
+                    + ENTRYCARD_BASE_NAME + ENTRYCARD_SNAPSHOT_NAME;
+            for (String entryCardPathItem : utility.getformattedEntryCardPathList()) {
+                pathToFile(utility, entryCardPathItem, entryCardPath, true);
+            }
+        }
+        if (!utility.getPackResPath().isEmpty()) {
+            pathToFile(utility, utility.getPackResPath(), NULL_DIR_NAME, false);
+        }
+        // others
+        if (!utility.getCertificatePath().isEmpty()) {
+            pathToFile(utility, utility.getCertificatePath(), NULL_DIR_NAME, false);
+        }
+        if (!utility.getSignaturePath().isEmpty()) {
+            pathToFile(utility, utility.getSignaturePath(), NULL_DIR_NAME, false);
         }
     }
 

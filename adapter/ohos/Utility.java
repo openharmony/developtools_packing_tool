@@ -30,6 +30,7 @@ public class Utility {
     static final String MODE_HAP = "hap";
     static final String MODE_HAR = "har";
     static final String MODE_APP = "app";
+    static final String MODE_FAST_APP = "fastApp";
     static final String MODE_MULTI_APP = "multiApp";
     static final String MODE_HQF = "hqf";
     static final String MODE_APPQF = "appqf";
