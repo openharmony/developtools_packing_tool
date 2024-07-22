@@ -129,7 +129,8 @@
             "maxChildProcess",
             "multiAppMode",
             "hwasanEnabled",
-            "cloudFileSyncEnabled"
+            "cloudFileSyncEnabled",
+            "configuration"
           ]
         }
       },
@@ -172,7 +173,8 @@
             "appEnvironments",
             "maxChildProcess",
             "hwasanEnabled",
-            "cloudFileSyncEnabled"
+            "cloudFileSyncEnabled",
+            "configuration"
           ]
         }
       },
@@ -457,6 +459,12 @@
           "description": "Indicates whether the application enables cloud file sync.",
           "type": "boolean",
           "default": false
+        },
+        "configuration": {
+          "description": "Indicates the configuration of the application, in the format of \"$profile:configuration\".This configuration can be left blank by default.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         }
       }
     }

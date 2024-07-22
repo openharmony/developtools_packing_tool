@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -116,6 +118,8 @@ public class CompressVerify {
                 return isVerifyValidInHarMode(utility);
             case Utility.MODE_APP:
                 return isVerifyValidInAppMode(utility);
+            case Utility.MODE_FAST_APP:
+                return PackageUtil.isVerifyValidInFastAppMode(utility);
             case Utility.MODE_RES:
                 return isVerifyValidInResMode(utility);
             case Utility.MODE_MULTI_APP:
@@ -708,7 +712,7 @@ public class CompressVerify {
      * @param suffix    process type
      * @return Returns {@code true} if the compatible is successful; returns {@code false} otherwise.
      */
-    private static boolean compatibleProcess(Utility utility, String inputPath,
+    public static boolean compatibleProcess(Utility utility, String inputPath,
         List<String> fileList, String suffix) {
         if (isPathValid(inputPath, TYPE_DIR, null)) {
             File inputFile = new File(inputPath);
