@@ -15,6 +15,11 @@
 
 package ohos;
 
+/**
+ * ModuleJsonInfo
+ *
+ * @since 2024-06-18
+ */
 public class ModuleJsonInfo {
     private String moduleType = "";
     private String moduleName = "";
@@ -53,6 +58,11 @@ public class ModuleJsonInfo {
         this.generateBuildHash = generateBuildHash;
     }
 
+    /**
+     * check the module type is shared or not
+     *
+     * @return true if module type is shared
+     */
     public boolean isShared() {
         return moduleType != null && moduleType.equals(Constants.TYPE_SHARED);
     }
