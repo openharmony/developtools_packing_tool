@@ -85,10 +85,10 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option
 | 指令                 | 是否必选项 | 选项          | 描述                                                           |
 |--------------------|-------|-------------|--------------------------------------------------------------|
 | --mode             | 是     | app         | 多个hap需满足hap的合法性校验。                                           |
-| --hap-path         | 是     | NA          | 1.hap包文件路径，文件名必须以.hap为后缀。如果时多个hap包需要用“，”分隔。2.hap包文件路径也可以是目录。 |
+| --hap-path         | 否     | NA          | 1.hap包文件路径，文件名必须以.hap为后缀。如果时多个hap包需要用“，”分隔。2.hap包文件路径也可以是目录。 |
 | --hsp-path         | 否     | NA          | 1.hsp包文件路径，文件名必须以.hsp为后缀。如果时多个hsp包需要用“，”分隔。2.hsp包文件路径也可以是目录。 |
 | --pack-info-path   | 是     | NA          | 文件名必须为pack.info。                                             |
-| --out-path         | 否     | NA          | 目标文件路径，文件名必须以.app为后缀。                                        |
+| --out-path         | 是     | NA          | 目标文件路径，文件名必须以.app为后缀。                                        |
 | --signature-path   | 否     | NA          | 签名路径。                                                        |
 | --certificate-path | 否     | NA          | 证书路径。                                                        |
 | --pack-res-path    | 否     | NA          | 打包res的目标文件路径，文件名需要为pack.res。                                 |
@@ -96,7 +96,7 @@ java -jar app_packing_tool.jar --mode app --hap-path <option> --hsp-path <option
 
 #### 1.3.3 打包app时hap的合法性校验
 
-在对工程内的hap包打包生成app包时，需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。
+在对工程内的hap、hsp包打包生成app包时，需要保证被打包的每个hap、hsp在json文件中配置的bundleName，versionCode，minCompatibleVersionCode，minAPIVersion，targetAPIVersion相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
 
 #### 1.3.4 打包app时的压缩规则
 
@@ -123,7 +123,7 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list 1.hap,2.hap --app-list
 
 #### 1.4.3 多工程打包hap合法性校验
 
-需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion，apiReleaseType相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。
+需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
 
 ### 1.5 hqf模式打包指令
 
@@ -229,6 +229,32 @@ java -jar path\app_packing_tool.jar --mode packageNormalize --hsp-list path\1.hs
 | --bundle-name  | 是     | 包名               | 指定的包名，HSP的包名会被修改为指定的包名。                             |
 | --version-code | 是     | 版本号              | 指定的版本号，HSP的版本号会被修改为该版本号。需要为整数，且大于0。                 |                                  
 | --out-path     | 是     | NA               | 目标文件路径，需要为一个目录。                                     |
+
+### 1.10 fastApp模式打包指令
+
+#### 1.10.1 示例
+
+```
+java -jar app_packing_tool.jar --mode fastApp --hap-path <option> --hsp-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info-path [option] --force [option]
+```
+
+#### 1.10.2 参数含义及规范
+
+| 指令                 | 是否必选项 | 选项         | 描述                                                                                                    |
+|--------------------|-------|------------|-------------------------------------------------------------------------------------------------------|
+| --mode             | 是     | fastApp    | 多个hap需满足hap的合法性校验。                                                                                    |
+| --hap-path         | 否     | NA         | hap包文件目录路径，目录内要包含一个完整的hap包的所有文件。允许传入多个路径，多个路径需要用英文“,”分隔。                                              |
+| --hsp-path         | 否     | NA         | 1.hsp包文件路径，文件名必须以.hsp为后缀。如果时多个hsp包需要用“，”分隔。2.hsp包文件目录路径，目录内要包含一个完整的hsp包的所有文件。允许传入多个路径，多个路径需要用英文“,”分隔。 |
+| --pack-info-path   | 是     | NA         | 文件名必须为pack.info。                                                                                      |
+| --out-path         | 是     | NA         | 目标文件路径，文件名必须以.app为后缀。                                                                                 |
+| --signature-path   | 否     | NA         | 签名路径。                                                                                                 |
+| --certificate-path | 否     | NA         | 证书路径。                                                                                                 |
+| --pack-res-path    | 否     | NA         | 打包res的目标文件路径，文件名需要为pack.res。                                                                          |
+| --force            | 否     | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                                                                    |
+
+#### 1.10.3 打包app时hap、hsp的合法性校验
+
+在对工程内的hap、hsp包打包生成app包时，需要保证被打包的每个hap、hsp在json文件中配置的bundleName，versionCode，minCompatibleVersionCode，minAPIVersion，targetAPIVersion相同，moduleName唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
 
 ## 2. 拆包指令说明
 
@@ -409,8 +435,6 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                            | stage模型新增   |
 | labels                         | HashMap\<String, String> | 标识多语言应用程序AppJson的标签。                                                        | NA          |
 | descriptions                   | HashMap\<String, String> | 标识多语言应用程序AppJson的说明。                                                        | NA          |
-| compileSdkVersion              | String  | 标识编译该应用时使用的sdk版本                                                            | NA        |
-| compileSdkType                 | String  | 标识编译该应用时使用的sdk类别                                                            | NA        |
 
 ### 4.5 HapInfo结构体信息
 
