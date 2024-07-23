@@ -943,7 +943,8 @@
                   "liveViewLockScreen",
                   "sysPicker/filePicker",
                   "sysPicker/audioPicker",
-                  "sys/visualExtension"
+                  "sys/visualExtension",
+                  "uiService"
                 ]
               },
               "permissions": {
