@@ -190,4 +190,9 @@ public class Constants {
      * Indicates the bool string false
      */
     public static final String FALSE = "false";
+
+    /**
+     * Indicates the buffer size
+     */
+    public static final int BUFFER_SIZE = 40 * 1024;
 }

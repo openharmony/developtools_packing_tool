@@ -55,6 +55,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * PackageUtil
@@ -379,6 +381,37 @@ public class PackageUtil {
         String pkgName = packageNames.get(0);
         String suffix = moduleJsonInfo.isShared() ? Constants.HSP_SUFFIX : Constants.HAP_SUFFIX;
         Path outHap = Files.createFile(outPath.resolve(pkgName + suffix));
+
+        if (moduleJsonInfo.isCompressNativeLibs()) {
+            return packMultiThread(inputPath, appPackInfo, outHap, compressLevel, moduleJsonInfo);
+        } else {
+            return packSingleThread(inputPath, appPackInfo, outHap, moduleJsonInfo);
+        }
+    }
+
+    private static Path packSingleThread(Path inputPath, Path appPackInfo, Path outHap, ModuleJsonInfo moduleJsonInfo)
+            throws BundleException, IOException {
+        File[] files = inputPath.toFile().listFiles();
+        if (files == null || files.length == 0) {
+            throw new BundleException("pack err, dir is empty");
+        }
+        try (ZipOutputStream zipOut = new ZipOutputStream(
+                new CheckedOutputStream(Files.newOutputStream(outHap), new CRC32()))) {
+            // pack.info
+            pathToZipEntry(appPackInfo, Constants.NULL_DIR, zipOut, false);
+            // module.json generateBuildHash
+            if (moduleJsonInfo.isGenerateBuildHash()) {
+                genBuildHash(inputPath, zipOut);
+            }
+            // others
+            filesToZipEntry(files, zipOut, moduleJsonInfo.isGenerateBuildHash(),
+                    moduleJsonInfo.isCompressNativeLibs());
+        }
+        return outHap;
+    }
+
+    private static Path packMultiThread(Path inputPath, Path appPackInfo, Path outHap, int compressLevel,
+                                        ModuleJsonInfo moduleJsonInfo)throws BundleException, IOException {
         File[] files = inputPath.toFile().listFiles();
         if (files == null || files.length == 0) {
             throw new BundleException("pack err, dir is empty");
@@ -539,6 +572,126 @@ public class PackageUtil {
         return Files.newInputStream(file.toPath());
     }
 
+    private static void filesToZipEntry(File[] files, ZipOutputStream zipOut, boolean genHash, boolean compress)
+            throws BundleException {
+        for (File file : files) {
+            if (file.isFile() && !file.getName().equals(Constants.FILE_PACK_INFO)) {
+                if (genHash && file.getName().equals(Constants.FILE_MODULE_JSON)) {
+                    continue;
+                }
+                pathToZipEntry(file.toPath(), Constants.NULL_DIR, zipOut, false);
+            } else if (file.isDirectory()) {
+                if (file.getName().equals(Constants.LIBS_DIR)) {
+                    pathToZipEntry(file.toPath(), Constants.LIBS_DIR + Constants.SLASH, zipOut, compress);
+                } else {
+                    pathToZipEntry(file.toPath(), file.getName() + Constants.SLASH, zipOut, false);
+                }
+            }
+        }
+    }
+
+    private static void genBuildHash(Path path, ZipOutputStream zipOut) {
+        String hash = hash(path);
+        if (hash.isEmpty()) {
+            return;
+        }
+        Path moduleJson = path.resolve(Constants.FILE_MODULE_JSON);
+        if (!Files.exists(moduleJson)) {
+            LOG.warning("module.json not found: " + path);
+            return;
+        }
+        try (FileInputStream input = new FileInputStream(moduleJson.toFile())) {
+            JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
+            if (jsonObject == null) {
+                LOG.warning("generateBuildHash: parse json is null.");
+                return;
+            }
+            JSONObject moduleObject = jsonObject.getJSONObject(Constants.MODULE);
+            if (moduleObject == null) {
+                LOG.warning("generateBuildHash: parse json[module] is null.");
+                return;
+            }
+            moduleObject.put(Constants.BUILD_HASH, hash);
+            byte[] data = JSON.toJSONBytes(jsonObject, SerializerFeature.WriteMapNullValue,
+                    SerializerFeature.WriteDateUseDateFormat, SerializerFeature.SortField);
+            CRC32 crc32 = new CRC32();
+            crc32.update(data, 0, data.length);
+            ZipEntry zipEntry = new ZipEntry(Constants.FILE_MODULE_JSON);
+            zipEntry.setMethod(ZipEntry.STORED);
+            zipEntry.setCompressedSize(data.length);
+            zipEntry.setCrc(crc32.getValue());
+            zipOut.putNextEntry(zipEntry);
+            try (InputStream inputStream = new ByteArrayInputStream(data)) {
+                IOUtils.copy(inputStream, zipOut, Constants.BUFFER_SIZE);
+            }
+            zipOut.closeEntry();
+        } catch (IOException ex) {
+            LOG.warning("genBuildHash err: " + ex.getMessage());
+        }
+    }
+
+    private static void pathToZipEntry(Path path, String baseDir, ZipOutputStream zipOut,
+                                       boolean compress) throws BundleException {
+        try {
+            File file = path.toFile();
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files == null) {
+                    return;
+                }
+                for (File f : files) {
+                    addArchiveEntry(f, baseDir, zipOut, compress);
+                }
+            } else {
+                addArchiveEntry(file, baseDir, zipOut, compress);
+            }
+        } catch (IOException e) {
+            String errMsg = "pathToZip err: " + e.getMessage();
+            LOG.error(errMsg);
+            throw new BundleException(errMsg);
+        }
+    }
+
+    private static void addArchiveEntry(File file, String baseDir, ZipOutputStream zipOut, boolean compress)
+            throws IOException, BundleException {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files == null) {
+                LOG.error("listFiles null: " + file.getName());
+                return;
+            }
+            if (files.length == 0) {
+                String entryName = (baseDir + file.getName() + File.separator)
+                        .replace(File.separator, Constants.SLASH);
+                ZipEntry zipEntry = new ZipEntry(entryName);
+                zipEntry.setMethod(ZipEntry.STORED);
+                zipEntry.setSize(0);
+                zipEntry.setCrc(0);
+                zipOut.putNextEntry(zipEntry);
+                zipOut.closeEntry();
+            }
+            for (File f : files) {
+                addArchiveEntry(f, baseDir + file.getName() + File.separator, zipOut, compress);
+            }
+        } else {
+            String entryName = (baseDir + file.getName()).replace(File.separator, Constants.SLASH);
+            ZipEntry zipEntry = new ZipEntry(entryName);
+            if (compress) {
+                zipEntry.setMethod(ZipEntry.DEFLATED);
+            } else {
+                zipEntry.setMethod(ZipEntry.STORED);
+                CRC32 crc32 = PackageNormalize.getCrcFromFile(file);
+                zipEntry.setCrc(crc32.getValue());
+                zipEntry.setCompressedSize(file.length());
+            }
+            zipOut.putNextEntry(zipEntry);
+            try (InputStream input = Files.newInputStream(file.toPath())) {
+                IOUtils.copy(input, zipOut, Constants.BUFFER_SIZE);
+            }
+            zipOut.closeEntry();
+        }
+    }
+
     private static boolean checkBundleTypeConsistency(List<String> hapPathList, List<String> hspPathList,
                                                       Utility utility) {
         String bundleType = "";
@@ -562,8 +715,7 @@ public class PackageUtil {
                 return false;
             }
         }
-        if (bundleType.equals(Constants.BUNDLE_TYPE_SHARED) ||
-                bundleType.equals(Constants.BUNDLE_TYPE_APP_SERVICE)) {
+        if (bundleType.equals(Constants.BUNDLE_TYPE_SHARED)) {
             utility.setIsSharedApp(true);
         }
         return true;
