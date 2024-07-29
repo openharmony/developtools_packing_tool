@@ -43,7 +43,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -237,10 +236,10 @@ public class PackageUtil {
         if (!Files.isRegularFile(zipPath)) {
             return null;
         }
-        try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+        try (ZipFile zipFile = new ZipFile(zipPath.toFile());
+            ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             ZipArchiveEntry zipEntry = zipFile.getEntry(entryName);
             if (zipEntry != null) {
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
                 IOUtils.copy(zipFile.getInputStream(zipEntry), output);
                 return output.toString();
             }
@@ -258,6 +257,8 @@ public class PackageUtil {
      * @param outPath       output dir
      * @param compressLevel compress level
      * @return the hap/hsp path
+     * @throws BundleException bundle exception
+     * @throws IOException IO exception
      */
     public static Path pack(Path inputPath, Path appPackInfo, Path outPath, int compressLevel)
             throws BundleException, IOException {
@@ -531,8 +532,8 @@ public class PackageUtil {
                 byte[] data = JSON.toJSONBytes(jsonObject,
                         SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
                 return new ByteArrayInputStream(data);
-            } catch (Exception ex) {
-                LOG.warning("json format err: " + file.getAbsolutePath());
+            } catch (JSONException ex) {
+                LOG.warning("json format err: " + file.getName());
             }
         }
         return Files.newInputStream(file.toPath());
@@ -612,31 +613,7 @@ public class PackageUtil {
      * @return true if verify ok
      */
     public static boolean isVerifyValidInFastAppMode(Utility utility) {
-        if (utility.getPackInfoPath().isEmpty()) {
-            LOG.error("CompressVerify::isArgsValidInAppMode pack-info-path is empty.");
-            return false;
-        }
-        if (!isFileValid(utility.getPackInfoPath(), Constants.FILE_PACK_INFO)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack-info-path is invalid.");
-            return false;
-        }
-        if (!utility.getSignaturePath().isEmpty() && !isFileValid(utility.getSignaturePath(), "")) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode signature-path is invalid.");
-            return false;
-        }
-        if (!utility.getCertificatePath().isEmpty() &&
-                !isFileValid(utility.getCertificatePath(), "")) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode certificate-path is invalid.");
-            return false;
-        }
-        if (!utility.getPackResPath().isEmpty() && !isFileValid(utility.getPackResPath(), Constants.FILE_PACK_RES)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack-res-path is invalid.");
-            return false;
-        }
-        if (!utility.getEntryCardPath().isEmpty() &&
-                !CompressVerify.compatibleProcess(utility, utility.getEntryCardPath(),
-                        utility.getformattedEntryCardPathList(), Constants.PNG_SUFFIX)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode entrycard-path is invalid.");
+        if (!isVerifyValid(utility)) {
             return false;
         }
         if (!utility.getHapPath().isEmpty() &&
@@ -669,10 +646,6 @@ public class PackageUtil {
             LOG.error("CompressVerify::isVerifyValidInFastAppMode pack.info is invalid.");
             return false;
         }
-        if (utility.getOutPath().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode out-path is empty.");
-            return false;
-        }
         Path outPath = Paths.get(utility.getOutPath());
         if (utility.getForceRewrite().equals(Constants.FALSE) && Files.exists(outPath)) {
             LOG.error("CompressVerify::isVerifyValidInFastAppMode out file already existed.");
@@ -680,6 +653,41 @@ public class PackageUtil {
         }
         if (!outPath.getFileName().toString().endsWith(Constants.APP_SUFFIX)) {
             LOG.error("CompressVerify::isVerifyValidInFastAppMode out-path must end with .app.");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isVerifyValid(Utility utility) {
+        if (utility.getPackInfoPath().isEmpty()) {
+            LOG.error("CompressVerify::isArgsValidInAppMode pack-info-path is empty.");
+            return false;
+        }
+        if (!isFileValid(utility.getPackInfoPath(), Constants.FILE_PACK_INFO)) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack-info-path is invalid.");
+            return false;
+        }
+        if (!utility.getSignaturePath().isEmpty() && !isFileValid(utility.getSignaturePath(), "")) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode signature-path is invalid.");
+            return false;
+        }
+        if (!utility.getCertificatePath().isEmpty() &&
+                !isFileValid(utility.getCertificatePath(), "")) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode certificate-path is invalid.");
+            return false;
+        }
+        if (!utility.getPackResPath().isEmpty() && !isFileValid(utility.getPackResPath(), Constants.FILE_PACK_RES)) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack-res-path is invalid.");
+            return false;
+        }
+        if (!utility.getEntryCardPath().isEmpty() &&
+                !CompressVerify.compatibleProcess(utility, utility.getEntryCardPath(),
+                        utility.getformattedEntryCardPathList(), Constants.PNG_SUFFIX)) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode entrycard-path is invalid.");
+            return false;
+        }
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode out-path is empty.");
             return false;
         }
         return true;
