@@ -99,7 +99,7 @@ def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_versio
 
 
 def compile_packing_tool(root_path, src_path, jar_output, out_path, 
-                         toolchain, fastjson_jar, compress_jar):
+                         toolchain, fastjson_jar, compress_jar, io_jar):
     java_sources = [
         'ApiVersion.java',
         'BundleException.java',
@@ -138,7 +138,7 @@ def compile_packing_tool(root_path, src_path, jar_output, out_path,
 
     shell_path = os.path.join(root_path, "packingTool.sh")
     command = ['bash', shell_path, root_path, jar_output, out_path, 
-               toolchain, compile_java, fastjson_jar, compress_jar]
+               toolchain, compile_java, fastjson_jar, compress_jar, io_jar]
     print('command: ', command)
     run_cmd('app_packing_tool', command, 5000)
     return
@@ -192,8 +192,9 @@ def main():
     toolchain += "_" + args.compileTarget
     
     fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson-1.2.83.jar')
-    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/commons-compress-1.24.0.jar')
-    print('packingTool: ', toolchain, fastjson_jar, compress_jar)
+    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/commons-compress-1.26.1.jar')
+    io_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/commons-io-2.15.1.jar')
+    print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar)
 
     # compile haptobin_tool.jar
     compile_haptobin_tool(root_dir, src_dir, args.haptobinOutput, args.outpath, 
@@ -214,7 +215,7 @@ def main():
 
     #compile app_packing_tool.jar
     compile_packing_tool(root_dir, src_dir, args.packOutput, args.outpath, 
-                         toolchain, fastjson_jar, compress_jar)
+                         toolchain, fastjson_jar, compress_jar, io_jar)
 
     #compile app_check_tool.jar
     compile_check_tool(root_dir, src_dir, args.checkOutput, args.outpath, 
