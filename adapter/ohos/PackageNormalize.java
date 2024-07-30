@@ -226,7 +226,13 @@ public class PackageNormalize {
         }
     }
 
-    private static CRC32 getCrcFromFile(File file) throws BundleException {
+    /**
+     * get crc32 from file
+     * @param file input file
+     * @return cac32 value
+     * @throws BundleException bundle exception
+     */
+    public static CRC32 getCrcFromFile(File file) throws BundleException {
         CRC32 crc = new CRC32();
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             byte[] buffer = new byte[BUFFER_SIZE];
