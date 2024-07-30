@@ -20,12 +20,14 @@ toolchain=$4
 compile_java=$5
 fastjson_jar=$6
 compress_jar=$7
+io_jar=$8
 final_path=$(pwd)
 
 jar_dir="jar"
 pack_jar_file="app_packing_tool.jar"
 fastjson_jar_file="fastjson-1.2.83.jar"
-compress_jar_file="commons-compress-1.24.0.jar"
+compress_jar_file="commons-compress-1.26.1.jar"
+io_jar_file="commons-io-2.15.1.jar"
 jar_directory="${root_path}/jar"
 pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
 manifest_path="${root_path}/META-INF/packing_tool/MANIFEST.MF"
@@ -38,7 +40,8 @@ if [ -d "${out_dir}/ohos" ]
         mkdir -p "${out_dir}/ohos"
 fi
 
-compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar}:${compress_jar}  -d ${out_dir} ${compile_java}"
+compile_command="javac -source 1.8 -target 1.8 \
+-cp ${fastjson_jar}:${compress_jar}:${io_jar} -d ${out_dir} ${compile_java}"
 eval ${compile_command}
 
 temp_dir="$root_path/jar/packing_temp_${toolchain}"
@@ -56,17 +59,21 @@ eval ${product_pack_jar_command}
 # merge app_packing_tool.jar and fastjson/commons-compress
 cp ${fastjson_jar} "${temp_dir}/${fastjson_jar_file}"
 cp ${compress_jar} "${temp_dir}/${compress_jar_file}"
+cp ${io_jar} "${temp_dir}/${io_jar_file}"
 detach_pack_jar_command="jar -xvf ${pack_jar_file}"
 detach_fastjson_jar_command="jar -xvf ${fastjson_jar_file}"
+detach_io_jar_command="jar -xvf ${io_jar_file}"
 detach_compress_jar_command="jar -xvf ${compress_jar_file}"
 cd ${temp_dir}
 eval ${detach_pack_jar_command}
 eval ${detach_fastjson_jar_command}
+eval ${detach_io_jar_command}
 eval ${detach_compress_jar_command}
 cp "$root_path/jar/NOTICE" "META-INF/NOTICE.txt"
 rm ${pack_jar_file}
 rm ${fastjson_jar_file}
 rm ${compress_jar_file}
+rm ${io_jar_file}
 
 cd ${jar_directory}
 temp_pack_jar_dir="${root_path}/jar/packtool_${toolchain}"
