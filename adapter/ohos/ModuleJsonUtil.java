@@ -79,6 +79,8 @@ class ModuleJsonUtil {
     private static final String COMPRESS_NATIVE_LIBS = "compressNativeLibs";
     private static final String ASAN_ENABLED = "asanEnabled";
     private static final String TSAN_ENABLED = "tsanEnabled";
+    private static final String GWP_ASAN_ENABLED = "GWPAsanEnabled";
+    private static final String HW_ASAN_ENABLED = "hwasanEnabled";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String SPLIT = "split";
     private static final String MAIN = "main";
@@ -1481,6 +1483,34 @@ class ModuleJsonUtil {
         JSONObject appObj = getAppObj(jsonString);
         if (appObj.containsKey(TSAN_ENABLED)) {
             return appObj.getBoolean(TSAN_ENABLED);
+        }
+        return false;
+    }
+
+    /**
+     * get gwpAsanEnabled in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the value of gwpAsanEnabled
+     */
+    public static boolean getStageGwpAsanEnabled(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+        if (appObj.containsKey(GWP_ASAN_ENABLED)) {
+            return appObj.getBoolean(GWP_ASAN_ENABLED);
+        }
+        return false;
+    }
+
+    /**
+     * get hwasanEnabled in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the value of hwasanEnabled
+     */
+    public static boolean getStageHwasanEnabled(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+        if (appObj.containsKey(HW_ASAN_ENABLED)) {
+            return appObj.getBoolean(HW_ASAN_ENABLED);
         }
         return false;
     }
