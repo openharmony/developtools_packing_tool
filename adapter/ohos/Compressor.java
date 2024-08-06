@@ -427,6 +427,10 @@ public class Compressor {
                 LOG.error("checkStageAsanTsanEnabledValid failed.");
                 throw new BundleException("compressHsp failed.");
             }
+            if (!checkStageHwasanEnabledValid(jsonString)) {
+                LOG.error("checkStageHwasanEnabledValid failed.");
+                throw new BundleException("compressHsp failed.");
+            }
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("checkStageAtomicService failed.");
                 throw new BundleException("checkStageAtomicService failed.");
@@ -737,6 +741,10 @@ public class Compressor {
             LOG.error("checkStageAsanTsanEnabledValid failed.");
             return false;
         }
+        if (!checkStageHwasanEnabledValid(jsonString)) {
+            LOG.error("checkStageHwasanEnabledValid failed.");
+            return false;
+        }
         // check atomicService in module.json
         if (!checkStageAtomicService(jsonString)) {
             LOG.error("checkStageAtomicService failed.");
@@ -750,6 +758,26 @@ public class Compressor {
         boolean tsanEnabled = ModuleJsonUtil.getStageTsanEnabled(jsonString);
         if (asanEnabled && tsanEnabled) {
             LOG.error("asanEnabled and tsanEnabled cannot be true at the same time.");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkStageHwasanEnabledValid(String jsonString) throws BundleException {
+        boolean asanEnabled = ModuleJsonUtil.getStageAsanEnabled(jsonString);
+        boolean tsanEnabled = ModuleJsonUtil.getStageTsanEnabled(jsonString);
+        boolean gwpAsanEnabled = ModuleJsonUtil.getStageGwpAsanEnabled(jsonString);
+        boolean hwasanEnabled = ModuleJsonUtil.getStageHwasanEnabled(jsonString);
+        if (hwasanEnabled && asanEnabled) {
+            LOG.error("hwasanEnabled and asanEnabled cannot be true at the same time.");
+            return false;
+        }
+        if (hwasanEnabled && tsanEnabled) {
+            LOG.error("hwasanEnabled and tsanEnabled cannot be true at the same time.");
+            return false;
+        }
+        if (hwasanEnabled && gwpAsanEnabled) {
+            LOG.error("hwasanEnabled and GWPAsanEnabled cannot be true at the same time.");
             return false;
         }
         return true;
