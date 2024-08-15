@@ -81,6 +81,7 @@ class ModuleJsonUtil {
     private static final String TSAN_ENABLED = "tsanEnabled";
     private static final String GWP_ASAN_ENABLED = "GWPAsanEnabled";
     private static final String HW_ASAN_ENABLED = "hwasanEnabled";
+    private static final String UB_SAN_ENABLED = "ubsanEnabled";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String SPLIT = "split";
     private static final String MAIN = "main";
@@ -1511,6 +1512,20 @@ class ModuleJsonUtil {
         JSONObject appObj = getAppObj(jsonString);
         if (appObj.containsKey(HW_ASAN_ENABLED)) {
             return appObj.getBoolean(HW_ASAN_ENABLED);
+        }
+        return false;
+    }
+
+    /**
+     * get ubsanEnabled in module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return the value of ubsanEnabled
+     */
+    public static boolean getStageUbsanEnabled(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+        if (appObj.containsKey(UB_SAN_ENABLED)) {
+            return appObj.getBoolean(UB_SAN_ENABLED);
         }
         return false;
     }

@@ -431,6 +431,10 @@ public class Compressor {
                 LOG.error("checkStageHwasanEnabledValid failed.");
                 throw new BundleException("compressHsp failed.");
             }
+            if (!checkStageUbsanEnabledValid(jsonString)) {
+                LOG.error("checkStageUbsanEnabledValid failed.");
+                throw new BundleException("compressHsp failed.");
+            }
             if (!checkStageAtomicService(jsonString)) {
                 LOG.error("checkStageAtomicService failed.");
                 throw new BundleException("checkStageAtomicService failed.");
@@ -745,6 +749,10 @@ public class Compressor {
             LOG.error("checkStageHwasanEnabledValid failed.");
             return false;
         }
+        if (!checkStageUbsanEnabledValid(jsonString)) {
+            LOG.error("checkStageUbsanEnabledValid failed.");
+            return false;
+        }
         // check atomicService in module.json
         if (!checkStageAtomicService(jsonString)) {
             LOG.error("checkStageAtomicService failed.");
@@ -778,6 +786,26 @@ public class Compressor {
         }
         if (hwasanEnabled && gwpAsanEnabled) {
             LOG.error("hwasanEnabled and GWPAsanEnabled cannot be true at the same time.");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkStageUbsanEnabledValid(String jsonString) throws BundleException {
+        boolean asanEnabled = ModuleJsonUtil.getStageAsanEnabled(jsonString);
+        boolean tsanEnabled = ModuleJsonUtil.getStageTsanEnabled(jsonString);
+        boolean hwasanEnabled = ModuleJsonUtil.getStageHwasanEnabled(jsonString);
+        boolean ubsanEnabled = ModuleJsonUtil.getStageUbsanEnabled(jsonString);
+        if(ubsanEnabled && asanEnabled) {
+            LOG.error("ubsanEnabled and asanEnabled cannot be true at the same time.");
+            return false;
+        }
+        if(ubsanEnabled && tsanEnabled) {
+            LOG.error("ubsanEnabled and tsanEnabled cannot be true at the same time.");
+            return false;
+        }
+        if(ubsanEnabled && hwasanEnabled) {
+            LOG.error("ubsanEnabled and hwasanEnabled cannot be true at the same time.");
             return false;
         }
         return true;

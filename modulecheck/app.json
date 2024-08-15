@@ -125,6 +125,7 @@
             "2in1",
             "GWPAsanEnabled",
             "tsanEnabled",
+            "ubsanEnabled",
             "appEnvironments",
             "maxChildProcess",
             "multiAppMode",
@@ -170,6 +171,7 @@
             "2in1",
             "GWPAsanEnabled",
             "tsanEnabled",
+            "ubsanEnabled",
             "appEnvironments",
             "maxChildProcess",
             "hwasanEnabled",
@@ -365,6 +367,11 @@
         },
         "tsanEnabled": {
           "description": "Indicates whether to support tsan.",
+          "type": "boolean",
+          "default": false
+        },
+        "ubsanEnabled": {
+          "description": "Indicates whether to support ubsan.",
           "type": "boolean",
           "default": false
         },
