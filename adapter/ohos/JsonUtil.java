@@ -151,11 +151,14 @@ public class JsonUtil {
     private static final String PRELOADS = "preloads";
     private static final String MODULE_NAME = "moduleName";
     private static final int DEFAULT_VERSION_CODE = -1;
+    private static final int DEFAULT_PRIORITY = 1;
     private static final String DEPENDENCY_BUNDLE_NAME = "bundleName";
     private static final String DEPENDENCY_MODULE_NAME = "moduleName";
     private static final String DEPENDENCIES = "dependencies";
     private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
     private static final String COMPILE_SDK_TYPE = "compileSdkType";
+    private static final String TARGET_BUNDLE_NAME = "targetBundleName";
+    private static final String TARGET_PRIORITY = "targetPriority";
 
 
     /**
@@ -447,6 +450,10 @@ public class JsonUtil {
         moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
         moduleAppInfo.setCompileSdkType(getJsonString(appJson, COMPILE_SDK_TYPE, EMPTY));
         moduleAppInfo.setCompileSdkVersion(getJsonString(appJson, COMPILE_SDK_VERSION, EMPTY));
+        if (appJson.containsKey(TARGET_BUNDLE_NAME)) {
+            moduleAppInfo.setTargetBundleName(getJsonString(appJson, TARGET_BUNDLE_NAME, EMPTY));
+            moduleAppInfo.setTargetPriority(getJsonIntValue(appJson, TARGET_PRIORITY, DEFAULT_PRIORITY));
+        }
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
