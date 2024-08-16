@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-
 enum class Result : uint8_t {
     SUCCESS,
     NOT_EXIST,
@@ -122,5 +121,4 @@ private:
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_JSON_PT_JSON_H

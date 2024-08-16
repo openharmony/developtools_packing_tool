@@ -14,6 +14,7 @@
  */
 
 #include "pt_json.h"
+
 #include "log.h"
 
 namespace OHOS {

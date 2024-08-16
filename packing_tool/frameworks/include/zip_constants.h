@@ -19,14 +19,14 @@
 #include <filesystem>
 #include <string>
 #include <map>
-#include "contrib/minizip/zip.h"
+
 #include "contrib/minizip/unzip.h"
+#include "contrib/minizip/zip.h"
 
 namespace fs = std::filesystem;
 
 namespace OHOS {
 namespace AppPackingTool {
-
 enum ZipErrCode {
     ZIP_ERR_SUCCESS = 0,
     ZIP_ERR_FAILURE
@@ -50,11 +50,10 @@ static const ZipLevel ZIP_LEVEL_NO_COMPRESS = ZipLevel::ZIP_LEVEL_0;
 static const ZipLevel ZIP_LEVEL_BEST_SPEED = ZipLevel::ZIP_LEVEL_1;
 static const ZipLevel ZIP_LEVEL_BEST_COMPRESS = ZipLevel::ZIP_LEVEL_9;
 
-static const int ZIP_FILE_ATTR_DEFAULT = 0;
-static const int ZIP_FILE_ATTR_DIRECTORY = 16;
+static const int32_t ZIP_FILE_ATTR_DEFAULT = 0;
+static const int32_t ZIP_FILE_ATTR_DIRECTORY = 16;
 
-static const int MAX_ZIP_BUFFER_SIZE = 4096;
+static const int32_t MAX_ZIP_BUFFER_SIZE = 4096;
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_CONSTANTS_H

@@ -18,11 +18,11 @@
 
 #include <filesystem>
 #include <string>
+
 #include "zip_constants.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class ZipWrapper {
 public:
     ZipWrapper();
@@ -32,8 +32,8 @@ public:
     ZipWrapper(const ZipWrapper &) = delete;
     ZipWrapper &operator=(const ZipWrapper &) = delete;
 
-    int Open(std::string& zipPath, int append = APPEND_STATUS_CREATE);
-    int Open(int append = APPEND_STATUS_CREATE);
+    int32_t Open(std::string& zipPath, int32_t append = APPEND_STATUS_CREATE);
+    int32_t Open(int32_t append = APPEND_STATUS_CREATE);
     void Close();
 
     void SetZipFilePath(std::string path)
@@ -56,16 +56,16 @@ public:
         return (zipFile_ != nullptr);
     }
 
-    int AddFileOrDirectoryToZip(const std::string &filePath, const std::string &zipPath);
-    int AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
+    int32_t AddFileOrDirectoryToZip(const std::string &filePath, const std::string &zipPath);
+    int32_t AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
 
-    int WriteStringToZip(const std::string &content, const std::string& zipPath);
+    int32_t WriteStringToZip(const std::string &content, const std::string& zipPath);
     
 protected:
-    int AddEmptyDirToZip(const std::string &zipPath);
-    int AddEmptyDirToZip(const fs::path &fsZipPath);
-    int AddFileToZip(const std::string &filePath, const std::string &zipPath);
-    int AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
+    int32_t AddEmptyDirToZip(const std::string &zipPath);
+    int32_t AddEmptyDirToZip(const fs::path &fsZipPath);
+    int32_t AddFileToZip(const std::string &filePath, const std::string &zipPath);
+    int32_t AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
 
 private:
     zipFile zipFile_ = nullptr;
@@ -73,8 +73,6 @@ private:
     std::string zipFilePath_;
     ZipLevel zipLevel_ = ZipLevel::ZIP_LEVEL_DEFAULT;
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_WRAPPER_H

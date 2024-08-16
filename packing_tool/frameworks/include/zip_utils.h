@@ -16,12 +16,11 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_UTILS_H
 
-#include "zip_wrapper.h"
 #include "unzip_wrapper.h"
+#include "zip_wrapper.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class ZipUtils {
 public:
     ZipUtils();
@@ -30,11 +29,11 @@ public:
     ZipUtils(const ZipUtils &) = delete;
     ZipUtils &operator=(const ZipUtils &) = delete;
 
-    static int Zip(const std::string& filePath, const std::string& zipFilePath,
+    static int32_t Zip(const std::string& filePath, const std::string& zipFilePath,
         const std::string& zipPath = "", const ZipLevel& zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT,
-        const int& append = APPEND_STATUS_CREATE);
+        const int32_t& append = APPEND_STATUS_CREATE);
 
-    static int Unzip(const std::string& zipPath, const std::string& filePath);
+    static int32_t Unzip(const std::string& zipPath, const std::string& filePath);
 
     static bool IsFileExistsInZip(const std::string& zipFilePath, const std::string& filename);
     static bool IsFileNameExistsInZip(const std::string& zipFilePath, const std::string& filename);
@@ -49,8 +48,6 @@ private:
     static bool AddToResourceMap(unzFile& unzipFile, const std::string& filePathInZip, std::map<std::string,
         std::string>& resourceMap);
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_UTILS_H
