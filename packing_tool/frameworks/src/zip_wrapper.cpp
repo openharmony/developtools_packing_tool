@@ -13,16 +13,16 @@
  * limitations under the License.
  */
 
+#include "zip_wrapper.h"
+
 #include <fstream>
 #include <iostream>
-#include "zip_wrapper.h"
-#include "log.h"
+
 #include "app_log_wrapper.h"
+#include "log.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 ZipWrapper::ZipWrapper() : zipFile_(nullptr)
 {}
 
@@ -34,13 +34,13 @@ ZipWrapper::~ZipWrapper()
     Close();
 }
 
-int ZipWrapper::Open(std::string& zipPath, int append)
+int32_t ZipWrapper::Open(std::string& zipPath, int32_t append)
 {
     zipFilePath_ = zipPath;
     return Open(append);
 }
 
-int ZipWrapper::Open(int append)
+int32_t ZipWrapper::Open(int32_t append)
 {
     if (zipFile_ != nullptr) {
         LOGE("zip file handle has open");
@@ -62,19 +62,19 @@ void ZipWrapper::Close()
     }
 }
 
-int ZipWrapper::AddFileOrDirectoryToZip(const std::string &filePath, const std::string &zipPath)
+int32_t ZipWrapper::AddFileOrDirectoryToZip(const std::string &filePath, const std::string &zipPath)
 {
     return AddFileOrDirectoryToZip(fs::path(filePath), fs::path(zipPath));
 }
 
-int ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath)
+int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath)
 {
     APP_LOGD("Add [%{public}s] into zip[%{public}s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
     LOGI("Add [%s] into zip[%s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
-    int ret = ZIP_ERR_SUCCESS;
+    int32_t ret = ZIP_ERR_SUCCESS;
     if (fs::is_directory(fsFilePath)) {
         LOGI("[%s] is directory to [%s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
-        int count = 0;
+        int32_t count = 0;
         for (const auto &entry : fs::directory_iterator(fsFilePath)) {
             fs::path fsZipFullPath = fsZipPath / entry.path().filename();
             LOGE("Add File %s from %s", entry.path().string().c_str(), fsZipFullPath.string().c_str());
@@ -102,7 +102,7 @@ int ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::pa
     return ZIP_ERR_SUCCESS;
 }
 
-int ZipWrapper::WriteStringToZip(const std::string &content, const std::string& zipPath)
+int32_t ZipWrapper::WriteStringToZip(const std::string &content, const std::string& zipPath)
 {
     if (!IsOpen()) {
         LOGE("zip file is not open");
@@ -120,15 +120,15 @@ int ZipWrapper::WriteStringToZip(const std::string &content, const std::string& 
         ret = ZIP_ERR_FAILURE;
     }
     zipCloseFileInZip(zipFile_);
-    return ret;
+    return ZIP_ERR_SUCCESS;
 }
 
-int ZipWrapper::AddEmptyDirToZip(const std::string &zipPath)
+int32_t ZipWrapper::AddEmptyDirToZip(const std::string &zipPath)
 {
     return AddEmptyDirToZip(fs::path(zipPath));
 }
 
-int ZipWrapper::AddEmptyDirToZip(const fs::path &fsZipPath)
+int32_t ZipWrapper::AddEmptyDirToZip(const fs::path &fsZipPath)
 {
     fs::path fsZipDirPath = fs::path(fsZipPath.string() + "/");
     LOGI("Add [%s] into zip", fsZipDirPath.string().c_str());
@@ -144,15 +144,15 @@ int ZipWrapper::AddEmptyDirToZip(const fs::path &fsZipPath)
         return ZIP_ERR_FAILURE;
     }
     zipCloseFileInZip(zipFile_);
-    return ret;
+    return ZIP_ERR_SUCCESS;
 }
 
-int ZipWrapper::AddFileToZip(const std::string &filePath, const std::string &zipPath)
+int32_t ZipWrapper::AddFileToZip(const std::string &filePath, const std::string &zipPath)
 {
     return AddFileToZip(fs::path(filePath), fs::path(zipPath));
 }
 
-int ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZipPath)
+int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZipPath)
 {
     if (!IsOpen()) {
         LOGE("zip file is not open");
@@ -175,28 +175,28 @@ int ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZipPa
         file.close();
         return ZIP_ERR_FAILURE;
     }
+    int32_t result = ZIP_ERR_SUCCESS;
     if (fs::file_size(fsFilePath) > 0) {
-        ret = ZIP_ERR_SUCCESS;
+        result = ZIP_ERR_SUCCESS;
         char buffer[MAX_ZIP_BUFFER_SIZE];
         while (file.good()) {
             file.read(buffer, sizeof(buffer));
             auto bytesRead = file.gcount();
             if (bytesRead <= 0) {
                 LOGE("read file bytes error![filePath=%s][bytesRead=%u]", fsFilePath.c_str(), bytesRead);
-                ret = ZIP_ERR_FAILURE;
+                result = ZIP_ERR_FAILURE;
                 break;
             }
             if (zipWriteInFileInZip(zipFile_, buffer, bytesRead) < 0) {
                 LOGE("write file in zip failed!");
-                ret = ZIP_ERR_FAILURE;
+                result = ZIP_ERR_FAILURE;
                 break;
             }
         }
     }
     zipCloseFileInZip(zipFile_);
     file.close();
-    return ret;
+    return result;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
+#include "unzip_wrapper.h"
+
 #include <fstream>
 #include <iostream>
-#include "unzip_wrapper.h"
+
 #include "log.h"
 
 namespace OHOS {
@@ -33,13 +35,13 @@ UnzipWrapper::~UnzipWrapper()
     Close();
 }
 
-int UnzipWrapper::Open(std::string& unzPath)
+int32_t UnzipWrapper::Open(std::string& unzPath)
 {
     unzFilePath_ = unzPath;
     return Open();
 }
 
-int UnzipWrapper::Open()
+int32_t UnzipWrapper::Open()
 {
     if (unzFile_ != nullptr) {
         LOGE("unzip file handle has open");
@@ -110,7 +112,7 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     return fsFullFilePath.string();
 }
 
-int UnzipWrapper::UnzipFile(std::string filePath)
+int32_t UnzipWrapper::UnzipFile(std::string filePath)
 {
     LOGI("Unzip file[%s] to [%s]", unzFilePath_.c_str(), filePath.c_str());
     if (unzFile_ == nullptr) {
@@ -138,6 +140,5 @@ int UnzipWrapper::UnzipFile(std::string filePath)
     }
     return ZIP_ERR_SUCCESS;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

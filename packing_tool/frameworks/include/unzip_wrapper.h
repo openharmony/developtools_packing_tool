@@ -17,11 +17,11 @@
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_UNZIP_WRAPPER_H
 
 #include <filesystem>
+
 #include "zip_constants.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class UnzipWrapper {
 public:
     UnzipWrapper();
@@ -31,10 +31,10 @@ public:
     UnzipWrapper(const UnzipWrapper &) = delete;
     UnzipWrapper &operator=(const UnzipWrapper &) = delete;
 
-    int Open(std::string& unzPath);
-    int Open();
+    int32_t Open(std::string& unzPath);
+    int32_t Open();
     void Close();
-    int UnzipFile(std::string filePath);
+    int32_t UnzipFile(std::string filePath);
 
     bool IsOpen() const
     {
@@ -49,8 +49,6 @@ private:
     unz_global_info64 unzGlobalInfo_;
     std::string unzFilePath_;
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_UNZIP_WRAPPER_H

@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-#include <iostream>
-#include <cstring>
-#include <algorithm>
-#include <map>
 #include "zip_utils.h"
+
+#include <algorithm>
+#include <cstring>
+#include <map>
+#include <iostream>
+
 #include "log.h"
 #include "utils.h"
 
@@ -33,8 +35,8 @@ ZipUtils::ZipUtils()
 ZipUtils::~ZipUtils()
 {}
 
-int ZipUtils::Zip(const std::string& filePath, const std::string& zipFilePath,
-    const std::string& zipPath, const ZipLevel& zipLevel, const int& append)
+int32_t ZipUtils::Zip(const std::string& filePath, const std::string& zipFilePath,
+    const std::string& zipPath, const ZipLevel& zipLevel, const inint32_tt& append)
 {
     ZipWrapper zipWrapper(zipFilePath);
     if (zipWrapper.Open(append) != ZIP_ERR_SUCCESS) {
@@ -44,7 +46,7 @@ int ZipUtils::Zip(const std::string& filePath, const std::string& zipFilePath,
     if (zipLevel != ZipLevel::ZIP_LEVEL_DEFAULT) {
         zipWrapper.SetZipLevel(zipLevel);
     }
-    int ret = zipWrapper.AddFileOrDirectoryToZip(filePath, zipPath);
+    int32_t ret = zipWrapper.AddFileOrDirectoryToZip(filePath, zipPath);
     if (ret != ZIP_ERR_SUCCESS) {
         LOGE("ZipWrapper AddFileOrDirectoryToZip failed!");
     }
@@ -52,14 +54,14 @@ int ZipUtils::Zip(const std::string& filePath, const std::string& zipFilePath,
     return ret;
 }
 
-int ZipUtils::Unzip(const std::string& zipPath, const std::string& filePath)
+int32_t ZipUtils::Unzip(const std::string& zipPath, const std::string& filePath)
 {
     UnzipWrapper unzipWrapper(zipPath);
     if (unzipWrapper.Open() != ZIP_ERR_SUCCESS) {
         LOGE("UnzipWrapper Open failed!");
         return ZIP_ERR_FAILURE;
     }
-    int ret = unzipWrapper.UnzipFile(filePath);
+    int32_t ret = unzipWrapper.UnzipFile(filePath);
     if (ret != ZIP_ERR_SUCCESS) {
         LOGE("UnzipWrapper UnzipFile failed!");
     }
