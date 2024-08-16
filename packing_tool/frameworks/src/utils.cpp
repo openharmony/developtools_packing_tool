@@ -13,19 +13,21 @@
  * limitations under the License.
  */
 
-#include <fstream>
-#include <sstream>
+#include "utils.h"
+
 #include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <dirent.h>
+#include <fstream>
 #include <iomanip>
 #include <random>
-#include <vector>
-#include <dirent.h>
-#include <cstring>
-#include <cmath>
+#include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "utils.h"
+#include <vector>
+
 #include "log.h"
 
 namespace OHOS {

@@ -21,16 +21,12 @@
 #include <string>
 
 #include "constants.h"
-#include "packager.h"
 #include "hap_packager.h"
 #include "hsp_packager.h"
+#include "packager.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {
-
-} // namespace
-
 ShellCommand::ShellCommand(int argc, char *argv[], std::string name)
 {
     opterr = 0;
@@ -45,9 +41,10 @@ ShellCommand::ShellCommand(int argc, char *argv[], std::string name)
     cmd_ = argv[1];
 }
 
-ShellCommand::~ShellCommand() {}
+ShellCommand::~ShellCommand()
+{}
 
-int ShellCommand::CreateCommandMap()
+int32_t ShellCommand::CreateCommandMap()
 {
     commandMap_ = {
         {"help", std::bind(&ShellCommand::RunAsHelpCommand, this)},
@@ -57,7 +54,7 @@ int ShellCommand::CreateCommandMap()
     return ERR_OK;
 }
 
-int ShellCommand::ParseParam()
+int32_t ShellCommand::ParseParam()
 {
     int n = 0;
     while (n < Constants::OPTIONS_SIZE) {
@@ -83,7 +80,7 @@ int ShellCommand::ParseParam()
     return ERR_OK;
 }
 
-int ShellCommand::OnCommand()
+int32_t ShellCommand::OnCommand()
 {
     auto respond = commandMap_[cmd_];
     if (respond == nullptr) {
@@ -96,7 +93,7 @@ int ShellCommand::OnCommand()
 
 std::string ShellCommand::ExecCommand()
 {
-    int result = CreateCommandMap();
+    int32_t result = CreateCommandMap();
     if (result != ERR_OK) {
         resultReceiver_.append("failed to create command map.\n");
         return resultReceiver_;
@@ -115,13 +112,13 @@ std::string ShellCommand::ExecCommand()
     return resultReceiver_;
 }
 
-int ShellCommand::RunAsHelpCommand()
+int32_t ShellCommand::RunAsHelpCommand()
 {
     resultReceiver_.append(HELP_MSG);
     return ERR_OK;
 }
 
-int ShellCommand::RunAsPackCommand()
+int32_t ShellCommand::RunAsPackCommand()
 {
     std::cout << "RunAsPackCommand " << std::endl;
     std::unique_ptr<Packager> packager = getPackager();
@@ -131,7 +128,7 @@ int ShellCommand::RunAsPackCommand()
     return ERR_OK;
 }
 
-int ShellCommand::RunAsUnpackCommand()
+int32_t ShellCommand::RunAsUnpackCommand()
 {
     std::cout << "RunAsUnpackCommand " << std::endl;
     return ERR_OK;
@@ -152,6 +149,5 @@ std::unique_ptr<Packager> ShellCommand::getPackager()
     resultReceiver_.append("not support --mode: ").append(mode).append("\n");
     return nullptr;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

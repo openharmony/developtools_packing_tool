@@ -16,9 +16,10 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_LOG_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_LOG_H
 
+#include <cstdint>
+
 namespace OHOS {
 namespace AppPackingTool {
-
 enum LOG_LEVEL {
     LOG_LEVEL_DEBUG = 0,
     LOG_LEVEL_INFO,
@@ -27,7 +28,7 @@ enum LOG_LEVEL {
     LOG_LEVEL_FATAL
 };
 
-void Log(char *file, char *func, int line, int level, char *format, ...);
+void Log(char *file, char *func, int32_t line, int32_t level, char *format, ...);
 
 #define LOGD(format, ...) Log((char *)__FILE__, (char *)__func__, __LINE__, LOG_LEVEL_DEBUG, \
     (char *)format, ##__VA_ARGS__)
@@ -39,8 +40,6 @@ void Log(char *file, char *func, int line, int level, char *format, ...);
     (char *)format, ##__VA_ARGS__)
 #define LOGF(format, ...) Log((char *)__FILE__, (char *)__func__, __LINE__, LOG_LEVEL_FATAL, \
     (char *)format, ##__VA_ARGS__)
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_UTILS_H

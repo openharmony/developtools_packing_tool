@@ -16,17 +16,16 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_UTILS_H
 
-#include <string>
-#include <list>
-#include <set>
-#include <openssl/sha.h>
 #include <filesystem>
+#include <list>
+#include <openssl/sha.h>
+#include <set>
+#include <string>
 
 namespace fs = std::filesystem;
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class Utils {
 public:
     Utils() {};
@@ -70,8 +69,6 @@ public:
     static bool CopyFile(const std::string& srcFile, const std::string& dstFile);
     static bool GetFormattedPath(const std::string& path, std::string& formattedPath);
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_UTILS_H

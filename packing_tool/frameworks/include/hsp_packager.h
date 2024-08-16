@@ -24,20 +24,17 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class HspPackager : public Packager {
 public:
     HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver);
     ~HspPackager() override {}
 
 protected:
-    int InitAllowedParam() override;
-    int PreProcess() override;
-    int Process() override;
-    int PostProcess() override;
+    int32_t InitAllowedParam() override;
+    int32_t PreProcess() override;
+    int32_t Process() override;
+    int32_t PostProcess() override;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HSP_PACKAGER_H

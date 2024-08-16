@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include "hap_packager.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -20,7 +22,6 @@
 #include <regex>
 #include <string>
 
-#include "hap_packager.h"
 #include "constants.h"
 #include "contrib/minizip/zip.h"
 #include "nlohmann/json.hpp"
@@ -28,13 +29,11 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
 
-int HapPackager::InitAllowedParam()
+int32_t HapPackager::InitAllowedParam()
 {
     allowedParameters_ = {
         {}
@@ -42,12 +41,12 @@ int HapPackager::InitAllowedParam()
     return ERR_OK;
 }
 
-int HapPackager::PreProcess()
+int32_t HapPackager::PreProcess()
 {
     return ERR_OK;
 }
 
-int HapPackager::Process()
+int32_t HapPackager::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipWrapper_.Open(outPath);
@@ -97,10 +96,9 @@ int HapPackager::Process()
     return ERR_OK;
 }
 
-int HapPackager::PostProcess()
+int32_t HapPackager::PostProcess()
 {
     return ERR_OK;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

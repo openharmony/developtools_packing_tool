@@ -13,31 +13,32 @@
  * limitations under the License.
  */
 
+#include "hsp_packager.h"
+
 #include <iostream>
 #include <ostream>
 #include <string>
 
-#include "hsp_packager.h"
 #include "constants.h"
 #include "packager.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
 
-int HspPackager::InitAllowedParam()
+int32_t HspPackager::InitAllowedParam()
 {
     return ERR_OK;
 }
-int HspPackager::PreProcess()
+
+int32_t HspPackager::PreProcess()
 {
     return ERR_OK;
 }
-int HspPackager::Process()
+
+int32_t HspPackager::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipFile zf = zipOpen64(outPath.c_str(), APPEND_STATUS_CREATE);
@@ -83,10 +84,10 @@ int HspPackager::Process()
     zipClose(zf, nullptr);
     return ERR_OK;
 }
-int HspPackager::PostProcess()
+
+int32_t HspPackager::PostProcess()
 {
     return ERR_OK;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

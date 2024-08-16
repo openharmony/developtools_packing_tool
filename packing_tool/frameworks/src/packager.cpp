@@ -13,23 +13,22 @@
  * limitations under the License.
  */
 
+#include "packager.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-#include "packager.h"
-
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 Packager::Packager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : parameterMap_(parameterMap), resultReceiver_(resultReceiver)
 {}
 
-Packager::~Packager() {}
+Packager::~Packager()
+{}
 
 std::string Packager::MakePackage()
 {
@@ -52,21 +51,21 @@ std::string Packager::MakePackage()
     return "OHOS::ERR_OK";
 }
 
-int Packager::PreProcess()
+int32_t Packager::PreProcess()
 {
     std::cout << "PreCheck" << std::endl;
     resultReceiver_.append("do PreCheck\n");
     return ERR_OK;
 }
 
-int Packager::Process()
+int32_t Packager::Process()
 {
     std::cout << "DoPackage" << std::endl;
     resultReceiver_.append("do DoPackage\n");
     return ERR_OK;
 }
 
-int Packager::PostProcess()
+int32_t Packager::PostProcess()
 {
     std::cout << "PostCheck" << std::endl;
     resultReceiver_.append("do PostCheck\n");
@@ -164,7 +163,5 @@ bool Packager::CheckFileValid(const std::string &filePath, const std::string &fi
     }
     return false;
 }
-
-
 } // namespace AppPackingTool
 } // namespace OHOS

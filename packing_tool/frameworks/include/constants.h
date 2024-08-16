@@ -16,10 +16,10 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_CONSTANTS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_CONSTANTS_H
 
+#include <getopt.h>
 #include <iostream>
 #include <map>
 #include <string>
-#include <getopt.h>
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -128,7 +128,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_NORMAL_MODULE_LIMIT.c_str(), required_argument, nullptr, 36},
     {nullptr, 0, nullptr, 0},
 };
-constexpr const int OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);
+constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);
 
 enum PARAM_TYPE {
     DEFAULT,
@@ -140,7 +140,7 @@ enum PARAM_TYPE {
     FILE_OR_DIRECTORY_ARRAY,
 };
 
-constexpr const int BUF_SIZE = 1024 * 4;
+constexpr const int32_t BUF_SIZE = 1024 * 4;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
