@@ -43,10 +43,10 @@ public:
     ShellCommand(int argc, char *argv[], std::string name);
     virtual ~ShellCommand();
 
-    int ParseParam();
-    int OnCommand();
+    int32_t ParseParam();
+    int32_t OnCommand();
     std::string ExecCommand();
-    int CreateCommandMap();
+    int32_t CreateCommandMap();
 
 protected:
     static constexpr int MIN_ARGUMENT_NUMBER = 2;
@@ -60,9 +60,9 @@ protected:
     std::map<std::string, std::string> parameterMap_;
     std::string resultReceiver_ = "";
 
-    int RunAsHelpCommand();
-    int RunAsPackCommand();
-    int RunAsUnpackCommand();
+    int32_t RunAsHelpCommand();
+    int32_t RunAsPackCommand();
+    int32_t RunAsUnpackCommand();
 
 private:
     std::unique_ptr<Packager> getPackager();

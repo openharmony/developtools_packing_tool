@@ -13,14 +13,15 @@
  * limitations under the License.
  */
 
-#include <iostream>
+#include "log.h"
+
 #include <chrono>
-#include <cstdio>
 #include <cstdarg>
+#include <cstdio>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <securec.h>
-#include "log.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -31,7 +32,7 @@ const char LOG_LEVEL_FLAG[5] = {'D', 'I', 'W', 'E', 'F'};
 const int MS_LEN = 3;
 }
 
-void Log(char *file, char *func, int line, int level, char *format, ...)
+void Log(char *file, char *func, int32_t line, int32_t level, char *format, ...)
 {
     if (level < DEFAULT_LOG_LEVEL) {
         return;
@@ -59,6 +60,5 @@ void Log(char *file, char *func, int line, int level, char *format, ...)
         std::cerr << "Error: Buffer size too small for log message." << std::endl;
     }
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

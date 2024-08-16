@@ -33,7 +33,6 @@ namespace fs = std::filesystem;
 
 namespace OHOS {
 namespace AppPackingTool {
-
 enum ErrCode {
     ERR_OK = 0,
     ERR_INVALID_VALUE,
@@ -54,10 +53,10 @@ public:
 
     std::string MakePackage();
 
-    virtual int InitAllowedParam() = 0;
-    virtual int PreProcess() = 0;
-    virtual int Process() = 0;
-    virtual int PostProcess() = 0;
+    virtual int32_t InitAllowedParam() = 0;
+    virtual int32_t PreProcess() = 0;
+    virtual int32_t Process() = 0;
+    virtual int32_t PostProcess() = 0;
 
 protected:
     const std::map<std::string, std::string> &parameterMap_;
@@ -72,8 +71,6 @@ protected:
     bool CheckFileValid(const std::string &filePath, const std::string &filename);
     bool endWith(const std::string &str, const std::string &suffix);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACKAGER_H
