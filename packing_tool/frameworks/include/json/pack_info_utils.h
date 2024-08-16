@@ -16,10 +16,11 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACK_INFO_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACK_INFO_UTILS_H
 
-#include <string>
 #include <map>
-#include "pt_json.h"
+#include <string>
+
 #include "pack_info.h"
+#include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -50,8 +51,6 @@ private:
     static bool CheckBundleTypeInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2);
     static bool CheckVersionCodeInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2);
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_JSON_UTILS_H

@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-#include <fstream>
 #include "patch_json.h"
+
+#include <fstream>
+
 #include "log.h"
 
 namespace OHOS {
@@ -324,7 +326,7 @@ bool PatchJson::GetDeviceTypesByModuleObj(const std::unique_ptr<PtJson>& moduleO
         LOGE("Module node get %s array node failed!", DEVICE_TYPES.c_str());
         return false;
     }
-    for (int i = 0; i < deviceTypesObj->GetSize(); i++) {
+    for (int32_t i = 0; i < deviceTypesObj->GetSize(); i++) {
         deviceTypes.push_back(deviceTypesObj->Get(i)->GetString());
     }
     return true;

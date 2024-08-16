@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
-#include <fstream>
-#include <algorithm>
 #include "pack_info.h"
+
+#include <algorithm>
+#include <fstream>
+
 #include "log.h"
 #include "utils.h"
 
@@ -399,7 +401,7 @@ bool PackInfo::GetVersionByVersionObj(const std::unique_ptr<PtJson>& versionObj,
     return true;
 }
 
-bool PackInfo::SetVersionCode(const int& versionCode)
+bool PackInfo::SetVersionCode(const int32_t& versionCode)
 {
     std::unique_ptr<PtJson> versionObj;
     if (!GetVersionObject(versionObj)) {
@@ -523,7 +525,7 @@ bool PackInfo::GetSupportDimensionsByFormObj(const std::unique_ptr<PtJson>& form
         LOGE("Form node get %s array node failed!", SUPPORT_DIMENSIONS.c_str());
         return false;
     }
-    for (int i = 0; i < supportDimensionsObj->GetSize(); i++) {
+    for (int32_t i = 0; i < supportDimensionsObj->GetSize(); i++) {
         supportDimensions.push_back(supportDimensionsObj->Get(i)->GetString());
     }
     return true;
@@ -541,7 +543,7 @@ bool PackInfo::GetFormNames(std::list<std::string>& formNames, std::list<std::st
         LOGE("Module node is not array!");
         return false;
     }
-    for (int i = 0; i < modulesObj->GetSize(); i++) {
+    for (int32_t i = 0; i < modulesObj->GetSize(); i++) {
         std::unique_ptr<PtJson> distroObj;
         if (!GetDistroObjectByModuleObj(modulesObj->Get(i), distroObj)) {
             LOGE("GetDistroObjectByModuleObj failed!");
@@ -572,7 +574,7 @@ bool PackInfo::GetFormNamesByExtensionAbilitiesObj(const std::unique_ptr<PtJson>
         LOGE("ExtensionAbilities node is null or is not array!");
         return false;
     }
-    for (int j = 0; j < extensionAbilitiesObj->GetSize(); j++) {
+    for (int32_t j = 0; j < extensionAbilitiesObj->GetSize(); j++) {
         std::unique_ptr<PtJson> formsObj;
         if (!GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(j), formsObj)) {
             LOGE("GetFormsObjByExtensionAbilityObj failed!");
@@ -594,7 +596,7 @@ bool PackInfo::GetFormNamesByFormsObj(const std::unique_ptr<PtJson>& formsObj,
         LOGE("Form node is null or is not array!");
         return false;
     }
-    for (int k = 0; k < formsObj->GetSize(); k++) {
+    for (int32_t k = 0; k < formsObj->GetSize(); k++) {
         std::string formName;
         std::string defaultDimension;
         std::list<std::string> supportDimensions;

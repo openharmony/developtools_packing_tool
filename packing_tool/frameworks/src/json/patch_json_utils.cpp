@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-#include <fstream>
 #include "patch_json_utils.h"
+
+#include <fstream>
+
 #include "log.h"
 
 namespace OHOS {
