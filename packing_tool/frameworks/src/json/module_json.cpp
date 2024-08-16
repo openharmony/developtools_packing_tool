@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-#include <fstream>
 #include "module_json.h"
+
+#include <fstream>
+
 #include "utils.h"
 #include "log.h"
 
@@ -522,7 +524,7 @@ bool ModuleJson::GetModuleMetadatasByModuleObj(std::unique_ptr<PtJson>& moduleOb
             LOGE("Module node get %s array node failed!", METADATA.c_str());
             return false;
         }
-        for (int i = 0; i < moduleMetadataInfosObj->GetSize(); i++) {
+        for (int32_t i = 0; i < moduleMetadataInfosObj->GetSize(); i++) {
             ModuleMetadataInfo moduleMetadataInfo;
             std::unique_ptr<PtJson> moduleMetadataInfoObj = moduleMetadataInfosObj->Get(i);
             if (!GetModuleMetadataInfoByModuleMetadataInfoObj(moduleMetadataInfoObj, moduleMetadataInfo)) {
@@ -584,7 +586,7 @@ bool ModuleJson::GetAbilityNamesByAbilitiesObj(std::unique_ptr<PtJson>& abilitie
         LOGE("Abilities node is null!");
         return false;
     }
-    for (int i = 0; i < abilitiesObj->GetSize(); i++) {
+    for (int32_t i = 0; i < abilitiesObj->GetSize(); i++) {
         std::unique_ptr<PtJson> abilityObj = abilitiesObj->Get(i);
         if (abilityObj->Contains(NAME.c_str())) {
             std::string name;
@@ -665,7 +667,7 @@ bool ModuleJson::GetProxyDataUrisByProxyDatasObj(std::unique_ptr<PtJson>& proxyD
         LOGE("ProxyData node is null or is not array!");
         return false;
     }
-    for (int i = 0; i < proxyDatasObj->GetSize(); i++) {
+    for (int32_t i = 0; i < proxyDatasObj->GetSize(); i++) {
         std::unique_ptr<PtJson> proxyDataObj = proxyDatasObj->Get(i);
         if (!proxyDataObj->Contains(PROXY_URI.c_str())) {
             LOGE("proxyData node has no %s node!", PROXY_URI.c_str());
@@ -698,7 +700,7 @@ bool ModuleJson::GetExtensionAbilityNamesByExtensionAbilityObj(std::unique_ptr<P
         LOGE("ExtensionAbilities node is null!");
         return false;
     }
-    for (int i = 0; i < extensionAbilitiesObj->GetSize(); i++) {
+    for (int32_t i = 0; i < extensionAbilitiesObj->GetSize(); i++) {
         std::unique_ptr<PtJson> extensionAbilityObj = extensionAbilitiesObj->Get(i);
         if (extensionAbilityObj->Contains(NAME.c_str())) {
             std::string extensionAbilityName;
@@ -791,7 +793,7 @@ bool ModuleJson::GetDependencyItemsByModuleObj(std::unique_ptr<PtJson>& moduleOb
             LOGE("Module node get %s array node failed!", DEPENDENCIES.c_str());
             return false;
         }
-        for (int i = 0; i < dependencyItemsObj->GetSize(); i++) {
+        for (int32_t i = 0; i < dependencyItemsObj->GetSize(); i++) {
             std::unique_ptr<PtJson> dependencyItemObj = dependencyItemsObj->Get(i);
             DependencyItem dependencyItem;
             if (!GetDependencyBundleNameByDependencyItemObj(dependencyItemObj, dependencyItem.bundleName,
@@ -874,7 +876,7 @@ bool ModuleJson::GetAtomicServicePreloadsByModuleObj(std::unique_ptr<PtJson>& mo
         LOGE("Module node get %s array node failed!", PRELOADS.c_str());
         return false;
     }
-    for (int i = 0; i < preloadsObj->GetSize(); i++) {
+    for (int32_t i = 0; i < preloadsObj->GetSize(); i++) {
         std::unique_ptr<PtJson> preloadObj = preloadsObj->Get(i);
         PreloadItem preloadItem;
         std::string moduleName;
@@ -929,7 +931,7 @@ bool ModuleJson::GetContinueTypesByAbilityObj(std::unique_ptr<PtJson>& abilityOb
             LOGE("Module node get %s array node failed!", CONTINUE_TYPE.c_str());
             return false;
         }
-        for (int i = 0; i < continueTypeObj->GetSize(); i++) {
+        for (int32_t i = 0; i < continueTypeObj->GetSize(); i++) {
             continueTypes.push_back(continueTypeObj->Get(i)->GetString());
         }
     }
@@ -949,7 +951,7 @@ bool ModuleJson::GetAbilityContinueTypeMapByModuleObj(std::unique_ptr<PtJson>& m
             LOGE("Module node get %s array node failed!", PRELOADS.c_str());
             return false;
         }
-        for (int i = 0; i < abilitysObj->GetSize(); i++) {
+        for (int32_t i = 0; i < abilitysObj->GetSize(); i++) {
             std::unique_ptr<PtJson> abilityObj = abilitysObj->Get(i);
             std::string abilityName = "";
             if (!GetAbilityNameByAbilityObj(abilityObj, abilityName)) {
@@ -1316,7 +1318,7 @@ bool ModuleJson::GetNormalizeVersion(NormalizeVersion& normalizeVersion, const b
     return true;
 }
 
-bool ModuleJson::SetVersionCodeAndName(const int& versionCode, const std::string& versionName, const bool& isStage)
+bool ModuleJson::SetVersionCodeAndName(const int32_t& versionCode, const std::string& versionName, const bool& isStage)
 {
     if (isStage) {
         if (!SetStageVersionCode(versionCode) || !SetStageVersionName(versionName)) {

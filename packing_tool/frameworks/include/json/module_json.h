@@ -16,20 +16,20 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_JSON_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_JSON_H
 
-#include <string>
 #include <filesystem>
-#include <memory>
 #include <list>
-#include "pt_json.h"
-#include "version.h"
-#include "module_api_version.h"
+#include <memory>
+#include <string>
+
 #include "hap_verify_info.h"
+#include "module_api_version.h"
 #include "module_metadata_info.h"
 #include "normalize_version.h"
+#include "pt_json.h"
+#include "version.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class ModuleJson {
 public:
     ModuleJson() {};
@@ -54,7 +54,7 @@ public:
     // stage funcs, module.json
     bool GetStageVersion(Version& version);
     bool GetStageVersionByAppObj(std::unique_ptr<PtJson>& appObj, Version& version);
-    bool SetStageVersionCode(const int& versionCode);
+    bool SetStageVersionCode(const int32_t& versionCode);
     bool SetStageVersionName(const std::string& versionName);
     bool GetStageModuleApiVersion(ModuleApiVersion& moduleApiVersion);
     bool GetStageModuleApiVersionByAppObj(std::unique_ptr<PtJson>& appObj, ModuleApiVersion& moduleApiVersion);
@@ -105,7 +105,7 @@ public:
     bool GetFaVersion(Version& version);
     bool GetFaVersionByAppObj(std::unique_ptr<PtJson>& appObj, Version& version);
     bool GetFaVersionByVersionObj(std::unique_ptr<PtJson>& versionObj, Version& version);
-    bool SetFaVersionCode(const int& versionCode);
+    bool SetFaVersionCode(const int32_t& versionCode);
     bool SetFaVersionName(const std::string& versionName);
     bool GetFaInstallationFree(bool& installationFree);
     bool GetFaInstallationFreeByModuleObj(std::unique_ptr<PtJson>& moduleObj, bool& installationFree);
@@ -184,7 +184,7 @@ public:
     bool RemoveGenerateBuildHashFromModuleObj();
 
     bool GetNormalizeVersion(NormalizeVersion& normalizeVersion, const bool& isStage = true);
-    bool SetVersionCodeAndName(const int& versionCode, const std::string& versionName, const bool& isStage = true);
+    bool SetVersionCodeAndName(const int32_t& versionCode, const std::string& versionName, const bool& isStage = true);
 
     bool SetBuildHash(const std::string& buildHash);
 
@@ -214,8 +214,6 @@ protected:
 private:
     std::unique_ptr<PtJson> root_ = nullptr;
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_JSON_H
