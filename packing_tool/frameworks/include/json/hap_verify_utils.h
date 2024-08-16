@@ -16,26 +16,27 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HAP_VERIFY_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HAP_VERIFY_UTILS_H
 
-#include <string>
 #include <list>
 #include <map>
-#include "multi_app_mode.h"
-#include "hap_verify_info.h"
+#include <string>
+
 #include "distro_filter.h"
+#include "hap_verify_info.h"
+#include "multi_app_mode.h"
 
 namespace OHOS {
 namespace AppPackingTool {
 struct VerifyCollection {
     std::string bundleName = "";
     std::string vendor = "";
-    int versionCode = -1;
+    int32_t versionCode = -1;
     std::string versionName = "";
-    int minCompatibleVersionCode = -1;
-    int compatibleApiVersion = -1;
-    int targetApiVersion = -1;
+    int32_t minCompatibleVersionCode = -1;
+    int32_t compatibleApiVersion = -1;
+    int32_t targetApiVersion = -1;
     std::string releaseType = "";
     std::string targetBundleName = "";
-    int targetPriority = 0;
+    int32_t targetPriority = 0;
     bool debug = false;
     std::list<std::string> moduleNames;
     std::list<std::string> packageNames;

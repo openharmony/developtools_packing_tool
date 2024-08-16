@@ -16,15 +16,16 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HAP_VERIFY_INFO_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HAP_VERIFY_INFO_H
 
-#include <string>
 #include <list>
 #include <map>
-#include "version.h"
-#include "module_api_version.h"
-#include "distro_filter.h"
+#include <string>
+
 #include "dependency_item.h"
-#include "preload_item.h"
+#include "distro_filter.h"
+#include "module_api_version.h"
 #include "multi_app_mode.h"
+#include "preload_item.h"
+#include "version.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -74,20 +75,20 @@ public:
     void SetPreloadItems(const std::list<PreloadItem>& preloadItems);
     const std::string& GetTargetBundleName() const;
     void SetTargetBundleName(const std::string& targetBundleName);
-    const int& GetTargetPriority() const;
-    void SetTargetPriority(const int& priority);
+    const int32_t& GetTargetPriority() const;
+    void SetTargetPriority(const int32_t& priority);
     const std::string& GetTargetModuleName() const;
     void SetTargetModuleName(const std::string& targetModuleName);
-    const int& GetTargetModulePriority() const;
-    void SetTargetModulePriority(const int& priority);
+    const int32_t& GetTargetModulePriority() const;
+    void SetTargetModulePriority(const int32_t& priority);
     const int64_t& GetFileLength() const;
     void SetFileLength(const int64_t& fileLength);
-    const int& GetEntrySizeLimit() const;
-    void SetEntrySizeLimit(const int& limit);
-    const int& GetNotEntrySizeLimit() const;
-    void SetNotEntrySizeLimit(const int& notEntrySizeLimit);
-    const int& GetSumSizeLimit() const;
-    void SetSumSizeLimit(const int& sumSizeLimit);
+    const int32_t& GetEntrySizeLimit() const;
+    void SetEntrySizeLimit(const int32_t& limit);
+    const int32_t& GetNotEntrySizeLimit() const;
+    void SetNotEntrySizeLimit(const int32_t& notEntrySizeLimit);
+    const int32_t& GetSumSizeLimit() const;
+    void SetSumSizeLimit(const int32_t& sumSizeLimit);
     const bool& IsDebug() const;
     void SetDebug(const bool& debug);
     const std::string& GetCompileSdkVersion() const;
@@ -125,15 +126,15 @@ private:
     std::map<std::string, std::string> resourceMap_;
     std::string bundleType_ = "app";
     std::string targetBundleName_ = "";
-    int targetPriority_ = 0;
+    int32_t targetPriority_ = 0;
     std::string targetModuleName_ = "";
-    int targetModulePriority_ = 0;
+    int32_t targetModulePriority_ = 0;
     std::list<PreloadItem> preloadItems_;
     // json file size
     int64_t fileLength_ = 0L;
-    int entrySizeLimit_ = 2;
-    int notEntrySizeLimit_ = 2;
-    int sumSizeLimit_ = 10;
+    int32_t entrySizeLimit_ = 2;
+    int32_t notEntrySizeLimit_ = 2;
+    int32_t sumSizeLimit_ = 10;
     bool debug_ = false;
     std::string compileSdkVersion_ = "";
     std::string compileSdkType_ = "";
