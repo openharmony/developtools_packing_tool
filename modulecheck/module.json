@@ -944,7 +944,8 @@
                   "sysPicker/filePicker",
                   "sysPicker/audioPicker",
                   "sys/visualExtension",
-                  "uiService"
+                  "uiService",
+                  "recentPhoto"
                 ]
               },
               "permissions": {
