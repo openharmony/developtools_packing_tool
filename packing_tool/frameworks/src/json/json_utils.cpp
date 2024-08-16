@@ -13,13 +13,20 @@
  * limitations under the License.
  */
 
+#include "json_utils.h"
+
 #include <iostream>
 #include <fstream>
+
 #include "utils.h"
-#include "json_utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+    const std::string MODULE_JSON = "module.json";
+    const std::string CONFIG_JSON = "config.json";
+    const std::string PATCH_JSON = "patch.json";
+}
 
 bool JsonUtils::IsModuleJson(const std::string& filePath)
 {

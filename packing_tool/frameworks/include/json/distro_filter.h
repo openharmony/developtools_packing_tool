@@ -16,14 +16,14 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_DISTRO_FILTER_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_DISTRO_FILTER_H
 
-#include <string>
 #include <list>
 #include <sstream>
+#include <string>
+
 #include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 struct PolicyValue {
     std::string policy = "";
     std::list<std::string> value;
@@ -58,5 +58,4 @@ private:
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_DISTRO_FILTER_H

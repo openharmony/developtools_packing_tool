@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
-#include <iostream>
-#include <fstream>
-#include <memory>
 #include "distro_filter.h"
-#include "utils.h"
+
+#include <fstream>
+#include <iostream>
+#include <memory>
+
 #include "log.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -55,7 +57,7 @@ bool PolicyValue::ParseFromString(const std::string& jsonString)
             LOGE("Json root get %s array node failed!", VALUE.c_str());
             return false;
         }
-        for (int i = 0; i< valueObj->GetSize(); i++) {
+        for (int32_t i = 0; i< valueObj->GetSize(); i++) {
             value.push_back(valueObj->Get(i)->GetString());
         }
     }

@@ -17,16 +17,14 @@
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_NORMALIZE_VERSION_H
 
 #include <string>
-#include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
 struct NormalizeVersion {
-    int originVersionCode = -1;
+    int32_t originVersionCode = -1;
     std::string originVersionName = "";
     std::string moduleName = "";
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_NORMALIZE_VERSION_H

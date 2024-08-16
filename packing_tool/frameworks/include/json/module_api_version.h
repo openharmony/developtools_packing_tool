@@ -21,11 +21,10 @@
 namespace OHOS {
 namespace AppPackingTool {
 struct ModuleApiVersion {
-    int compatibleApiVersion = -1;
-    int targetApiVersion = -1;
+    int32_t compatibleApiVersion = -1;
+    int32_t targetApiVersion = -1;
     std::string releaseType = "";
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_API_VERSION_H

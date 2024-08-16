@@ -13,15 +13,17 @@
  * limitations under the License.
  */
 
-#include <filesystem>
-#include <algorithm>
-#include <iterator>
-#include "module_json.h"
 #include "module_json_utils.h"
-#include "zip_utils.h"
-#include "log.h"
-#include "utils.h"
+
+#include <algorithm>
+#include <filesystem>
+#include <iterator>
+
 #include "hap_verify_utils.h"
+#include "log.h"
+#include "module_json.h"
+#include "utils.h"
+#include "zip_utils.h"
 
 namespace fs = std::filesystem;
 
@@ -32,15 +34,15 @@ namespace {
     const std::string CONFIG_JSON = "config.json";
     const std::string HAP_SUFFIX = ".hap";
     const std::string HSP_SUFFIX = ".hsp";
-    const int SHARED_APP_HSP_LIMIT = 1;
+    const int32_t SHARED_APP_HSP_LIMIT = 1;
     const std::string TYPE_SHARED = "shared";
     const std::string INCLUDE = "include";
     const std::string EXCLUDE = "exclude";
     const std::string ATOMIC_SERVICE = "atomicService";
 
-    static int g_entryModuleSizeLimit = 2;
-    static int g_notEntryModuleSizeLimit = 2;
-    static int g_sumModuleSizeLimit = 10;
+    static int32_t g_entryModuleSizeLimit = 2;
+    static int32_t g_notEntryModuleSizeLimit = 2;
+    static int32_t g_sumModuleSizeLimit = 10;
 }
 
 // java : parseStageHapVerifyInfo

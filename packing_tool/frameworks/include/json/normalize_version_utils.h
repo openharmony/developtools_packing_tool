@@ -16,8 +16,9 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_NORMALIZE_VERSION_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_NORMALIZE_VERSION_UTILS_H
 
-#include <string>
 #include <list>
+#include <string>
+
 #include "normalize_version.h"
 
 namespace OHOS {
@@ -35,5 +36,4 @@ public:
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_NORMALIZE_VERSION_UTILS_H

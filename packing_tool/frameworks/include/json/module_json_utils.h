@@ -17,6 +17,7 @@
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_JSON_UTILS_H
 
 #include <string>
+
 #include "hap_verify_info.h"
 
 namespace OHOS {
