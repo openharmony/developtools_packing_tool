@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-#include <fstream>
 #include "module_json.h"
-#include "utils.h"
+
+#include <fstream>
+
 #include "log.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -85,7 +87,7 @@ namespace {
     const std::string BUILD_HASH = "buildHash";
 }
 
-bool ModuleJson::SetStageVersionCode(const int& versionCode)
+bool ModuleJson::SetStageVersionCode(const int32_t& versionCode)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
@@ -384,7 +386,7 @@ bool ModuleJson::GetStageDeviceTypesByModuleObj(std::unique_ptr<PtJson>& moduleO
         LOGE("Module node get %s array node failed!", DEVICE_TYPES.c_str());
         return false;
     }
-    for (int i = 0; i < deviceTypeObj->GetSize(); i++) {
+    for (int32_t i = 0; i < deviceTypeObj->GetSize(); i++) {
         deviceTypes.push_back(deviceTypeObj->Get(i)->GetString());
     }
     return true;
