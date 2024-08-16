@@ -21,11 +21,10 @@
 namespace OHOS {
 namespace AppPackingTool {
 struct Version {
-    int versionCode = -1;
+    int32_t versionCode = -1;
     std::string versionName = "";
-    int minCompatibleVersionCode = -1;
+    int32_t minCompatibleVersionCode = -1;
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_VERSION_H

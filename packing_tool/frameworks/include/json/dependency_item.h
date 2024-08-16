@@ -23,9 +23,8 @@ namespace AppPackingTool {
 struct DependencyItem {
     std::string bundleName = "";
     std::string moduleName = "";
-    int versionCode = 0;
+    int32_t versionCode = 0;
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_DEPENDENCY_ITEM_H

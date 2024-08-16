@@ -16,13 +16,12 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HQF_INFO_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HQF_INFO_H
 
-#include <string>
 #include <list>
 #include <map>
+#include <string>
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class HqfInfo {
 public:
     HqfInfo() {};

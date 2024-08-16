@@ -27,5 +27,4 @@ struct ModuleMetadataInfo {
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MODULE_METADATA_INFO_H

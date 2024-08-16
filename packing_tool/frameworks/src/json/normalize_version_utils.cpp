@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-#include "pt_json.h"
 #include "normalize_version_utils.h"
+
 #include "log.h"
+#include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {

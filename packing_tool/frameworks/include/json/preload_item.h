@@ -25,5 +25,4 @@ struct PreloadItem {
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PRELOAD_ITEM_H

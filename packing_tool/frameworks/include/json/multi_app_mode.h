@@ -23,7 +23,7 @@ namespace AppPackingTool {
 // java : java has two override functions: equals() and hashCode()
 struct MultiAppMode {
     std::string multiAppModeType = "";
-    int maxCount = 0;
+    int32_t maxCount = 0;
 
     bool operator == (const MultiAppMode& multiAppMode) const
     {
@@ -37,5 +37,4 @@ struct MultiAppMode {
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_MULTI_APP_MODE_H

@@ -16,16 +16,13 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_JSON_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_JSON_UTILS_H
 
-#include <string>
 #include <memory>
+#include <string>
+
 #include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-const std::string MODULE_JSON = "module.json";
-const std::string CONFIG_JSON = "config.json";
-const std::string PATCH_JSON = "patch.json";
-
 class JsonUtils {
 public:
     JsonUtils() {};
