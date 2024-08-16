@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-#include <fstream>
 #include "pack_info_utils.h"
+
+#include <fstream>
+
 #include "log.h"
 
 namespace OHOS {
@@ -65,7 +67,7 @@ bool PackInfoUtils::MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackI
         LOGE("Module node is not array!");
         return false;
     }
-    for (int i = 0; i < modulesObj2->GetSize(); i++) {
+    for (int32_t i = 0; i < modulesObj2->GetSize(); i++) {
         if (!modulesObj1->Push(modulesObj2->Get(i))) {
             LOGE("Push module node failed!");
             return false;
@@ -82,7 +84,7 @@ bool PackInfoUtils::MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackI
         LOGE("Package node is not array!");
         return false;
     }
-    for (int i = 0; i < packagesObj2->GetSize(); i++) {
+    for (int32_t i = 0; i < packagesObj2->GetSize(); i++) {
         if (!packagesObj1->Push(packagesObj2->Get(i))) {
             LOGE("Push package node failed!");
             return false;
@@ -138,7 +140,7 @@ bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, Pac
         return false;
     }
     bool isFind = false;
-    for (int i = 0; i < modulesObj2->GetSize(); i++) {
+    for (int32_t i = 0; i < modulesObj2->GetSize(); i++) {
         std::unique_ptr<PtJson> distroObj;
         if (!srcPackInfo2.GetDistroObject(i, distroObj)) {
             LOGE("GetDistroObject failed!");
@@ -179,7 +181,7 @@ bool PackInfoUtils::FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, Pa
         return false;
     }
     bool isFind = false;
-    for (int i = 0; i < packagesObj2->GetSize(); i++) {
+    for (int32_t i = 0; i < packagesObj2->GetSize(); i++) {
         std::string packageNameInPackageObj;
         if (!srcPackInfo2.GetNameByPackageObj(packagesObj2->Get(i), packageNameInPackageObj)) {
             LOGE("GetNameByPackageObj failed!");

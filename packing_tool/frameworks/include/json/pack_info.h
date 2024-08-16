@@ -16,14 +16,15 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACK_INFO_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACK_INFO_H
 
-#include <string>
 #include <list>
+#include <string>
+
 #include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
 struct PackInfoVersion {
-    int code = -1;
+    int32_t code = -1;
     std::string name = "";
 };
 
@@ -68,7 +69,7 @@ public:
         const std::string& defaultBundleType);
     bool GetVersion(PackInfoVersion& version);
     bool GetVersionByVersionObj(const std::unique_ptr<PtJson>& appObj, PackInfoVersion& version);
-    bool SetVersionCode(const int& versionCode);
+    bool SetVersionCode(const int32_t& versionCode);
     bool SetVersionName(const std::string& versionName);
     bool GetModuleNameByDistroObj(const std::unique_ptr<PtJson>& distroObj, std::string& moduleName);
     bool GetNameByPackageObj(const std::unique_ptr<PtJson>& packageObj, std::string& name);

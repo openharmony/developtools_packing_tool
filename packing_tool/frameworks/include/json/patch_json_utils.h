@@ -16,14 +16,14 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PATCH_JSON_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PATCH_JSON_UTILS_H
 
-#include <string>
 #include <list>
-#include "patch_json.h"
+#include <string>
+
 #include "hqf_info.h"
+#include "patch_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class PatchJsonUtils {
 public:
     PatchJsonUtils() {};

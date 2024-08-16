@@ -18,12 +18,12 @@
 
 #include <string>
 #include <list>
-#include "pt_json.h"
+
 #include "hqf_info.h"
+#include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
-
 class PatchJson {
 public:
     PatchJson() {};
@@ -67,8 +67,6 @@ public:
 private:
     std::unique_ptr<PtJson> root_ = nullptr;
 };
-
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PATCH_JSON_H
