@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-#include <iostream>
 #include "hap_verify_info.h"
+
+#include <iostream>
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -224,12 +225,12 @@ void HapVerifyInfo::SetTargetBundleName(const std::string& targetBundleName)
     targetBundleName_ = targetBundleName;
 }
 
-const int& HapVerifyInfo::GetTargetPriority() const
+const int32_t& HapVerifyInfo::GetTargetPriority() const
 {
     return targetPriority_;
 }
 
-void HapVerifyInfo::SetTargetPriority(const int& priority)
+void HapVerifyInfo::SetTargetPriority(const int32_t& priority)
 {
     targetPriority_ = priority;
 }
@@ -244,12 +245,12 @@ void HapVerifyInfo::SetTargetModuleName(const std::string& targetModuleName)
     targetModuleName_ = targetModuleName;
 }
 
-const int& HapVerifyInfo::GetTargetModulePriority() const
+const int32_t& HapVerifyInfo::GetTargetModulePriority() const
 {
     return targetModulePriority_;
 }
 
-void HapVerifyInfo::SetTargetModulePriority(const int& priority)
+void HapVerifyInfo::SetTargetModulePriority(const int32_t& priority)
 {
     targetModulePriority_ = priority;
 }
@@ -264,32 +265,32 @@ void HapVerifyInfo::SetFileLength(const int64_t& fileLength)
     fileLength_ = fileLength;
 }
 
-const int& HapVerifyInfo::GetEntrySizeLimit() const
+const int32_t& HapVerifyInfo::GetEntrySizeLimit() const
 {
     return entrySizeLimit_;
 }
 
-void HapVerifyInfo::SetEntrySizeLimit(const int& limit)
+void HapVerifyInfo::SetEntrySizeLimit(const int32_t& limit)
 {
     entrySizeLimit_ = limit;
 }
 
-const int& HapVerifyInfo::GetNotEntrySizeLimit() const
+const int32_t& HapVerifyInfo::GetNotEntrySizeLimit() const
 {
     return notEntrySizeLimit_;
 }
 
-void HapVerifyInfo::SetNotEntrySizeLimit(const int& notEntrySizeLimit)
+void HapVerifyInfo::SetNotEntrySizeLimit(const int32_t& notEntrySizeLimit)
 {
     notEntrySizeLimit_ = notEntrySizeLimit;
 }
 
-const int& HapVerifyInfo::GetSumSizeLimit() const
+const int32_t& HapVerifyInfo::GetSumSizeLimit() const
 {
     return sumSizeLimit_;
 }
 
-void HapVerifyInfo::SetSumSizeLimit(const int& sumSizeLimit)
+void HapVerifyInfo::SetSumSizeLimit(const int32_t& sumSizeLimit)
 {
     sumSizeLimit_ = sumSizeLimit;
 }

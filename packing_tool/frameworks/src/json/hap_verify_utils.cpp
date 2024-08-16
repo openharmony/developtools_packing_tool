@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
+#include "hap_verify_utils.h"
+
 #include <algorithm>
 #include <set>
+
 #include "hap_verify_info.h"
-#include "hap_verify_utils.h"
 #include "log.h"
 #include "utils.h"
 
@@ -36,7 +38,7 @@ namespace {
     const std::string ATOMIC_SERVICE = "atomicService";
     const std::string TYPE_SHARED = "shared";
     const std::string HAR = "har";
-    const int TWO = 2;
+    const int32_t TWO = 2;
     const long FILE_LENGTH_1M = 1024 * 1024L;
 }
 
@@ -848,8 +850,8 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
         return false;
     }
     // check single file length
-    int entryLimit = hapVerifyInfos.begin()->GetEntrySizeLimit();
-    int notEntryLimit = hapVerifyInfos.begin()->GetNotEntrySizeLimit();
+    int32_t entryLimit = hapVerifyInfos.begin()->GetEntrySizeLimit();
+    int32_t notEntryLimit = hapVerifyInfos.begin()->GetNotEntrySizeLimit();
     for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetModuleType() == ENTRY &&
             (hapVerifyInfo.GetFileLength() >= entryLimit * FILE_LENGTH_1M)) {
@@ -890,8 +892,8 @@ bool HapVerifyUtils::CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>
         LOGE("hapVerifyInfos is empty!");
         return false;
     }
-    int entryLimit = hapVerifyInfos.begin()->GetEntrySizeLimit();
-    int notEntryLimit = hapVerifyInfos.begin()->GetNotEntrySizeLimit();
+    int32_t entryLimit = hapVerifyInfos.begin()->GetEntrySizeLimit();
+    int32_t notEntryLimit = hapVerifyInfos.begin()->GetNotEntrySizeLimit();
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         std::list<std::string> dependencies;
         GetModuleDependency(hapVerifyInfo, hapVerifyInfos, dependencies);
