@@ -33,16 +33,16 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const int BUFFER_SIZE = 1024;
-    const int HEX_WIDTH = 2;
-    const char PATH_DELIMITER = '/';
-    const long FILE_LENGTH_1M = 1024 * 1024L;
-    const double FILE_SIZE_OFFSET_DOUBLE = 0.01;
-    const int FILE_SIZE_DECIMAL_PRECISION = 2;
-    const int MAX_UUID_LENGTH = 32;
-    const int RANGE_MIN = 0;
-    const int RANGE_MAX = 15;
-    const int TEN = 10;
+const int BUFFER_SIZE = 1024;
+const int HEX_WIDTH = 2;
+const char PATH_DELIMITER = '/';
+const long FILE_LENGTH_1M = 1024 * 1024L;
+const double FILE_SIZE_OFFSET_DOUBLE = 0.01;
+const int FILE_SIZE_DECIMAL_PRECISION = 2;
+const int MAX_UUID_LENGTH = 32;
+const int RANGE_MIN = 0;
+const int RANGE_MAX = 15;
+const int TEN = 10;
 }
 
 std::string Utils::GetFileContent(const std::string filePath)
