@@ -59,7 +59,7 @@ public:
     int32_t AddFileOrDirectoryToZip(const std::string &filePath, const std::string &zipPath);
     int32_t AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
 
-    int32_t WriteStringToZip(const std::string &content, const std::string& zipPath);
+    int32_t WriteStringToZip(const std::string &content, const std::string &zipPath);
     
 protected:
     int32_t AddEmptyDirToZip(const std::string &zipPath);
