@@ -36,7 +36,7 @@ ZipUtils::~ZipUtils()
 {}
 
 int32_t ZipUtils::Zip(const std::string& filePath, const std::string& zipFilePath,
-    const std::string& zipPath, const ZipLevel& zipLevel, const inint32_tt& append)
+    const std::string& zipPath, const ZipLevel& zipLevel, const int32_t& append)
 {
     ZipWrapper zipWrapper(zipFilePath);
     if (zipWrapper.Open(append) != ZIP_ERR_SUCCESS) {
