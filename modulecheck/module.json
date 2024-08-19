@@ -1168,7 +1168,7 @@
                     "bundle",
                     "runWithMainProcess"
                   ],
-                  "default": "instance"
+                  "default": "bundle"
                 }
               }
             },
@@ -1182,7 +1182,7 @@
                     "type",
                     "bundle"
                   ],
-                  "default": "instance"
+                  "default": "bundle"
                 }
               }
             }
