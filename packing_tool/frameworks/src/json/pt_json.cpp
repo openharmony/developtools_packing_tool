@@ -40,6 +40,9 @@ void PtJson::ReleaseRoot()
 std::unique_ptr<PtJson> PtJson::Parse(const std::string &data)
 {
     cJSON *value = cJSON_ParseWithOpts(data.c_str(), nullptr, true);
+    if (value == nullptr) {
+        return nullptr;
+    }
     return std::make_unique<PtJson>(value);
 }
 
@@ -155,54 +158,36 @@ bool PtJson::Add(const char *key, const std::unique_ptr<PtJson> &value) const
 
 bool PtJson::Push(bool value) const
 {
-    cJSON *node = cJSON_CreateBool(value);
-    if (node == nullptr) {
-        return false;
-    }
-
-    cJSON_bool ret = cJSON_AddItemToArray(object_, node);
-    if (ret == 0) {
-        cJSON_Delete(node);
-        return false;
-    }
-
-    return true;
+    return Push(cJSON_CreateBool(value));
 }
 
 bool PtJson::Push(int32_t value) const
 {
-    return Push(static_cast<double>(value));
+    return Push(cJSON_CreateNumber(value));
 }
 
 bool PtJson::Push(int64_t value) const
 {
-    return Push(static_cast<double>(value));
+    return Push(cJSON_CreateNumber(value));
 }
 
 bool PtJson::Push(uint32_t value) const
 {
-    return Push(static_cast<double>(value));
+    return Push(cJSON_CreateNumber(value));
 }
 
 bool PtJson::Push(double value) const
 {
-    cJSON *node = cJSON_CreateNumber(value);
-    if (node == nullptr) {
-        return false;
-    }
-
-    cJSON_bool ret = cJSON_AddItemToArray(object_, node);
-    if (ret == 0) {
-        cJSON_Delete(node);
-        return false;
-    }
-
-    return true;
+    return Push(cJSON_CreateNumber(value));
 }
 
 bool PtJson::Push(const char *value) const
 {
-    cJSON *node = cJSON_CreateString(value);
+    return Push(cJSON_CreateString(value));
+}
+
+bool PtJson::Push(cJSON *node) const
+{
     if (node == nullptr) {
         return false;
     }
@@ -222,17 +207,7 @@ bool PtJson::Push(const std::unique_ptr<PtJson> &value) const
         return false;
     }
 
-    cJSON *node = value->GetJson();
-    if (node == nullptr) {
-        return false;
-    }
-
-    cJSON_bool ret = cJSON_AddItemToArray(object_, node);
-    if (ret == 0) {
-        return false;
-    }
-
-    return true;
+    return Push(value->GetJson());
 }
 
 bool PtJson::Remove(const char *key) const

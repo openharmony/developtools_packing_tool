@@ -28,8 +28,8 @@ namespace fs = std::filesystem;
 namespace OHOS {
 namespace AppPackingTool {
 enum ZipErrCode {
-    ZIP_ERR_SUCCESS = 0,
-    ZIP_ERR_FAILURE
+    ZIP_ERR_FAILURE = -1,
+    ZIP_ERR_SUCCESS = 0
 };
 
 enum class ZipLevel : int32_t {

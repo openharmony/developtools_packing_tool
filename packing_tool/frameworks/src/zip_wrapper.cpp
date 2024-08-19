@@ -18,7 +18,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "app_log_wrapper.h"
 #include "log.h"
 
 namespace OHOS {
@@ -69,8 +68,6 @@ int32_t ZipWrapper::AddFileOrDirectoryToZip(const std::string &filePath, const s
 
 int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath)
 {
-    APP_LOGD("Add [%{public}s] into zip[%{public}s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
-    LOGI("Add [%s] into zip[%s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
     int32_t ret = ZIP_ERR_SUCCESS;
     if (fs::is_directory(fsFilePath)) {
         LOGI("[%s] is directory to [%s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
@@ -179,8 +176,12 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZ
     if (fs::file_size(fsFilePath) > 0) {
         result = ZIP_ERR_SUCCESS;
         char buffer[MAX_ZIP_BUFFER_SIZE];
-        while (file.good()) {
+        while (!file.eof()) {
             file.read(buffer, sizeof(buffer));
+            if (file.fail() && !file.eof()) {
+                LOGE("read file error!");
+                break;
+            }
             auto bytesRead = file.gcount();
             if (bytesRead <= 0) {
                 LOGE("read file bytes error![filePath=%s][bytesRead=%u]", fsFilePath.c_str(), bytesRead);
