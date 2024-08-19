@@ -86,6 +86,7 @@ int64_t Utils::GetFileLength(const std::string filePath)
 {
     struct stat statbuf = { 0 };
     if (stat(filePath.c_str(), &statbuf) != 0) {
+        LOGE("file stat failed! filePath=%s", filePath.c_str());
         return -1;
     }
     return statbuf.st_size;
