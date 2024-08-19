@@ -64,6 +64,7 @@ public:
     bool Push(uint32_t value) const;
     bool Push(double value) const;
     bool Push(const char *value) const;
+    bool Push(cJSON *node) const;
     bool Push(const std::unique_ptr<PtJson> &value) const;
 
     // Remove Json child

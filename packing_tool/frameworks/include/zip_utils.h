@@ -16,6 +16,8 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_UTILS_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_ZIP_UTILS_H
 
+#include <map>
+
 #include "unzip_wrapper.h"
 #include "zip_wrapper.h"
 
