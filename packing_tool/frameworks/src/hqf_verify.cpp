@@ -41,9 +41,9 @@ bool HQFVerify::checkHQFIsValid(const std::vector<HqfInfo>& HqfInfos)
 bool HQFVerify::checkAppFields(const std::vector<HqfInfo>& HqfInfos)
 {
     const std::string& bundleName = HqfInfos[0].GetBundleName();
-    int versionCode = HqfInfos[0].GetVersionCode();
+    int32_t versionCode = HqfInfos[0].GetVersionCode();
     const std::string& versionName = HqfInfos[0].GetVersionName();
-    int patchVersionCode = HqfInfos[0].GetPatchVersionCode();
+    int32_t patchVersionCode = HqfInfos[0].GetPatchVersionCode();
     const std::string& patchVersionName = HqfInfos[0].GetPatchVersionName();
 
     for (const auto& info : HqfInfos) {

@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
+#include "appqf_packager.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <ostream>
 #include <regex>
 #include <string>
-
-#include "appqf_packager.h"
 
 #include "constants.h"
 #include "contrib/minizip/zip.h"
@@ -41,7 +41,7 @@ APPQFPackager::APPQFPackager(const std::map<std::string, std::string> &parameter
     : Packager(parameterMap, resultReceiver)
 {}
 
-int APPQFPackager::InitAllowedParam()
+int32_t APPQFPackager::InitAllowedParam()
 {
     allowedParameters_ = {
         {}
@@ -88,7 +88,7 @@ bool APPQFPackager::CheckHqfList(const std::list<std::string>& hqfList)
     return true;
 }
 
-int APPQFPackager::PreProcess()
+int32_t APPQFPackager::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end()) {
@@ -133,7 +133,7 @@ int APPQFPackager::PreProcess()
     return ERR_OK;
 }
 
-int APPQFPackager::Process()
+int32_t APPQFPackager::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipWrapper_.Open(outPath);
@@ -148,7 +148,7 @@ int APPQFPackager::Process()
     return ERR_OK;
 }
 
-int APPQFPackager::PostProcess()
+int32_t APPQFPackager::PostProcess()
 {
     return ERR_OK;
 }
