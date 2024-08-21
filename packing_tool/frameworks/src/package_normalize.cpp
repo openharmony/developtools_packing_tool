@@ -31,8 +31,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 PackageNormalize::PackageNormalize(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}

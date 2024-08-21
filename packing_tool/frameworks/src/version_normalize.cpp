@@ -40,8 +40,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 VersionNormalize::VersionNormalize(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
@@ -180,7 +178,7 @@ bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int
     return true;
 }
 
-bool VersionNormalize::compressDirToHap(const std::string &sourceDir, const std::string &zipFilePath)
+bool VersionNormalize::CompressDirToHap(const std::string &sourceDir, const std::string &zipFilePath)
 {
     std::map<std::string, std::string> parameterMap;
     std::string resultReceiver = "";
@@ -226,7 +224,8 @@ bool VersionNormalize::compressDirToHap(const std::string &sourceDir, const std:
     } else if (Utils::EndsWith(zipFilePath, Constants::HSP_SUFFIX)) {
         packager = std::make_unique<HspPackager>(parameterMap, resultReceiver);
     }
-    if (packager->PreProcess() != ERR_OK || packager->Process() != ERR_OK) {
+
+    if (packager == nullptr || ->PreProcess() != ERR_OK || packager->Process() != ERR_OK) {
         return false;
     }
     return true;
@@ -285,7 +284,7 @@ int32_t VersionNormalize::Process()
             return ERR_INVALID_VALUE;
         }
         normalizeVersionList.push_back(normalizeVersion);
-        if (!compressDirToHap(tempPath,
+        if (!CompressDirToHap(tempPath,
             outPath + Constants::LINUX_FILE_SEPARATOR + fs::path(path).filename().string())) {
             Utils::ForceRemoveDirectory(tempPath);
             return ERR_INVALID_VALUE;
