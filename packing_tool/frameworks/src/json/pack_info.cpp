@@ -620,5 +620,38 @@ bool PackInfo::GetFormNamesByFormsObj(const std::unique_ptr<PtJson>& formsObj,
     }
     return true;
 }
+
+bool PackInfo::GetPackageNames(std::list<std::string> &packageNames)
+{
+    std::unique_ptr<PtJson> packagesObj;
+    if (!GetPackagesObject(packagesObj)) {
+        LOGE("GetPackagesObject failed!");
+        return false;
+    }
+    return GetPackageNamesByPackagesObj(packagesObj, packageNames);
+}
+
+bool PackInfo::GetPackageNamesByPackagesObj(const std::unique_ptr<PtJson>& packagesObj,
+    std::list<std::string> &packageNames)
+{
+    if (!packagesObj || !packagesObj->IsArray()) {
+        LOGE("Packages node is null or is not array!");
+        return false;
+    }
+    for (int i = 0; i < packagesObj->GetSize(); i++) {
+        std::unique_ptr<PtJson> packageObj;
+        if (!GetPackageObject(i, packageObj)) {
+            LOGE("GetPackageObject failed!");
+            return false;
+        }
+        std::string name;
+        if (!GetNameByPackageObj(packageObj, name)) {
+            LOGE("GetNameByPackageObj failed!");
+            return false;
+        }
+        packageNames.push_back(name);
+    }
+    return true;
+}
 } // namespace AppPackingTool
 } // namespace OHOS

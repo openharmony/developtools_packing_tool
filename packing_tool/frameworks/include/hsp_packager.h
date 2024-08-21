@@ -17,10 +17,13 @@
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HSP_PACKAGER_H
 
 #include <iostream>
+#include <list>
 #include <map>
 #include <string>
 
+#include "json/module_json.h"
 #include "packager.h"
+#include "zip_wrapper.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -28,12 +31,36 @@ class HspPackager : public Packager {
 public:
     HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver);
     ~HspPackager() override {}
+    bool IsVerifyValidInHspCommonMode();
+    bool Compatible(const std::string &paramPath, std::list<std::string> &fileList, const std::string &suffix);
+    bool IsVerifyValidInHspMode();
+    bool IsHspPathValid();
+    bool IsHspPathValid(const std::string &parameterMapKey);
+    bool CompressHsp();
+    bool CompressHspMode(const std::string &jsonPath);
+    bool CompressHspModePartSecond(const std::string &jsonPath);
+    bool CompressHspModePartThird(const std::string &jsonPath);
+    bool CompressHspModePartFourth();
+    bool CompressHspModeMultiple();
+    bool AddCommonFileOrDirectoryToZip(const std::string &paramPath, const std::string &targetPath);
 
 protected:
     int32_t InitAllowedParam() override;
     int32_t PreProcess() override;
     int32_t Process() override;
     int32_t PostProcess() override;
+
+private:
+    std::list<std::string> formatedDirList_;
+    std::list<std::string> formattedJarPathList_;
+    std::list<std::string> formattedTxtPathList_;
+    std::list<std::string> formattedSoPathList_;
+    
+    std::string moduleName_;
+    std::string jsonPath_;
+    std::list<std::string> deviceTypes_;
+    ZipWrapper zipWrapper_;
+    ModuleJson moduleJson_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

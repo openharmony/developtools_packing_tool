@@ -1032,8 +1032,8 @@ bool ModuleJson::IsExistedStageModuleTargetPriority()
 bool ModuleJson::IsExistedStageAppTargetPriority()
 {
     std::unique_ptr<PtJson> appObj;
-    if (!GetModuleObject(appObj)) {
-        LOGE("GetModuleObject failed!");
+    if (!GetAppObject(appObj)) {
+        LOGE("GetAppObject failed!");
         return false;
     }
     return appObj->Contains(TARGET_PRIORITY.c_str());
@@ -1164,12 +1164,10 @@ bool ModuleJson::CheckStageAtomicService()
 {
     if (!IsModuleAtomicServiceValid()) {
         LOGE("IsModuleAtomicServiceValid failed!");
-        LOGE("module can not config atomicService when bundleType is not atomicService.");
         return false;
     }
     if (!CheckEntryInAtomicService()) {
         LOGE("CheckEntryInAtomicService failed!");
-        LOGE("entry module must contain at least one ability.");
         return false;
     }
     if (!CheckAtomicServiceInstallationFree()) {
