@@ -36,7 +36,7 @@ protected:
 private:
     ZipWrapper zipWrapper_;
     std::list<std::string> hqfList_;
-    bool CheckHqfList(const std::list<std::string>& hqfList);
+    bool CheckHqfList(const std::list<std::string> &hqfList);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

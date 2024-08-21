@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
+#include "package_normalize.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <ostream>
 #include <regex>
 #include <string>
-
-#include "package_normalize.h"
 
 #include "constants.h"
 #include "json/json_utils.h"
@@ -37,7 +37,7 @@ PackageNormalize::PackageNormalize(const std::map<std::string, std::string> &par
     : Packager(parameterMap, resultReceiver)
 {}
 
-int PackageNormalize::InitAllowedParam()
+int32_t PackageNormalize::InitAllowedParam()
 {
     allowedParameters_ = {
         {}
@@ -46,9 +46,8 @@ int PackageNormalize::InitAllowedParam()
 }
 
 
-int PackageNormalize::PreProcess()
+int32_t PackageNormalize::PreProcess()
 {
-    LOGD("PackageNormalize PreProcess");
     if (!IsOutDirectoryValid()) {
         return ERR_INVALID_VALUE;
     }
@@ -82,7 +81,7 @@ int PackageNormalize::PreProcess()
 }
 
 bool PackageNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
-    const int newVersionCode, const std::string newBundleName)
+    const int32_t &newVersionCode, const std::string &newBundleName)
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
@@ -105,7 +104,7 @@ bool PackageNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 }
 
 bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
-    const int newVersionCode, const std::string newBundleName)
+    const int32_t &newVersionCode, const std::string &newBundleName)
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
@@ -127,11 +126,11 @@ bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
     return true;
 }
 
-int PackageNormalize::Process()
+int32_t PackageNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     std::string tempPath = outPath +Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_TEMP_DIR;
-    int versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+    int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
     std::string bundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
     for (const std::string &path : hspList_) {
         if (ZipUtils::Unzip(path, tempPath) != ZIP_ERR_SUCCESS) {
@@ -166,7 +165,7 @@ int PackageNormalize::Process()
     return ERR_OK;
 }
 
-int PackageNormalize::PostProcess()
+int32_t PackageNormalize::PostProcess()
 {
     return ERR_OK;
 }
