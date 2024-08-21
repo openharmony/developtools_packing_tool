@@ -33,8 +33,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 HqfPackager::HqfPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}

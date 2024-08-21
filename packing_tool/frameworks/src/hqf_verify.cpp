@@ -21,24 +21,24 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-bool HQFVerify::checkHQFIsValid(const std::vector<HqfInfo>& HqfInfos)
+bool HQFVerify::CheckHQFIsValid(const std::vector<HqfInfo>& HqfInfos)
 {
     if (HqfInfos.empty()) {
         LOGE("Error: input hqf file is empty!");
         return false;
     }
-    if (!checkAppFields(HqfInfos)) {
+    if (!CheckAppFields(HqfInfos)) {
         LOGE("Error: input hqf file has different fields in app!");
         return false;
     }
-    if (!checkModuleIsValid(HqfInfos)) {
+    if (!CheckModuleIsValid(HqfInfos)) {
         LOGE("Error: input hqf file moduleName is invalid!");
         return false;
     }
     return true;
 }
 
-bool HQFVerify::checkAppFields(const std::vector<HqfInfo>& HqfInfos)
+bool HQFVerify::CheckAppFields(const std::vector<HqfInfo>& HqfInfos)
 {
     const std::string& bundleName = HqfInfos[0].GetBundleName();
     int32_t versionCode = HqfInfos[0].GetVersionCode();
@@ -71,13 +71,13 @@ bool HQFVerify::checkAppFields(const std::vector<HqfInfo>& HqfInfos)
     return true;
 }
 
-bool HQFVerify::checkModuleIsValid(const std::vector<HqfInfo>& HqfInfos)
+bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& HqfInfos)
 {
     std::unordered_set<std::string> moduleNames;
     std::list<std::string> deviceTypes_;
     for (const auto& info : HqfInfos) {
         if (!moduleNames.insert(info.GetModuleName()).second) {
-            LOGE("Error: input hqf file has overlapping moduleNames!, %s", info.GetModuleName().c_str());
+            LOGE("Error: input hqf file has overlapping moduleNames!");
             return false;
         }
         const auto& deviceTypes = info.GetDeviceTypes();

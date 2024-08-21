@@ -46,7 +46,7 @@ private:
         const std::string &newVersionName);
     bool ProcessJsonFiles(const std::string &tempPath, NormalizeVersion &normalizeVersion,
         const int32_t &versionCode, const std::string& versionName);
-    bool compressDirToHap(const std::string &tempDir, const std::string &modifiedHapPath);
+    bool CompressDirToHap(const std::string &tempDir, const std::string &modifiedHapPath);
     ZipWrapper zipWrapper_;
     UnzipWrapper unzipWrapper_;
     std::list<std::string> hspOrhapList_;
