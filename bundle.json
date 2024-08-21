@@ -17,7 +17,10 @@
       "adapted_system_type": [ "mini", "small", "standard" ],
       "deps": {
         "components": [
-          "json",
+          "bounds_checking_function",
+          "cJSON",
+          "hilog",
+          "openssl",
           "zlib"
         ]
       },

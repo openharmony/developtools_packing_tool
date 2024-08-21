@@ -17,8 +17,6 @@
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_CONSTANTS_H
 
 #include <getopt.h>
-#include <iostream>
-#include <map>
 #include <string>
 
 namespace OHOS {
@@ -36,11 +34,29 @@ const std::string MODE_APPQF = "appqf";
 const std::string MODE_MULTIAPP = "multiApp";
 const std::string MODE_VERSION_NORMALIZE = "versionNormalize";
 const std::string MODE_PACKAGE_NORMALIZE = "packageNormalize";
-
+const std::string MODE_FAST_APP = "fastApp";
+const std::string COMPRESSOR_TEMP_DIR = "temp";
+const std::string COMPRESSOR_APP_TEMP_DIR = "app_";
+const std::string COMPRESSOR_FAST_APP_TEMP_DIR = "fastApp_";
+const std::string COMPRESSOR_MULTIAPP_TEMP_DIR = "multiApp_";
+const std::string COMPRESSOR_PACKAGENORMALIZE_TEMP_DIR = "packageNormalize_";
+const std::string COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR = "versionNormalize_";
 const std::string PARAM_PREFIX = "--";
 const std::string PARAM_MODE = "mode";
 const std::string PARAM_JSON_PATH = "json-path";
 const std::string PARAM_LIB_PATH = "lib-path";
+const std::string PARAM_RES_PATH = "res-path";
+const std::string PARAM_HNP_PATH = "hnp-path";
+const std::string PARAM_FILE_PATH = "file-path";
+const std::string PARAM_BIN_PATH = "bin-path";
+const std::string PARAM_ASSETS_PATH = "assets-path";
+const std::string PARAM_SHAREDLIBS_PATH = "shared-libs-path";
+const std::string PARAM_ABC_PATH = "abc-path";
+const std::string PARAM_ABILITY_SO_PATH = "ability-so-path";
+const std::string PARAM_JAR_PATH = "jar-path";
+const std::string PARAM_TXT_PATH = "txt-path";
+const std::string PARAM_PACK_RES_PATH = "pack-res-path";
+const std::string PARAM_ENTRYCARD_PATH = "entrycard-path";
 const std::string PARAM_RESOURCES_PATH = "resources-path";
 const std::string PARAM_INDEX_PATH = "index-path";
 const std::string PARAM_PACK_INFO_PATH = "pack-info-path";
@@ -73,21 +89,64 @@ const std::string PARAM_RPCID = "rpcid";
 const std::string PARAM_APPQF_PATH = "appqf-path";
 const std::string PARAM_MAIN_MODULE_LIMIT = "main-module-limit";
 const std::string PARAM_NORMAL_MODULE_LIMIT = "normal-module-limit";
+const std::string PARAM_BUNDLE_NAME = "bundle-name";
 
 const std::string MODULE_JSON = "module.json";
 const std::string CONFIG_JSON = "config.json";
+const std::string PATCH_JSON = "patch.json";
 const std::string LIB_PATH = "libs";
+const std::string AN_PATH = "an";
+const std::string AP_PATH = "ap";
+const std::string JS_PATH = "js";
+const std::string HNP_PATH = "hnp";
+const std::string ASSETS_PATH = "assets";
+const std::string RES_PATH = "res";
+const std::string SO_DIR = "maple";
+const std::string SO_ARM64_DIR = "maple/arm64/";
+const std::string SHARED_LIBS_DIR = "shared_libs";
+const std::string LINUX_FILE_SEPARATOR = "/";
+const std::string ENTRYCARD_NAME = "EntryCard/";
+const std::string ENTRYCARD_BASE_NAME = "base";
+const std::string ENTRYCARD_SNAPSHOT_NAME = "snapshot";
 const std::string RESOURCES_PATH = "resources";
 const std::string RESOURCES_INDEX = "resources.index";
 const std::string PACK_INFO = "pack.info";
 const std::string ETS_PATH = "ets";
 const std::string RPCID_SC = "rpcid.sc";
 const std::string PKG_CONTEXT_JSON = "pkgContextInfo.json";
+const std::string PROFILE_NAME = "CAPABILITY.profile";
+const std::string FILE_PACK_RES = "pack.res";
+const std::string INVALID_PATH = "invalid";
+const std::string TYPE_SHARED = "shared";
+const std::string BUNDLE_TYPE_APP_SERVICE = "appService";
+const std::string TEMP_HAP_DIR = "tempHapDir";
+const std::string TEMP_HSP_DIR = "tempHspDir";
+const std::string TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
+const std::string ATOMIC_SERVICE = "atomicService";
+const std::string NULL_DIR_NAME = "";
+const std::string DEVICE_TYPE_FITNESSWATCH = "fitnessWatch";
+const std::string DEVICE_TYPE_FITNESSWATCH_NEW = "liteWearable";
+const std::string VERSION_RECORD = "version_record.json";
+const std::string VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
+const std::string BUNDLE_NAME_PATTERN =
+    "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
 
 const std::string JSON_SUFFIX = ".json";
 const std::string HAP_SUFFIX = ".hap";
+const std::string HAR_SUFFIX = ".har";
 const std::string HSP_SUFFIX = ".hsp";
 const std::string APP_SUFFIX = ".app";
+const std::string SO_SUFFIX = ".so";
+const std::string RES_SUFFIX = ".res";
+const std::string ABC_SUFFIX = ".abc";
+const std::string JAR_SUFFIX = ".jar";
+const std::string TXT_SUFFIX = ".txt";
+const std::string PNG_SUFFIX = ".png";
+const std::string HQF_SUFFIX = ".hqf";
+const std::string APPQF_SUFFIX = ".appqf";
+
+const int32_t BUFFER_SIZE = 1024;
+const char COMMA_SPLIT = ',';
 
 constexpr const char* SHORT_OPTIONS = "";
 const struct option LONG_OPTIONS[] = {
@@ -126,6 +185,14 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_APPQF_PATH.c_str(), required_argument, nullptr, 34},
     {PARAM_MAIN_MODULE_LIMIT.c_str(), required_argument, nullptr, 35},
     {PARAM_NORMAL_MODULE_LIMIT.c_str(), required_argument, nullptr, 36},
+    {PARAM_FILE_PATH.c_str(), required_argument, nullptr, 37},
+    {PARAM_HNP_PATH.c_str(), required_argument, nullptr, 38},
+    {PARAM_JAR_PATH.c_str(), required_argument, nullptr, 39},
+    {PARAM_ASSETS_PATH.c_str(), required_argument, nullptr, 40},
+    {PARAM_RES_PATH.c_str(), required_argument, nullptr, 41},
+    {PARAM_PACK_RES_PATH.c_str(), required_argument, nullptr, 42},
+    {PARAM_ENTRYCARD_PATH.c_str(), required_argument, nullptr, 43},
+    {PARAM_BUNDLE_NAME.c_str(), required_argument, nullptr, 44},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);
@@ -144,5 +211,4 @@ constexpr const int32_t BUF_SIZE = 1024 * 4;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_CONSTANTS_H
