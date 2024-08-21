@@ -18,6 +18,7 @@
 
 #include "packager.h"
 #include "zip_wrapper.h"
+
 namespace OHOS {
 namespace AppPackingTool {
 
@@ -27,17 +28,16 @@ public:
     ~APPQFPackager() override {}
 
 protected:
-    int InitAllowedParam() override;
-    int PreProcess() override;
-    int Process() override;
-    int PostProcess() override;
+    int32_t InitAllowedParam() override;
+    int32_t PreProcess() override;
+    int32_t Process() override;
+    int32_t PostProcess() override;
+
 private:
     ZipWrapper zipWrapper_;
     std::list<std::string> hqfList_;
     bool CheckHqfList(const std::list<std::string>& hqfList);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
 #endif // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_APPQF_PACKAGER_H

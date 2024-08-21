@@ -19,7 +19,8 @@
 #include <ostream>
 #include <regex>
 #include <string>
-#include <unistd.h>
+
+#include "version_normalize.h"
 
 #include "constants.h"
 #include "contrib/minizip/unzip.h"
@@ -34,8 +35,8 @@
 #include "nlohmann/json.hpp"
 #include "packager.h"
 #include "utils.h"
-#include "version_normalize.h"
 #include "zip_utils.h"
+
 namespace OHOS {
 namespace AppPackingTool {
 namespace {}
@@ -304,6 +305,5 @@ int VersionNormalize::PostProcess()
 {
     return ERR_OK;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS
