@@ -15,22 +15,25 @@
 
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACKAGE_NORMALIZE_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACKAGE_NORMALIZE_H
+
+#include "json/module_json.h"
+#include "json/normalize_version.h"
 #include "packager.h"
 #include "unzip_wrapper.h"
 #include "zip_wrapper.h"
-#include "json/module_json.h"
-#include "json/normalize_version.h"
 namespace OHOS {
 namespace AppPackingTool {
 class PackageNormalize : public Packager {
 public:
     PackageNormalize(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver);
     ~PackageNormalize() override {}
+
 protected:
-    int InitAllowedParam() override;
-    int PreProcess() override;
-    int Process() override;
-    int PostProcess() override;
+    int32_t InitAllowedParam() override;
+    int32_t PreProcess() override;
+    int32_t Process() override;
+    int32_t PostProcess() override;
+
 private:
     bool ModifyModuleJson(const std::string &moduleJsonPath,
         const int newVersionCode, const std::string newBundleName);
@@ -40,8 +43,6 @@ private:
     UnzipWrapper unzipWrapper_;
     std::list<std::string> hspList_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACKAGE_NORMALIZE_H
