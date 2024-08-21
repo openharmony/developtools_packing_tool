@@ -39,7 +39,7 @@ HqfPackager::HqfPackager(const std::map<std::string, std::string> &parameterMap,
     : Packager(parameterMap, resultReceiver)
 {}
 
-int HqfPackager::InitAllowedParam()
+int32_t HqfPackager::InitAllowedParam()
 {
     allowedParameters_ = {
         {}
@@ -47,7 +47,7 @@ int HqfPackager::InitAllowedParam()
     return ERR_OK;
 }
 
-int HqfPackager::PreProcess()
+int32_t HqfPackager::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end()) {
@@ -110,7 +110,7 @@ int HqfPackager::PreProcess()
     return ERR_OK;
 }
 
-int HqfPackager::Process()
+int32_t HqfPackager::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipWrapper_.Open(outPath);
@@ -147,7 +147,7 @@ int HqfPackager::Process()
     return ERR_OK;
 }
 
-int HqfPackager::PostProcess()
+int32_t HqfPackager::PostProcess()
 {
     return ERR_OK;
 }
