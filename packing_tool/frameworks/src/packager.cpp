@@ -17,12 +17,22 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <random>
 #include <sstream>
 #include <string>
+#include <unordered_set>
+
+#include "json/json_utils.h"
+#include "log.h"
+#include "utils.h"
+#include "zip_utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+const std::string EN_US_UTF_8 = "en_US.UTF-8";
+}
+
 Packager::Packager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : parameterMap_(parameterMap), resultReceiver_(resultReceiver)
 {}
@@ -33,135 +43,379 @@ Packager::~Packager()
 std::string Packager::MakePackage()
 {
     if (InitAllowedParam() != ERR_OK) {
-        std::cout << "PreCheck err" << std::endl;
+        LOGE("PreCheck err");
+        return "";
     }
 
     if (PreProcess() != ERR_OK) {
-        std::cout << "PreCheck err" << std::endl;
+        LOGE("PreCheck err");
+        return "";
     }
 
     if (Process() != ERR_OK) {
-        std::cout << "DoPackage err" << std::endl;
+        LOGE("DoPackage err");
+        return "";
     }
 
     if (PostProcess() != ERR_OK) {
-        std::cout << "PostCheck err" << std::endl;
+        LOGE("PostCheck err");
+        return "";
     }
-
     return "OHOS::ERR_OK";
 }
 
 int32_t Packager::PreProcess()
 {
-    std::cout << "PreCheck" << std::endl;
     resultReceiver_.append("do PreCheck\n");
     return ERR_OK;
 }
 
 int32_t Packager::Process()
 {
-    std::cout << "DoPackage" << std::endl;
     resultReceiver_.append("do DoPackage\n");
     return ERR_OK;
 }
 
 int32_t Packager::PostProcess()
 {
-    std::cout << "PostCheck" << std::endl;
     resultReceiver_.append("do PostCheck\n");
     return ERR_OK;
 }
 
-void Packager::AddFileToZip(zipFile zf, const fs::path &filePath, const fs::path &zipPath, zip_fileinfo &zipfi)
+bool Packager::CheckForceFlag()
 {
-    if (fs::is_directory(filePath)) {
-        for (const auto &entry : fs::directory_iterator(filePath)) {
-            fs::path tmpPath = zipPath / entry.path().filename();
-            AddFileToZip(zf, entry.path(), tmpPath, zipfi);
-        }
-    } else if (fs::is_regular_file(filePath)) {
-        std::ifstream file(filePath, std::ios::binary);
-        if (!file.is_open()) {
-            std::cout << "err opening file for read: " << filePath << std::endl;
-        }
-        int ret = zipOpenNewFileInZip(zf, zipPath.string().c_str(), &zipfi, nullptr, 0,
-            nullptr, 0, nullptr, 0, Z_DEFAULT_COMPRESSION);
-        if (ret != ZIP_OK) {
-            std::cout << "zipOpenNewFileInZip err: " << ret << ", " << filePath << std::endl;
-            file.close();
-            return ;
-        }
-        char buffer[Constants::BUF_SIZE];
-        while (file.good()) {
-            file.read(buffer, sizeof(buffer));
-            auto bytesRead = file.gcount();
-            if (bytesRead <= 0) {
-                std::cout << "read file: " << filePath << " err, bytesRead: " << bytesRead << std::endl;
-                break;
-            }
-            if (zipWriteInFileInZip(zf, buffer, bytesRead) < 0) {
-                std::cout << "err write to zip file: " << filePath << std::endl;
-                break;
-            }
-        }
-        zipCloseFileInZip(zf);
-        file.close();
-    }
-}
-
-void Packager::WriteStringToZip(zipFile zf, const std::string &content, const fs::path &zipPath, zip_fileinfo &zipfi)
-{
-    if (zipOpenNewFileInZip(zf, zipPath.string().c_str(), &zipfi, nullptr, 0, nullptr, 0, nullptr, 0,
-                            Z_DEFAULT_COMPRESSION) == ZIP_OK) {
-        if (zipWriteInFileInZip(zf, content.data(), content.length()) < 0) {
-            std::cout << "zipWriteInFileInZip err: " << errno << std::endl;
-        }
-        zipCloseFileInZip(zf);
-    }
-}
-
-bool Packager::ParseJsonFile(nlohmann::json &jsonObject, std::string filePath)
-{
-    std::ifstream i(filePath);
-    if (!i.is_open()) {
-        std::cout<<"failed to open json file, errno: " << errno << std::endl;
+    auto it = parameterMap_.find(Constants::PARAM_FORCE);
+    if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
+        LOGE("Packager::commandVerify forceRewrite is invalid.");
         return false;
     }
-    i.seekg(0, std::ios::end);
-    int len = static_cast<int>(i.tellg());
-    if (len == 0) {
-        i.close();
-        std::cout << "json file is empty" << std::endl;
-        return true;
-    }
-    i.seekg(0, std::ios::beg);
-    jsonObject = nlohmann::json::parse(i, nullptr, false);
-    if (jsonObject.is_discarded()) {
-        i.close();
-        std::cout << "ParseJsonFile failed due to data is discarded." << std::endl;
-        return false;
-    }
-    i.close();
     return true;
 }
 
-bool Packager::endWith(const std::string &str, const std::string &suffix)
+bool Packager::IsPathValid(const std::string &path, const bool &isFile, const std::string suffix)
 {
-    if (str.length() >= suffix.length()) {
-        return str.compare(str.length() - suffix.length(), suffix.length(), suffix);
+    if (isFile && fs::is_regular_file(path)) {
+        std::string name = fs::path(path).filename();
+        std::locale englishLocale(EN_US_UTF_8);
+        std::transform(name.begin(), name.end(), name.begin(),
+                       [&englishLocale](unsigned char c) { return std::tolower(c); });
+        if (Utils::EndsWith(name, suffix)) {
+            return true;
+        }
     }
-    return false;
+    return (!isFile) && fs::is_directory(path);
 }
 
-bool Packager::CheckFileValid(const std::string &filePath, const std::string &filename)
+bool Packager::SplitDirList(const std::string &dirList, std::list<std::string> &fileList)
 {
-    if (fs::is_regular_file(filePath)) {
-        std::string name = fs::path(filePath).filename();
-        if (endWith(name, filename)) {
+    std::list<std::string> pathList;
+    RemoveDuplicatePath(dirList, pathList);
+    for (const std::string &pathItem : pathList) {
+        std::string formattedPathItem;
+        if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
+            LOGE("GetFormattedPath failed for %s", pathItem.c_str());
+            return false;
+        };
+        if (!IsPathValid(formattedPathItem, false)) {
+            return false;
+        }
+        fileList.push_back(formattedPathItem);
+    }
+    return true;
+}
+
+void Packager::RemoveDuplicatePath(const std::string &path, std::list<std::string> &pathList)
+{
+    std::string pathItem;
+    std::istringstream pathStream(path);
+    while (std::getline(pathStream, pathItem, Constants::COMMA_SPLIT)) {
+        pathList.push_back(pathItem);
+    }
+    std::unordered_set<std::string> uniqueTokens(pathList.begin(), pathList.end());
+    pathList.assign(uniqueTokens.begin(), uniqueTokens.end());
+}
+
+bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList,
+    const std::string &suffix)
+{
+    if (IsPathValid(inputPath, false)) {
+        for (const auto& fileItem : fs::recursive_directory_iterator(inputPath)) {
+            std::string name = fileItem.path().filename();
+            std::locale englishLocale(EN_US_UTF_8);
+            std::transform(name.begin(), name.end(), name.begin(),
+                 [&englishLocale](unsigned char c) { return std::tolower(c); });
+            if (Utils::EndsWith(name, suffix)) {
+                fileList.push_back(fileItem.path().string());
+            }
+        }
+        return true;
+    } else {
+        std::string formattedPathItem;
+        std::list<std::string> pathList;
+        RemoveDuplicatePath(inputPath, pathList);
+        for (std::string pathItem : pathList) {
+            if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
+                LOGE("GetFormattedPath failed for %s", pathItem.c_str());
+                return false;
+            };
+            if (!IsPathValid(formattedPathItem, true, suffix)) {
+                return false;
+            }
+            fileList.push_back(formattedPathItem);
+        }
+        return true;
+    }
+}
+
+bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList,
+    const std::string &suffix, const std::string &extraSuffix)
+{
+    if (IsPathValid(inputPath, false)) {
+        for (const auto& fileItem : fs::recursive_directory_iterator(inputPath)) {
+            std::string name = fileItem.path().filename();
+            std::locale englishLocale(EN_US_UTF_8);
+            std::transform(name.begin(), name.end(), name.begin(),
+                 [&englishLocale](unsigned char c) { return std::tolower(c); });
+            if (Utils::EndsWith(name, suffix) || Utils::EndsWith(name, extraSuffix)) {
+                fileList.push_back(fileItem.path().string());
+            }
+        }
+        return true;
+    } else {
+        std::string formattedPathItem;
+        std::list<std::string> pathList;
+        RemoveDuplicatePath(inputPath, pathList);
+        for (std::string pathItem : pathList) {
+            if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
+                LOGE("GetFormattedPath failed for %s", pathItem.c_str());
+                return false;
+            };
+            if (!IsPathValid(formattedPathItem, true, suffix) &&
+                !IsPathValid(formattedPathItem, true, extraSuffix)) {
+                return false;
+            }
+            fileList.push_back(formattedPathItem);
+        }
+        return true;
+    }
+}
+
+bool Packager::IsOutPathValid(const std::string &outPath, const std::string &forceRewrite, const std::string &suffix)
+{
+    fs::path filePath(outPath);
+
+    if ("false" == forceRewrite && fs::exists(filePath)) {
+        LOGE("Packager::isOutPathValid out file already existed.");
+        return false;
+    }
+
+    if (suffix == Constants::HAP_SUFFIX) {
+        if (!Utils::EndsWith(filePath.filename().string(), Constants::HAP_SUFFIX)) {
+            LOGE("Packager::isOutPathValid out-path must end with .hap.");
+            return false;
+        } else {
+            return true;
+        }
+    } else if (suffix == Constants::HAR_SUFFIX) {
+        if (!Utils::EndsWith(filePath.filename().string(), Constants::HAR_SUFFIX)) {
+            LOGE("Packager::isOutPathValid out-path must end with .har.");
+            return false;
+        } else {
+            return true;
+        }
+    } else if (suffix == Constants::APP_SUFFIX) {
+        if (!Utils::EndsWith(filePath.filename().string(), Constants::APP_SUFFIX)) {
+            LOGE("Packager::isOutPathValid out-path must end with .app.");
+            return false;
+        } else {
+            return true;
+        }
+    } else if (suffix == Constants::RES_SUFFIX) {
+        if (!Utils::EndsWith(filePath.filename().string(), Constants::RES_SUFFIX)) {
+            LOGE("Packager::isOutPathValid out-path must end with .res.");
+            return false;
+        } else {
+            return true;
+        }
+    } else if (suffix == Constants::HSP_SUFFIX) {
+        if (!Utils::EndsWith(filePath.filename().string(), Constants::HSP_SUFFIX)) {
+            LOGE("Packager::isOutPathValid out-path must end with .hsp.");
+            return false;
+        } else {
             return true;
         }
     }
     return false;
+}
+
+bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHash, bool &buildHashFinish)
+{
+    if (!fs::exists(jsonPath)) {
+        LOGE("Packager::setGenerateBuildHash failed for json file not exist");
+        return false;
+    }
+    ModuleJson moduleJson;
+    moduleJson.ParseFromFile(jsonPath);
+
+    if (buildHashFinish || !moduleJson.GetGenerateBuildHash(generateBuildHash)) {
+        return true;
+    }
+
+    if (!CopyFileToTempDir(jsonPath)) {
+        return false;
+    }
+
+    if (!fs::exists(jsonPath)) {
+        LOGE("Packager::setGenerateBuildHash failed for json file not exist");
+        return false;
+    }
+
+    ModuleJson moduleJsonTemp;
+    moduleJsonTemp.ParseFromFile(jsonPath);
+    if (!moduleJsonTemp.GetGenerateBuildHash(generateBuildHash)) {
+        LOGE("ModuleJson::GetGenerateBuildHash failed");
+        return false;
+    }
+
+    if (!moduleJsonTemp.RemoveGenerateBuildHash()) {
+        LOGE("ModuleJson::RemoveGenerateBuildHash failed");
+        return false;
+    }
+    
+    std::string prettyJsonString = moduleJsonTemp.ToString();
+    if (prettyJsonString.empty()) {
+        LOGE("ModuleJson::ToString failed");
+        return false;
+    }
+    
+    std::ofstream outFile(jsonPath);
+    if (outFile.is_open()) {
+        outFile << prettyJsonString.c_str();
+        outFile.close();
+    } else {
+        LOGE("Failed to open file for writing");
+        return false;
+    }
+    return true;
+}
+
+bool Packager::CopyFileToTempDir(std::string &jsonPath)
+{
+    if (!fs::exists(jsonPath)) {
+        LOGE("Packager::copyFileToTempDir failed for json file not found.");
+        return false;
+    }
+    fs::path oldFileParent = fs::path(jsonPath).parent_path();
+    std::string tempDir = Constants::COMPRESSOR_TEMP_DIR + fs::path::preferred_separator + Utils::GenerateUUID();
+    fs::path tempDirFs(tempDir);
+    tempDir = oldFileParent.string() + fs::path::preferred_separator + tempDirFs.string();
+    fs::create_directories(tempDir);
+    fs::path fileName = JsonUtils::IsModuleJson(jsonPath) ? Constants::MODULE_JSON : Constants::CONFIG_JSON;
+    std::string tempPath = tempDir + fs::path::preferred_separator + fileName.string();
+    if (!Utils::CopyFile(jsonPath, tempPath)) {
+        return false;
+    }
+    jsonPath = tempPath;
+    return true;
+}
+
+bool Packager::BuildHash(bool &buildHashFinish, const bool &generateBuildHash,
+    const std::map<std::string, std::string> &parameterMap, const std::string &jsonPath)
+{
+    if (buildHashFinish || !generateBuildHash) {
+        return true;
+    }
+    std::map<std::string, std::string>::const_iterator it = parameterMap.find(Constants::PARAM_OUT_PATH);
+    if (it == parameterMap.end()) {
+        LOGE("out-path not found");
+        return false;
+    }
+    std::string filePath = it->second;
+    std::string hash = Utils::GetSha256File(filePath);
+    return PutBuildHash(jsonPath, hash, buildHashFinish);
+}
+
+bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash, bool &buildHashFinish)
+{
+    if (buildHashFinish) {
+        return true;
+    }
+
+    ModuleJson moduleJson;
+    moduleJson.ParseFromFile(jsonPath);
+    moduleJson.SetBuildHash(hash);
+    std::string prettyJsonString = moduleJson.ToString();
+    if (prettyJsonString.empty()) {
+        LOGE("ModuleJson::ToString failed");
+        return false;
+    }
+    
+    std::ofstream outFile(jsonPath);
+    if (outFile.is_open()) {
+        outFile << prettyJsonString.c_str();
+        outFile.close();
+    } else {
+        LOGE("Failed to open file for writing");
+        return false;
+    }
+
+    buildHashFinish = true;
+    return true;
+}
+
+bool Packager::IsModuleHap(const std::string& hapPath)
+{
+    if (!Utils::EndsWith(hapPath, Constants::HAP_SUFFIX)) {
+        return false;
+    }
+    if (!ZipUtils::IsFileExistsInZip(hapPath, Constants::MODULE_JSON)) {
+        return false;
+    }
+    return true;
+}
+
+void Packager::CompressPackinfoIntoHap(const std::string& hapPathItem, const std::string& unzipPathString,
+    const std::string& outPathString, const std::string& packInfoPath)
+{
+    if (!fs::exists(fs::path(unzipPathString))) {
+        fs::create_directory(fs::path(unzipPathString));
+    }
+    ZipUtils::Unzip(hapPathItem, unzipPathString);
+    for (const auto& entry : fs::directory_iterator(unzipPathString)) {
+        if (entry.path().filename() == Constants::PACK_INFO) {
+            fs::remove(entry.path());
+        }
+    }
+
+    std::ifstream packInfoFile(packInfoPath, std::ios::binary);
+    std::ofstream destFile(unzipPathString + fs::path::preferred_separator +
+        Constants::PACK_INFO, std::ios::binary | std::ios::trunc);
+    destFile << packInfoFile.rdbuf();
+    destFile.close();
+    packInfoFile.close();
+    ZipUtils::Zip(unzipPathString, outPathString);
+    if (fs::exists(fs::path(unzipPathString))) {
+        fs::remove_all(fs::path(unzipPathString));
+    }
+}
+
+bool Packager::IsOutDirectoryValid()
+{
+    auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
+    if (it == parameterMap_.end()) {
+        LOGE("Validate out-path is empty");
+        return false;
+    } else if (fs::exists(it->second) && !fs::is_directory(it->second)) {
+        LOGE("Validate out-path is not a directory.");
+        return false;
+    } else if (!fs::exists(it->second)) {
+        if (fs::create_directories(it->second)) {
+        } else {
+            LOGE("Failed to create out-path directory.");
+            return false;
+        }
+    }
+    return true;
 }
 } // namespace AppPackingTool
 } // namespace OHOS

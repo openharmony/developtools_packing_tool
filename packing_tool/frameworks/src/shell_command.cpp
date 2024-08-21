@@ -13,17 +13,20 @@
  * limitations under the License.
  */
 
-#include "shell_command.h"
-
 #include <getopt.h>
 #include <iostream>
 #include <memory>
 #include <string>
 
+#include "app_packager.h"
 #include "constants.h"
+#include "fast_app_packager.h"
 #include "hap_packager.h"
 #include "hsp_packager.h"
+#include "log.h"
+#include "multiapp_packager.h"
 #include "packager.h"
+#include "shell_command.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -63,7 +66,7 @@ int32_t ShellCommand::ParseParam()
             return ERR_INVALID_VALUE;
         }
         if (option < 0) {
-            std::cout << "ParseParam finish." << std::endl;
+            LOGI("ParseParam finish.");
             break;
         } else if (option == '?') {
             resultReceiver_.append("not support param: ").append(argv_[optind - 1]).append("\n");
@@ -120,7 +123,7 @@ int32_t ShellCommand::RunAsHelpCommand()
 
 int32_t ShellCommand::RunAsPackCommand()
 {
-    std::cout << "RunAsPackCommand " << std::endl;
+    LOGI("RunAsPackCommand ");
     std::unique_ptr<Packager> packager = getPackager();
     if (packager != nullptr) {
         packager->MakePackage();
@@ -130,7 +133,7 @@ int32_t ShellCommand::RunAsPackCommand()
 
 int32_t ShellCommand::RunAsUnpackCommand()
 {
-    std::cout << "RunAsUnpackCommand " << std::endl;
+    LOGI("RunAsUnpackCommand ");
     return ERR_OK;
 }
 
@@ -144,6 +147,18 @@ std::unique_ptr<Packager> ShellCommand::getPackager()
     } else if (mode == Constants::MODE_HSP) {
         std::unique_ptr<Packager> packager =
             std::make_unique<HspPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_APP) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<AppPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_MULTIAPP) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<MultiAppPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_FAST_APP) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<FastAppPackager>(parameterMap_, resultReceiver_);
         return packager;
     }
     resultReceiver_.append("not support --mode: ").append(mode).append("\n");
