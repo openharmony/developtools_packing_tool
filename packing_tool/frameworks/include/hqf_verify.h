@@ -15,11 +15,14 @@
 
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HQFVERIFY_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HQFVERIFY_H
+
 #include <iostream>
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
+
 #include "json/hqf_info.h"
+
 namespace OHOS {
 namespace AppPackingTool {
 
