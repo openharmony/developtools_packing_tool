@@ -82,6 +82,8 @@ public:
         std::string moduleName, std::list<std::string>& formNames, std::list<std::string>& formFullNames);
     bool GetFormNamesByFormsObj(const std::unique_ptr<PtJson>& formsObj,
         std::string moduleName, std::list<std::string>& formNames, std::list<std::string>& formFullNames);
+    bool GetPackageNames(std::list<std::string> &packageNames);
+    bool GetPackageNamesByPackagesObj(const std::unique_ptr<PtJson>& appObj, std::list<std::string> &packageNames);
 
 private:
     std::unique_ptr<PtJson> root_ = nullptr;
