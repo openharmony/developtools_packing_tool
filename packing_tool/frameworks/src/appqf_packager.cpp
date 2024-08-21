@@ -21,6 +21,7 @@
 #include <string>
 
 #include "appqf_packager.h"
+
 #include "constants.h"
 #include "contrib/minizip/zip.h"
 #include "json/json_utils.h"
@@ -31,6 +32,7 @@
 #include "packager.h"
 #include "utils.h"
 #include "zip_utils.h"
+
 namespace OHOS {
 namespace AppPackingTool {
 namespace {}
@@ -150,6 +152,5 @@ int APPQFPackager::PostProcess()
 {
     return ERR_OK;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS

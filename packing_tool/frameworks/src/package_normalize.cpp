@@ -19,15 +19,16 @@
 #include <ostream>
 #include <regex>
 #include <string>
-#include <unistd.h>
+
+#include "package_normalize.h"
 
 #include "constants.h"
 #include "json/json_utils.h"
 #include "json/pack_info.h"
 #include "log.h"
-#include "package_normalize.h"
 #include "utils.h"
 #include "zip_utils.h"
+
 namespace OHOS {
 namespace AppPackingTool {
 namespace {}
@@ -169,6 +170,5 @@ int PackageNormalize::PostProcess()
 {
     return ERR_OK;
 }
-
 } // namespace AppPackingTool
 } // namespace OHOS
