@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include "version_normalize.h"
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -20,7 +22,6 @@
 #include <regex>
 #include <string>
 
-#include "version_normalize.h"
 
 #include "constants.h"
 #include "contrib/minizip/unzip.h"
@@ -45,7 +46,7 @@ VersionNormalize::VersionNormalize(const std::map<std::string, std::string> &par
     : Packager(parameterMap, resultReceiver)
 {}
 
-int VersionNormalize::InitAllowedParam()
+int32_t VersionNormalize::InitAllowedParam()
 {
     allowedParameters_ = {
         {}
@@ -53,7 +54,7 @@ int VersionNormalize::InitAllowedParam()
     return ERR_OK;
 }
 
-int VersionNormalize::PreProcess()
+int32_t VersionNormalize::PreProcess()
 {
     if (!IsOutDirectoryValid()) {
         return ERR_INVALID_VALUE;
@@ -93,8 +94,8 @@ int VersionNormalize::PreProcess()
     return ERR_OK;
 }
 
-bool VersionNormalize::VerifyModuleVersion(const NormalizeVersion &normalizeVersion, const int newVersionCode,
-    const std::string newVersionName)
+bool VersionNormalize::VerifyModuleVersion(const NormalizeVersion &normalizeVersion, const int32_t &newVersionCode,
+    const std::string &newVersionName)
 {
     if (normalizeVersion.originVersionCode > newVersionCode) {
         LOGE("versionNormalize failed, module %s version code less than input version code",
@@ -110,9 +111,8 @@ bool VersionNormalize::VerifyModuleVersion(const NormalizeVersion &normalizeVers
 }
 
 bool VersionNormalize::ModifyModuleJson(const std::string &moduleJsonPath, NormalizeVersion &normalizeVersion,
-    const int newVersionCode, const std::string newVersionName)
+    const int32_t &newVersionCode, const std::string &newVersionName)
 {
-    LOGI("start modify moduleJson");
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
         LOGE("parseAndModifyModuleJson failed, parse module.json is null.");
@@ -134,7 +134,7 @@ bool VersionNormalize::ModifyModuleJson(const std::string &moduleJsonPath, Norma
 }
 
 bool VersionNormalize::ModifyConfigJson(const std::string &configJsonPath, NormalizeVersion &normalizeVersion,
-    const int newVersionCode, const std::string newVersionName)
+    const int32_t &newVersionCode, const std::string &newVersionName)
 {
     ModuleJson configJson;
     if (!configJson.ParseFromFile(configJsonPath)) {
@@ -156,8 +156,8 @@ bool VersionNormalize::ModifyConfigJson(const std::string &configJsonPath, Norma
     return true;
 }
 
-bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int newVersionCode,
-    const std::string newVersionName)
+bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int32_t &newVersionCode,
+    const std::string &newVersionName)
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
@@ -180,7 +180,7 @@ bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int
     return true;
 }
 
-bool VersionNormalize::compressDirToHap(const std::string& sourceDir, const std::string& zipFilePath)
+bool VersionNormalize::compressDirToHap(const std::string &sourceDir, const std::string &zipFilePath)
 {
     std::map<std::string, std::string> parameterMap;
     std::string resultReceiver = "";
@@ -233,8 +233,8 @@ bool VersionNormalize::compressDirToHap(const std::string& sourceDir, const std:
 }
 
 
-bool VersionNormalize::ProcessJsonFiles(const std::string& tempPath, NormalizeVersion& normalizeVersion,
-    int versionCode, const std::string& versionName)
+bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVersion &normalizeVersion,
+    const int32_t &versionCode, const std::string &versionName)
 {
     std::string moduleJsonPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::MODULE_JSON;
     std::string configJsonPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::CONFIG_JSON;
@@ -269,11 +269,11 @@ bool VersionNormalize::ProcessJsonFiles(const std::string& tempPath, NormalizeVe
     return true;
 }
 
-int VersionNormalize::Process()
+int32_t VersionNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_TEMP_DIR;
-    int versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+    int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
     std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
     std::list<NormalizeVersion> normalizeVersionList;
 
@@ -301,7 +301,7 @@ int VersionNormalize::Process()
     return ERR_OK;
 }
 
-int VersionNormalize::PostProcess()
+int32_t VersionNormalize::PostProcess()
 {
     return ERR_OK;
 }

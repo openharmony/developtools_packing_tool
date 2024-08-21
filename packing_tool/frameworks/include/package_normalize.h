@@ -36,9 +36,9 @@ protected:
 
 private:
     bool ModifyModuleJson(const std::string &moduleJsonPath,
-        const int newVersionCode, const std::string newBundleName);
+        const int32_t &newVersionCode, const std::string &newBundleName);
     bool ModifyPackInfo(const std::string &moduleJsonPath,
-        const int newVersionCode, const std::string newBundleName);
+        const int32_t &newVersionCode, const std::string &newBundleName);
     ZipWrapper zipWrapper_;
     UnzipWrapper unzipWrapper_;
     std::list<std::string> hspList_;

@@ -37,16 +37,16 @@ protected:
 
 private:
     bool ModifyModuleJson(const std::string &moduleJsonPath, NormalizeVersion &normalizeVersion,
-        const int newVersionCode, const std::string newVersionName);
+        const int32_t &newVersionCode, const std::string &newVersionName);
     bool ModifyConfigJson(const std::string &moduleJsonPath, NormalizeVersion &normalizeVersion,
-        const int newVersionCode, const std::string newVersionName);
-    bool ModifyPackInfo(const std::string &packInfoPath, const int newVersionCode,
-        const std::string newVersionName);
-    bool VerifyModuleVersion(const NormalizeVersion &normalizeVersion, const int newVersionCode,
-        const std::string newVersionName);
-    bool ProcessJsonFiles(const std::string& tempPath, NormalizeVersion& normalizeVersion,
-        int versionCode, const std::string& versionName);
-    bool compressDirToHap(const std::string& tempDir, const std::string& modifiedHapPath);
+        const int32_t &newVersionCode, const std::string &newVersionName);
+    bool ModifyPackInfo(const std::string &packInfoPath, const int32_t &newVersionCode,
+        const std::string &newVersionName);
+    bool VerifyModuleVersion(const NormalizeVersion &normalizeVersion, const int32_t &newVersionCode,
+        const std::string &newVersionName);
+    bool ProcessJsonFiles(const std::string &tempPath, NormalizeVersion &normalizeVersion,
+        const int32_t &versionCode, const std::string& versionName);
+    bool compressDirToHap(const std::string &tempDir, const std::string &modifiedHapPath);
     ZipWrapper zipWrapper_;
     UnzipWrapper unzipWrapper_;
     std::list<std::string> hspOrhapList_;
