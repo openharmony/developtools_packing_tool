@@ -104,6 +104,7 @@ int32_t ZipWrapper::WriteStringToZip(const std::string &content, const std::stri
         LOGE("zip file is not open");
         return ZIP_ERR_FAILURE;
     }
+    zipFileInfo_.external_fa = ZIP_FILE_ATTR_DEFAULT;
     int ret = zipOpenNewFileInZip64(zipFile_, zipPath.c_str(), &zipFileInfo_, nullptr, 0,
         nullptr, 0, nullptr, 0, static_cast<int>(zipLevel_), 1);
     if (ret != ZIP_OK) {
