@@ -17,9 +17,11 @@
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_HAP_PACKAGER_H
 
 #include <iostream>
+#include <list>
 #include <map>
 #include <string>
 
+#include "json/module_json.h"
 #include "packager.h"
 #include "zip_wrapper.h"
 
@@ -29,6 +31,25 @@ class HapPackager : public Packager {
 public:
     HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver);
     ~HapPackager() override {}
+    bool IsVerifyValidInHapCommonMode();
+    bool Compatible(const std::string &paramPath, std::list<std::string> &fileList, const std::string &suffix);
+    bool IsVerifyValidInHapMode();
+    bool IsValidRpcid();
+    bool IsValidPackInfo();
+    bool IsHapPathValid();
+    bool IsHapPathValid(const std::string &parameterMapKey);
+    bool CompressHap();
+    bool CheckStageHap(const std::string &jsonPath);
+    bool AddFileListToZip(const std::list<std::string> &pathList_);
+    bool OpenZipWrapper();
+    bool AddCommonFileOrDirectoryToZip(const std::string &paramPath, const std::string &targetPath);
+    bool AddParamFileToZip();
+    bool AddResFileAndDirLsitToZip();
+    bool AddIndexToZipForFaMaode();
+    bool AddPkgAndBinFileToZipForStageMaode();
+    bool CompressHapModeForModule(const std::string &jsonPath);
+    bool CompressHapMode();
+    bool CompressHapModeMultiple();
 
 protected:
     int32_t InitAllowedParam() override;
@@ -37,7 +58,18 @@ protected:
     int32_t PostProcess() override;
 
 private:
+    std::list<std::string> formattedSoPathList_;
+    std::list<std::string> formatedDirList_;
+    std::list<std::string> formattedAbcPathList_;
+    std::list<std::string> formattedAbilitySoPathList_;
+    std::list<std::string> formattedJarPathList_;
+    std::list<std::string> formattedTxtPathList_;
+
+    std::string moduleName_;
+    std::string jsonPath_;
+    std::list<std::string> deviceTypes_;
     ZipWrapper zipWrapper_;
+    ModuleJson moduleJson_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
