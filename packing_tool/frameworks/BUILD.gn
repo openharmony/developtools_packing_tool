@@ -27,9 +27,12 @@ config("ohos_packing_tool_config") {
 ohos_executable("ohos_packing_tool") {
   public_configs = [ ":ohos_packing_tool_config" ]
   sources = [
+    "src/appqf_packager.cpp",
     "src/app_packager.cpp",
     "src/fast_app_packager.cpp",
     "src/hap_packager.cpp",
+    "src/hqf_packager.cpp",
+    "src/hqf_verify.cpp",
     "src/hsp_packager.cpp",
     "src/json/distro_filter.cpp",
     "src/json/hap_verify_info.cpp",
@@ -49,9 +52,11 @@ ohos_executable("ohos_packing_tool") {
     "src/main.cpp",
     "src/multiapp_packager.cpp",
     "src/packager.cpp",
+    "src/package_normalize.cpp",
     "src/shell_command.cpp",
     "src/unzip_wrapper.cpp",
     "src/utils.cpp",
+    "src/version_normalize.cpp",
     "src/zip_utils.cpp",
     "src/zip_wrapper.cpp",
   ]

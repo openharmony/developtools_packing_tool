@@ -13,20 +13,25 @@
  * limitations under the License.
  */
 
+#include "shell_command.h"
+
 #include <getopt.h>
 #include <iostream>
 #include <memory>
 #include <string>
 
 #include "app_packager.h"
+#include "appqf_packager.h"
 #include "constants.h"
 #include "fast_app_packager.h"
 #include "hap_packager.h"
+#include "hqf_packager.h"
 #include "hsp_packager.h"
 #include "log.h"
 #include "multiapp_packager.h"
 #include "packager.h"
-#include "shell_command.h"
+#include "package_normalize.h"
+#include "version_normalize.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -159,6 +164,22 @@ std::unique_ptr<Packager> ShellCommand::getPackager()
     } else if (mode == Constants::MODE_FAST_APP) {
         std::unique_ptr<Packager> packager =
             std::make_unique<FastAppPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_VERSION_NORMALIZE) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<VersionNormalize>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_HQF) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<HqfPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_APPQF) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<APPQFPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_PACKAGE_NORMALIZE) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<PackageNormalize>(parameterMap_, resultReceiver_);
         return packager;
     }
     resultReceiver_.append("not support --mode: ").append(mode).append("\n");
