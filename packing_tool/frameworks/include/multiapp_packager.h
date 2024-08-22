@@ -31,6 +31,8 @@ public:
     ~MultiAppPackager() override {}
     bool IsVerifyValidInMultiAppMode();
     bool CompressAppModeForMultiProject();
+    bool PrepareFilesForCompression(std::list<std::string> &fileList, fs::path &tempHapDirPath,
+        fs::path &tempSelectedHapDirPath, std::string &finalPackInfoStr, std::string &finalPackInfoPath);
     std::string GetJsonInZips(const std::string &filePath, const std::string &jsonName);
     std::string ReadModuleNameFromHap(const std::string &hapPath);
     std::string SelectHapInApp(const std::string &appPath, std::list<std::string> &selectedHaps,

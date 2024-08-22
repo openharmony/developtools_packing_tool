@@ -15,21 +15,10 @@
 
 #include "appqf_packager.h"
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <regex>
-#include <string>
-
-#include "constants.h"
-#include "contrib/minizip/zip.h"
 #include "json/json_utils.h"
 #include "json/patch_json.h"
 #include "hqf_verify.h"
 #include "log.h"
-#include "nlohmann/json.hpp"
-#include "packager.h"
 #include "utils.h"
 #include "zip_utils.h"
 
@@ -80,7 +69,7 @@ bool APPQFPackager::CheckHqfList(const std::list<std::string>& hqfList)
         }
         hqfInfos.push_back(hqfInfo);
     }
-    if (!HQFVerify::checkHQFIsValid(hqfInfos)) {
+    if (!HQFVerify::CheckHQFIsValid(hqfInfos)) {
         return false;
     }
     return true;
@@ -96,7 +85,7 @@ int32_t APPQFPackager::PreProcess()
         std::string outputPath = it->second;
         std::transform(outputPath.begin(), outputPath.end(), outputPath.begin(), ::tolower);
         if (!Utils::EndsWith(outputPath, Constants::APPQF_SUFFIX)) {
-            LOGE("Input out file must end with .apphqf.");
+            LOGE("Input output file must end with .apphqf.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -108,7 +97,7 @@ int32_t APPQFPackager::PreProcess()
     fs::path outPath(parameterMap_.at(Constants::PARAM_OUT_PATH));
     if (it == parameterMap_.end() || it->second == "false") {
         if (fs::exists(outPath) && fs::is_regular_file(outPath)) {
-            LOGE("File already exist and can not overrite");
+            LOGE("File already exist and can not overrite.");
             return ERR_INVALID_VALUE;
         }
     }

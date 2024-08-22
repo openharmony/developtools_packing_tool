@@ -15,14 +15,6 @@
 
 #include "package_normalize.h"
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <regex>
-#include <string>
-
-#include "constants.h"
 #include "json/json_utils.h"
 #include "json/pack_info.h"
 #include "log.h"
@@ -51,28 +43,28 @@ int32_t PackageNormalize::PreProcess()
     }
     auto it = parameterMap_.find(Constants::PARAM_HSP_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("CompressVerify::validate PackageNormalizeMode hsp-list is empty.");
+        LOGE("PackageNormalizeMode hsp-list is empty.");
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspList_, Constants::HSP_SUFFIX)) {
-        LOGE("CompressVerify::validate PackageNormalizeMode hsp-list is invalid.");
+        LOGE("PackageNormalizeMode hsp-list is invalid.");
         return ERR_INVALID_VALUE;
     }
     if (hspList_.empty()) {
-        LOGE("CompressVerify::validate PackageNormalizeMode hsp-list is empty.");
+        LOGE("PackageNormalizeMode hsp-list is empty.");
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_BUNDLE_NAME);
     std::regex pattern(Constants::BUNDLE_NAME_PATTERN);
     if (it == parameterMap_.end() || !std::regex_match(it->second, pattern)) {
-        LOGE("CompressVerify::validate PackageNormalizeMode bundle-name is invalid.");
+        LOGE("PackageNormalizeMode bundle-name is invalid.");
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it == parameterMap_.end() || !Utils::IsPositiveInteger(it->second)) {
-        LOGE("CompressVerify::validate PackageNormalizeMode version-code is invalid.");
+        LOGE("PackageNormalizeMode version-code is invalid.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -83,19 +75,19 @@ bool PackageNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
-        LOGE("updateModuleJson failed, parse json is null.");
+        LOGE("Update module.json failed, parse json is null.");
         return false;
     }
     if (!moduleJson.SetBundleName(newBundleName)) {
-        LOGE("parseAndModifyModuleJson failed, json file not valid.");
+        LOGE("Parse and modify module.json failed, json file not valid.");
         return false;
     }
     if (!moduleJson.SetStageVersionCode(newVersionCode)) {
-        LOGE("parseAndModifyModuleJson failed, json file not valid.");
+        LOGE("Parse and modify module.json failed, json file not valid.");
         return false;
     }
     if (!JsonUtils::StrToFile(moduleJson.ToString(), moduleJsonPath)) {
-        LOGE("parseAndModifyModuleJson failed, write Json failed.");
+        LOGE("Parse and modify module.json failed, write Json failed.");
         return false;
     }
     return true;
@@ -106,19 +98,19 @@ bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
-        LOGE("updatePackInfo failed, parse json is null.");
+        LOGE("Update packInfo failed, parse json is null.");
         return false;
     }
     if (!packInfo.SetBundleName(newBundleName)) {
-        LOGE("parseAndModifypackInfo failed, json file not valid.");
+        LOGE("Parse and modify packInfo failed, json file not valid.");
         return false;
     }
     if (!packInfo.SetVersionCode(newVersionCode)) {
-        LOGE("parseAndModifypackInfo failed, json file not valid.");
+        LOGE("Parse and modify packInfo failed, json file not valid.");
         return false;
     }
     if (!JsonUtils::StrToFile(packInfo.ToString(), packInfoPath)) {
-        LOGE("parseAndModifyModuleJson failed, write Json failed.");
+        LOGE("Parse and modify packinfo failed, write Json failed.");
         return false;
     }
     return true;
@@ -127,7 +119,8 @@ bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
 int32_t PackageNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
-    std::string tempPath = outPath +Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_TEMP_DIR;
+    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_PACKAGENORMALIZE_TEMP_DIR
+        + Utils::GenerateUUID();
     int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
     std::string bundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
     for (const std::string &path : hspList_) {

@@ -279,17 +279,15 @@ void MultiAppPackager::WritePackInfo(const std::string &filePath, const std::str
     fwriter.close();
 }
 
-bool MultiAppPackager::CompressAppModeForMultiProject()
+bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileList, fs::path &tempHapDirPath,
+    fs::path &tempSelectedHapDirPath, std::string &finalPackInfoStr, std::string &finalPackInfoPath)
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
         LOGE("MultiAppPackager::CompressAppModeForMultiProject: zipWrapper Open failed!");
-        return ERR_INVALID_VALUE;
+        return false;
     }
-    std::list<std::string> fileList;
-    fs::path tempHapDirPath;
-    fs::path tempSelectedHapDirPath;
     if (fs::exists(fs::path(outPath).parent_path().parent_path()) &&
         fs::path(outPath).parent_path().parent_path() != fs::path("/")) {
         tempHapDirPath =  fs::path(outPath).parent_path().parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
@@ -309,9 +307,9 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         fs::create_directories(tempSelectedHapDirPath);
     }
     std::list<std::string> selectedHaps;
-    std::string finalPackInfoStr = DisposeApp(selectedHaps, tempSelectedHapDirPath);
+    finalPackInfoStr = DisposeApp(selectedHaps, tempSelectedHapDirPath);
     finalPackInfoStr = DisposeHapAndHsp(selectedHaps, tempSelectedHapDirPath, finalPackInfoStr);
-    std::string finalPackInfoPath = tempSelectedHapDirPath.string() + "/" + Constants::PACK_INFO;
+    finalPackInfoPath = tempSelectedHapDirPath.string() + "/" + Constants::PACK_INFO;
     WritePackInfo(finalPackInfoPath, finalPackInfoStr);
     for (const auto &selectedHapName : selectedHaps) {
         std::string hapPathItem = tempSelectedHapDirPath.string() + "/" + selectedHapName;
@@ -321,6 +319,20 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
             Utils::GenerateUUID());
         fileList.push_back(hapTempPath);
         CompressPackinfoIntoHap(hapPathItem, hapUnzipTempPath, hapTempPath, finalPackInfoPath);
+    }
+    return true;
+}
+
+bool MultiAppPackager::CompressAppModeForMultiProject()
+{
+    std::list<std::string> fileList;
+    fs::path tempHapDirPath;
+    fs::path tempSelectedHapDirPath;
+    std::string finalPackInfoStr;
+    std::string finalPackInfoPath;
+    if(!PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath, finalPackInfoStr,
+        finalPackInfoPath)) {
+        return false;
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, false)) {
         LOGE("here are somehaps with different version code or duplicated moduleName or packageName.");

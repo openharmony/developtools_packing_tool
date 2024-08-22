@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 #include "hqf_verify.h"
 
 #include "log.h"
@@ -48,23 +47,23 @@ bool HQFVerify::CheckAppFields(const std::vector<HqfInfo>& HqfInfos)
 
     for (const auto& info : HqfInfos) {
         if (bundleName.empty() || bundleName != info.GetBundleName()) {
-            LOGE("Error: input hqf file has different bundleName!");
+            LOGE("Input hqf file has different bundleName!");
             return false;
         }
         if (versionCode != info.GetVersionCode()) {
-            LOGE("Error: input hqf file has different versionCode!");
+            LOGE("Input hqf file has different versionCode!");
             return false;
         }
         if (versionName.empty() || versionName != info.GetVersionName()) {
-            LOGE("Error: input hqf file has different versionName!");
+            LOGE("Input hqf file has different versionName!");
             return false;
         }
         if (patchVersionCode != info.GetPatchVersionCode()) {
-            LOGE("Error: input hqf file has different patchVersionCode!");
+            LOGE("Input hqf file has different patchVersionCode!");
             return false;
         }
         if (patchVersionName.empty() || patchVersionName != info.GetPatchVersionName()) {
-            LOGE("Error: input hqf file has different patchVersionName!");
+            LOGE("Input hqf file has different patchVersionName!");
             return false;
         }
     }
@@ -77,12 +76,12 @@ bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& HqfInfos)
     std::list<std::string> deviceTypes_;
     for (const auto& info : HqfInfos) {
         if (!moduleNames.insert(info.GetModuleName()).second) {
-            LOGE("Error: input hqf file has overlapping moduleNames!");
+            LOGE("Input hqf file has overlapping moduleNames!");
             return false;
         }
         const auto& deviceTypes = info.GetDeviceTypes();
         if (!Utils::CheckDisjoint(deviceTypes_, deviceTypes)) {
-            LOGE("Error: input hqf file has overlapping device types!");
+            LOGE("Input hqf file has overlapping device types!");
             return false;
         }
         deviceTypes_.insert(deviceTypes_.end(), deviceTypes.begin(), deviceTypes.end());
@@ -91,4 +90,3 @@ bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& HqfInfos)
 }
 }  // namespace AppPackingTool
 }  // namespace OHOS
-
