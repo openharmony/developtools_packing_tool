@@ -63,7 +63,7 @@ int32_t HqfPackager::PreProcess()
     fs::path outPath(parameterMap_.at(Constants::PARAM_OUT_PATH));
     if (it->second != "true") {
         if (fs::exists(outPath) && fs::is_regular_file(outPath)) {
-            LOGE("%s already exist and can not overrite", outPath.c_str());
+            LOGE("%s already exist and can not overwrite.", outPath.c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -78,14 +78,14 @@ int32_t HqfPackager::PreProcess()
         return ERR_INVALID_VALUE;
     } else {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_JSON_PATH), true, Constants::JSON_SUFFIX)) {
-            LOGE("Input patch.json is invalid when pack hqf file");
+            LOGE("Input patch.json is invalid when pack hqf file.");
             return ERR_INVALID_VALUE;
         }
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_LIB_PATH), false)) {
-            LOGE("Input lib path is invalid when pack hqf file");
+            LOGE("Input lib path is invalid when pack hqf file.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -93,7 +93,7 @@ int32_t HqfPackager::PreProcess()
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_RESOURCES_PATH), false)) {
-            LOGE("Input resources path is invalid when pack hqf file");
+            LOGE("Input resources path is invalid when pack hqf file.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -120,7 +120,7 @@ int32_t HqfPackager::Process()
             return ERR_INVALID_VALUE;
         }
     } else {
-        LOGE("patch.json is invalid!");
+        LOGE("Input patch.json is invalid.");
         return ERR_INVALID_VALUE;
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);

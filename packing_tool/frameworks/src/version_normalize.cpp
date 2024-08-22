@@ -262,7 +262,6 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVe
     }
 
     if (!VerifyModuleVersion(normalizeVersion, versionCode, versionName)) {
-        LOGE("versionNormalize failed, version code less than input version code");
         return false;
     }
     return true;
@@ -271,7 +270,8 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVe
 int32_t VersionNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
-    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_TEMP_DIR;
+    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR
+        + Utils::GenerateUUID();
     int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
     std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
     std::list<NormalizeVersion> normalizeVersionList;

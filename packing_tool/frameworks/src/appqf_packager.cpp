@@ -80,7 +80,7 @@ bool APPQFPackager::CheckHqfList(const std::list<std::string>& hqfList)
         }
         hqfInfos.push_back(hqfInfo);
     }
-    if (!HQFVerify::checkHQFIsValid(hqfInfos)) {
+    if (!HQFVerify::CheckHQFIsValid(hqfInfos)) {
         return false;
     }
     return true;
@@ -96,7 +96,7 @@ int32_t APPQFPackager::PreProcess()
         std::string outputPath = it->second;
         std::transform(outputPath.begin(), outputPath.end(), outputPath.begin(), ::tolower);
         if (!Utils::EndsWith(outputPath, Constants::APPQF_SUFFIX)) {
-            LOGE("Input out file must end with .apphqf.");
+            LOGE("Input output file must end with .apphqf.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -108,7 +108,7 @@ int32_t APPQFPackager::PreProcess()
     fs::path outPath(parameterMap_.at(Constants::PARAM_OUT_PATH));
     if (it == parameterMap_.end() || it->second == "false") {
         if (fs::exists(outPath) && fs::is_regular_file(outPath)) {
-            LOGE("File already exist and can not overrite");
+            LOGE("File already exist and can not overrite.");
             return ERR_INVALID_VALUE;
         }
     }
