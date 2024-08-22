@@ -74,7 +74,6 @@ int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs
         int32_t count = 0;
         for (const auto &entry : fs::directory_iterator(fsFilePath)) {
             fs::path fsZipFullPath = fsZipPath / entry.path().filename();
-            LOGE("Add File %s from %s", entry.path().string().c_str(), fsZipFullPath.string().c_str());
             ret = AddFileOrDirectoryToZip(entry.path(), fsZipFullPath);
             if (ret != ZIP_ERR_SUCCESS) {
                 LOGE("AddFileOrDirectoryToZip failed![%s]", fsFilePath.string().c_str());
