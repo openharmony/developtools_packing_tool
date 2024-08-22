@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -100,6 +100,7 @@ class ModuleJsonUtil {
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_URI = "uri";
     private static final String CONTINUE_TYPE = "continueType";
+    private static final String CONTINUE_BUNDLE_NAME = "continueBundleName";
     private static final String MULTI_APP_MODE = "multiAppMode";
     private static final String MULTI_APP_MODE_TYPE = "multiAppModeType";
     private static final String MULTI_APP_MODE_NUMBER = "maxCount";
@@ -1528,6 +1529,33 @@ class ModuleJsonUtil {
             return appObj.getBoolean(UB_SAN_ENABLED);
         }
         return false;
+    }
+
+
+    /**
+     * get ability continueBundleName map from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return continueBundleName map
+     */
+    public static Map<String, List<String>> getAbilityContinueBundleNameMap(String jsonString)
+            throws BundleException {
+        Map<String, List<String>> continueBundleName = new HashMap<>();
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(ABILITIES)) {
+            JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
+            for (int i = 0; i < abilityObjs.size(); ++i) {
+                JSONObject abilityObj = abilityObjs.getJSONObject(i);
+                String abilityName = getJsonString(abilityObj, NAME);
+                if (abilityObj.containsKey(CONTINUE_BUNDLE_NAME)) {
+                    JSONArray typeArray = abilityObj.getJSONArray(CONTINUE_BUNDLE_NAME);
+                    continueBundleName.put(abilityName, typeArray.toJavaList(String.class));
+                } else {
+                    continueBundleName.put(abilityName, new ArrayList<>());
+                }
+            }
+        }
+        return continueBundleName;
     }
 
     /**
