@@ -330,7 +330,7 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     fs::path tempSelectedHapDirPath;
     std::string finalPackInfoStr;
     std::string finalPackInfoPath;
-    if(!PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath, finalPackInfoStr,
+    if (!PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath, finalPackInfoStr,
         finalPackInfoPath)) {
         return false;
     }
