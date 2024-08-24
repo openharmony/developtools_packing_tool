@@ -15,17 +15,6 @@
 
 #include "version_normalize.h"
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <regex>
-#include <string>
-
-
-#include "constants.h"
-#include "contrib/minizip/unzip.h"
-#include "contrib/minizip/zip.h"
 #include "hap_packager.h"
 #include "hqf_packager.h"
 #include "hsp_packager.h"
@@ -33,8 +22,6 @@
 #include "json/normalize_version_utils.h"
 #include "json/pack_info.h"
 #include "log.h"
-#include "nlohmann/json.hpp"
-#include "packager.h"
 #include "utils.h"
 #include "zip_utils.h"
 
@@ -59,34 +46,34 @@ int32_t VersionNormalize::PreProcess()
     }
     auto it = parameterMap_.find(Constants::PARAM_INPUT_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("CompressVerify::validate VersionNormalizeMode input-list is empty.");
+        LOGE("Input input-list is empty.");
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspOrhapList_, Constants::HAP_SUFFIX, Constants::HSP_SUFFIX)) {
-            LOGE("CompressVerify::validatePackageNormalizeMode input-list is invalid.");
+            LOGE("Input input-list is invalid.");
             return ERR_INVALID_VALUE;
         }
     if (hspOrhapList_.size() == 0) {
-        LOGE("CompressVerify::validate VersionNormalizeMode input-list is empty.");
+        LOGE("Input input-list is empty.");
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_VERSION_NAME);
     std::regex pattern(Constants::VERSION_NAME_PATTERN);
     if (it == parameterMap_.end()) {
-        LOGE("CompressVerify::validate VersionNormalizeMode version-name is empty.");
+        LOGE("Input version-name is empty.");
         return ERR_INVALID_VALUE;
     } else if (!std::regex_match(it->second, pattern)) {
-        LOGE("CompressVerify::validate VersionNormalizeMode version-name is not valid.");
+        LOGE("Input version-name is not valid.");
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it == parameterMap_.end()) {
-        LOGE("validate VersionNormalizeMode version-code is empty.");
+        LOGE("Input version-code is empty.");
         return ERR_INVALID_VALUE;
     } else if (!Utils::IsPositiveInteger(it->second)) {
-        LOGE("validate VersionNormalizeMode version-code is invalid.");
+        LOGE("Input version-code is invalid.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -96,14 +83,14 @@ bool VersionNormalize::VerifyModuleVersion(const NormalizeVersion &normalizeVers
     const std::string &newVersionName)
 {
     if (normalizeVersion.originVersionCode > newVersionCode) {
-        LOGE("versionNormalize failed, module %s version code less than input version code",
+        LOGE("VersionNormalize failed, input version code less than module %s version code.",
             normalizeVersion.moduleName.c_str());
         return false;
     } else if (normalizeVersion.originVersionCode == newVersionCode) {
-        LOGW("versionNormalize warning: module %s version code not changed", normalizeVersion.moduleName.c_str());
+        LOGW("VersionNormalize warning: module %s version code not changed.", normalizeVersion.moduleName.c_str());
     }
     if (normalizeVersion.originVersionName == newVersionName) {
-        LOGW("versionNormalize warning: module %s version name not changed", normalizeVersion.moduleName.c_str());
+        LOGW("VersionNormalize warning: module %s version name not changed.", normalizeVersion.moduleName.c_str());
     }
     return true;
 }
@@ -113,19 +100,19 @@ bool VersionNormalize::ModifyModuleJson(const std::string &moduleJsonPath, Norma
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
-        LOGE("parseAndModifyModuleJson failed, parse module.json is null.");
+        LOGE("Parse and modify module.json failed, parse module.json is null.");
         return false;
     }
     if (!moduleJson.GetNormalizeVersion(normalizeVersion, true)) {
-        LOGE("parseAndModifyModuleJson failed, write Json failed.");
+        LOGE("Parse and modify module.json failed, write Json failed.");
         return false;
     }
     if (!moduleJson.SetVersionCodeAndName(newVersionCode, newVersionName, true)) {
-        LOGE("parseAndModifyModuleJson failed, json file not valid.");
+        LOGE("Parse and modify module.json failed, json file not valid.");
         return false;
     }
     if (!JsonUtils::StrToFile(moduleJson.ToString(), moduleJsonPath)) {
-        LOGE("parseAndModifyModuleJson failed,  writeJson failed.");
+        LOGE("Parse and modify module.json failed, write Json failed.");
         return false;
     }
     return true;
@@ -136,19 +123,19 @@ bool VersionNormalize::ModifyConfigJson(const std::string &configJsonPath, Norma
 {
     ModuleJson configJson;
     if (!configJson.ParseFromFile(configJsonPath)) {
-        LOGE("parseAndModifyConfigJson failed, parse json is null.");
+        LOGE("Parse and modify config.json failed, parse json is null.");
         return false;
     }
     if (!configJson.GetNormalizeVersion(normalizeVersion, false)) {
-        LOGE("parseAndModifyConfigJson failed, json file not valid");
+        LOGE("Parse and modify config.json failed, json file not valid.");
         return false;
     }
     if (!configJson.SetVersionCodeAndName(newVersionCode, newVersionName, false)) {
-        LOGE("parseAndModifyConfigJson failed, json file not valid.");
+        LOGE("Parse and modify config.json failed, json file not valid.");
         return false;
     }
     if (!JsonUtils::StrToFile(configJson.ToString(), configJsonPath)) {
-        LOGE("parseAndModifyConfigJson failed,  writeJson failed.");
+        LOGE("Parse and modify config.json failed, writeJson failed.");
         return false;
     }
     return true;
@@ -159,20 +146,20 @@ bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
-        LOGW("parseAndModifyPackInfo failed, json format invalid.");
+        LOGW("Parse and modify packInfo failed, json format invalid.");
         return false;
     }
     if (!packInfo.SetVersionCode(newVersionCode)) {
-        LOGW("parseAndModifyPackInfo failed, version invalid.");
+        LOGW("Parse and modify packInfo failed, version code invalid.");
         return false;
     }
     if (!packInfo.SetVersionName(newVersionName)) {
-        LOGW("parseAndModifyPackInfo failed, version invalid.");
+        LOGW("Parse and modify packInfo failed, version name invalid.");
         return false;
     }
 
     if (!JsonUtils::StrToFile(packInfo.ToString(), packInfoPath)) {
-        LOGW("parseAndModifyPackInfo failed, writeJson failed.");
+        LOGW("Parse and modify packInfo failed, writeJson failed.");
         return false;
     }
     return true;
@@ -225,7 +212,7 @@ bool VersionNormalize::CompressDirToHap(const std::string &sourceDir, const std:
         packager = std::make_unique<HspPackager>(parameterMap, resultReceiver);
     }
 
-    if (packager == nullptr || ->PreProcess() != ERR_OK || packager->Process() != ERR_OK) {
+    if (packager == nullptr || packager->PreProcess() != ERR_OK || packager->Process() != ERR_OK) {
         return false;
     }
     return true;
@@ -243,7 +230,7 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVe
     bool isConfigFileExists = fs::exists(configJsonPath);
     bool isPackInfoFileExists = fs::exists(packInfoPath);
     if ((isModuleFileExists && isConfigFileExists) || (!isModuleFileExists && !isConfigFileExists)) {
-        LOGE("versionNormalize failed, invalid hap structure.");
+        LOGE("VersionNormalize failed, invalid hap structure.");
         return false;
     }
 

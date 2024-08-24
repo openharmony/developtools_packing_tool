@@ -15,21 +15,10 @@
 
 #include "appqf_packager.h"
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <regex>
-#include <string>
-
-#include "constants.h"
-#include "contrib/minizip/zip.h"
 #include "json/json_utils.h"
 #include "json/patch_json.h"
 #include "hqf_verify.h"
 #include "log.h"
-#include "nlohmann/json.hpp"
-#include "packager.h"
 #include "utils.h"
 #include "zip_utils.h"
 

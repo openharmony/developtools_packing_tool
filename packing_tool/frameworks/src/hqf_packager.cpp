@@ -13,22 +13,11 @@
  * limitations under the License.
  */
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <regex>
-#include <string>
-
 #include "hqf_packager.h"
 
-#include "constants.h"
-#include "contrib/minizip/zip.h"
 #include "json/json_utils.h"
 #include "json/module_json.h"
 #include "log.h"
-#include "nlohmann/json.hpp"
-#include "packager.h"
 #include "utils.h"
 
 namespace OHOS {

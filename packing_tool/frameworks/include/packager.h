@@ -19,20 +19,20 @@
 #include <filesystem>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <map>
 #include <regex>
 #include <string>
 #include <vector>
 
 #include "constants.h"
-#include "contrib/minizip/zip.h"
-#include "contrib/minizip/unzip.h"
-#include "nlohmann/json.hpp"
+#include "json/module_json.h"
 
 namespace fs = std::filesystem;
 
 namespace OHOS {
 namespace AppPackingTool {
+
 enum ErrCode {
     ERR_OK = 0,
     ERR_INVALID_VALUE,
@@ -62,15 +62,29 @@ protected:
     const std::map<std::string, std::string> &parameterMap_;
     std::string &resultReceiver_;
     std::vector<Parameter> allowedParameters_;
-    nlohmann::json moduleJson;
-    nlohmann::json packInfo;
+    bool buildHashFinish_ = false;
+    bool generateBuildHash_ = false;
     
-    void AddFileToZip(zipFile zf, const fs::path &filePath, const fs::path &zipPath, zip_fileinfo &zipfi);
-    void WriteStringToZip(zipFile zf, const std::string &content, const fs::path &zipPath, zip_fileinfo &zipfi);
-    bool ParseJsonFile(nlohmann::json &jsonObject, std::string filePath);
-    bool CheckFileValid(const std::string &filePath, const std::string &filename);
-    bool endWith(const std::string &str, const std::string &suffix);
+    bool CheckForceFlag();
+    bool IsPathValid(const std::string &path, const bool &isFile, const std::string suffix = "");
+    bool SplitDirList(const std::string &dirList, std::list<std::string> &fileList);
+    void RemoveDuplicatePath(const std::string &path, std::list<std::string> &pathList);
+    bool CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList, const std::string &suffix);
+    bool CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList,
+        const std::string &suffix, const std::string &extraSuffix);
+    bool IsOutPathValid(const std::string &outPath, const std::string &forceRewrite, const std::string &suffix);
+    bool SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHash, bool &buildHashFinish);
+    bool CopyFileToTempDir(std::string &jsonPath);
+    bool BuildHash(bool &buildHashFinish, const bool &generateBuildHash,
+        const std::map<std::string, std::string> &parameterMap, const std::string &jsonPath);
+    bool PutBuildHash(const std::string &jsonPath, const std::string &hash, bool &buildHashFinish);
+    bool IsOutDirectoryValid();
+    bool IsModuleHap(const std::string& hapPath);
+    void CompressPackinfoIntoHap(const std::string& hapPathItem, const std::string& unzipPathString,
+        const std::string& outPathString, const std::string& packInfoPath);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
+
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_PACKAGER_H
