@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 #include "hqf_verify.h"
 
 #include "log.h"
