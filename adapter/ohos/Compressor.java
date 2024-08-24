@@ -2490,7 +2490,7 @@ public class Compressor {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
-            throw new BundleException("Get Crc from file failed.");
+            throw new BundleException("Get Crc from file failed: " + file.getName());
         } catch (IOException exception) {
             LOG.error("Compressor::getCrcFromFile io exception: " + exception.getMessage());
             throw new BundleException("Get Crc from file failed.");
