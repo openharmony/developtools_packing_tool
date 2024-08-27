@@ -1146,7 +1146,7 @@
                   "type",
                   "bundle"
                 ],
-                "default": "instance"
+                "default": "bundle"
               },
               "dataGroupIds": {
                 "description": "Indicates the data group IDs associated with the extension ability.",
