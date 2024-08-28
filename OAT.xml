@@ -65,6 +65,19 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="jar/haptobin_tool.jar" desc="the jar file for hap to bin hap, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/fastjson-1.2.83.jar" desc="the jar file for fast json, the file is self-developed"/>
                 <filteritem type="filepath" name="adapter/scanner/image/construct.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/app_packager_test/appPackagerHapTest/entry/src/main/resources/base/media/app_icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/app_packager_test/appPackagerHapTest/entry/src/main/resources/base/media/icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/app_packager_test/appPackagerHapTest/AppScope/resources/base/media/app_icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/app_packager_test/appPackagerHspTest/entry/src/main/resources/base/media/icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/app_packager_test/appPackagerHspTest/AppScope/resources/base/media/app_icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/app_packager_test/appPackagerHspTest/entry/src/main/resources/base/media/setting.jpeg" desc="the jpeg file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHapTest/entry/src/main/resources/base/media/icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHapTest/entry/src/main/resources/base/media/app_icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHapTest/entry/src/main/resources/base/media/icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHapTest/AppScope/resources/base/media/app_icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHspTest/entry/src/main/resources/base/media/icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHspTest/AppScope/resources/base/media/app_icon.png" desc="the png file for packing tool, the file is self-developed"/>
+                <filteritem type="filepath" name="packing_tool/frameworks/test/unittest/multiapp_packager_test/multiappPackagerHspTest/entry/src/main/resources/base/media/setting.jpeg" desc="the jpeg file for packing tool, the file is self-developed"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
