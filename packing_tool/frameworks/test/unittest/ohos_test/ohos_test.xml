@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<configuration ver="2.0">
+  <target name="app_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/test_bundle_app/appPackagerHapTest.hap -> /data/test/resource/packingtool/test_file/hap/" src="res" />
+      <option name="push" value="../test_file/test_bundle_app/appPackagerHspTest.hsp -> /data/test/resource/packingtool/test_file/hsp/" src="res" />
+      <option name="push" value="../test_file/app_packager_file/pack.info -> /data/test/resource/packingtool/test_file/packinfo/" src="res" />
+      <option name="push" value="../test_file/app_packager_file/com.test.apppackagertest.csr -> /data/test/resource/packingtool/test_file/signature/" src="res" />
+      <option name="push" value="../test_file/app_packager_file/com.test.apppackagertest.p7b -> /data/test/resource/packingtool/test_file/certificate/" src="res" />
+      <option name="push" value="../test_file/app_packager_file/pack.res -> /data/test/resource/packingtool/test_file/packres/" src="res" />
+    </preparer>
+  </target>
+  <target name="multiapp_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/test_bundle_multiapp/multiappPackagerHapTest.hap-> /data/test/resource/packingtool/test_file/multiApp/hap/" src="res" />
+      <option name="push" value="../test_file/test_bundle_multiapp/multiappPackagerHspTest.hsp-> /data/test/resource/packingtool/test_file/multiApp/hsp/" src="res" />
+    </preparer>
+  </target>
+  <target name="hap_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/hap_packager_file/stage/module.json -> /data/test/resource/packingtool/test_file/stage/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/stage/pack.json -> /data/test/resource/packingtool/test_file/stage/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/stage/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/stage/ets/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/stage/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/stage/resources/base/profile/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/config.json -> /data/test/resource/packingtool/test_file/fa/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/pack.json -> /data/test/resource/packingtool/test_file/fa/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/assets_jsbundle/default/js/MainAbility/pages/index.js -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/pages/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/assets_jsbundle/default/js/MainAbility/pages/index.js.map -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/pages/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/assets_jsbundle/default/js/MainAbility/app.js -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/assets_jsbundle/default/js/MainAbility/app.js.map -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+      <option name="push" value="../test_file/hap_packager_file/fa/assets_jsbundle/default/js/MainAbility/manifest.json -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+    </preparer>
+  </target>
+  <target name="hsp_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/hsp_packager_file/module.json -> /data/test/resource/packingtool/test_file/" src="res" />
+      <option name="push" value="../test_file/hsp_packager_file/pack.json -> /data/test/resource/packingtool/test_file/" src="res" />
+      <option name="push" value="../test_file/hsp_packager_file/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/resources/base/profile/" src="res" />
+    </preparer>
+  </target>
+  <target name="fast_app_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/fast_app_packager_file/pack.json -> /data/test/resource/packingtool/test_file/" src="res" />
+      <option name="push" value="../test_file/fast_app_packager_file/fastAppPackagerHspTest.hsp -> /data/test/resource/packingtool/test_file/" src="res" />
+      <option name="push" value="../test_file/fast_app_packager_file/hap/entry/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/hap/entry/resources/base/profile/" src="res" />
+      <option name="push" value="../test_file/fast_app_packager_file/hap/entry/module.json -> /data/test/resource/packingtool/test_file/hap/entry/" src="res" />
+      <option name="push" value="../test_file/fast_app_packager_file/hap/entry/pack.json -> /data/test/resource/packingtool/test_file/hap/entry/" src="res" />
+    </preparer>
+  </target>
+  <target name="version_normalize_test">
+    <preparer>
+      <option name="push" value="../test_file/version_normalize_file/stage/module.json -> /data/test/resource/packingtool/test_file/stage/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/stage/pack.json -> /data/test/resource/packingtool/test_file/stage/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/stage/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/stage/ets/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/stage/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/stage/resources/base/profile/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/config.json -> /data/test/resource/packingtool/test_file/fa/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/pack.json -> /data/test/resource/packingtool/test_file/fa/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/assets_jsbundle/default/js/MainAbility/pages/index.js -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/pages/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/assets_jsbundle/default/js/MainAbility/pages/index.js.map -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/pages/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/assets_jsbundle/default/js/MainAbility/app.js -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/assets_jsbundle/default/js/MainAbility/app.js.map -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+      <option name="push" value="../test_file/version_normalize_file/fa/assets_jsbundle/default/js/MainAbility/manifest.json -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+    </preparer>
+  </target>
+  <target name="hqf_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample1/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/ets/" src="res" />
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample1/resources/base/media/aa_icon.png -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/resources/base/media/" src="res" />
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample1/resources/base/media/app_icon.png -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/resources/base/media/" src="res" />
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample1/resources/base/media/icon.png -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/resources/base/media/" src="res" />
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample1/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/resources/base/profile/" src="res" />
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample1/patch.json -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/" src="res" />                                 
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample2/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample2/ets/" src="res" />                   
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample2/resources/base/media/aa_icon.png -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample2/resources/base/media/" src="res" />                                     
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample2/resources/base/media/app_icon.png -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample2/resources/base/media/" src="res" />                                 
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample2/resources/base/media/icon.png -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample2/resources/base/media/" src="res" />                                        
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample2/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample2/resources/base/profile/" src="res" />                                     
+      <option name="push" value="../test_file/hqf_packager_file/hqfFileExample2/patch.json -> /data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample2/" src="res" />
+    </preparer>
+  </target>
+  <target name="appqf_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample1/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample1/ets/" src="res" />
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample1/resources/base/media/aa_icon.png -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample1/resources/base/media/" src="res" />
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample1/resources/base/media/app_icon.png -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample1/resources/base/media/" src="res" />
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample1/resources/base/media/icon.png -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample1/resources/base/media/" src="res" />
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample1/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample1/resources/base/profile/" src="res" />
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample1/patch.json -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample1/" src="res" />                                                                                                                
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample2/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample2/ets/" src="res" />                                                                          
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample2/resources/base/media/aa_icon.png -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample2/resources/base/media/" src="res" />                                          
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample2/resources/base/media/app_icon.png -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample2/resources/base/media/" src="res" />                                     
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample2/resources/base/media/icon.png -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample2/resources/base/media/" src="res" />                                       
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample2/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample2/resources/base/profile/" src="res" />                                        
+      <option name="push" value="../test_file/appqf_packager_file/hqfFileExample2/patch.json -> /data/test/resource/packingtool/test_file/appqf_packager_file/hqfFileExample2/" src="res" />                                     
+    </preparer>
+  </target>
+  <target name="package_normalize_test">
+    <preparer>
+      <option name="push" value="../test_file/package_normalize_file/module.json -> /data/test/resource/packingtool/test_file/" src="res" />
+      <option name="push" value="../test_file/package_normalize_file/pack.json -> /data/test/resource/packingtool/test_file/" src="res" />
+      <option name="push" value="../test_file/package_normalize_file/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/resources/base/profile/" src="res" />
+    </preparer>
+  </target>
+</configuration>
