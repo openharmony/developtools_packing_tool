@@ -1,0 +1,75 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+config("version_normalize_test_config") {
+  include_dirs = [
+    "../../../include",
+    "../../../include/json",
+  ]
+
+  cflags_cc = [ "-fexceptions" ]
+  cflags_objcc = cflags_cc
+}
+
+module_output_path = "developtools/packing_tool"
+
+ohos_unittest("version_normalize_test") {
+  module_out_path = module_output_path
+  public_configs = [ ":version_normalize_test_config" ]
+  sources = [
+    "../../../src/hap_packager.cpp",
+    "../../../src/hsp_packager.cpp",
+    "../../../src/json/json_utils.cpp",
+    "../../../src/json/module_json.cpp",
+    "../../../src/json/module_json_fa.cpp",
+    "../../../src/json/module_json_stage.cpp",
+    "../../../src/json/normalize_version_utils.cpp",
+    "../../../src/json/pack_info.cpp",
+    "../../../src/json/pt_json.cpp",
+    "../../../src/log.cpp",
+    "../../../src/packager.cpp",
+    "../../../src/unzip_wrapper.cpp",
+    "../../../src/utils.cpp",
+    "../../../src/version_normalize.cpp",
+    "../../../src/zip_utils.cpp",
+    "../../../src/zip_wrapper.cpp",
+    "version_normalize_test.cpp",
+  ]
+
+  external_deps = [
+    "bounds_checking_function:libsec_static",
+    "cJSON:cjson_static",
+    "hilog:libhilog",
+    "openssl:libcrypto_shared",
+    "zlib:libz",
+  ]
+  deps = [
+    ":copy_test_file",
+    "../ohos_test:copy_ohos_test",
+  ]
+}
+
+group("unittest") {
+  testonly = true
+  deps = [ ":version_normalize_test" ]
+}
+
+ohos_copy("copy_test_file") {
+  subsystem_name = "developtools"
+  part_name = "packing_tool"
+  sources = [ "./version_normalize_file" ]
+  outputs = [ "$root_out_dir/tests/unittest/developtools/packing_tool/test_file/version_normalize_file/" ]
+}
