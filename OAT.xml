@@ -55,7 +55,7 @@ Note:If the text contains special characters, please escape them according to th
 > == &gt;
 -->
 <configuration>
-    <oatconfig> 
+    <oatconfig>
         <filefilterlist>
             <filefilter name="binaryFileTypePolicyFilter" desc="Filters for binary file policies" >
                 <filteritem type="filepath" name="img/打包工具架构图.webp" desc="the webp file for packing tool, the file is self-developed"/>
@@ -64,6 +64,7 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="jar/app_check_tool.jar" desc="the jar file for check hap, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/haptobin_tool.jar" desc="the jar file for hap to bin hap, the file is self-developed"/>
                 <filteritem type="filepath" name="jar/fastjson-1.2.83.jar" desc="the jar file for fast json, the file is self-developed"/>
+                <filteritem type="filepath" name="adapter/scanner/image/construct.png" desc="the png file for packing tool, the file is self-developed"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
