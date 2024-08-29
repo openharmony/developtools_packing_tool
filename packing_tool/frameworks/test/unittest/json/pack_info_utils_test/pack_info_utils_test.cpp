@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "pack_info_utils.h"
@@ -30,8 +31,8 @@ using namespace testing::ext;
 using namespace std;
 
 namespace OHOS {
-
-string content1 = "{"
+namespace {
+const string PACKING_INFO_STR_1 = "{"
     "\"summary\": {"
         "\"app\": {"
             "\"bundleName\": \"com.example.myapplication\","
@@ -83,7 +84,7 @@ string content1 = "{"
     "]"
 "}";
 
-string content2 = "{"
+const string PACKING_INFO_STR_2 = "{"
     "\"summary\": {"
         "\"app\": {"
             "\"bundleName\": \"com.example.myapplication\","
@@ -134,6 +135,7 @@ string content2 = "{"
         "}"
     "]"
 "}";
+}
 
 class PackInfoUtilsTest : public testing::Test {
 public:
@@ -167,7 +169,7 @@ HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0100, Function | MediumTest | Leve
 {
     OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
     std::string dstPackInfoJsonStr;
-    EXPECT_TRUE(packInfoUtils.MergeTwoPackInfos(content1, content2, dstPackInfoJsonStr));
+    EXPECT_TRUE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_STR_1, PACKING_INFO_STR_2, dstPackInfoJsonStr));
 }
 
 /*
@@ -183,6 +185,7 @@ HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0100, Function | Medi
     std::string dstPackInfoJsonStr = "";
     packagesMap.insert((make_pair("entry-default", "entry")));
 
-    EXPECT_TRUE(packInfoUtils.MergeTwoPackInfosByPackagePair(content1, content2, packagesMap, dstPackInfoJsonStr));
+    EXPECT_TRUE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_STR_1, PACKING_INFO_STR_2,
+        packagesMap, dstPackInfoJsonStr));
 }
 }

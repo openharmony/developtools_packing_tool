@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "pack_info.h"
@@ -28,8 +29,8 @@ using namespace testing::ext;
 using namespace std;
 
 namespace OHOS {
-
-const std::string jsonString = "{"
+namespace {
+const std::string JSON_STRING = "{"
     "\"summary\": {"
         "\"app\": {"
             "\"bundleName\": \"com.example.myapplication\","
@@ -80,6 +81,7 @@ const std::string jsonString = "{"
         "}"
     "]"
 "}";
+}
 
 class PackInfoTest : public testing::Test {
 public:
@@ -112,7 +114,7 @@ void PackInfoTest::TearDown() {}
 HWTEST_F(PackInfoTest, ParseFromString_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    EXPECT_TRUE(packInfo.ParseFromString(jsonString));
+    EXPECT_TRUE(packInfo.ParseFromString(JSON_STRING));
 }
 
 /*
@@ -124,7 +126,7 @@ HWTEST_F(PackInfoTest, ParseFromString_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetSummaryObject_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::unique_ptr<AppPackingTool::PtJson> summaryObj;
     EXPECT_TRUE(packInfo.GetSummaryObject(summaryObj));
     EXPECT_NE(summaryObj, nullptr);
@@ -140,7 +142,7 @@ HWTEST_F(PackInfoTest, GetAppObject_0100, Function | MediumTest | Level1)
 {
     std::unique_ptr<AppPackingTool::PtJson> appObj;
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     EXPECT_TRUE(packInfo.GetAppObject(appObj));
     EXPECT_NE(appObj, nullptr);
 }
@@ -154,7 +156,7 @@ HWTEST_F(PackInfoTest, GetAppObject_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetBundleName_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::string bundleName = "";
     EXPECT_TRUE(packInfo.GetBundleName(bundleName));
     EXPECT_NE(bundleName, "");
@@ -170,7 +172,7 @@ HWTEST_F(PackInfoTest, SetBundleName_0100, Function | MediumTest | Level1)
 {
     std::string bundleName = "com.example.myapplication";
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     EXPECT_TRUE(packInfo.SetBundleName(bundleName));
 }
 
@@ -183,7 +185,7 @@ HWTEST_F(PackInfoTest, SetBundleName_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetBundleType_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::string bundleType = "";
     std::string defaultBundleType = "app";
     EXPECT_TRUE(packInfo.GetBundleType(bundleType, defaultBundleType));
@@ -199,7 +201,7 @@ HWTEST_F(PackInfoTest, GetBundleType_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetVersionObject_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::unique_ptr<AppPackingTool::PtJson> versionObj;
     EXPECT_TRUE(packInfo.GetVersionObject(versionObj));
     EXPECT_NE(versionObj, nullptr);
@@ -214,7 +216,7 @@ HWTEST_F(PackInfoTest, GetVersionObject_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetDistroObject_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     int32_t moduleIndex = 0;
     std::unique_ptr<AppPackingTool::PtJson> distroObj;
     EXPECT_TRUE(packInfo.GetDistroObject(moduleIndex, distroObj));
@@ -230,7 +232,7 @@ HWTEST_F(PackInfoTest, GetDistroObject_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetExtensionAbilitiesObj_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     int32_t moduleIndex = 0;
     std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
     EXPECT_TRUE(packInfo.GetExtensionAbilitiesObj(moduleIndex, extensionAbilitiesObj));
@@ -246,7 +248,7 @@ HWTEST_F(PackInfoTest, GetExtensionAbilitiesObj_0100, Function | MediumTest | Le
 HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModulesObj_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::unique_ptr<AppPackingTool::PtJson> modulesObj;
     packInfo.GetModulesObject(modulesObj);
     int32_t moduleIndex = 0;
@@ -264,7 +266,7 @@ HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModulesObj_0100, Function | Med
 HWTEST_F(PackInfoTest, GetPackageObject_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     int32_t packageIndex = 0;
     std::unique_ptr<AppPackingTool::PtJson> packageObj;
     EXPECT_TRUE(packInfo.GetPackageObject(packageIndex, packageObj));
@@ -281,7 +283,7 @@ HWTEST_F(PackInfoTest, GetVersion_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfoVersion version;
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     EXPECT_TRUE(packInfo.GetVersion(version));
     EXPECT_EQ(version.code, 1000000);
     EXPECT_EQ(version.name, "1.0.0");
@@ -296,7 +298,7 @@ HWTEST_F(PackInfoTest, GetVersion_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, SetVersionCode_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     int versionCode = 1;
     EXPECT_TRUE(packInfo.SetVersionCode(versionCode));
 }
@@ -310,7 +312,7 @@ HWTEST_F(PackInfoTest, SetVersionCode_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, SetVersionName_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::string versionName = "2.0.0";
     EXPECT_TRUE(packInfo.SetVersionName(versionName));
 }
@@ -324,7 +326,7 @@ HWTEST_F(PackInfoTest, SetVersionName_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetNameByPackageObj_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     int32_t packageIndex = 0;
     std::unique_ptr<AppPackingTool::PtJson> packageObj;
     packInfo.GetPackageObject(packageIndex, packageObj);
@@ -343,7 +345,7 @@ HWTEST_F(PackInfoTest, GetNameByPackageObj_0100, Function | MediumTest | Level1)
 HWTEST_F(PackInfoTest, GetFormNames_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PackInfo packInfo;
-    packInfo.ParseFromString(jsonString);
+    packInfo.ParseFromString(JSON_STRING);
     std::list<std::string> formNames;
     std::list<std::string> formFullNames;
     EXPECT_TRUE(packInfo.GetFormNames(formNames, formFullNames));

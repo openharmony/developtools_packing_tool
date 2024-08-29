@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "patch_json_utils.h"
@@ -27,8 +28,8 @@ using namespace testing::ext;
 using namespace std;
 
 namespace OHOS {
-
-std::string content = "{"
+namespace {
+const std::string JSON_STRING = "{"
    "\"name\": \"Json.CN\","
    "\"app\": {"
        "\"bundleName\": \"bundleNametest\","
@@ -48,6 +49,7 @@ std::string content = "{"
        "]"
    "}"
 "}";
+}
 
 class PatchJsonUtilsTest : public testing::Test {
 public:
@@ -71,7 +73,7 @@ void PatchJsonUtilsTest::SetUp() {}
 
 void PatchJsonUtilsTest::TearDown() {}
 
- /*
+/*
  * @@tc.name: ParsePatchByJsonFilePath_0100
  * @tc.desc: test parse patch by json file path
  * @tc.type: FUNC
@@ -86,15 +88,15 @@ HWTEST_F(PatchJsonUtilsTest, ParsePatchByJsonFilePath_0100, Function | MediumTes
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr)
     {
-        fwrite(content.c_str(), content.size(), 1, fp);
+        fwrite(JSON_STRING.c_str(), JSON_STRING.size(), 1, fp);
         fclose(fp);
     }
     EXPECT_TRUE(OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonFilePath(patchJsonFilePath, hqfInfo));
 
-    system("rm -rf test.json");
+    system("rm -f test.json");
 }
 
- /*
+/*
  * @@tc.name: ParsePatchByJsonStr_0100
  * @tc.desc: test parse patch by json string
  * @tc.type: FUNC
@@ -103,7 +105,7 @@ HWTEST_F(PatchJsonUtilsTest, ParsePatchByJsonFilePath_0100, Function | MediumTes
 HWTEST_F(PatchJsonUtilsTest, ParsePatchByJsonStr_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::HqfInfo hqfInfo;
-    EXPECT_TRUE(OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonStr(content, hqfInfo));
+    EXPECT_TRUE(OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonStr(JSON_STRING, hqfInfo));
 }
 
 }
