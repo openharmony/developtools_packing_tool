@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "json_utils.h"
@@ -28,13 +29,12 @@ using namespace testing;
 using namespace testing::ext;
 
 namespace OHOS {
-
-#define FILE_PATH "/data/test/resource/packingtool/json_utils_test/"
+namespace {
+const std::string FILE_PATH = "/data/test/resource/packingtool/json_utils_test/";
 const std::string MODULE_JSON_NAME = "module.json";
 const std::string CONFIG_JSON_NAME = "config.json";
 const std::string PATCH_JSON_NAME = "patch.json";
 const std::string TEST_JSON_NAME = "test.json";
-
 const std::string JSON_STRING = "{"
    "\"name\": \"Json.CN\","
    "\"app\": \"apptest\","
@@ -48,6 +48,7 @@ const std::string JSON_STRING = "{"
        "]"
    "}"
 "}";
+}
 
 class JsonUtilsTest : public testing::Test {
 public:
@@ -88,7 +89,6 @@ void JsonUtilsTest::SetUp()
 }
 
 void JsonUtilsTest::TearDown() {}
-
 
 bool JsonUtilsTest::CheckFilePath(const std::string& filePath)
 {
@@ -204,4 +204,4 @@ HWTEST_F(JsonUtilsTest, JsonToFile_0100, Function | MediumTest | Level1)
     EXPECT_TRUE(jsonUtils.JsonToFile(OHOS::AppPackingTool::PtJson::Parse(JSON_STRING), testJsonPath));
     DeleteFilePath(testJsonPath);
 }
-}ls -
+}

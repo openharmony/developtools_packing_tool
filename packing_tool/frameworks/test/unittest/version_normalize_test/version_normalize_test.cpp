@@ -151,7 +151,6 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0200, Function | MediumTest | Level1)
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
 }
 
-
 /*
  * @tc.name: PreProcess_0300
  * @tc.desc: version-name is empty.
@@ -188,7 +187,6 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0400, Function | MediumTest | Level1)
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
 }
-
 
 /*
  * @tc.name: PreProcess_0500

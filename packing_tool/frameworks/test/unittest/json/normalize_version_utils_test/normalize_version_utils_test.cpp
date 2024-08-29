@@ -14,9 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
 #include <list>
+
 #define private public
 #define protected public
 #include "normalize_version_utils.h"

@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "module_json_utils.h"
@@ -29,16 +30,15 @@
 using namespace testing;
 using namespace testing::ext;
 using namespace OHOS::AppPackingTool;
-using namespace std;
 
 namespace OHOS {
+namespace {
+const std::string HAP_FILE_PATH_FA = "/data/test.hap";
+const std::string HAP_FILE_PATH_TEST = "/data/demo.hap";
+const std::string MODULE_JSON_FILE = "/data/module.json";
+const std::string CONFIG_JSON_FILE = "/data/config.json";
 
-#define HAP_FILE_PATH_FA "/data/test.hap"
-#define HAP_FILE_PATH_TEST "/data/demo.hap"
-#define MODULE_JSON_FILE "/data/module.json"
-#define CONFIG_JSON_FILE "/data/config.json"
-
-string str = "{"
+const std::string MODULE_JSON_STR = "{"
     "\"app\": {"
         "\"iconId\":16777217,"
         "\"debug\":true,"
@@ -91,7 +91,7 @@ string str = "{"
     "}"
 "}";
 
-string str1 = "{"
+const std::string CONFIG_JSON_STR = "{"
     "\"app\" :{"
         "\"apiVersion\" :{"
             "\"compatible\" : 9,"
@@ -169,6 +169,8 @@ string str1 = "{"
         "\"package\" : \"test_package\""
     "}"
 "}";
+}
+
 class ModuleJsonUtilsTest : public testing::Test {
 public:
     ModuleJsonUtilsTest() {}
@@ -197,7 +199,7 @@ bool CreateModuleJsonFile(std::string filename)
     FILE *fp = fopen(module_test.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr) {
-        fwrite(str.c_str(), str.size(), 1, fp);
+        fwrite(MODULE_JSON_STR.c_str(), MODULE_JSON_STR.size(), 1, fp);
         fclose(fp);
     } else {
         return false;
@@ -205,7 +207,7 @@ bool CreateModuleJsonFile(std::string filename)
     return true;
 }
 
-bool CreateModuleJsonHap(string hapFilePath, string filename)
+bool CreateModuleJsonHap(std::string hapFilePath, std::string filename)
 {
     EXPECT_TRUE(CreateModuleJsonFile(filename));
     ZipWrapper zipWrapper(hapFilePath);
@@ -223,7 +225,7 @@ bool CreateConfigJsonFile(std::string filename)
     FILE *fp = fopen(config_test.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr) {
-        fwrite(str1.c_str(), str1.size(), 1, fp);
+        fwrite(CONFIG_JSON_STR.c_str(), CONFIG_JSON_STR.size(), 1, fp);
         fclose(fp);
     } else {
         return false;
@@ -231,7 +233,7 @@ bool CreateConfigJsonFile(std::string filename)
     return true;
 }
 
-bool CreateConfigJsonHap(string hapFilePath, string filename)
+bool CreateConfigJsonHap(std::string hapFilePath, std::string filename)
 {
     EXPECT_TRUE(CreateConfigJsonFile(filename));
     ZipWrapper zipWrapper(hapFilePath);

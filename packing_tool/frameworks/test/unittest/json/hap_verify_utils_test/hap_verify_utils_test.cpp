@@ -14,8 +14,8 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+
 #define private public
 #define protected public
 #include "hap_verify_utils.h"

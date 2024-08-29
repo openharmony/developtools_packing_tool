@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "distro_filter.h"
@@ -26,22 +27,22 @@ using namespace testing;
 using namespace testing::ext;
 
 namespace OHOS {
-
-std::string policyValueJsonString = "{"
+namespace {
+const std::string policyValueJsonString = "{"
     "\"policy\": \"\","
     "\"value\": ["
         "\"xxx\""
     "]"
 "}";
 
-std::string policyValueString = "{"
+const std::string policyValueString = "{"
     "\\\"policy\\\": \\\"\\\","
     "\\\"value\\\": ["
         "\\\"xxx\\\""
     "]"
 "}";
 
-std::string distroFilterJsonString = "{"
+const std::string distroFilterJsonString = "{"
     "\"apiVersion\": \"" + policyValueString + "\","
     "\"screenShape\": \"" + policyValueString + "\","
     "\"screenDensity\": \"" + policyValueString + "\","
@@ -49,27 +50,28 @@ std::string distroFilterJsonString = "{"
     "\"countryCode\": \"" + policyValueString + "\""
 "}";
 
-std::string policyValueJsonString2 = "{"
+const std::string policyValueJsonString2 = "{"
     "\"policy\": \"xxx\","
     "\"value\": ["
         "\"xxx\""
     "]"
 "}";
 
-std::string policyValueString2 = "{"
+const std::string policyValueString2 = "{"
     "\\\"policy\\\": \\\"xxx\\\","
     "\\\"value\\\": ["
         "\\\"xxx\\\""
     "]"
 "}";
 
-std::string distroFilterJsonString2 = "{"
+const std::string distroFilterJsonString2 = "{"
     "\"apiVersion\": \"" + policyValueString2 + "\","
     "\"screenShape\": \"" + policyValueString2 + "\","
     "\"screenDensity\": \"" + policyValueString2 + "\","
     "\"screenWindow\": \"" + policyValueString2 + "\","
     "\"countryCode\": \"" + policyValueString2 + "\""
 "}";
+}
 
 class DistroFilterTest : public testing::Test {
 public:
