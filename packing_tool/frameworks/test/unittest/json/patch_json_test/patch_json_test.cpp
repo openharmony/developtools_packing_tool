@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "patch_json.h"
@@ -28,8 +29,8 @@ using namespace testing;
 using namespace testing::ext;
 
 namespace OHOS {
-
-std::string content = "{"
+namespace {
+const std::string JSON_STRING = "{"
    "\"name\": \"Json.CN\","
    "\"app\": {"
        "\"bundleName\": \"bundleNametest\","
@@ -49,6 +50,7 @@ std::string content = "{"
        "]"
    "}"
 "}";
+}
 
 class PatchJsonTest : public testing::Test {
 public:
@@ -81,7 +83,7 @@ void PatchJsonTest::TearDown() {}
 HWTEST_F(PatchJsonTest, ParseFromString_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 }
 
 /*
@@ -93,14 +95,14 @@ HWTEST_F(PatchJsonTest, ParseFromString_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, ParseFromFile_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string test("test.json");
     FILE *fp = fopen(test.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr)
     {
-        fwrite(content.c_str(), content.size(), 1, fp);
+        fwrite(JSON_STRING.c_str(), JSON_STRING.size(), 1, fp);
         fclose(fp);
         EXPECT_TRUE(patchJson.ParseFromFile(test));
         system("rm -f test.json");
@@ -116,7 +118,7 @@ HWTEST_F(PatchJsonTest, ParseFromFile_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, Release_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     patchJson.Release();
     EXPECT_TRUE(patchJson.root_ == nullptr);
@@ -131,7 +133,7 @@ HWTEST_F(PatchJsonTest, Release_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, IsValid_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     EXPECT_TRUE(patchJson.IsValid());
 }
@@ -145,7 +147,7 @@ HWTEST_F(PatchJsonTest, IsValid_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, ToString_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string contents = patchJson.ToString();
     EXPECT_TRUE(!contents.empty());
@@ -161,7 +163,7 @@ HWTEST_F(PatchJsonTest, ToString_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetAppObject_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::unique_ptr<OHOS::AppPackingTool::PtJson> appObj;
     EXPECT_TRUE(patchJson.GetAppObject(appObj));
@@ -176,7 +178,7 @@ HWTEST_F(PatchJsonTest, GetAppObject_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetModuleObject_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::unique_ptr<OHOS::AppPackingTool::PtJson> appObj;
     EXPECT_TRUE(patchJson.GetModuleObject(appObj));
@@ -191,7 +193,7 @@ HWTEST_F(PatchJsonTest, GetModuleObject_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetBundleName_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string bundleName;
     EXPECT_TRUE(patchJson.GetBundleName(bundleName));
@@ -207,7 +209,7 @@ HWTEST_F(PatchJsonTest, GetBundleName_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetVersionCode_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     int32_t versionCode;
     EXPECT_TRUE(patchJson.GetVersionCode(versionCode));
@@ -223,7 +225,7 @@ HWTEST_F(PatchJsonTest, GetVersionCode_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetVersionName_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string versionName;
     EXPECT_TRUE(patchJson.GetVersionName(versionName));
@@ -239,7 +241,7 @@ HWTEST_F(PatchJsonTest, GetVersionName_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetPatchVersionCode_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     int32_t patchVersionCode;
     EXPECT_TRUE(patchJson.GetPatchVersionCode(patchVersionCode));
@@ -255,7 +257,7 @@ HWTEST_F(PatchJsonTest, GetPatchVersionCode_0100, Function | MediumTest | Level1
 HWTEST_F(PatchJsonTest, GetPatchVersionName_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string patchVersionName;
     EXPECT_TRUE(patchJson.GetPatchVersionName(patchVersionName));
@@ -271,7 +273,7 @@ HWTEST_F(PatchJsonTest, GetPatchVersionName_0100, Function | MediumTest | Level1
 HWTEST_F(PatchJsonTest, GetName_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string name;
     EXPECT_TRUE(patchJson.GetName(name));
@@ -287,7 +289,7 @@ HWTEST_F(PatchJsonTest, GetName_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetType_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string type;
     EXPECT_TRUE(patchJson.GetType(type));
@@ -303,7 +305,7 @@ HWTEST_F(PatchJsonTest, GetType_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetDeviceTypes_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::list<std::string> deviceTypes;
     EXPECT_TRUE(patchJson.GetDeviceTypes(deviceTypes));
@@ -319,7 +321,7 @@ HWTEST_F(PatchJsonTest, GetDeviceTypes_0100, Function | MediumTest | Level1)
 HWTEST_F(PatchJsonTest, GetOriginalModuleHash_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
 
     std::string originalModuleHash;
     EXPECT_TRUE(patchJson.GetOriginalModuleHash(originalModuleHash));
@@ -335,7 +337,7 @@ HWTEST_F(PatchJsonTest, GetOriginalModuleHash_0100, Function | MediumTest | Leve
 HWTEST_F(PatchJsonTest, GetHqfInfo_0100, Function | MediumTest | Level1)
 {
     OHOS::AppPackingTool::PatchJson patchJson;
-    EXPECT_TRUE(patchJson.ParseFromString(content));
+    EXPECT_TRUE(patchJson.ParseFromString(JSON_STRING));
     
     OHOS::AppPackingTool::HqfInfo hqfInfo;
     EXPECT_TRUE(patchJson.GetHqfInfo(hqfInfo));

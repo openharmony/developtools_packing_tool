@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-
 #include <cstdlib>
+#include <string>
+
 #define private public
 #define protected public
 #include "pt_json.h"
@@ -26,8 +27,8 @@ using namespace testing;
 using namespace testing::ext;
 
 namespace OHOS {
-
-std::string content = "{"
+namespace {
+const std::string JSON_STRING = "{"
    "\"name\": \"Json.CN\","
    "\"app\": \"apptest\","
    "\"module\": {"
@@ -46,6 +47,7 @@ std::string content = "{"
    "\"patchVersionName\": \"patchVersionNametest\","
    "\"originalModuleHash\": \"originalModuleHashtest\""
 "}";
+}
 
 class PtJsonTest : public testing::Test {
 public:
@@ -125,7 +127,7 @@ HWTEST_F(PtJsonTest, Parse_0400, Function | MediumTest | Level1)
     cJSON *cjson = new cJSON();
     OHOS::AppPackingTool::PtJson ptJson(cjson);
 
-    std::unique_ptr<OHOS::AppPackingTool::PtJson> ptjson = ptJson.Parse(content);
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> ptjson = ptJson.Parse(JSON_STRING);
     EXPECT_TRUE(ptjson != NULL);
 }
 
@@ -140,7 +142,7 @@ HWTEST_F(PtJsonTest, Stringify_0500, Function | MediumTest | Level1)
     cJSON *cjson = new cJSON();
     OHOS::AppPackingTool::PtJson ptJson(cjson);
 
-    std::unique_ptr<OHOS::AppPackingTool::PtJson> ptjson = ptJson.Parse(content);
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> ptjson = ptJson.Parse(JSON_STRING);
     EXPECT_TRUE(ptjson != NULL);
     EXPECT_TRUE(!ptjson->Stringify().empty());
 }
