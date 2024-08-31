@@ -58,6 +58,14 @@ int32_t FastAppPackager::Process()
 {
     bool ret = CompressFastAppMode();
     if (!ret) {
+        std::string outPath;
+        if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+            outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+        }
+        if (fs::exists(outPath)) {
+            fs::remove_all(outPath);
+        }
+        LOGE("FastAppMode DoPackage failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;

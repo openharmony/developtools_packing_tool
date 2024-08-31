@@ -59,6 +59,14 @@ int32_t MultiAppPackager::Process()
 {
     bool ret = CompressAppModeForMultiProject();
     if (!ret) {
+        std::string outPath;
+        if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+            outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+        }
+        if (fs::exists(outPath)) {
+            fs::remove_all(outPath);
+        }
+        LOGE("MultiApp DoPackage failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -143,6 +151,9 @@ bool MultiAppPackager::CopyHapAndHspFromApp(const std::string &appPath, std::lis
         }
         if (std::find(selectedHaps.begin(), selectedHaps.end(), entry.path().filename()) != selectedHaps.end()) {
             LOGE("CopyHapAndHspFromApp file duplicated, file is %s ", entry.path().filename().c_str());
+            if (fs::exists(tempPath)) {
+                fs::remove_all(tempPath);
+            }
             return false;
         } else {
             filePath = fs::path(tempDir) / entry.path().filename();
@@ -332,10 +343,17 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     std::string finalPackInfoPath;
     if (!PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath, finalPackInfoStr,
         finalPackInfoPath)) {
+        LOGE("CompressAppModeForMultiProject PrepareFilesForCompression failed.");
         return false;
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, false)) {
         LOGE("here are somehaps with different version code or duplicated moduleName or packageName.");
+        if (fs::exists(tempHapDirPath)) {
+            fs::remove_all(tempHapDirPath);
+        }
+        if (fs::exists(tempSelectedHapDirPath)) {
+            fs::remove_all(tempSelectedHapDirPath);
+        }
         return false;
     }
     for (const auto &hapPath : fileList) {

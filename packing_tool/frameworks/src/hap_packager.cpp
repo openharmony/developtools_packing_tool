@@ -73,6 +73,13 @@ int32_t HapPackager::PreProcess()
 int32_t HapPackager::Process()
 {
     if (!CompressHap()) {
+        std::string outPath;
+        if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+            outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+        }
+        if (fs::exists(outPath)) {
+            fs::remove_all(outPath);
+        }
         LOGE("Hap DoPackage failed.");
         return ERR_INVALID_VALUE;
     }
@@ -83,6 +90,13 @@ int32_t HapPackager::PostProcess()
 {
     if (generateBuildHash_) {
         if (!CompressHap()) {
+            std::string outPath;
+            if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+                outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+            }
+            if (fs::exists(outPath)) {
+                fs::remove_all(outPath);
+            }
             LOGE("sencond CompressHap failed.");
             return ERR_INVALID_VALUE;
         }
