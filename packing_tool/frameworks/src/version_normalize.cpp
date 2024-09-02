@@ -219,9 +219,10 @@ bool VersionNormalize::CompressDirToHap(const std::string &sourceDir, const std:
 }
 
 
-bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVersion &normalizeVersion,
+bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, std::list<NormalizeVersion> &normalizeVersionList,
     const int32_t &versionCode, const std::string &versionName)
 {
+    NormalizeVersion normalizeVersion;
     std::string moduleJsonPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::MODULE_JSON;
     std::string configJsonPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::CONFIG_JSON;
     std::string packInfoPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::PACK_INFO;
@@ -229,21 +230,26 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVe
     bool isModuleFileExists = fs::exists(moduleJsonPath);
     bool isConfigFileExists = fs::exists(configJsonPath);
     bool isPackInfoFileExists = fs::exists(packInfoPath);
-    if ((isModuleFileExists && isConfigFileExists) || (!isModuleFileExists && !isConfigFileExists)) {
+    if (isModuleFileExists == isConfigFileExists) {
         LOGE("VersionNormalize failed, invalid hap structure.");
         return false;
     }
 
+    bool modifyJsonSuccess = false;
     if (isModuleFileExists) {
-        if (!ModifyModuleJson(moduleJsonPath, normalizeVersion, versionCode, versionName))
-            return false;
+        modifyJsonSuccess = ModifyModuleJson(moduleJsonPath, normalizeVersion, versionCode, versionName);
     } else {
-        if (!ModifyConfigJson(configJsonPath, normalizeVersion, versionCode, versionName))
-            return false;
+        modifyJsonSuccess = ModifyConfigJson(configJsonPath, normalizeVersion, versionCode, versionName);
+    }
+
+    if (!modifyJsonSuccess) {
+        normalizeVersionList.push_back(normalizeVersion);
+        return false;
     }
 
     if (isPackInfoFileExists) {
         if (!ModifyPackInfo(packInfoPath, versionCode, versionName)) {
+            normalizeVersionList.push_back(normalizeVersion);
             return false;
         }
     }
@@ -251,6 +257,7 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, NormalizeVe
     if (!VerifyModuleVersion(normalizeVersion, versionCode, versionName)) {
         return false;
     }
+    normalizeVersionList.push_back(normalizeVersion);
     return true;
 }
 
@@ -265,23 +272,21 @@ int32_t VersionNormalize::Process()
 
     for (const std::string& path : hspOrhapList_) {
         ZipUtils::Unzip(path, tempPath);
-        NormalizeVersion normalizeVersion;
-        if (!ProcessJsonFiles(tempPath, normalizeVersion, versionCode, versionName)) {
+        if (!ProcessJsonFiles(tempPath, normalizeVersionList, versionCode, versionName)) {
             Utils::ForceRemoveDirectory(tempPath);
-            return ERR_INVALID_VALUE;
+            continue;
         }
-        normalizeVersionList.push_back(normalizeVersion);
         if (!CompressDirToHap(tempPath,
             outPath + Constants::LINUX_FILE_SEPARATOR + fs::path(path).filename().string())) {
             Utils::ForceRemoveDirectory(tempPath);
-            return ERR_INVALID_VALUE;
+            continue;
         }
         Utils::ForceRemoveDirectory(tempPath);
     }
 
-    if (!normalizeVersionList.empty() &&
-        !JsonUtils::StrToFile(NormalizeVersionUtils::ArrayToString(normalizeVersionList),
-                              outPath + Constants::LINUX_FILE_SEPARATOR + Constants::VERSION_RECORD)) {
+    if (!JsonUtils::StrToFile(NormalizeVersionUtils::ArrayToString(normalizeVersionList), outPath +
+        Constants::LINUX_FILE_SEPARATOR + Constants::VERSION_RECORD)) {
+        LOGE("WriteVersionRecord failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
