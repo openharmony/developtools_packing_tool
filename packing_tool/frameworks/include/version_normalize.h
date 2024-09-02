@@ -44,7 +44,7 @@ private:
         const std::string &newVersionName);
     bool VerifyModuleVersion(const NormalizeVersion &normalizeVersion, const int32_t &newVersionCode,
         const std::string &newVersionName);
-    bool ProcessJsonFiles(const std::string &tempPath, NormalizeVersion &normalizeVersion,
+    bool ProcessJsonFiles(const std::string &tempPath, std::list<NormalizeVersion> &normalizeVersionList,
         const int32_t &versionCode, const std::string& versionName);
     bool CompressDirToHap(const std::string &tempDir, const std::string &modifiedHapPath);
     ZipWrapper zipWrapper_;
