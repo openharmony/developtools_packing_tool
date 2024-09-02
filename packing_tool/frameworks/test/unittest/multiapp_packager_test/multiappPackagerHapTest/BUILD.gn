@@ -1,0 +1,41 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+
+ohos_hap("multiappPackagerHapTest") {
+  hap_profile = "entry/src/main/module.json"
+  hap_name = "multiappPackagerHapTest"
+  final_hap_path = "$root_out_dir/tests/unittest/developtools/packing_tool/test_file/test_bundle_multiapp/${hap_name}.hap"
+  testonly = true
+  deps = [
+    ":hjs_demo_js_assets",
+    ":hjs_demo_resources",
+  ]
+  certificate_profile = "../multiapp_packager_file/com.test.apppackagertest.p7b"
+}
+
+ohos_app_scope("bmsstagedemoone_app_profile") {
+  app_profile = "AppScope/app.json"
+  sources = [ "AppScope/resources" ]
+}
+
+ohos_js_assets("hjs_demo_js_assets") {
+  source_dir = "entry/src/main/ets"
+}
+
+ohos_resources("hjs_demo_resources") {
+  sources = [ "entry/src/main/resources" ]
+  deps = [ ":bmsstagedemoone_app_profile" ]
+  hap_profile = "entry/src/main/module.json"
+}
