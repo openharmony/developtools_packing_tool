@@ -30,19 +30,18 @@ namespace fs = std::filesystem;
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string MODULE_JSON = "module.json";
-    const std::string CONFIG_JSON = "config.json";
-    const std::string HAP_SUFFIX = ".hap";
-    const std::string HSP_SUFFIX = ".hsp";
-    const int32_t SHARED_APP_HSP_LIMIT = 1;
-    const std::string TYPE_SHARED = "shared";
-    const std::string INCLUDE = "include";
-    const std::string EXCLUDE = "exclude";
-    const std::string ATOMIC_SERVICE = "atomicService";
-
-    static int32_t g_entryModuleSizeLimit = 2;
-    static int32_t g_notEntryModuleSizeLimit = 2;
-    static int32_t g_sumModuleSizeLimit = 10;
+const std::string MODULE_JSON = "module.json";
+const std::string CONFIG_JSON = "config.json";
+const std::string HAP_SUFFIX = ".hap";
+const std::string HSP_SUFFIX = ".hsp";
+const int32_t SHARED_APP_HSP_LIMIT = 1;
+const std::string TYPE_SHARED = "shared";
+const std::string INCLUDE = "include";
+const std::string EXCLUDE = "exclude";
+const std::string ATOMIC_SERVICE = "atomicService";
+static int32_t g_entryModuleSizeLimit = 2;
+static int32_t g_notEntryModuleSizeLimit = 2;
+static int32_t g_sumModuleSizeLimit = 10;
 }
 
 // java : parseStageHapVerifyInfo

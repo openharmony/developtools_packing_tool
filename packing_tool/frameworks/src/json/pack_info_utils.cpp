@@ -22,14 +22,14 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string DEFAULT_BUNDLE_TYPE = "APP";
-    const std::string MODULE = "module";
-    const std::string PACKAGES = "packages";
-    const char DOT = '.';
+const std::string DEFAULT_BUNDLE_TYPE = "APP";
+const std::string MODULE = "module";
+const std::string PACKAGES = "packages";
+const char DOT = '.';
 }
 
 // java : mergeTwoPackInfo
-bool PackInfoUtils::MergeTwoPackInfos(std::string& srcPackInfoJsonStr1, std::string& srcPackInfoJsonStr2,
+bool PackInfoUtils::MergeTwoPackInfos(const std::string& srcPackInfoJsonStr1, const std::string& srcPackInfoJsonStr2,
     std::string& dstPackInfoJsonStr)
 {
     PackInfo srcPackInfo1;
@@ -94,8 +94,9 @@ bool PackInfoUtils::MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackI
 }
 
 // java : mergeTwoPackInfoByPackagePair
-bool PackInfoUtils::MergeTwoPackInfosByPackagePair(std::string& srcPackInfoJsonStr1, std::string& srcPackInfoJsonStr2,
-    std::map<std::string, std::string> packagesMap, std::string& dstPackInfoJsonStr)
+bool PackInfoUtils::MergeTwoPackInfosByPackagePair(const std::string& srcPackInfoJsonStr1,
+    const std::string& srcPackInfoJsonStr2, const std::map<std::string, std::string>& packagesMap,
+    std::string& dstPackInfoJsonStr)
 {
     PackInfo srcPackInfo1;
     PackInfo srcPackInfo2;
@@ -111,7 +112,7 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(std::string& srcPackInfoJsonS
         LOGE("VerifyPackInfos failed!");
         return false;
     }
-    std::map<std::string, std::string>::iterator iter = packagesMap.begin();
+    auto iter = packagesMap.begin();
     while (iter != packagesMap.end()) {
         std::string packageName = iter->first;
         std::string moduleName = iter->second;
@@ -127,7 +128,7 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(std::string& srcPackInfoJsonS
 }
 
 bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2,
-    std::string& moduleName)
+    const std::string& moduleName)
 {
     std::unique_ptr<PtJson> modulesObj1;
     std::unique_ptr<PtJson> modulesObj2;
@@ -168,7 +169,7 @@ bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, Pac
 }
 
 bool PackInfoUtils::FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2,
-    std::string& packageName)
+    const std::string& packageName)
 {
     std::unique_ptr<PtJson> packagesObj1;
     std::unique_ptr<PtJson> packagesObj2;
@@ -205,7 +206,7 @@ bool PackInfoUtils::FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, Pa
 
 // java : mergeTwoPackInfoObjByPackagePair
 bool PackInfoUtils::MergeTwoPackInfosByPackagePair(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2,
-    std::string& packageName, std::string& moduleName)
+    const std::string& packageName, const std::string& moduleName)
 {
     if (!FindAndMergeModulesByPackagePair(srcPackInfo1, srcPackInfo2, moduleName)) {
         LOGE("FindAndMergeModulesByPackagePair failed!");
@@ -219,11 +220,12 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(PackInfo& srcPackInfo1, PackI
 }
 
 // java : verifyPackInfo
-bool PackInfoUtils::VerifyPackInfos(PackInfo& packInfo1, PackInfo& packInfo2)
+bool PackInfoUtils::VerifyPackInfos(const PackInfo& packInfo1, const PackInfo& packInfo2)
 {
     std::unique_ptr<PtJson> appObj1;
     std::unique_ptr<PtJson> appObj2;
-    if (!packInfo1.GetAppObject(appObj1) || !packInfo2.GetAppObject(appObj2)) {
+    if (!const_cast<PackInfo&>(packInfo1).GetAppObject(appObj1) ||
+        !const_cast<PackInfo&>(packInfo2).GetAppObject(appObj2)) {
         LOGE("GetAppObject failed!");
         return false;
     }
@@ -242,15 +244,15 @@ bool PackInfoUtils::VerifyPackInfos(PackInfo& packInfo1, PackInfo& packInfo2)
     return true;
 }
 
-bool PackInfoUtils::CheckBundleNameInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2)
+bool PackInfoUtils::CheckBundleNameInPackInfo(const PackInfo& packInfo1, const PackInfo& packInfo2)
 {
     std::string bundleName1;
     std::string bundleName2;
-    if (!packInfo1.GetBundleName(bundleName1)) {
+    if (!const_cast<PackInfo&>(packInfo1).GetBundleName(bundleName1)) {
         LOGE("GetBundleName from packInfo1 failed!");
         return false;
     }
-    if (!packInfo2.GetBundleName(bundleName2)) {
+    if (!const_cast<PackInfo&>(packInfo2).GetBundleName(bundleName2)) {
         LOGE("GetBundleName from packInfo2 failed!");
         return false;
     }
@@ -261,15 +263,15 @@ bool PackInfoUtils::CheckBundleNameInPackInfo(PackInfo& packInfo1, PackInfo& pac
     return true;
 }
 
-bool PackInfoUtils::CheckBundleTypeInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2)
+bool PackInfoUtils::CheckBundleTypeInPackInfo(const PackInfo& packInfo1, const PackInfo& packInfo2)
 {
     std::string bundleType1;
     std::string bundleType2;
-    if (!packInfo1.GetBundleType(bundleType1, DEFAULT_BUNDLE_TYPE)) {
+    if (!const_cast<PackInfo&>(packInfo1).GetBundleType(bundleType1, DEFAULT_BUNDLE_TYPE)) {
         LOGE("GetBundleType from packInfo1 failed!");
         return false;
     }
-    if (!packInfo2.GetBundleType(bundleType2, DEFAULT_BUNDLE_TYPE)) {
+    if (!const_cast<PackInfo&>(packInfo2).GetBundleType(bundleType2, DEFAULT_BUNDLE_TYPE)) {
         LOGE("GetBundleType from packInfo2 failed!");
         return false;
     }
@@ -280,15 +282,15 @@ bool PackInfoUtils::CheckBundleTypeInPackInfo(PackInfo& packInfo1, PackInfo& pac
     return true;
 }
 
-bool PackInfoUtils::CheckVersionCodeInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2)
+bool PackInfoUtils::CheckVersionCodeInPackInfo(const PackInfo& packInfo1, const PackInfo& packInfo2)
 {
     PackInfoVersion version1;
     PackInfoVersion version2;
-    if (!packInfo1.GetVersion(version1)) {
+    if (!const_cast<PackInfo&>(packInfo1).GetVersion(version1)) {
         LOGE("GetVersion from packInfo1 failed!");
         return false;
     }
-    if (!packInfo2.GetVersion(version2)) {
+    if (!const_cast<PackInfo&>(packInfo2).GetVersion(version2)) {
         LOGE("GetVersion from packInfo2 failed!");
         return false;
     }
