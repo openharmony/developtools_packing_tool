@@ -1,0 +1,96 @@
+{
+    "app" : 
+    {
+        "apiVersion" : 
+        {
+            "compatible" : 9,
+            "releaseType" : "Release",
+            "target" : 9
+        },
+        "bundleName" : "com.example.packingtoolfademo",
+        "vendor" : "example",
+        "version" : 
+        {
+            "code" : 1000000,
+            "name" : "1.0.0"
+        }
+    },
+    "deviceConfig" : 
+    {
+        "default" : 
+        {
+            "debug" : true
+        }
+    },
+    "module" : 
+    {
+        "abilities" : 
+        [
+            {
+                "description" : "$string:MainAbility_desc",
+                "descriptionId" : 16777216,
+                "formsEnabled" : false,
+                "icon" : "$media:icon",
+                "iconId" : 16777220,
+                "label" : "$string:MainAbility_label",
+                "labelId" : 16777217,
+                "launchType" : "standard",
+                "name" : ".MainAbility",
+                "orientation" : "unspecified",
+                "skills" : 
+                [
+                    {
+                        "actions" : 
+                        [
+                            "action.system.home"
+                        ],
+                        "entities" : 
+                        [
+                            "entity.system.home"
+                        ]
+                    }
+                ],
+                "srcLanguage" : "ets",
+                "srcPath" : "MainAbility",
+                "type" : "page",
+                "visible" : true
+            }
+        ],
+        "deviceType" : 
+        [
+            "default",
+            "tablet"
+        ],
+        "distro" : 
+        {
+            "deliveryWithInstall" : true,
+            "installationFree" : false,
+            "moduleName" : "entry",
+            "moduleType" : "entry",
+            "virtualMachine" : "ark9.0.0.0"
+        },
+        "js" : 
+        [
+            {
+                "mode" : 
+                {
+                    "syntax" : "ets",
+                    "type" : "pageAbility"
+                },
+                "name" : ".MainAbility",
+                "pages" : 
+                [
+                    "pages/index"
+                ],
+                "window" : 
+                {
+                    "autoDesignWidth" : false,
+                    "designWidth" : 720
+                }
+            }
+        ],
+        "mainAbility" : ".MainAbility",
+        "name" : ".entry",
+        "package" : "com.example.packingtoolfademo"
+    }
+}

@@ -111,7 +111,7 @@ HWTEST_F(AppqfPackagetTest, AppqfPackage_0100, Function | MediumTest | Level1)
     EXPECT_EQ(appQFPackager.PreProcess(), 0);
     EXPECT_EQ(appQFPackager.Process(), 0);
     std::string cmd = {"rm -f "};
-    cmd +=OUT_PATH;
+    cmd += OUT_PATH;
     system(cmd.c_str());
 }
 
