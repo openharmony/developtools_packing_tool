@@ -627,6 +627,10 @@ bool ModuleJson::GetStageHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
         LOGE("SetStageHapVerifyInfoByModuleObj failed!");
         return false;
     }
+    if (!SetStageHapVerifyInfoExtByModuleObj(moduleObj, hapVerifyInfo)) {
+        LOGE("SetStageHapVerifyInfoExtByModuleObj failed!");
+        return false;
+    }
     return true;
 }
 
