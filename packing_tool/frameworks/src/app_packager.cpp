@@ -53,6 +53,14 @@ int32_t AppPackager::Process()
 {
     bool ret = CompressAppMode();
     if (!ret) {
+        std::string outPath;
+        if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+            outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+        }
+        if (fs::exists(outPath)) {
+            fs::remove_all(outPath);
+        }
+        LOGE("App DoPackage failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -298,6 +306,13 @@ bool AppPackager::PrepareDirectoriesAndFiles(const std::string outPath)
         fs::create_directories(hspTempDirPath);
     }
     if (!CompressHapAndHspFiles(tempPath, hspTempDirPath)) {
+        if (fs::exists(tempPath)) {
+            fs::remove_all(tempPath);
+        }
+        if (fs::exists(hspTempDirPath)) {
+            fs::remove_all(hspTempDirPath);
+        }
+        LOGE("AppPackager::CompressHapAndHspFiles failed.");
         return false;
     }
     return true;

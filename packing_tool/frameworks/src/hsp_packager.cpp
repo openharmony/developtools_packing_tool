@@ -46,6 +46,13 @@ int32_t HspPackager::PreProcess()
 int32_t HspPackager::Process()
 {
     if (!CompressHsp()) {
+        std::string outPath;
+        if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+            outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+        }
+        if (fs::exists(outPath)) {
+            fs::remove_all(outPath);
+        }
         LOGE("Hsp DoPackage failed!");
         return ERR_INVALID_VALUE;
     }
@@ -55,6 +62,13 @@ int32_t HspPackager::PostProcess()
 {
     if (generateBuildHash_) {
         if (!CompressHsp()) {
+            std::string outPath;
+            if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+                outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+            }
+            if (fs::exists(outPath)) {
+                fs::remove_all(outPath);
+            }
             LOGE("sencond CompressHsp failed!");
             return ERR_INVALID_VALUE;
         }
