@@ -77,13 +77,13 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     if (fileInfo.external_fa == ZIP_FILE_ATTR_DIRECTORY ||
         (fsUnzipPath.string().rfind('/') == fsUnzipPath.string().length() - 1)) {
         if (!fs::exists(fsFullFilePath)) {
-            LOGI("fsFullFilePath not exist, create: %s", fsFullFilePath.string().c_str());
+            LOGD("fsFullFilePath not exist, create: %s", fsFullFilePath.string().c_str());
             fs::create_directories(fsFullFilePath.string());
         }
         return fsFullFilePath.string();
     }
     if (!fs::exists(fsFullFilePath.parent_path())) {
-        LOGI("fsFullFilePath not exists, create : %s", fsFullFilePath.parent_path().string().c_str());
+        LOGD("fsFullFilePath not exists, create : %s", fsFullFilePath.parent_path().string().c_str());
         fs::create_directories(fsFullFilePath.parent_path().string());
     }
     if (unzOpenCurrentFile(unzFile_) != UNZ_OK) {
@@ -114,7 +114,7 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
 
 int32_t UnzipWrapper::UnzipFile(std::string filePath)
 {
-    LOGI("Unzip file[%s] to [%s]", unzFilePath_.c_str(), filePath.c_str());
+    LOGD("Unzip file[%s] to [%s]", unzFilePath_.c_str(), filePath.c_str());
     if (unzFile_ == nullptr) {
         LOGE("zip file not open");
         return ZIP_ERR_FAILURE;
