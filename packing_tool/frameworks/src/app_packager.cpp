@@ -81,19 +81,22 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
     if (!tmpHapPathList.empty()) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(tmpHapPathList.front(), hapVerifyInfo)) {
-            return false;
+            LOGW("GetStageHapVerifyInfo failed, this hap maybe fa module");
+            return true;
         }
         bundleType = hapVerifyInfo.GetBundleType();
     } else {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(tmpHspPathList.front(), hapVerifyInfo)) {
-            return false;
+            LOGW("GetStageHapVerifyInfo failed, this hap maybe fa module");
+            return true;
         }
         bundleType = hapVerifyInfo.GetBundleType();
     }
     for (const auto& hapPath : tmpHapPathList) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(hapPath, hapVerifyInfo)) {
+            LOGW("GetStageHapVerifyInfo failed");
             return false;
         }
         if (bundleType != hapVerifyInfo.GetBundleType()) {
@@ -104,6 +107,7 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
     for (const auto& hspPath : tmpHspPathList) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(hspPath, hapVerifyInfo)) {
+            LOGW("GetStageHapVerifyInfo failed");
             return false;
         }
         if (bundleType != hapVerifyInfo.GetBundleType()) {
@@ -410,7 +414,10 @@ bool AppPackager::CompressOtherFiles()
 
 bool AppPackager::CompressAppMode()
 {
-    std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+    std::string outPath;
+    if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
+        outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+    }
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
         LOGE("AppPackager::CompressAppMode: zipWrapper Open failed!");
