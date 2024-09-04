@@ -71,7 +71,6 @@ int32_t ShellCommand::ParseParam()
             return ERR_INVALID_VALUE;
         }
         if (option < 0) {
-            LOGI("ParseParam finish.");
             break;
         } else if (option == '?') {
             resultReceiver_.append("not support param: ").append(argv_[optind - 1]).append("\n");

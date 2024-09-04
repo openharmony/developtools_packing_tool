@@ -57,7 +57,8 @@ int32_t PackageNormalize::PreProcess()
 
     it = parameterMap_.find(Constants::PARAM_BUNDLE_NAME);
     std::regex pattern(Constants::BUNDLE_NAME_PATTERN);
-    if (it == parameterMap_.end() || !std::regex_match(it->second, pattern)) {
+    if (it == parameterMap_.end() || it->second.length() < Constants::BUNDLE_NAME_LEN_MIN ||
+        it->second.length() > Constants::BUNDLE_NAME_LEN_MAX || !std::regex_match(it->second, pattern)) {
         LOGE("PackageNormalizeMode bundle-name is invalid.");
         return ERR_INVALID_VALUE;
     }

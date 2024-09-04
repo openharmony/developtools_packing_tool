@@ -405,15 +405,9 @@ bool Packager::IsOutDirectoryValid()
     if (it == parameterMap_.end()) {
         LOGE("Validate out-path is empty");
         return false;
-    } else if (fs::exists(it->second) && !fs::is_directory(it->second)) {
+    } else if (!Utils::IsDirectory(it->second)) {
         LOGE("Validate out-path is not a directory.");
         return false;
-    } else if (!fs::exists(it->second)) {
-        if (fs::create_directories(it->second)) {
-        } else {
-            LOGE("Failed to create out-path directory.");
-            return false;
-        }
     }
     return true;
 }

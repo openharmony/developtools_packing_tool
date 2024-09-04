@@ -28,11 +28,12 @@ namespace AppPackingTool {
 
 class HQFVerify {
 public:
-    static bool CheckHQFIsValid(const std::vector<HqfInfo> &HqfInfos);
+    static bool CheckHQFIsValid(const std::vector<HqfInfo> &hqfInfos);
 
 private:
-    static bool CheckAppFields(const std::vector<HqfInfo> &HqfInfos);
-    static bool CheckModuleIsValid(const std::vector<HqfInfo> &HqfInfos);
+    static bool CheckAppFields(const std::vector<HqfInfo> &hqfInfos);
+    static bool CheckModuleIsDuplicated(const HqfInfo& hqfVerifyInfoLeft, const HqfInfo& hqfVerifyInfoRight);
+    static bool CheckModuleIsValid(const std::vector<HqfInfo> &hqfInfos);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
