@@ -702,10 +702,7 @@ bool ModuleJson::GetFaHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
         LOGE("GetDependencyItemsByModuleObj failed!");
         return false;
     }
-    if (!GetFaDebug(debug)) {
-        LOGE("GetFaDebug failed!");
-        return false;
-    }
+    GetFaDebug(debug);
     hapVerifyInfo.SetBundleName(bundleName);
     hapVerifyInfo.SetBundleType(bundleType);
     hapVerifyInfo.SetDependencyItemList(dependencyItems);

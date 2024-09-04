@@ -97,7 +97,7 @@ bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVeri
         return false;
     }
     if (!moduleJson.GetFaHapVerifyInfo(hapVerifyInfo)) {
-        LOGE("Get stage hap verify info failed!");
+        LOGE("Get FA hap verify info failed!");
         return false;
     }
     hapVerifyInfo.SetProfileStr(fileContent);
