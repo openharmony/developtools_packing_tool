@@ -73,7 +73,7 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
         return false;
     }
     if (!CheckAbilityNameIsValid(hapVerifyInfos)) {
-        LOGE("CheckAbilityNameIsValid failed. Ability name is duplicated.");
+        LOGI("CheckAbilityNameIsValid failed. Ability name is duplicated.");
     }
     if (!CheckTargetModuleNameIsExisted(hapVerifyInfos)) {
         LOGE("CheckTargetModuleNameIsExisted failed. Target module is not found.");
@@ -1098,12 +1098,18 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
         return true;
     }
     for (auto iter1 = abilityNames.begin(); iter1 != abilityNames.end(); iter1++) {
-        const std::list<std::string>& typeList1 = hapVerifyInfo.GetContinueTypeMap().at(*iter1);
+        std::list<std::string> typeList1;
+        if (hapVerifyInfo.GetContinueTypeMap().find(*iter1) != hapVerifyInfo.GetContinueTypeMap().end()) {
+            typeList1 = hapVerifyInfo.GetContinueTypeMap().at(*iter1);
+        }
         if (typeList1.empty()) {
             continue;
         }
         for (auto iter2 = std::next(iter1); iter2 != abilityNames.end(); iter2++) {
-            const std::list<std::string>& typeList2 = hapVerifyInfo.GetContinueTypeMap().at(*iter2);
+            std::list<std::string> typeList2;
+            if (hapVerifyInfo.GetContinueTypeMap().find(*iter2) != hapVerifyInfo.GetContinueTypeMap().end()) {
+                typeList2 = hapVerifyInfo.GetContinueTypeMap().at(*iter2);
+            }
             if (typeList2.empty()) {
                 continue;
             }
