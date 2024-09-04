@@ -27,7 +27,7 @@ namespace OHOS {
 namespace AppPackingTool {
 namespace {
 const int MAX_LOG_SIZE = 10240;
-const LOG_LEVEL DEFAULT_LOG_LEVEL = LOG_LEVEL::LOG_LEVEL_DEBUG;
+const LOG_LEVEL DEFAULT_LOG_LEVEL = LOG_LEVEL::LOG_LEVEL_INFO;
 const char LOG_LEVEL_FLAG[5] = {'D', 'I', 'W', 'E', 'F'};
 const int MS_LEN = 3;
 }

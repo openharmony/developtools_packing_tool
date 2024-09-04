@@ -70,7 +70,7 @@ int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs
 {
     int32_t ret = ZIP_ERR_SUCCESS;
     if (fs::is_directory(fsFilePath)) {
-        LOGI("[%s] is directory to [%s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
+        LOGD("[%s] is directory to [%s]", fsFilePath.string().c_str(), fsZipPath.string().c_str());
         int32_t count = 0;
         for (const auto &entry : fs::directory_iterator(fsFilePath)) {
             fs::path fsZipFullPath = fsZipPath / entry.path().filename();
@@ -128,7 +128,7 @@ int32_t ZipWrapper::AddEmptyDirToZip(const std::string &zipPath)
 int32_t ZipWrapper::AddEmptyDirToZip(const fs::path &fsZipPath)
 {
     fs::path fsZipDirPath = fs::path(fsZipPath.string() + "/");
-    LOGI("Add [%s] into zip", fsZipDirPath.string().c_str());
+    LOGD("Add [%s] into zip", fsZipDirPath.string().c_str());
     if (!IsOpen()) {
         LOGE("zip file is not open");
         return ZIP_ERR_FAILURE;

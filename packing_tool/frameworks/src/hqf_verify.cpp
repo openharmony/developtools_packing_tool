@@ -20,32 +20,32 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-bool HQFVerify::CheckHQFIsValid(const std::vector<HqfInfo>& HqfInfos)
+bool HQFVerify::CheckHQFIsValid(const std::vector<HqfInfo>& hqfInfos)
 {
-    if (HqfInfos.empty()) {
+    if (hqfInfos.empty()) {
         LOGE("Error: input hqf file is empty!");
         return false;
     }
-    if (!CheckAppFields(HqfInfos)) {
+    if (!CheckAppFields(hqfInfos)) {
         LOGE("Error: input hqf file has different fields in app!");
         return false;
     }
-    if (!CheckModuleIsValid(HqfInfos)) {
+    if (!CheckModuleIsValid(hqfInfos)) {
         LOGE("Error: input hqf file moduleName is invalid!");
         return false;
     }
     return true;
 }
 
-bool HQFVerify::CheckAppFields(const std::vector<HqfInfo>& HqfInfos)
+bool HQFVerify::CheckAppFields(const std::vector<HqfInfo>& hqfInfos)
 {
-    const std::string& bundleName = HqfInfos[0].GetBundleName();
-    int32_t versionCode = HqfInfos[0].GetVersionCode();
-    const std::string& versionName = HqfInfos[0].GetVersionName();
-    int32_t patchVersionCode = HqfInfos[0].GetPatchVersionCode();
-    const std::string& patchVersionName = HqfInfos[0].GetPatchVersionName();
+    const std::string& bundleName = hqfInfos[0].GetBundleName();
+    int32_t versionCode = hqfInfos[0].GetVersionCode();
+    const std::string& versionName = hqfInfos[0].GetVersionName();
+    int32_t patchVersionCode = hqfInfos[0].GetPatchVersionCode();
+    const std::string& patchVersionName = hqfInfos[0].GetPatchVersionName();
 
-    for (const auto& info : HqfInfos) {
+    for (const auto& info : hqfInfos) {
         if (bundleName.empty() || bundleName != info.GetBundleName()) {
             LOGE("Input hqf file has different bundleName!");
             return false;
@@ -70,21 +70,26 @@ bool HQFVerify::CheckAppFields(const std::vector<HqfInfo>& HqfInfos)
     return true;
 }
 
-bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& HqfInfos)
+bool HQFVerify::CheckModuleIsDuplicated(const HqfInfo& hqfVerifyInfoLeft, const HqfInfo& hqfVerifyInfoRight)
 {
-    std::unordered_set<std::string> moduleNames;
-    std::list<std::string> deviceTypes_;
-    for (const auto& info : HqfInfos) {
-        if (!moduleNames.insert(info.GetModuleName()).second) {
-            LOGE("Input hqf file has overlapping moduleNames!");
-            return false;
+    if (hqfVerifyInfoLeft.GetModuleName().compare(hqfVerifyInfoRight.GetModuleName()) != 0) {
+        return false;
+    }
+    if (Utils::CheckDisjoint(hqfVerifyInfoLeft.GetDeviceTypes(), hqfVerifyInfoRight.GetDeviceTypes())) {
+        return false;
+    }
+    return true;
+}
+
+bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& hqfInfos)
+{
+    for (int i = 0; i < hqfInfos.size(); ++i) {
+        for (int j = i + 1; j < hqfInfos.size(); ++j) {
+            if (CheckModuleIsDuplicated(hqfInfos[i], hqfInfos[j])) {
+                LOGE("input hqf file moduleName duplicated.");
+                return false;
+            }
         }
-        const auto& deviceTypes = info.GetDeviceTypes();
-        if (!Utils::CheckDisjoint(deviceTypes_, deviceTypes)) {
-            LOGE("Input hqf file has overlapping device types!");
-            return false;
-        }
-        deviceTypes_.insert(deviceTypes_.end(), deviceTypes.begin(), deviceTypes.end());
     }
     return true;
 }

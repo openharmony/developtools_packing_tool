@@ -105,6 +105,7 @@ HWTEST_F(PackageNormalizeTest, PackageNormalize_0100, Function | MediumTest | Le
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
     };
+    system("mkdir /data/test/packagenormalize_packing");
     OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(packageNormalize.PreProcess(), 0);
     EXPECT_EQ(packageNormalize.Process(), 0);
@@ -127,9 +128,12 @@ HWTEST_F(PackageNormalizeTest, PreProcess_0100, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
-
+    system("mkdir /data/test/packagenormalize_packing");
     OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(packageNormalize.PreProcess(), 1);
+    std::string cmd = {"rm -rf "};
+    cmd += OUT_PATH;
+    system(cmd.c_str());
 }
 
 /*
@@ -148,9 +152,12 @@ HWTEST_F(PackageNormalizeTest, PreProcess_0200, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
-
+    system("mkdir /data/test/packagenormalize_packing");
     OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(packageNormalize.PreProcess(), 1);
+    std::string cmd = {"rm -rf "};
+    cmd += OUT_PATH;
+    system(cmd.c_str());
 }
 
 /*
@@ -168,9 +175,12 @@ HWTEST_F(PackageNormalizeTest, PreProcess_0300, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
-
+    system("mkdir /data/test/packagenormalize_packing");
     OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(packageNormalize.PreProcess(), 1);
+    std::string cmd = {"rm -rf "};
+    cmd += OUT_PATH;
+    system(cmd.c_str());
 }
 
 /*
@@ -189,8 +199,11 @@ HWTEST_F(PackageNormalizeTest, PreProcess_0400, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-12345"},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
-
+    system("mkdir /data/test/packagenormalize_packing");
     OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(packageNormalize.PreProcess(), 1);
+    std::string cmd = {"rm -rf "};
+    cmd += OUT_PATH;
+    system(cmd.c_str());
 }
 } // namespace OHOS

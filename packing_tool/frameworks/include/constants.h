@@ -146,6 +146,8 @@ const std::string HQF_SUFFIX = ".hqf";
 const std::string APPQF_SUFFIX = ".appqf";
 
 const int32_t BUFFER_SIZE = 1024;
+const int32_t BUNDLE_NAME_LEN_MIN = 7;
+const int32_t BUNDLE_NAME_LEN_MAX = 128;
 const char COMMA_SPLIT = ',';
 
 constexpr const char* SHORT_OPTIONS = "";

@@ -33,7 +33,7 @@ namespace OHOS {
 #define INPUT_LIST  "/data/test/entry-default-unsigned.hap"
 #define VERSION_CODE "9999999"
 #define VERSION_NAME "30.11.22"
-#define OUT_PATH "/data/test/packagenormalize_packing"
+#define OUT_PATH "/data/test/versionnormalize_packing"
 #define STAGE_INDEX_PATH "/data/test/resource/packingtool/test_file/stage/resources.index"
 #define STAGE_PACK_INFO_PATH "/data/test/resource/packingtool/test_file/stage/pack.info"
 #define STAGE_ETS_PATH "/data/test/resource/packingtool/test_file/stage/ets"
@@ -76,14 +76,14 @@ void VersionNormalizeTest::SetUpTestCase()
     EXPECT_EQ(hapPackager.PreProcess(), 0);
     EXPECT_EQ(hapPackager.Process(), 0);
     EXPECT_EQ(hapPackager.PostProcess(), 0);
-    system("rm -rf /data/test/resource/packingtool/test_file/stage/ets");
-    system("rm -f /data/test/resource/packingtool/test_file/stage/resources.index");
+    system("rm -rf /data/test/resource/packingtool/test_file/stage");
+    system("rm -rf /data/test/resource/packingtool/test_file/fa");
 }
 
 void VersionNormalizeTest::TearDownTestCase()
 {
-    std::string cmd = {"rm -f /data/test/packagenormalize_packing/*"};
-    system(cmd.c_str());
+    system("rm -rf /data/test/versionnormalize_packing");
+    system("rm -rf /data/test/entry-default-unsigned.hap");
 }
 
 void VersionNormalizeTest::SetUp() {}
@@ -106,9 +106,11 @@ HWTEST_F(VersionNormalizeTest, VersionNormalize_0100, Function | MediumTest | Le
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
 
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 0);
     EXPECT_EQ(versionNormalize.Process(), 0);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 
 /*
@@ -126,8 +128,10 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0100, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
 
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 
 /*
@@ -147,8 +151,10 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0200, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
 
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 
 /*
@@ -165,8 +171,11 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0300, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
+
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 
 /*
@@ -184,8 +193,11 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0400, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, "aabbc"},
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
+
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 
 /*
@@ -203,8 +215,10 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0500, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
 
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 
 /*
@@ -223,6 +237,7 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0600, Function | MediumTest | Level1)
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
     };
 
+    system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
 }
