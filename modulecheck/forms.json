@@ -48,8 +48,7 @@
           "isDefault",
           "supportDimensions",
           "defaultDimension",
-          "updateEnabled",
-          "displayName"
+          "updateEnabled"
         ],
         "allOf": [
           {
