@@ -26,7 +26,7 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string RESOURCE_PATH = "resources/base/profile/";
+const std::string RESOURCE_PATH = "resources/base/profile/";
 }
 
 ZipUtils::ZipUtils()

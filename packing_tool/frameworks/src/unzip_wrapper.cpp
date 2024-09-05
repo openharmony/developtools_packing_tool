@@ -22,8 +22,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 UnzipWrapper::UnzipWrapper()
 {}
 

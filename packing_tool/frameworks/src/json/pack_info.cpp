@@ -24,23 +24,22 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string SUMMARY = "summary";
-    const std::string PACKAGES = "packages";
-    const std::string APP = "app";
-    const std::string MODULES = "modules";
-    // const std::string MODULE = "module";
-    const std::string BUNDLE_NAME = "bundleName";
-    const std::string BUNDLE_TYPE = "bundleType";
-    const std::string VERSION = "version";
-    const std::string CODE = "code";
-    const std::string NAME = "name";
-    const std::string DISTRO = "distro";
-    const std::string MODULE_NAME = "moduleName";
-    const std::string EXTENSION_ABILITIES = "extensionAbilities";
-    const std::string FORMS = "forms";
-    const std::string DEFAULT_DIMENSION = "defaultDimension";
-    const std::string SUPPORT_DIMENSIONS = "supportDimensions";
-    const char ASTERISK = '*';
+const std::string SUMMARY = "summary";
+const std::string PACKAGES = "packages";
+const std::string APP = "app";
+const std::string MODULES = "modules";
+const std::string BUNDLE_NAME = "bundleName";
+const std::string BUNDLE_TYPE = "bundleType";
+const std::string VERSION = "version";
+const std::string CODE = "code";
+const std::string NAME = "name";
+const std::string DISTRO = "distro";
+const std::string MODULE_NAME = "moduleName";
+const std::string EXTENSION_ABILITIES = "extensionAbilities";
+const std::string FORMS = "forms";
+const std::string DEFAULT_DIMENSION = "defaultDimension";
+const std::string SUPPORT_DIMENSIONS = "supportDimensions";
+const char ASTERISK = '*';
 }
 
 bool PackInfo::ParseFromString(const std::string& jsonString)

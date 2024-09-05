@@ -23,8 +23,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {}
-
 AppPackager::AppPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}

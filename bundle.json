@@ -28,6 +28,9 @@
         "sub_component": [
           "//developtools/packing_tool:packing_tool",
           "//developtools/packing_tool:ohos_packing_tool"
+        ],
+        "test": [
+          "//developtools/packing_tool/packing_tool/frameworks/test/unittest:unittest"
         ]
       }
     }

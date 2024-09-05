@@ -33,23 +33,24 @@ public:
     PackInfoUtils(const PackInfoUtils &) = delete;
     PackInfoUtils &operator=(const PackInfoUtils &) = delete;
 
-    static bool MergeTwoPackInfos(std::string& srcPackInfoJsonStr1, std::string& srcPackInfoJsonStr2,
+    static bool MergeTwoPackInfos(const std::string& srcPackInfoJsonStr1, const std::string& srcPackInfoJsonStr2,
         std::string& dstPackInfoJsonStr);
-    static bool MergeTwoPackInfosByPackagePair(std::string& srcPackInfoJsonStr1, std::string& srcPackInfoJsonStr2,
-        std::map<std::string, std::string>, std::string& dstPackInfoJsonStr);
+    static bool MergeTwoPackInfosByPackagePair(const std::string& srcPackInfoJsonStr1,
+        const std::string& srcPackInfoJsonStr2, const std::map<std::string, std::string>& packagesMap,
+        std::string& dstPackInfoJsonStr);
 
 private:
     static bool MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2);
     static bool MergeTwoPackInfosByPackagePair(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2,
-        std::string& packageName, std::string& moduleName);
+        const std::string& packageName, const std::string& moduleName);
     static bool FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2,
-        std::string& moduleName);
+        const std::string& moduleName);
     static bool FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, PackInfo& srcPackInfo2,
-        std::string& packageName);
-    static bool VerifyPackInfos(PackInfo& finalPackInfo, PackInfo& srcPackInfo);
-    static bool CheckBundleNameInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2);
-    static bool CheckBundleTypeInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2);
-    static bool CheckVersionCodeInPackInfo(PackInfo& packInfo1, PackInfo& packInfo2);
+        const std::string& packageName);
+    static bool VerifyPackInfos(const PackInfo& finalPackInfo, const PackInfo& srcPackInfo);
+    static bool CheckBundleNameInPackInfo(const PackInfo& packInfo1, const PackInfo& packInfo2);
+    static bool CheckBundleTypeInPackInfo(const PackInfo& packInfo1, const PackInfo& packInfo2);
+    static bool CheckVersionCodeInPackInfo(const PackInfo& packInfo1, const PackInfo& packInfo2);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

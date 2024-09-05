@@ -21,9 +21,9 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string ORIGIN_VERSION_CODE = "originVersionCode";
-    const std::string ORIGIN_VERSION_NAME = "originVersionName";
-    const std::string MODULE_NAME = "moduleName";
+const std::string ORIGIN_VERSION_CODE = "originVersionCode";
+const std::string ORIGIN_VERSION_NAME = "originVersionName";
+const std::string MODULE_NAME = "moduleName";
 }
 
 std::string NormalizeVersionUtils::ToString(const NormalizeVersion& normalizeVersion)

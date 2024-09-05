@@ -25,21 +25,21 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string ENTRY = "entry";
-    const std::string FEATURE = "feature";
-    const std::string SHARED_LIBRARY = "shared";
-    const std::string EMPTY_STRING = "";
-    const std::string REFERENCE_LINK = "FAQ";
-    const std::string INCLUDE = "include";
-    const std::string EXCLUDE = "exclude";
-    const std::string MODULE_NAME = "moduleName";
-    const std::string PACKAGE_NAME = "packageName";
-    const std::string ENTRY_NAME = "entryName";
-    const std::string ATOMIC_SERVICE = "atomicService";
-    const std::string TYPE_SHARED = "shared";
-    const std::string HAR = "har";
-    const int32_t TWO = 2;
-    const long FILE_LENGTH_1M = 1024 * 1024L;
+const std::string ENTRY = "entry";
+const std::string FEATURE = "feature";
+const std::string SHARED_LIBRARY = "shared";
+const std::string EMPTY_STRING = "";
+const std::string REFERENCE_LINK = "FAQ";
+const std::string INCLUDE = "include";
+const std::string EXCLUDE = "exclude";
+const std::string MODULE_NAME = "moduleName";
+const std::string PACKAGE_NAME = "packageName";
+const std::string ENTRY_NAME = "entryName";
+const std::string ATOMIC_SERVICE = "atomicService";
+const std::string TYPE_SHARED = "shared";
+const std::string HAR = "har";
+const int32_t TWO = 2;
+const long FILE_LENGTH_1M = 1024 * 1024L;
 }
 
 bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
