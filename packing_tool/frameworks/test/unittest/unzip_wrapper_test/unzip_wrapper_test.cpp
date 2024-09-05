@@ -30,9 +30,9 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace {
-const std::string OUT_PATH "/data/test_1.hqf";
-const std::string FILE_PATH "/data/unzip_wrapper_test";
-const std::string TEMP_PATH "/data/temp";
+const std::string OUT_PATH = "/data/test_1.hqf";
+const std::string FILE_PATH = "/data/test/resource/packingtool/unzip_wrapper_test";
+const std::string TEMP_PATH = "/data/temp";
 }
 
 class UnzipWrapperTest : public testing::Test {

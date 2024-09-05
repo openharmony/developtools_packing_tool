@@ -22,17 +22,17 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string APP = "app";
-    const std::string MODULE = "module";
-    const std::string BUNDLE_NAME = "bundleName";
-    const std::string VERSION_CODE = "versionCode";
-    const std::string VERSION_NAME = "versionName";
-    const std::string PATCH_VERSION_CODE = "patchVersionCode";
-    const std::string PATCH_VERSION_NAME = "patchVersionName";
-    const std::string NAME = "name";
-    const std::string TYPE = "type";
-    const std::string DEVICE_TYPES = "deviceTypes";
-    const std::string ORIGINAL_MODULE_HASH = "originalModuleHash";
+const std::string APP = "app";
+const std::string MODULE = "module";
+const std::string BUNDLE_NAME = "bundleName";
+const std::string VERSION_CODE = "versionCode";
+const std::string VERSION_NAME = "versionName";
+const std::string PATCH_VERSION_CODE = "patchVersionCode";
+const std::string PATCH_VERSION_NAME = "patchVersionName";
+const std::string NAME = "name";
+const std::string TYPE = "type";
+const std::string DEVICE_TYPES = "deviceTypes";
+const std::string ORIGINAL_MODULE_HASH = "originalModuleHash";
 }
 
 bool PatchJson::ParseFromString(const std::string& jsonString)

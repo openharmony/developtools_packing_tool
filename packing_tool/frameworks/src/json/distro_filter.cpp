@@ -25,13 +25,13 @@
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
-    const std::string API_VERSION = "apiVersion";
-    const std::string SCREEN_SHAPE = "screenShape";
-    const std::string SCREEN_DENSITY = "screenDensity";
-    const std::string SCREEN_WINDOW = "screenWindow";
-    const std::string COUNTRY_CODE = "countryCode";
-    const std::string POLICY = "policy";
-    const std::string VALUE = "value";
+const std::string API_VERSION = "apiVersion";
+const std::string SCREEN_SHAPE = "screenShape";
+const std::string SCREEN_DENSITY = "screenDensity";
+const std::string SCREEN_WINDOW = "screenWindow";
+const std::string COUNTRY_CODE = "countryCode";
+const std::string POLICY = "policy";
+const std::string VALUE = "value";
 }
 
 bool PolicyValue::ParseFromString(const std::string& jsonString)
