@@ -50,6 +50,7 @@ public:
     // Algorithm
     static std::string GetSha256Str(const std::string &str);
     static std::string GetSha256File(const std::string &filePath);
+    static std::string GetSha256Folder(const std::string &filePath);
     static std::string GenerateUUID();
 
     // File

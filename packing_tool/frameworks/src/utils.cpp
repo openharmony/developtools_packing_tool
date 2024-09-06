@@ -184,6 +184,33 @@ std::string Utils::GetSha256File(const std::string &filePath)
     return ss.str();
 }
 
+std::string Utils::GetSha256Folder(const std::string &filePath)
+{
+    SHA256_CTX ctx;
+    SHA256_Init(&ctx);
+    for (const auto& entry : fs::recursive_directory_iterator(filePath)) {
+        if (fs::is_regular_file(entry)) {
+            std::ifstream file(entry, std::ios::binary);
+            if (!file.is_open()) {
+                LOGE("file open failed! filePath=%s", entry.path().string().c_str());
+                return "";
+            }
+            std::vector<char> buffer((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+            SHA256_Update(&ctx, buffer.data(), buffer.size());
+        }
+    }
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_Final(hash, &ctx);
+
+    // Convert hash to hex string
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        ss << std::hex << std::setw(HEX_WIDTH) << std::setfill('0') << static_cast<uint32_t>(hash[i]);
+    }
+    return ss.str();
+}
+
 bool Utils::IsFileExists(const std::string& file)
 {
     return access(file.c_str(), F_OK) == 0;
