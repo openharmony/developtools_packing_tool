@@ -773,6 +773,7 @@ bool FastAppPackager::packSingleThread(const fs::path &inputPath, const fs::path
     }
     zipWrapper_.Close();
     path = pathStr;
+    isGenerateBuildHash_ = false;
     return true;
 }
 
@@ -807,7 +808,7 @@ bool FastAppPackager::AddOtherFileToZip(const fs::path &entry)
 
 void FastAppPackager::GenBuildHash(const fs::path &inputPath, std::string &jsonString)
 {
-    std::string hash = Utils::GetSha256File(inputPath);
+    std::string hash = Utils::GetSha256Folder(inputPath);
     if (hash.empty()) {
         return;
     }
