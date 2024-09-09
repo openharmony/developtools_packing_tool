@@ -355,17 +355,42 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
         LOGE("AppPackager::CheckHapsIsValid verify failed.");
         return false;
     }
-    for (const auto& hapPath : fileList) {
-        std::string zipPath = fs::path(hapPath).filename().string();
-        if (zipWrapper_.AddFileOrDirectoryToZip(hapPath, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            return false;
-        }
+    if (!AddHapListToApp(fileList)) {
+        zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
+        LOGE("AppPackager::AddHapListToApp failed.");
+        return false;
     }
     if (fs::exists(tempPath)) {
         fs::remove_all(tempPath);
     }
     if (fs::exists(hspTempDirPath)) {
         fs::remove_all(hspTempDirPath);
+    }
+    return true;
+}
+
+bool AppPackager::AddHapListToApp(const std::list<std::string> &fileList)
+{
+    for (const auto& hapPath : fileList) {
+        HapVerifyInfo hapVerifyInfo;
+        if (ModuleJsonUtils::IsModuleHap(hapPath)) {
+            if (!ModuleJsonUtils::GetStageHapVerifyInfo(hapPath, hapVerifyInfo)) {
+                LOGW("GetStageHapVerifyInfo failed! hapPath:%s", hapPath.c_str());
+            }
+        } else {
+            if (!ModuleJsonUtils::GetFaHapVerifyInfo(hapPath, hapVerifyInfo)) {
+                LOGW("GetFaHapVerifyInfo failed! hapPath:%s", hapPath.c_str());
+            }
+        }
+        if (hapVerifyInfo.IsDebug()) {
+            zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_0);
+        }
+        if (zipWrapper_.AddFileOrDirectoryToZip(hapPath, fs::path(hapPath).filename().string()) !=
+            ZipErrCode::ZIP_ERR_SUCCESS) {
+            LOGE("AppPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
+            return false;
+        }
+        zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
     }
     return true;
 }
