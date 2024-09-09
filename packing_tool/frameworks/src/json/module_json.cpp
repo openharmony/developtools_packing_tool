@@ -471,18 +471,19 @@ bool ModuleJson::GetTargetModulePriorityByModuleObj(std::unique_ptr<PtJson>& mod
 }
 
 // parseModuleMetadata
-bool ModuleJson::GetModuleMetadatas(std::list<ModuleMetadataInfo>& moduleMetadataInfos)
+bool ModuleJson::GetModuleMetadatas(std::list<ModuleMetadataInfo>& moduleMetadataInfos,
+    const std::map<std::string, std::string>& resourceMap)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
         LOGE("GetModuleObject failed!");
         return false;
     }
-    return GetModuleMetadatasByModuleObj(moduleObj, moduleMetadataInfos);
+    return GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos);
 }
 
 bool ModuleJson::GetModuleMetadataInfoByModuleMetadataInfoObj(std::unique_ptr<PtJson>& moduleMetadataInfoObj,
-    ModuleMetadataInfo& moduleMetadataInfo)
+    const std::map<std::string, std::string>& resourceMap, ModuleMetadataInfo& moduleMetadataInfo)
 {
     if (!moduleMetadataInfoObj) {
         LOGE("ModuleMetadataInfo node is null!");
@@ -506,13 +507,19 @@ bool ModuleJson::GetModuleMetadataInfoByModuleMetadataInfoObj(std::unique_ptr<Pt
             LOGE("ModuleMetadataInfo node get %s failed!", RESOURCE.c_str());
             return false;
         }
-        moduleMetadataInfo.resource = Utils::ReplaceAll(resource, PROFILE, "") + JSON_PREFIX;
+        std::string fileName = Utils::ReplaceAll(resource, PROFILE, "") + JSON_PREFIX;
+        auto iter = resourceMap.find(fileName);
+        if (iter == resourceMap.end()) {
+            LOGE("find filename in resourceMap failed!");
+            return false;
+        }
+        moduleMetadataInfo.resource = iter->second;
     }
     return true;
 }
 
 bool ModuleJson::GetModuleMetadatasByModuleObj(std::unique_ptr<PtJson>& moduleObj,
-    std::list<ModuleMetadataInfo>& moduleMetadataInfos)
+    const std::map<std::string, std::string>& resourceMap, std::list<ModuleMetadataInfo>& moduleMetadataInfos)
 {
     if (!moduleObj) {
         LOGE("Module node is null!");
@@ -527,7 +534,8 @@ bool ModuleJson::GetModuleMetadatasByModuleObj(std::unique_ptr<PtJson>& moduleOb
         for (int32_t i = 0; i < moduleMetadataInfosObj->GetSize(); i++) {
             ModuleMetadataInfo moduleMetadataInfo;
             std::unique_ptr<PtJson> moduleMetadataInfoObj = moduleMetadataInfosObj->Get(i);
-            if (!GetModuleMetadataInfoByModuleMetadataInfoObj(moduleMetadataInfoObj, moduleMetadataInfo)) {
+            if (!GetModuleMetadataInfoByModuleMetadataInfoObj(moduleMetadataInfoObj, resourceMap,
+                moduleMetadataInfo)) {
                 LOGE("GetModuleMetadataInfoByModuleMetadataInfoObj failed!");
                 return false;
             }
@@ -544,25 +552,25 @@ bool ModuleJson::ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetada
         if (moduleMetadataInfo.resource.empty()) {
             continue;
         }
-        std::unique_ptr<PtJson> distroFilterObj = PtJson::Parse(moduleMetadataInfo.resource);
-        if (!distroFilterObj) {
+        std::unique_ptr<PtJson> distroFilterJsonObj = PtJson::Parse(moduleMetadataInfo.resource);
+        if (!distroFilterJsonObj) {
             LOGE("DistroFilter node is null!");
             return false;
         }
-        std::string distroFilterJsonStr;
-        if (distroFilterObj->Contains(DISTRIBUTION_FILTER.c_str())) {
-            if (distroFilterObj->GetString(DISTRIBUTION_FILTER.c_str(), &distroFilterJsonStr) != Result::SUCCESS) {
-                LOGE("DistroFilter node get %s failed!", DISTRIBUTION_FILTER.c_str());
+        std::unique_ptr<PtJson> distroFilterObj;
+        if (distroFilterJsonObj->Contains(DISTRIBUTION_FILTER.c_str())) {
+            if (distroFilterJsonObj->GetObject(DISTRIBUTION_FILTER.c_str(), &distroFilterObj) != Result::SUCCESS) {
+                LOGE("DistroFilter node get %s failed!", DISTRO_FILTER.c_str());
                 return false;
             }
-        } else if (distroFilterObj->Contains(DISTRO_FILTER.c_str())) {
-            if (distroFilterObj->GetString(DISTRO_FILTER.c_str(), &distroFilterJsonStr) != Result::SUCCESS) {
+        } else if (distroFilterJsonObj->Contains(DISTRO_FILTER.c_str())) {
+            if (distroFilterJsonObj->GetObject(DISTRO_FILTER.c_str(), &distroFilterObj) != Result::SUCCESS) {
                 LOGE("DistroFilter node get %s failed!", DISTRO_FILTER.c_str());
                 return false;
             }
         }
-        if (!distroFilter.ParseFromString(distroFilterJsonStr)) {
-            LOGE("Parse distro filter string failed![%s]", distroFilterJsonStr.c_str());
+        if (!distroFilter.ParseFromJson(distroFilterObj)) {
+            LOGE("Parse distro filter failed!");
             return false;
         }
     }
@@ -1248,7 +1256,7 @@ bool ModuleJson::GetGenerateBuildHash(bool& generateBuildHash)
             return false;
         }
     } else {
-        LOGE("App node and module node are both not contain %s node", GENERATE_BUILD_HASH.c_str());
+        LOGW("App node and module node are both not contain %s node", GENERATE_BUILD_HASH.c_str());
         return false;
     }
     return true;

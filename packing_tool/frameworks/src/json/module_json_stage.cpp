@@ -392,20 +392,22 @@ bool ModuleJson::GetStageDeviceTypesByModuleObj(std::unique_ptr<PtJson>& moduleO
     return true;
 }
 
-bool ModuleJson::GetStageDistroFilter(DistroFilter& distroFilter)
+bool ModuleJson::GetStageDistroFilter(DistroFilter& distroFilter,
+    const std::map<std::string, std::string>& resourceMap)
 {
     std::list<ModuleMetadataInfo> moduleMetadataInfos;
-    if (!GetModuleMetadatas(moduleMetadataInfos)) {
+    if (!GetModuleMetadatas(moduleMetadataInfos, resourceMap)) {
         LOGE("GetModuleMetadatas failed!");
         return false;
     }
     return ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter);
 }
 
-bool ModuleJson::GetStageDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj, DistroFilter& distroFilter)
+bool ModuleJson::GetStageDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj,
+    const std::map<std::string, std::string>& resourceMap, DistroFilter& distroFilter)
 {
     std::list<ModuleMetadataInfo> moduleMetadataInfos;
-    if (!GetModuleMetadatasByModuleObj(moduleObj, moduleMetadataInfos)) {
+    if (!GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos)) {
         LOGE("GetModuleMetadatasByModuleObj failed!");
         return false;
     }
@@ -646,6 +648,7 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
     std::string targetBundleName;
     int32_t targetPriority = 0;
     bool debug = false;
+    MultiAppMode multiAppMode;
     if (!GetVendorByAppObj(appObj, vendor)) {
         LOGE("GetVendorByAppObj failed!");
         return false;
@@ -670,12 +673,17 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
         LOGE("GetStageDebugByAppObj failed!");
         return false;
     }
+    if (!GetMultiAppModeByAppObj(appObj, multiAppMode)) {
+        LOGE("GetMultiAppModeByAppObj failed!");
+        return false;
+    }
     hapVerifyInfo.SetVendor(vendor);
     hapVerifyInfo.SetVersion(version);
     hapVerifyInfo.SetApiVersion(moduleApiVersion);
     hapVerifyInfo.SetTargetBundleName(targetBundleName);
     hapVerifyInfo.SetTargetPriority(targetPriority);
     hapVerifyInfo.SetDebug(debug);
+    hapVerifyInfo.SetMultiAppMode(multiAppMode);
     return true;
 }
 
@@ -742,8 +750,7 @@ bool ModuleJson::SetStageHapVerifyInfoExtByModuleObj(std::unique_ptr<PtJson>& mo
     std::list<PreloadItem> preloadItems;
     std::list<std::string> proxyDataUris;
     std::map<std::string, std::list<std::string>> abilityContinueTypeMap;
-    MultiAppMode multiAppMode;
-    if (!GetStageDistroFilterByModuleObj(moduleObj, distroFilter)) {
+    if (!GetStageDistroFilterByModuleObj(moduleObj, hapVerifyInfo.GetResourceMap(), distroFilter)) {
         LOGE("GetStageDistroFilterByModuleObj failed!");
         return false;
     }
@@ -767,17 +774,12 @@ bool ModuleJson::SetStageHapVerifyInfoExtByModuleObj(std::unique_ptr<PtJson>& mo
         LOGE("GetAbilityContinueTypeMapByModuleObj failed!");
         return false;
     }
-    if (!GetMultiAppModeByAppObj(moduleObj, multiAppMode)) {
-        LOGE("GetMultiAppModeByAppObj failed!");
-        return false;
-    }
     hapVerifyInfo.SetDistroFilter(distroFilter);
     hapVerifyInfo.SetAbilityNames(abilityNames);
     hapVerifyInfo.AddAbilityNames(extensionAbilityNames);
     hapVerifyInfo.SetPreloadItems(preloadItems);
     hapVerifyInfo.SetProxyDataUris(proxyDataUris);
     hapVerifyInfo.SetContinueTypeMap(abilityContinueTypeMap);
-    hapVerifyInfo.SetMultiAppMode(multiAppMode);
     return true;
 }
 } // namespace AppPackingTool

@@ -89,6 +89,7 @@ const std::string PARAM_RPCID = "rpcid";
 const std::string PARAM_APPQF_PATH = "appqf-path";
 const std::string PARAM_MAIN_MODULE_LIMIT = "main-module-limit";
 const std::string PARAM_NORMAL_MODULE_LIMIT = "normal-module-limit";
+const std::string PARAM_TOTAL_LIMIT = "total-limit";
 const std::string PARAM_BUNDLE_NAME = "bundle-name";
 
 const std::string MODULE_JSON = "module.json";
@@ -195,6 +196,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_PACK_RES_PATH.c_str(), required_argument, nullptr, 42},
     {PARAM_ENTRYCARD_PATH.c_str(), required_argument, nullptr, 43},
     {PARAM_BUNDLE_NAME.c_str(), required_argument, nullptr, 44},
+    {PARAM_TOTAL_LIMIT.c_str(), required_argument, nullptr, 45},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

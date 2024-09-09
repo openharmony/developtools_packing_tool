@@ -214,7 +214,7 @@ bool HapVerifyUtils::CheckModuleNameIsValid(const std::list<HapVerifyInfo>& hapV
             const HapVerifyInfo& hapVerifyInfo2 = *iter2;
             if (hapVerifyInfo1.GetModuleName() == hapVerifyInfo2.GetModuleName() &&
                 !CheckDuplicatedIsValid(hapVerifyInfo1, hapVerifyInfo2)) {
-                ShowCheckTips(hapVerifyInfo1, hapVerifyInfo1, MODULE_NAME);
+                ShowCheckTips(hapVerifyInfo1, hapVerifyInfo2, MODULE_NAME);
                 return false;
             }
         }
@@ -236,7 +236,6 @@ bool HapVerifyUtils::CheckDuplicatedIsValid(const HapVerifyInfo& hapVerifyInfo1,
 bool HapVerifyUtils::CheckDistroFilterDisjoint(const DistroFilter& distroFilter1, const DistroFilter& distroFilter2)
 {
     if (distroFilter1.IsEmpty() || distroFilter2.IsEmpty()) {
-        LOGE("distroFilter1 or distroFilter2 is empty!");
         return false;
     }
     if (!distroFilter1.apiVersion.IsEmpty() && !distroFilter2.apiVersion.IsEmpty()) {
@@ -301,7 +300,7 @@ bool HapVerifyUtils::CheckPackageNameIsValid(const std::list<HapVerifyInfo>& hap
             const HapVerifyInfo& hapVerifyInfo2 = *iter2;
             if (hapVerifyInfo1.GetPackageName() == hapVerifyInfo2.GetPackageName() &&
                 !CheckDuplicatedIsValid(hapVerifyInfo1, hapVerifyInfo2)) {
-                ShowCheckTips(hapVerifyInfo1, hapVerifyInfo1, PACKAGE_NAME);
+                ShowCheckTips(hapVerifyInfo1, hapVerifyInfo2, PACKAGE_NAME);
                 return false;
             }
         }

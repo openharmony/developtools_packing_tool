@@ -40,6 +40,7 @@ public:
     bool IsVerifyValidInAppMode();
     bool PrepareDirectoriesAndFiles(const std::string outPath);
     bool CompressHapAndHspFiles(const fs::path &tempPath, const fs::path &hspTempDirPath);
+    bool AddHapListToApp(const std::list<std::string> &fileList);
     bool CompressOtherFiles();
     bool CompressAppMode();
 

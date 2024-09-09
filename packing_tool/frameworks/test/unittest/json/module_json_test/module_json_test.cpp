@@ -161,7 +161,8 @@ const std::string MODULE_JSON_STRING = "{"
         "\"metadata\": ["
             "{"
                 "\"name\": \"test_metadata\","
-                "\"value\": \"test_value\""
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
             "}"
         "],"
         "\"extensionAbilities\": ["
@@ -171,7 +172,7 @@ const std::string MODULE_JSON_STRING = "{"
         "]"
     "},"
     "\"deviceConfig\": {"
-        "\"default\": true"
+        "\"default\": {\"debug\": true}"
     "}"
 "}";
 
@@ -501,7 +502,14 @@ HWTEST_F(ModuleJsonTest, GetStageHapVerifyInfo_0100, Function | MediumTest | Lev
 {
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    string str = "{"
+    "\"distributionFilter\": {"
+        "}"
+    "}";
     HapVerifyInfo hapVerifyInfo;
+    map<std::string, std::string> resourceMap;
+    resourceMap.insert((make_pair("test_resource.json", str)));
+    hapVerifyInfo.SetResourceMap(resourceMap);
     EXPECT_TRUE(moduleJson.GetStageHapVerifyInfo(hapVerifyInfo));
 }
 
@@ -516,7 +524,13 @@ HWTEST_F(ModuleJsonTest, GetStageDistroFilter_0100, Function | MediumTest | Leve
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
     DistroFilter distroFilter;
-    EXPECT_TRUE(moduleJson.GetStageDistroFilter(distroFilter));
+    map<std::string, std::string> resourceMap;
+    string str = "{"
+    "\"distributionFilter\": {"
+        "}"
+    "}";
+    resourceMap.insert((make_pair("test_resource.json", str)));
+    EXPECT_TRUE(moduleJson.GetStageDistroFilter(distroFilter, resourceMap));
 }
 
 /*
@@ -1612,7 +1626,13 @@ HWTEST_F(ModuleJsonTest, GetModuleMetadatas_0100, Function | MediumTest | Level1
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
     std::list<ModuleMetadataInfo> moduleMetadataInfos;
-    EXPECT_TRUE(moduleJson.GetModuleMetadatas(moduleMetadataInfos));
+    map<std::string, std::string> resourceMap;
+    string str = "{"
+    "\"distributionFilter\": {"
+        "}"
+    "}";
+    resourceMap.insert((make_pair("test_resource.json", str)));
+    EXPECT_TRUE(moduleJson.GetModuleMetadatas(moduleMetadataInfos, resourceMap));
     EXPECT_NE(moduleMetadataInfos.size(), 0);
 }
 
@@ -1628,7 +1648,14 @@ HWTEST_F(ModuleJsonTest, SetStageHapVerifyInfoExtByModuleObj_0100, Function | Me
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
     std::unique_ptr<PtJson> moduleObj;
     EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    string str = "{"
+    "\"distributionFilter\": {"
+        "}"
+    "}";
     HapVerifyInfo hapVerifyInfo;
+    map<std::string, std::string> resourceMap;
+    resourceMap.insert((make_pair("test_resource.json", str)));
+    hapVerifyInfo.SetResourceMap(resourceMap);
     EXPECT_TRUE(moduleJson.SetStageHapVerifyInfoExtByModuleObj(moduleObj, hapVerifyInfo));
 }
 

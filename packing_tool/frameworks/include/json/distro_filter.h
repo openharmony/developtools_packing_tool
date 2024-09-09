@@ -28,7 +28,8 @@ struct PolicyValue {
     std::string policy = "";
     std::list<std::string> value;
 
-    bool ParseFromString(const std::string& jsonString);
+    bool ParseFromJson(std::unique_ptr<PtJson>& root);
+    bool ParseFromJsonApiVersion(std::unique_ptr<PtJson>& root);
     bool IsEmpty() const;
 };
 
@@ -45,7 +46,7 @@ struct DistroFilter {
     ScreenWindow screenWindow;
     CountryCode countryCode;
 
-    bool ParseFromString(const std::string& jsonString);
+    bool ParseFromJson(std::unique_ptr<PtJson>& root);
     bool IsEmpty() const;
     std::string Dump() const;
 

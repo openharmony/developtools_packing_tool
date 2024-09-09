@@ -53,6 +53,7 @@ public:
     bool PackDir(const fs::path &inputPath, const fs::path &appPackInfo, const fs::path &outPath, fs::path &path);
     bool RepackHsp(const fs::path &inputPath, const fs::path &appPackInfo, const fs::path &outPath, fs::path &path);
     bool PackFastApp(const std::list<std::string> &fileList);
+    bool AddHapListToApp(const std::list<std::string> &fileList);
     bool AddSignatureAndCertificateToApp();
     bool packSingleThread(const fs::path &inputPath, const fs::path &appPackInfo,
         const fs::path &outHap, fs::path &path);

@@ -34,39 +34,59 @@ const std::string POLICY = "policy";
 const std::string VALUE = "value";
 }
 
-bool PolicyValue::ParseFromString(const std::string& jsonString)
+bool PolicyValue::IsEmpty() const
 {
-    if (jsonString.length() == 0) {
-        LOGE("Json length is zero!");
-        return false;
-    }
-    std::unique_ptr<PtJson> root = PtJson::Parse(jsonString);
+    return policy.empty();
+}
+
+bool PolicyValue::ParseFromJson(std::unique_ptr<PtJson>& root)
+{
     if (!root) {
         LOGE("Json root is null!");
         return false;
     }
-    if (root->Contains(POLICY.c_str())) {
-        if (root->GetString(POLICY.c_str(), &policy) != Result::SUCCESS) {
-            LOGE("Json root get %s failed!", POLICY.c_str());
+    if (root->Contains(VALUE.c_str())) {
+        std::unique_ptr<PtJson> valuesObj;
+        if (root->GetArray(VALUE.c_str(), &valuesObj) != Result::SUCCESS) {
+            LOGE("apiVersion node get %s array node failed!", VALUE.c_str());
             return false;
+        }
+        for (int32_t i = 0; i < valuesObj->GetSize(); i++) {
+            value.push_back(valuesObj->Get(i)->GetString());
         }
     }
-    if (root->Contains(VALUE.c_str())) {
-        std::unique_ptr<PtJson> valueObj;
-        if (root->GetArray(VALUE.c_str(), &valueObj) != Result::SUCCESS) {
-            LOGE("Json root get %s array node failed!", VALUE.c_str());
+    if (root->Contains(POLICY.c_str())) {
+        if (root->GetString(POLICY.c_str(), &policy) != Result::SUCCESS) {
+            LOGE("App node get %s failed!", POLICY.c_str());
             return false;
-        }
-        for (int32_t i = 0; i< valueObj->GetSize(); i++) {
-            value.push_back(valueObj->Get(i)->GetString());
         }
     }
     return true;
 }
 
-bool PolicyValue::IsEmpty() const
+bool PolicyValue::ParseFromJsonApiVersion(std::unique_ptr<PtJson>& root)
 {
-    return policy.empty();
+    if (!root) {
+        LOGE("Json root is null!");
+        return false;
+    }
+    if (root->Contains(VALUE.c_str())) {
+        std::unique_ptr<PtJson> valuesObj;
+        if (root->GetArray(VALUE.c_str(), &valuesObj) != Result::SUCCESS) {
+            LOGE("apiVersion node get %s array node failed!", VALUE.c_str());
+            return false;
+        }
+        for (int32_t i = 0; i < valuesObj->GetSize(); i++) {
+            value.push_back(std::to_string(valuesObj->Get(i)->GetInt()));
+        }
+    }
+    if (root->Contains(POLICY.c_str())) {
+        if (root->GetString(POLICY.c_str(), &policy) != Result::SUCCESS) {
+            LOGE("App node get %s failed!", POLICY.c_str());
+            return false;
+        }
+    }
+    return true;
 }
 
 bool DistroFilter::ParseApiVersion(std::unique_ptr<PtJson>& root)
@@ -76,13 +96,13 @@ bool DistroFilter::ParseApiVersion(std::unique_ptr<PtJson>& root)
         return false;
     }
     if (root->Contains(API_VERSION.c_str())) {
-        std::string apiVersionJsonStr;
-        if (root->GetString(API_VERSION.c_str(), &apiVersionJsonStr) != Result::SUCCESS) {
-            LOGE("Json root get %s failed!", API_VERSION.c_str());
+        std::unique_ptr<PtJson> apiVersionObj;
+        if (root->GetObject(API_VERSION.c_str(), &apiVersionObj) != Result::SUCCESS) {
+            LOGE("Json root get %s node failed!", API_VERSION.c_str());
             return false;
         }
-        if (!apiVersion.ParseFromString(apiVersionJsonStr)) {
-            LOGE("ApiVersion parse from string failed![%s]", apiVersionJsonStr.c_str());
+        if (!apiVersion.ParseFromJsonApiVersion(apiVersionObj)) {
+            LOGE("Parse apiVersionObj failed!");
             return false;
         }
     }
@@ -96,13 +116,13 @@ bool DistroFilter::ParseScreenShape(std::unique_ptr<PtJson>& root)
         return false;
     }
     if (root->Contains(SCREEN_SHAPE.c_str())) {
-        std::string screenShapeJsonStr;
-        if (root->GetString(SCREEN_SHAPE.c_str(), &screenShapeJsonStr) != Result::SUCCESS) {
-            LOGE("Json root get %s failed!", SCREEN_SHAPE.c_str());
+        std::unique_ptr<PtJson> screenShapeObj;
+        if (root->GetObject(SCREEN_SHAPE.c_str(), &screenShapeObj) != Result::SUCCESS) {
+            LOGE("Json root get %s node failed!", SCREEN_SHAPE.c_str());
             return false;
         }
-        if (!screenShape.ParseFromString(screenShapeJsonStr)) {
-            LOGE("ScreenShape parse from string failed![%s]", screenShapeJsonStr.c_str());
+        if (!screenShape.ParseFromJson(screenShapeObj)) {
+            LOGE("Parse screenShape failed!");
             return false;
         }
     }
@@ -116,13 +136,13 @@ bool DistroFilter::ParseScreenDensity(std::unique_ptr<PtJson>& root)
         return false;
     }
     if (root->Contains(SCREEN_DENSITY.c_str())) {
-        std::string screenDensityJsonStr;
-        if (root->GetString(SCREEN_DENSITY.c_str(), &screenDensityJsonStr) != Result::SUCCESS) {
-            LOGE("Json root get %s failed!", SCREEN_DENSITY.c_str());
+        std::unique_ptr<PtJson> screenDensityObj;
+        if (root->GetObject(SCREEN_DENSITY.c_str(), &screenDensityObj) != Result::SUCCESS) {
+            LOGE("Json root get %s node failed!", SCREEN_DENSITY.c_str());
             return false;
         }
-        if (!screenDensity.ParseFromString(screenDensityJsonStr)) {
-            LOGE("ScreenDensity parse from string failed![%s]", screenDensityJsonStr.c_str());
+        if (!screenDensity.ParseFromJson(screenDensityObj)) {
+            LOGE("Parse screenDensity failed!");
             return false;
         }
     }
@@ -136,13 +156,13 @@ bool DistroFilter::ParseScreenWindow(std::unique_ptr<PtJson>& root)
         return false;
     }
     if (root->Contains(SCREEN_WINDOW.c_str())) {
-        std::string screenWindowJsonStr;
-        if (root->GetString(SCREEN_WINDOW.c_str(), &screenWindowJsonStr) != Result::SUCCESS) {
-            LOGE("Json root get %s failed!", SCREEN_WINDOW.c_str());
+        std::unique_ptr<PtJson> screenWindowObj;
+        if (root->GetObject(SCREEN_WINDOW.c_str(), &screenWindowObj) != Result::SUCCESS) {
+            LOGE("Json root get %s node failed!", SCREEN_WINDOW.c_str());
             return false;
         }
-        if (!screenWindow.ParseFromString(screenWindowJsonStr)) {
-            LOGE("ScreenWindow parse from string failed![%s]", screenWindowJsonStr.c_str());
+        if (!screenWindow.ParseFromJson(screenWindowObj)) {
+            LOGE("Parse screenWindow failed!");
             return false;
         }
     }
@@ -156,27 +176,21 @@ bool DistroFilter::ParseCountryCode(std::unique_ptr<PtJson>& root)
         return false;
     }
     if (root->Contains(COUNTRY_CODE.c_str())) {
-        std::string countryCodeJsonStr;
-        if (root->GetString(COUNTRY_CODE.c_str(), &countryCodeJsonStr) != Result::SUCCESS) {
-            LOGE("Json root get %s failed!", COUNTRY_CODE.c_str());
+        std::unique_ptr<PtJson> countryCodeObj;
+        if (root->GetObject(COUNTRY_CODE.c_str(), &countryCodeObj) != Result::SUCCESS) {
+            LOGE("Json root get %s node failed!", COUNTRY_CODE.c_str());
             return false;
         }
-        if (!countryCode.ParseFromString(countryCodeJsonStr)) {
-            LOGE("CountryCode parse from string failed![%s]", countryCodeJsonStr.c_str());
+        if (!countryCode.ParseFromJson(countryCodeObj)) {
+            LOGE("Parse countryCode failed!");
             return false;
         }
     }
     return true;
 }
 
-
-bool DistroFilter::ParseFromString(const std::string& jsonString)
+bool DistroFilter::ParseFromJson(std::unique_ptr<PtJson>& root)
 {
-    if (jsonString.length() == 0) {
-        LOGE("Json length is zero!");
-        return false;
-    }
-    std::unique_ptr<PtJson> root = PtJson::Parse(jsonString);
     if (!root) {
         LOGE("Json root is null!");
         return false;
