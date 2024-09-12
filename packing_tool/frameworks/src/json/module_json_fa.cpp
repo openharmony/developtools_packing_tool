@@ -464,9 +464,16 @@ bool ModuleJson::GetFaDebugByDeviceConfigObj(std::unique_ptr<PtJson>& deviceConf
         LOGE("DeviceConfig node has no %s node!", DEFAULT.c_str());
         return false;
     }
-    if (deviceConfigObj->GetBool(DEFAULT.c_str(), &debug) != Result::SUCCESS) {
+    std::unique_ptr<PtJson> defaultObj;
+    if (deviceConfigObj->GetObject(DEFAULT.c_str(), &defaultObj) != Result::SUCCESS) {
         LOGE("DeviceConfig node get %s failed!", DEFAULT.c_str());
         return false;
+    }
+    if (defaultObj->Contains(DEBUG.c_str())) {
+        if (defaultObj->GetBool(DEBUG.c_str(), &debug) != Result::SUCCESS) {
+            LOGE("debug node get %s failed!", DEBUG.c_str());
+            return false;
+        }
     }
     return true;
 }
@@ -654,20 +661,20 @@ bool ModuleJson::GetFaDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj
             LOGE("Module node get %s failed!", DISTRO_FILTER.c_str());
             return false;
         }
-        std::unique_ptr<PtJson> distroFilterObj = PtJson::Parse(distroFilterStr);
-        if (!distroFilterObj) {
+        std::unique_ptr<PtJson> distroFilterJsonObj = PtJson::Parse(distroFilterStr);
+        if (!distroFilterJsonObj) {
             LOGE("Parse distro filter string failed!");
             return false;
         }
-        std::string distroFilterJsonStr;
-        if (distroFilterObj->Contains(DISTRO_FILTER.c_str())) {
-            if (distroFilterObj->GetString(DISTRO_FILTER.c_str(), &distroFilterJsonStr) != Result::SUCCESS) {
+        std::unique_ptr<PtJson> distroFilterObj;
+        if (distroFilterJsonObj->Contains(DISTRO_FILTER.c_str())) {
+            if (distroFilterJsonObj->GetObject(DISTRO_FILTER.c_str(), &distroFilterObj) != Result::SUCCESS) {
                 LOGE("DistroFilter node get %s failed!", DISTRO_FILTER.c_str());
                 return false;
             }
         }
-        if (!distroFilter.ParseFromString(distroFilterJsonStr)) {
-            LOGE("Parse distro filter string failed![%s]", distroFilterJsonStr.c_str());
+        if (!distroFilter.ParseFromJson(distroFilterObj)) {
+            LOGE("Parse distro filter failed!");
             return false;
         }
     }

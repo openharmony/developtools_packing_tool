@@ -64,8 +64,10 @@ public:
     bool GetStageDeviceTypes(std::list<std::string>& deviceTypes);
     bool GetStageDeviceTypesByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& deviceTypes);
     bool GetStageHapVerifyInfo(HapVerifyInfo& hapVerifyInfo);
-    bool GetStageDistroFilter(DistroFilter& distroFilter);
-    bool GetStageDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj, DistroFilter& distroFilter);
+    bool GetStageDistroFilter(DistroFilter& distroFilter,
+        const std::map<std::string, std::string>& resourceMap);
+    bool GetStageDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj,
+        const std::map<std::string, std::string>& resourceMap, DistroFilter& distroFilter);
     bool GetStageInstallationFree(bool& installationFree);
     bool GetStageInstallationFreeByModuleObj(std::unique_ptr<PtJson>& moduleObj, bool& installationFree);
     bool GetStageBundleType(std::string& bundleType);
@@ -91,9 +93,10 @@ public:
     bool GetExtensionAbilityNames(std::list<std::string>& extensionAbilityNames);
     bool GetExtensionAbilityNamesByModuleObj(std::unique_ptr<PtJson>& moduleObj,
         std::list<std::string>& extensionAbilityNames);
-    bool GetModuleMetadatas(std::list<ModuleMetadataInfo>& moduleMetadataInfos);
+    bool GetModuleMetadatas(std::list<ModuleMetadataInfo>& moduleMetadataInfos,
+        const std::map<std::string, std::string>& resourceMap);
     bool GetModuleMetadatasByModuleObj(std::unique_ptr<PtJson>& moduleObj,
-        std::list<ModuleMetadataInfo>& moduleMetadataInfos);
+        const std::map<std::string, std::string>& resourceMap, std::list<ModuleMetadataInfo>& moduleMetadataInfos);
     bool ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
         DistroFilter& distroFilter);
 
@@ -201,7 +204,7 @@ protected:
     bool GetDependencyModuleNameByDependencyItemObj(std::unique_ptr<PtJson>& dependencyItemObj,
         std::string& moduleName);
     bool GetModuleMetadataInfoByModuleMetadataInfoObj(std::unique_ptr<PtJson>& moduleMetadataInfoObj,
-        ModuleMetadataInfo& moduleMetadataInfo);
+        const std::map<std::string, std::string>& resourceMap, ModuleMetadataInfo& moduleMetadataInfo);
     bool GetExtensionAbilityNamesByExtensionAbilityObj(std::unique_ptr<PtJson>& extensionAbilitiesObj,
         std::list<std::string>& extensionAbilityNames);
     bool GetAbilityNamesByAbilitiesObj(std::unique_ptr<PtJson>& abilitiesObj, std::list<std::string>& abilityNames);

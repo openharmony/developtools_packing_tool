@@ -20,6 +20,7 @@
 #define private public
 #define protected public
 #include "distro_filter.h"
+#include "pt_json.h"
 #undef private
 #undef protected
 
@@ -35,19 +36,37 @@ const std::string policyValueJsonString = "{"
     "]"
 "}";
 
-const std::string policyValueString = "{"
-    "\\\"policy\\\": \\\"\\\","
-    "\\\"value\\\": ["
-        "\\\"xxx\\\""
-    "]"
-"}";
-
 const std::string distroFilterJsonString = "{"
-    "\"apiVersion\": \"" + policyValueString + "\","
-    "\"screenShape\": \"" + policyValueString + "\","
-    "\"screenDensity\": \"" + policyValueString + "\","
-    "\"screenWindow\": \"" + policyValueString + "\","
-    "\"countryCode\": \"" + policyValueString + "\""
+    "\"apiVersion\": {"
+        "\"policy\": \"\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"screenShape\": {"
+        "\"policy\": \"\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"screenDensity\": {"
+        "\"policy\": \"\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"screenWindow\": {"
+        "\"policy\": \"\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"countryCode\": {"
+        "\"policy\": \"\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "}"
 "}";
 
 const std::string policyValueJsonString2 = "{"
@@ -57,19 +76,37 @@ const std::string policyValueJsonString2 = "{"
     "]"
 "}";
 
-const std::string policyValueString2 = "{"
-    "\\\"policy\\\": \\\"xxx\\\","
-    "\\\"value\\\": ["
-        "\\\"xxx\\\""
-    "]"
-"}";
-
 const std::string distroFilterJsonString2 = "{"
-    "\"apiVersion\": \"" + policyValueString2 + "\","
-    "\"screenShape\": \"" + policyValueString2 + "\","
-    "\"screenDensity\": \"" + policyValueString2 + "\","
-    "\"screenWindow\": \"" + policyValueString2 + "\","
-    "\"countryCode\": \"" + policyValueString2 + "\""
+    "\"apiVersion\": {"
+        "\"policy\": \"xxx\","
+        "\"value\": ["
+            "1,2,3"
+        "]"
+    "},"
+    "\"screenShape\": {"
+        "\"policy\": \"xxx\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"screenDensity\": {"
+        "\"policy\": \"xxx\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"screenWindow\": {"
+        "\"policy\": \"xxx\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "},"
+    "\"countryCode\": {"
+        "\"policy\": \"xxx\","
+        "\"value\": ["
+            "\"xxx\""
+        "]"
+    "}"
 "}";
 }
 
@@ -96,69 +133,73 @@ void DistroFilterTest::SetUp() {}
 void DistroFilterTest::TearDown() {}
 
 /*
- * @tc.name: PolicyValue_ParseFromString_0100
+ * @tc.name: PolicyValue_ParseFromJson_0100
  * @tc.desc: PolicyValue Function Test.
- *           ParseFromString/IsEmpty
+ *           ParseFromJson/IsEmpty
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(DistroFilterTest, PolicyValue_ParseFromString_0100, Function | MediumTest | Level1)
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0100, Function | MediumTest | Level1)
 {
-    OHOS::AppPackingTool::PolicyValue policyValue;
-    EXPECT_TRUE(policyValue.ParseFromString(policyValueJsonString));
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(policyValueJsonString);
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_TRUE(policyValue.ParseFromJson(root));
     EXPECT_TRUE(policyValue.IsEmpty());
 }
 
 /*
- * @tc.name: PolicyValue_ParseFromString_0200
+ * @tc.name: PolicyValue_ParseFromJson_0200
  * @tc.desc: PolicyValue Function Test.
- *           ParseFromString/IsEmpty
+ *           ParseFromJson/IsEmpty
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(DistroFilterTest, PolicyValue_ParseFromString_0200, Function | MediumTest | Level1)
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0200, Function | MediumTest | Level1)
 {
-    OHOS::AppPackingTool::PolicyValue policyValue;
-    EXPECT_TRUE(policyValue.ParseFromString(policyValueJsonString2));
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(policyValueJsonString2);
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_TRUE(policyValue.ParseFromJson(root));
     EXPECT_FALSE(policyValue.IsEmpty());
 }
 
 /*
- * @tc.name: DistroFilter_ParseFromString_0100
+ * @tc.name: DistroFilter_ParseFromJson_0100
  * @tc.desc: DistroFilter Function Test.
- *           ParseFromString/ParseApiVersion/ParseScreenShape/ParseScreenDensity/ParseScreenWindow/ParseCountryCode
+ *           ParseFromJson/ParseApiVersion/ParseScreenShape/ParseScreenDensity/ParseScreenWindow/ParseCountryCode
  *           /IsEmpty/Dump
  *           PolicyValue Function Test.
- *           ParseFromString/IsEmpty
+ *           ParseFromJson/IsEmpty
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(DistroFilterTest, DistroFilter_ParseFromString_0100, Function | MediumTest | Level1)
+HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0100, Function | MediumTest | Level1)
 {
-    OHOS::AppPackingTool::DistroFilter distroFilter;
-    EXPECT_TRUE(distroFilter.ParseFromString(distroFilterJsonString));
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(distroFilterJsonString);
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_TRUE(distroFilter.ParseFromJson(root));
     EXPECT_TRUE(distroFilter.IsEmpty());
     EXPECT_EQ(distroFilter.Dump(), "");
 }
 
 /*
- * @tc.name: DistroFilter_ParseFromString_0200
+ * @tc.name: DistroFilter_ParseFromJson_0200
  * @tc.desc: DistroFilter Function Test.
- *           ParseFromString/ParseApiVersion/ParseScreenShape/ParseScreenDensity/ParseScreenWindow/ParseCountryCode
+ *           ParseFromJson/ParseApiVersion/ParseScreenShape/ParseScreenDensity/ParseScreenWindow/ParseCountryCode
  *           /IsEmpty/Dump
  *           PolicyValue Function Test.
- *           ParseFromString/IsEmpty
+ *           ParseFromJson/IsEmpty
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(DistroFilterTest, DistroFilter_ParseFromString_0200, Function | MediumTest | Level1)
+HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0200, Function | MediumTest | Level1)
 {
-    OHOS::AppPackingTool::DistroFilter distroFilter;
-    EXPECT_TRUE(distroFilter.ParseFromString(distroFilterJsonString2));
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(distroFilterJsonString2);
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_TRUE(distroFilter.ParseFromJson(root));
     EXPECT_FALSE(distroFilter.IsEmpty());
     EXPECT_EQ(distroFilter.Dump(),
     "distroFilter: apiVersion: policy is xxx, "
-    "value is xxx screenShape: policy is xxx, "
+    "value is 123 screenShape: policy is xxx, "
     "value is xxx screenDensity: policy is xxx, "
     "value is xxx screenWindow: policy is xxx, "
     "value is xxx countryCode: policy is xxx, "
