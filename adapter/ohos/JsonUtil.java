@@ -159,6 +159,8 @@ public class JsonUtil {
     private static final String COMPILE_SDK_TYPE = "compileSdkType";
     private static final String TARGET_BUNDLE_NAME = "targetBundleName";
     private static final String TARGET_PRIORITY = "targetPriority";
+    private static final String PROXY_DATA = "proxyData";
+    private static final String PROXY_DATA_URI = "uri";
 
 
     /**
@@ -1031,6 +1033,7 @@ public class JsonUtil {
                 moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);
         moduleProfileInfo.moduleInfo.appModel = AppModel.STAGE;
         moduleProfileInfo.moduleInfo.dependenies.addAll(parseDenpendencies(appJson, moduleJson));
+        moduleProfileInfo.moduleInfo.proxyData.addAll(parseProxyDatas(moduleJson));
 
         // parse appName
         for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
@@ -1134,6 +1137,28 @@ public class JsonUtil {
             dependencyItemList.add(item);
         }
         return dependencyItemList;
+    }
+
+    private static List<ProxyDataItem> parseProxyDatas(JSONObject moduleJson) throws BundleException {
+        if (moduleJson == null) {
+            LOG.error("JsonUtil::parseModuleHapInfo exception: moduleJson is null.");
+            throw new BundleException("Parse module hap info failed, moduleJson is null.");
+        }
+
+        List<ProxyDataItem> proxyDataItemList = new ArrayList<>();
+        if (!moduleJson.containsKey(PROXY_DATA)) {
+            return proxyDataItemList;
+        }
+        JSONArray proxyDataObjList = moduleJson.getJSONArray(PROXY_DATA);
+        for (int i = 0; i < proxyDataObjList.size(); i++) {
+            JSONObject proxyDataObj = proxyDataObjList.getJSONObject(i);
+            ProxyDataItem dataItem = new ProxyDataItem();
+            if (proxyDataObj.containsKey(PROXY_DATA_URI)) {
+                dataItem.setUri(getJsonString(proxyDataObj, PROXY_DATA_URI, EMPTY));
+            }
+            proxyDataItemList.add(dataItem);
+        }
+        return proxyDataItemList;
     }
 
     private static void parseInstallationFree(JSONObject moduleJson, ModuleInfo moduleInfo) {
