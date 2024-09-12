@@ -166,6 +166,7 @@ class ModuleAdaption {
         hapInfo.moduleAtomicService = moduleInfo.moduleAtomicService;
         hapInfo.appModel = moduleInfo.appModel;
         hapInfo.dependencies = moduleInfo.dependenies;
+        hapInfo.proxyData = moduleInfo.proxyData;
         return hapInfo;
     }
 

@@ -124,12 +124,12 @@ public class AppInfo {
     /**
      * Indicates the targetBundleName of app AppJson.
      */
-    private String targetBundleName;
+    private String targetBundleName = "";
 
     /**
      * Indicates the targetPriority of app AppJson.
      */
-    private Integer targetPriority;
+    private int targetPriority = 0;
 
     /**
      * Indicates the labels of app AppJson, for multilingual.
@@ -261,11 +261,11 @@ public class AppInfo {
         this.targetBundleName = targetBundleName;
     }
 
-    public Integer getTargetPriority() {
+    public int getTargetPriority() {
         return targetPriority;
     }
 
-    public void setTargetPriority(Integer targetPriority) {
+    public void setTargetPriority(int targetPriority) {
         this.targetPriority = targetPriority;
     }
 }
