@@ -32,7 +32,7 @@ jar_directory="${root_path}/jar"
 pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
 manifest_path="${root_path}/META-INF/packing_tool/MANIFEST.MF"
 
-out_dir="${root_path}/out/${toolchain}/packing_tool"
+out_dir="${root_path}/out/${toolchain}/packTool"
 if [ -d "${out_dir}/ohos" ]
     then
         echo "${out_dir}/ohos exist"
