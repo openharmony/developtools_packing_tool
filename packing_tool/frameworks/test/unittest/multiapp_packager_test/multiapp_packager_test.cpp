@@ -33,6 +33,8 @@ using namespace testing::ext;
 namespace OHOS {
 namespace {
 const std::string OUT_PATH = "/data/test_1.app";
+const std::string OUT_PATH_WITHOUT_SUFFIX = "/data/test_1";
+const std::string OUT_PATH_WITHOUT_APP_SUFFIX = "/data/test_1.hap";
 const std::string HAP_LIST = "/data/test/resource/packingtool/test_file/multiApp/hap/multiappPackagerHapTest.hap";
 const std::string HSP_LIST = "/data/test/resource/packingtool/test_file/multiApp/hsp/multiappPackagerHspTest.hsp";
 }
@@ -84,5 +86,283 @@ HWTEST_F(MultiAppPackagerTest, MultiAppPackager_0100, Function | MediumTest | Le
     EXPECT_EQ(multiAppPackager.PreProcess(), 0);
     EXPECT_EQ(multiAppPackager.Process(), 0);
     EXPECT_EQ(multiAppPackager.PostProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_0100
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, ""},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0200
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0300
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_0400
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_APP_LIST, ""},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0500
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_0600
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, ""},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0700
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, ""},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_0800
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_0900
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_0900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_1000
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_1000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_1100
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_1100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+}
+
+/*
+ * @tc.name: PreProcess_1200
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_1200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH_WITHOUT_SUFFIX},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_1300
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_1300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH_WITHOUT_APP_SUFFIX},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: Process_0100
+ * @tc.desc: test process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, Process_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.Process(), 1);
+}
+
+/*
+ * @tc.name: Process_0200
+ * @tc.desc: test process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, Process_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.Process(), 1);
 }
 } // namespace OHOS
