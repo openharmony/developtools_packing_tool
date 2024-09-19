@@ -86,7 +86,7 @@ def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_versio
         'ScreenShape.java', 'ScreenWindow.java', 'Shortcut.java',
         'ShowHelp.java', 'SkillInfo.java', 'UncompressEntrance.java',
         'Uncompress.java', 'UncompressResult.java', 'UncompressVerify.java',
-        'UriInfo.java', 'UsedScene.java', 'Utility.java', 'Want.java'
+        'UriInfo.java', 'UsedScene.java', 'Utility.java', 'Want.java', 'ProxyDataItem.java'
     ]
     compile_java = get_compile_str(src_path, java_sources)
 

@@ -37,6 +37,12 @@ class ModuleInfo {
      * Indicates dependencies config.
      */
     public List<DependencyItem> dependenies = new ArrayList<>();
+
+    /**
+     * Indicates proxyData config.
+     */
+    public List<ProxyDataItem> proxyData = new ArrayList<>();
+
     /**
      * Indicates the hap name of ModuleInfo.
      */
