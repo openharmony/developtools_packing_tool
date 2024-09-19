@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -908,6 +909,11 @@ public class CompressVerify {
             return false;
         }
 
+        if((isInterApplicationHsp(utility) || isSystemHsp(utility)) && hspHasAbilities(utility)) {
+            LOG.error("System-level/inter-application hsp has abilities");
+            return false;
+        }
+
         if (!utility.getJarPath().isEmpty()
                 && !compatibleProcess(utility, utility.getJarPath(), utility.getFormattedJarPathList(), JAR_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInHspMode jar-path is invalid.");
@@ -1102,6 +1108,45 @@ public class CompressVerify {
             HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath.get(0));
             return hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_SHARE);
         } catch (BundleException e) {
+            return false;
+        }
+    }
+
+    private static boolean isInterApplicationHsp(Utility utility) {
+        try {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.orElseThrow(new BundleException("utility jsonPath is null"));
+            boolean result = ModuleJsonUtil.parseStageBundleType(jsonString).equals(BUNDLE_TYPE_SHARE);
+            if(result) {
+                LOG.info("isInterApplicationHsp(*) -> bundle type is shared");
+            }
+            return result;
+        } catch (BundleException e) {
+            LOG.error("isInterApplicationHsp(*) -> exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean isSystemHsp(Utility utility) {
+        try {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.orElseThrow(new BundleException("utility jsonPath is null"));
+            boolean result = ModuleJsonUtil.parseStageBundleType(jsonString).equals(BUNDLE_TYPE_APP_SERVICE);
+            if(result) {
+                LOG.info("isInterApplicationHsp(*) -> bundle type is appService");
+            }
+            return result;
+        } catch (BundleException e) {
+            LOG.error("isSystemHsp(*) exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean hspHasAbilities(Utility utility) {
+        try {
+            return ModuleJsonUtil.checkHspHasAbilities(utility);
+        } catch (BundleException e) {
+            LOG.error("hspHasAbilities(*) exception: " + e.getMessage());
             return false;
         }
     }

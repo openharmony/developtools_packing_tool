@@ -21,10 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class ModuleJsonUtil {
     private static final String APP = "app";
@@ -1797,6 +1794,22 @@ class ModuleJsonUtil {
             return false;
         }
         return true;
+    }
+
+    /**
+     * check whether hsp module has abilities or extensionAbilities.
+     *
+     * @param utility pack info.
+     * @return Returns true if jsonString is valid.
+     */
+    public static boolean checkHspHasAbilities(Utility utility) throws BundleException {
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        String jsonString = optional.orElseThrow(new BundleException("checkHspHasAbilities(*) -> jsonPath is null"));
+        boolean result = parseModuleType(jsonString).equals(ModuleJsonUtil.SHARED) && !parseAbilityNames(jsonString).isEmpty();
+        if(result) {
+            LOG.info("checkHspHasAbilities(*) -> hsp module has abilities or extensionAbilities");
+        }
+        return result;
     }
 
     /**
