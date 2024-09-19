@@ -128,6 +128,16 @@ class ModuleAppInfo {
     private String compileSdkType = "";
 
     /**
+     * Indicates the targetBundleName of app AppJson.
+     */
+    private String targetBundleName = "";
+
+    /**
+     * Indicates the targetPriority of app AppJson.
+     */
+    private int targetPriority = 0;
+
+    /**
      * Indicates the descriptions of app AppJson, for multilingual.
      */
     private HashMap<String, String> descriptions = new HashMap<>();
@@ -185,5 +195,21 @@ class ModuleAppInfo {
 
     public void setCompileSdkType(String compileSdkType) {
         this.compileSdkType = compileSdkType;
+    }
+
+    public String getTargetBundleName() {
+        return targetBundleName;
+    }
+
+    public void setTargetBundleName(String targetBundleName) {
+        this.targetBundleName = targetBundleName;
+    }
+
+    public int getTargetPriority() {
+        return targetPriority;
+    }
+
+    public void setTargetPriority(int targetPriority) {
+        this.targetPriority = targetPriority;
     }
 }

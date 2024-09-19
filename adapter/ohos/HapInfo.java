@@ -98,6 +98,11 @@ public class HapInfo {
     public List<DependencyItem> dependencies = new ArrayList<>();
 
     /**
+     * Indicates proxyData config.
+     */
+    public List<ProxyDataItem> proxyData = new ArrayList<>();
+
+    /**
      * Indicates the HapInfo is Js app.
      */
     public boolean isJs = false;

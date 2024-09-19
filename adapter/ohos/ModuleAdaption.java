@@ -96,6 +96,8 @@ class ModuleAdaption {
         appInfo.setBundleType(moduleAppInfo.getBundleType());
         appInfo.setCompileSdkType(moduleAppInfo.getCompileSdkType());
         appInfo.setCompileSdkVersion(moduleAppInfo.getCompileSdkVersion());
+        appInfo.setTargetBundleName(moduleAppInfo.getTargetBundleName());
+        appInfo.setTargetPriority(moduleAppInfo.getTargetPriority());
         return appInfo;
     }
 
@@ -164,6 +166,7 @@ class ModuleAdaption {
         hapInfo.moduleAtomicService = moduleInfo.moduleAtomicService;
         hapInfo.appModel = moduleInfo.appModel;
         hapInfo.dependencies = moduleInfo.dependenies;
+        hapInfo.proxyData = moduleInfo.proxyData;
         return hapInfo;
     }
 

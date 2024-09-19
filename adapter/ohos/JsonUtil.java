@@ -151,11 +151,16 @@ public class JsonUtil {
     private static final String PRELOADS = "preloads";
     private static final String MODULE_NAME = "moduleName";
     private static final int DEFAULT_VERSION_CODE = -1;
+    private static final int DEFAULT_PRIORITY = 1;
     private static final String DEPENDENCY_BUNDLE_NAME = "bundleName";
     private static final String DEPENDENCY_MODULE_NAME = "moduleName";
     private static final String DEPENDENCIES = "dependencies";
     private static final String COMPILE_SDK_VERSION = "compileSdkVersion";
     private static final String COMPILE_SDK_TYPE = "compileSdkType";
+    private static final String TARGET_BUNDLE_NAME = "targetBundleName";
+    private static final String TARGET_PRIORITY = "targetPriority";
+    private static final String PROXY_DATA = "proxyData";
+    private static final String PROXY_DATA_URI = "uri";
 
 
     /**
@@ -447,6 +452,10 @@ public class JsonUtil {
         moduleAppInfo.setBundleType(getJsonString(appJson, BUNDLE_TYPE, APP));
         moduleAppInfo.setCompileSdkType(getJsonString(appJson, COMPILE_SDK_TYPE, EMPTY));
         moduleAppInfo.setCompileSdkVersion(getJsonString(appJson, COMPILE_SDK_VERSION, EMPTY));
+        if (appJson.containsKey(TARGET_BUNDLE_NAME)) {
+            moduleAppInfo.setTargetBundleName(getJsonString(appJson, TARGET_BUNDLE_NAME, EMPTY));
+            moduleAppInfo.setTargetPriority(getJsonIntValue(appJson, TARGET_PRIORITY, DEFAULT_PRIORITY));
+        }
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
         return moduleAppInfo;
@@ -1024,6 +1033,7 @@ public class JsonUtil {
                 moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);
         moduleProfileInfo.moduleInfo.appModel = AppModel.STAGE;
         moduleProfileInfo.moduleInfo.dependenies.addAll(parseDenpendencies(appJson, moduleJson));
+        moduleProfileInfo.moduleInfo.proxyData.addAll(parseProxyDatas(moduleJson));
 
         // parse appName
         for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
@@ -1127,6 +1137,28 @@ public class JsonUtil {
             dependencyItemList.add(item);
         }
         return dependencyItemList;
+    }
+
+    private static List<ProxyDataItem> parseProxyDatas(JSONObject moduleJson) throws BundleException {
+        if (moduleJson == null) {
+            LOG.error("JsonUtil::parseModuleHapInfo exception: moduleJson is null.");
+            throw new BundleException("Parse module hap info failed, moduleJson is null.");
+        }
+
+        List<ProxyDataItem> proxyDataItemList = new ArrayList<>();
+        if (!moduleJson.containsKey(PROXY_DATA)) {
+            return proxyDataItemList;
+        }
+        JSONArray proxyDataObjList = moduleJson.getJSONArray(PROXY_DATA);
+        for (int i = 0; i < proxyDataObjList.size(); i++) {
+            JSONObject proxyDataObj = proxyDataObjList.getJSONObject(i);
+            ProxyDataItem dataItem = new ProxyDataItem();
+            if (proxyDataObj.containsKey(PROXY_DATA_URI)) {
+                dataItem.setUri(getJsonString(proxyDataObj, PROXY_DATA_URI, EMPTY));
+            }
+            proxyDataItemList.add(dataItem);
+        }
+        return proxyDataItemList;
     }
 
     private static void parseInstallationFree(JSONObject moduleJson, ModuleInfo moduleInfo) {
