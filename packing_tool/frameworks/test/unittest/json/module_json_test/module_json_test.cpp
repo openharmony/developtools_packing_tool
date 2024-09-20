@@ -194,6 +194,138 @@ const std::string MODULE_JSON_TEST_STRING = "{"
         "\"generateBuildHash\": true"
     "}"
 "}";
+
+const std::string MODULE_JSON_TEST_STRING_NOTHING = "{"
+"}";
+
+const std::string MODULE_JSON_TEST_STRING_ERROR = "{"
+    "\"app\": {"
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"type\": \"entry\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": true,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        
+        "},"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
 }
 class ModuleJsonTest : public testing::Test {
 public:
@@ -230,6 +362,18 @@ HWTEST_F(ModuleJsonTest, ParseFromString_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: ParseFromString_0200
+ * @tc.desc: test parse from string
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseFromString_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.ParseFromString(""));
+}
+
+/*
  * @tc.name: ParseFromFile_0100
  * @tc.desc: test parse from file
  * @tc.type: FUNC
@@ -247,6 +391,18 @@ HWTEST_F(ModuleJsonTest, ParseFromFile_0100, Function | MediumTest | Level1)
         EXPECT_TRUE(moduleJson.ParseFromFile(test));
         system("rm -f test_module.json");
     }
+}
+
+/*
+ * @tc.name: ParseFromFile_0200
+ * @tc.desc: test parse from file
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseFromFile_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.ParseFromFile(""));
 }
 
 /*
@@ -306,6 +462,35 @@ HWTEST_F(ModuleJsonTest, GetApiVersionObject_0100, Function | MediumTest | Level
 }
 
 /*
+ * @tc.name: GetApiVersionObject_0200
+ * @tc.desc: test get api version object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetApiVersionObject_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> apiVersion;
+    EXPECT_FALSE(moduleJson.GetApiVersionObject(apiVersion));
+    EXPECT_EQ(apiVersion, nullptr);
+}
+
+/*
+ * @tc.name: GetApiVersionObject_0300
+ * @tc.desc: test get api version object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetApiVersionObject_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
+    std::unique_ptr<PtJson> apiVersion;
+    EXPECT_FALSE(moduleJson.GetApiVersionObject(apiVersion));
+    EXPECT_EQ(apiVersion, nullptr);
+}
+
+/*
  * @tc.name: GetVersionObject
  * @tc.desc: test get version object
  * @tc.type: FUNC
@@ -318,6 +503,36 @@ HWTEST_F(ModuleJsonTest, GetVersionObject_0100, Function | MediumTest | Level1)
     std::unique_ptr<PtJson> versionObj;
     EXPECT_TRUE(moduleJson.GetVersionObject(versionObj));
     EXPECT_NE(versionObj, nullptr);
+}
+
+/*
+ * @tc.name: GetVersionObject_0200
+ * @tc.desc: test get version object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetVersionObject_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_NOTHING));
+    std::unique_ptr<PtJson> versionObj;
+    EXPECT_FALSE(moduleJson.GetVersionObject(versionObj));
+    EXPECT_EQ(versionObj, nullptr);
+}
+
+/*
+ * @tc.name: GetVersionObject_0300
+ * @tc.desc: test get version object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetVersionObject_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING));
+    std::unique_ptr<PtJson> versionObj;
+    EXPECT_FALSE(moduleJson.GetVersionObject(versionObj));
+    EXPECT_EQ(versionObj, nullptr);
 }
 
 /*
@@ -362,6 +577,21 @@ HWTEST_F(ModuleJsonTest, GetDistroObject_0100, Function | MediumTest | Level1)
     unique_ptr<PtJson> distroObj;
     EXPECT_TRUE(moduleJson.GetDistroObject(distroObj));
     EXPECT_NE(distroObj, nullptr);
+}
+
+/*
+ * @tc.name: GetDistroObject_0200
+ * @tc.desc: test get distro object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDistroObject_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_NOTHING));
+    unique_ptr<PtJson> distroObj;
+    EXPECT_FALSE(moduleJson.GetDistroObject(distroObj));
+    EXPECT_EQ(distroObj, nullptr);
 }
 
 /*
@@ -1090,6 +1320,19 @@ HWTEST_F(ModuleJsonTest, GetBundleName_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: GetBundleName_0200
+ * @tc.desc: test get bundle name
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetBundleName_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string bundleName = "";
+    EXPECT_FALSE(moduleJson.GetBundleName(bundleName));
+}
+
+/*
  * @tc.name: SetBundleName
  * @tc.desc: test set bundle name
  * @tc.type: FUNC
@@ -1119,6 +1362,19 @@ HWTEST_F(ModuleJsonTest, GetModuleName_0100, Function | MediumTest | Level1)
     std::string moduleName = "";
     EXPECT_TRUE(moduleJson.GetModuleName(moduleName));
     EXPECT_STREQ(moduleName.c_str(), "entry");
+}
+
+/*
+ * @tc.name: GetModuleName_0200
+ * @tc.desc: test get module name
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleName_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    EXPECT_FALSE(moduleJson.GetModuleName(moduleName));
 }
 
 /*
@@ -1562,6 +1818,33 @@ HWTEST_F(ModuleJsonTest, GetPatchModuleName_0100, Function | MediumTest | Level1
 }
 
 /*
+ * @tc.name: GetPatchModuleName_0200
+ * @tc.desc: test get patch module name
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetPatchModuleName_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string patchModuleName = "";
+    EXPECT_FALSE(moduleJson.GetPatchModuleName(patchModuleName));
+}
+
+/*
+ * @tc.name: GetPatchModuleName_0300
+ * @tc.desc: test get patch module name
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetPatchModuleName_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
+    std::string patchModuleName = "";
+    EXPECT_FALSE(moduleJson.GetPatchModuleName(patchModuleName));
+}
+
+/*
  * @tc.name: GetStageBundleType
  * @tc.desc: test get stage bundle type
  * @tc.type: FUNC
@@ -1659,4 +1942,257 @@ HWTEST_F(ModuleJsonTest, SetStageHapVerifyInfoExtByModuleObj_0100, Function | Me
     EXPECT_TRUE(moduleJson.SetStageHapVerifyInfoExtByModuleObj(moduleObj, hapVerifyInfo));
 }
 
+/*
+ * @tc.name: GetAppObject_0100
+ * @tc.desc: test get app object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAppObject_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string test("test_module.json");
+    FILE *fp = fopen(test.c_str(), "w");
+    EXPECT_TRUE(fp != nullptr);
+    if (fp != nullptr) {
+        fwrite(MODULE_JSON_STRING.c_str(), MODULE_JSON_STRING.size(), 1, fp);
+        fclose(fp);
+        EXPECT_TRUE(moduleJson.ParseFromFile(test));
+        system("rm -f test_module.json");
+    }
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    EXPECT_NE(appObj, nullptr);
+}
+
+/*
+ * @tc.name: GetAppObject_0200
+ * @tc.desc: test get app object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAppObject_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string test("test_module.json");
+    FILE* fp = fopen(test.c_str(), "w");
+    EXPECT_TRUE(fp != nullptr);
+    if (fp != nullptr) {
+        fwrite(MODULE_JSON_TEST_STRING_NOTHING.c_str(), MODULE_JSON_TEST_STRING_NOTHING.size(), 1, fp);
+        fclose(fp);
+        EXPECT_TRUE(moduleJson.ParseFromFile(test));
+        system("rm -f test_module.json");
+    }
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_FALSE(moduleJson.GetAppObject(appObj));
+    EXPECT_EQ(appObj, nullptr);
+}
+
+/*
+ * @tc.name: GetAppObject_0300
+ * @tc.desc: test get app object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAppObject_0300, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_FALSE(moduleJson.GetAppObject(appObj));
+    EXPECT_EQ(appObj, nullptr);
+}
+
+/*
+ * @tc.name: GetDeviceConfigObject_0100
+ * @tc.desc: test get device config object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeviceConfigObject_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string test("test_module.json");
+    FILE *fp = fopen(test.c_str(), "w");
+    EXPECT_TRUE(fp != nullptr);
+    if (fp != nullptr) {
+        fwrite(MODULE_JSON_STRING.c_str(), MODULE_JSON_STRING.size(), 1, fp);
+        fclose(fp);
+        EXPECT_TRUE(moduleJson.ParseFromFile(test));
+        system("rm -f test_module.json");
+    }
+    std::unique_ptr<PtJson> deviceConfigObj;
+    EXPECT_TRUE(moduleJson.GetDeviceConfigObject(deviceConfigObj));
+    EXPECT_NE(deviceConfigObj, nullptr);
+}
+
+/*
+ * @tc.name: GetDeviceConfigObject_0200
+ * @tc.desc: test get device config object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeviceConfigObject_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string test("test_module.json");
+    FILE *fp = fopen(test.c_str(), "w");
+    EXPECT_TRUE(fp != nullptr);
+    if (fp != nullptr) {
+        fwrite(MODULE_JSON_TEST_STRING_NOTHING.c_str(), MODULE_JSON_TEST_STRING_NOTHING.size(), 1, fp);
+        fclose(fp);
+        EXPECT_TRUE(moduleJson.ParseFromFile(test));
+        system("rm -f test_module.json");
+    }
+    std::unique_ptr<PtJson> deviceConfigObj;
+    EXPECT_FALSE(moduleJson.GetDeviceConfigObject(deviceConfigObj));
+    EXPECT_EQ(deviceConfigObj, nullptr);
+}
+
+/*
+ * @tc.name: GetDeviceConfigObject_0300
+ * @tc.desc: test get device config object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeviceConfigObject_0300, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> deviceConfigObj;
+    EXPECT_FALSE(moduleJson.GetDeviceConfigObject(deviceConfigObj));
+    EXPECT_EQ(deviceConfigObj, nullptr);
+}
+
+/*
+ * @tc.name: GetModuleObject_0100
+ * @tc.desc: test get module object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleObject_0100, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    EXPECT_NE(moduleObj, nullptr);
+}
+
+/*
+ * @tc.name: GetModuleObject_0200
+ * @tc.desc: test get module object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleObject_0200, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_NOTHING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_FALSE(moduleJson.GetModuleObject(moduleObj));
+    EXPECT_EQ(moduleObj, nullptr);
+}
+
+/*
+ * @tc.name: GetModuleObject_0300
+ * @tc.desc: test get module object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleObject_0300, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_FALSE(moduleJson.GetModuleObject(moduleObj));
+    EXPECT_EQ(moduleObj, nullptr);
+}
+
+/*
+ * @tc.name: GetDistroObjectByModuleObj_0100
+ * @tc.desc: test get distro object by module obj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDistroObjectByModuleObj_0100, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj;
+    std::unique_ptr<PtJson> distroObj;
+    EXPECT_FALSE(moduleJson.GetDistroObjectByModuleObj(moduleObj, distroObj));
+}
+
+/*
+ * @tc.name: GetDistroObjectByModuleObj_0200
+ * @tc.desc: test get distro object by module obj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDistroObjectByModuleObj_0200, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj;
+    std::unique_ptr<PtJson> distroObj;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
+    moduleJson.GetModuleObject(moduleObj);
+    EXPECT_FALSE(moduleJson.GetDistroObjectByModuleObj(moduleObj, distroObj));
+}
+
+/*
+ * @tc.name: GetModuleNameByModuleObj_0100
+ * @tc.desc: test get module name by moduleo bj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleNameByModuleObj_0100, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj;
+    std::string moduleName;
+    EXPECT_FALSE(moduleJson.GetModuleNameByModuleObj(moduleObj, moduleName));
+}
+
+/*
+ * @tc.name: GetModuleNameByModuleObj_0200
+ * @tc.desc: test get module name by module obj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleNameByModuleObj_0200, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj;
+    std::string moduleName;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
+    moduleJson.GetModuleObject(moduleObj);
+    EXPECT_FALSE(moduleJson.GetModuleNameByModuleObj(moduleObj, moduleName));
+}
+
+/*
+ * @tc.name: GetBundleNameByAppObj_0100
+ * @tc.desc: test get bundle name by app obj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetBundleNameByAppObj_0100, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj;
+    std::string bundleName;
+    EXPECT_FALSE(moduleJson.GetBundleNameByAppObj(appObj, bundleName));
+}
+
+/*
+ * @tc.name: GetBundleNameByAppObj_0200
+ * @tc.desc: test get bundle name by app obj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetBundleNameByAppObj_0200, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj;
+    std::string bundleName;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
+    moduleJson.GetModuleObject(appObj);
+    EXPECT_FALSE(moduleJson.GetBundleNameByAppObj(appObj, bundleName));
+}
 }
