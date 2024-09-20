@@ -24,10 +24,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,6 +65,8 @@ public class CompressVerify {
     private static final String BUNDLE_TYPE_SHARE = "shared";
     private static final String BUNDLE_TYPE_APP = "app";
     private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
+    private static final String ACTION_SYSTEM_HOME = "action.system.home";
+    private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String BUNDLE_NAME_PATTERN =
             "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
     private static final int BUNDLE_NAME_LEN_MIN = 7;
@@ -914,6 +913,11 @@ public class CompressVerify {
             return false;
         }
 
+        if(hasHomeAbilities(utility)) {
+            LOG.error("hsp has home ability");
+            return false;
+        }
+
         if (!utility.getJarPath().isEmpty()
                 && !compatibleProcess(utility, utility.getJarPath(), utility.getFormattedJarPathList(), JAR_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInHspMode jar-path is invalid.");
@@ -1147,6 +1151,30 @@ public class CompressVerify {
             return result;
         } catch (BundleException e) {
             LOG.error("CompressVerify::hspHasAbilities exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean hasHomeAbilities(Utility utility) {
+        try {
+            boolean result = false;
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
+            Map<String, List<String>> skillsMap = ModuleJsonUtil.parseAbilitySkillsMap(jsonString);
+            for (Map.Entry<String, List<String>> entry : skillsMap.entrySet()) {
+                String key = entry.getKey();
+                List<String> value = entry.getValue();
+                for(String str : value) {
+                    if (str.contains(ACTION_SYSTEM_HOME) && str.contains(ENTITY_SYSTEM_HOME)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            LOG.info("CompressVerify::hasHomeAbilities result = " + result);
+            return result;
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::hasHomeAbilities exception: " + e.getMessage());
             return false;
         }
     }
