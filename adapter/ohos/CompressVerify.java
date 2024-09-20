@@ -69,6 +69,8 @@ public class CompressVerify {
     private static final String BUNDLE_TYPE_SHARE = "shared";
     private static final String BUNDLE_TYPE_APP = "app";
     private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
+    private static final String SKILLS_ENTITIES = "entities";
+    private static final String SKILLS_ACTIONS = "actions";
     private static final String ACTION_SYSTEM_HOME = "action.system.home";
     private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String BUNDLE_NAME_PATTERN =
@@ -1123,10 +1125,11 @@ public class CompressVerify {
     private static boolean isBundleTypeShared(Utility utility) {
         try {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
-            boolean result = ModuleJsonUtil.parseStageBundleType(jsonString).equals(BUNDLE_TYPE_SHARE);
-            LOG.info("CompressVerify::isBundleTypeShared result = " + result);
-            return result;
+            if(optional.isPresent()) {
+                return ModuleJsonUtil.parseStageBundleType(optional.get()).equals(BUNDLE_TYPE_SHARE);
+            } else {
+                throw new BundleException("jsonPath content is empty");
+            }
         } catch (BundleException e) {
             LOG.error("CompressVerify::isBundleTypeShared exception: " + e.getMessage());
             return false;
@@ -1136,10 +1139,11 @@ public class CompressVerify {
     private static boolean isBundleTypeAppService(Utility utility) {
         try {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
-            boolean result = ModuleJsonUtil.parseStageBundleType(jsonString).equals(BUNDLE_TYPE_APP_SERVICE);
-            LOG.info("CompressVerify::isBundleTypeAppService result = " + result);
-            return result;
+            if(optional.isPresent()) {
+                return ModuleJsonUtil.parseStageBundleType(optional.get()).equals(BUNDLE_TYPE_APP_SERVICE);
+            } else {
+                throw new BundleException("jsonPath content is empty");
+            }
         } catch (BundleException e) {
             LOG.error("CompressVerify::isBundleTypeAppService exception: " + e.getMessage());
             return false;
@@ -1149,10 +1153,11 @@ public class CompressVerify {
     private static boolean hspHasAbilities(Utility utility) {
         try {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
-            boolean result = ModuleJsonUtil.parseModuleType(jsonString).equals(BUNDLE_TYPE_SHARE) && !ModuleJsonUtil.parseAbilityNames(jsonString).isEmpty();
-            LOG.info("CompressVerify::hspHasAbilities result = " + result);
-            return result;
+            if(optional.isPresent()) {
+                return ModuleJsonUtil.parseModuleType(optional.get()).equals(BUNDLE_TYPE_SHARE) && !ModuleJsonUtil.parseAbilityNames(optional.get()).isEmpty();
+            } else {
+                throw new BundleException("jsonPath content is empty");
+            }
         } catch (BundleException e) {
             LOG.error("CompressVerify::hspHasAbilities exception: " + e.getMessage());
             return false;
@@ -1163,13 +1168,14 @@ public class CompressVerify {
         try {
             boolean result = false;
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
-            Map<String, List<String>> skillsMap = ModuleJsonUtil.parseAbilitySkillsMap(jsonString);
-            for (Map.Entry<String, List<String>> entry : skillsMap.entrySet()) {
-                String key = entry.getKey();
-                List<String> value = entry.getValue();
-                for(String str : value) {
-                    if (str.contains(ACTION_SYSTEM_HOME) && str.contains(ENTITY_SYSTEM_HOME)) {
+            if(!optional.isPresent()) {
+                throw new BundleException("jsonPath content is empty");
+            }
+            Map<String, List<Map<String,String>>> skillsMap = ModuleJsonUtil.parseAbilitySkillsMap(optional.get());
+            for (Map.Entry<String, List<Map<String,String>>> entry : skillsMap.entrySet()) {
+                List<Map<String,String>> value = entry.getValue();
+                for(Map<String,String> map : value) {
+                    if ((map.containsKey(SKILLS_ENTITIES) && map.get(SKILLS_ENTITIES).contains(ENTITY_SYSTEM_HOME)) && (map.containsKey(SKILLS_ACTIONS) && map.get(SKILLS_ACTIONS).contains(ACTION_SYSTEM_HOME))) {
                         result = true;
                         break;
                     }

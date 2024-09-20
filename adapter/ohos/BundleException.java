@@ -15,13 +15,11 @@
 
 package ohos;
 
-import java.util.function.Supplier;
-
 /**
  * bundle tool exception class.
  *
  */
-class BundleException extends Exception implements Supplier<BundleException> {
+class BundleException extends Exception {
     private static final long serialVersionUID = 1813070042705457755L;
 
     /**
@@ -35,10 +33,5 @@ class BundleException extends Exception implements Supplier<BundleException> {
      */
     public BundleException(String message) {
         super(message);
-    }
-
-    @Override
-    public BundleException get() {
-        return new BundleException();
     }
 }
