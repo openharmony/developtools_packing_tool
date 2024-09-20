@@ -39,6 +39,6 @@ class BundleException extends Exception implements Supplier<BundleException> {
 
     @Override
     public BundleException get() {
-        return null;
+        return new BundleException();
     }
 }

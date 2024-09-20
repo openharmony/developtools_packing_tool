@@ -909,7 +909,7 @@ public class CompressVerify {
             return false;
         }
 
-        if((isInterApplicationHsp(utility) || isSystemHsp(utility)) && hspHasAbilities(utility)) {
+        if((isBundleTypeShared(utility) || isBundleTypeAppService(utility)) && hspHasAbilities(utility)) {
             LOG.error("System-level/inter-application hsp has abilities");
             return false;
         }
@@ -1112,41 +1112,41 @@ public class CompressVerify {
         }
     }
 
-    private static boolean isInterApplicationHsp(Utility utility) {
+    private static boolean isBundleTypeShared(Utility utility) {
         try {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.orElseThrow(new BundleException("utility jsonPath is null"));
+            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
             boolean result = ModuleJsonUtil.parseStageBundleType(jsonString).equals(BUNDLE_TYPE_SHARE);
-            if(result) {
-                LOG.info("isInterApplicationHsp(*) -> bundle type is shared");
-            }
+            LOG.info("CompressVerify::isBundleTypeShared result = " + result);
             return result;
         } catch (BundleException e) {
-            LOG.error("isInterApplicationHsp(*) -> exception: " + e.getMessage());
+            LOG.error("CompressVerify::isBundleTypeShared exception: " + e.getMessage());
             return false;
         }
     }
 
-    private static boolean isSystemHsp(Utility utility) {
+    private static boolean isBundleTypeAppService(Utility utility) {
         try {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.orElseThrow(new BundleException("utility jsonPath is null"));
+            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
             boolean result = ModuleJsonUtil.parseStageBundleType(jsonString).equals(BUNDLE_TYPE_APP_SERVICE);
-            if(result) {
-                LOG.info("isInterApplicationHsp(*) -> bundle type is appService");
-            }
+            LOG.info("CompressVerify::isBundleTypeAppService result = " + result);
             return result;
         } catch (BundleException e) {
-            LOG.error("isSystemHsp(*) exception: " + e.getMessage());
+            LOG.error("CompressVerify::isBundleTypeAppService exception: " + e.getMessage());
             return false;
         }
     }
 
     private static boolean hspHasAbilities(Utility utility) {
         try {
-            return ModuleJsonUtil.checkHspHasAbilities(utility);
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            String jsonString = optional.orElseThrow(new BundleException("jsonPath content is empty"));
+            boolean result = ModuleJsonUtil.parseModuleType(jsonString).equals(BUNDLE_TYPE_SHARE) && !ModuleJsonUtil.parseAbilityNames(jsonString).isEmpty();
+            LOG.info("CompressVerify::hspHasAbilities result = " + result);
+            return result;
         } catch (BundleException e) {
-            LOG.error("hspHasAbilities(*) exception: " + e.getMessage());
+            LOG.error("CompressVerify::hspHasAbilities exception: " + e.getMessage());
             return false;
         }
     }
