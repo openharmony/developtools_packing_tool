@@ -45,6 +45,8 @@ class ModuleJsonUtil {
     private static final String CODE = "code";
     private static final String NAME = "name";
     private static final String SKILLS = "skills";
+    private static final String SKILLS_ENTITIES = "entities";
+    private static final String SKILLS_ACTIONS = "actions";
     private static final String MODULE = "module";
     private static final String MODULES = "modules";
     private static final String MODULE_NAME = "moduleName";
@@ -1144,9 +1146,9 @@ class ModuleJsonUtil {
      * @param jsonString is the json String of module.json
      * @return skills map
      */
-    public static Map<String, List<String>> parseAbilitySkillsMap(String jsonString)
+    public static Map<String, List<Map<String,String>>> parseAbilitySkillsMap(String jsonString)
             throws BundleException {
-        Map<String, List<String>> skillsMap = new HashMap<>();
+        Map<String, List<Map<String,String>>> skillsMap = new HashMap<>();
         JSONObject moduleObj = getModuleObj(jsonString);
         if (moduleObj.containsKey(ABILITIES)) {
             JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
@@ -1154,11 +1156,22 @@ class ModuleJsonUtil {
                 JSONObject abilityObj = abilityObjs.getJSONObject(i);
                 String abilityName = getJsonString(abilityObj, NAME);
                 if (abilityObj.containsKey(SKILLS)) {
-                    JSONArray typeArray = abilityObj.getJSONArray(SKILLS);
-                    skillsMap.put(abilityName, typeArray.toJavaList(String.class));
+                    JSONArray skillArray = abilityObj.getJSONArray(SKILLS);
+                    List<Map<String,String>> listSkills = new ArrayList<>();
+                    for (int j = 0; j < skillArray.size(); ++j) {
+                        Map<String,String> mapSkill = new HashMap<>();
+                        JSONObject skillObj = skillArray.getJSONObject(i);
+                        String entities = getJsonString(skillObj, SKILLS_ENTITIES);
+                        String actions = getJsonString(skillObj, SKILLS_ACTIONS);
+                        mapSkill.put(SKILLS_ENTITIES,entities);
+                        mapSkill.put(SKILLS_ACTIONS,actions);
+                        listSkills.add(mapSkill);
+                    }
+                    skillsMap.put(abilityName, listSkills);
                 } else {
                     skillsMap.put(abilityName, new ArrayList<>());
                 }
+
             }
         }
         return skillsMap;
