@@ -34,7 +34,6 @@
                 "deviceTypes",
                 "pages",
                 "metadata",
-                "abilities",
                 "requestPermissions",
                 "dependencies",
                 "libIsolation",

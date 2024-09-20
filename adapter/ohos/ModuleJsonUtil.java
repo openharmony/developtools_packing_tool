@@ -44,6 +44,7 @@ class ModuleJsonUtil {
     private static final String VERSION = "version";
     private static final String CODE = "code";
     private static final String NAME = "name";
+    private static final String SKILLS = "skills";
     private static final String MODULE = "module";
     private static final String MODULES = "modules";
     private static final String MODULE_NAME = "moduleName";
@@ -1138,6 +1139,32 @@ class ModuleJsonUtil {
     }
 
     /**
+     * get ability skills map from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return skills map
+     */
+    public static Map<String, List<String>> parseAbilitySkillsMap(String jsonString)
+            throws BundleException {
+        Map<String, List<String>> skillsMap = new HashMap<>();
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(ABILITIES)) {
+            JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
+            for (int i = 0; i < abilityObjs.size(); ++i) {
+                JSONObject abilityObj = abilityObjs.getJSONObject(i);
+                String abilityName = getJsonString(abilityObj, NAME);
+                if (abilityObj.containsKey(SKILLS)) {
+                    JSONArray typeArray = abilityObj.getJSONArray(SKILLS);
+                    skillsMap.put(abilityName, typeArray.toJavaList(String.class));
+                } else {
+                    skillsMap.put(abilityName, new ArrayList<>());
+                }
+            }
+        }
+        return skillsMap;
+    }
+
+    /**
      * parse stage module type.
      *
      * @param jsonString is the json String of module.json or config.json
@@ -1857,7 +1884,7 @@ class ModuleJsonUtil {
      */
     private static String getJsonString(JSONObject jsonObject, String key) {
         String value = "";
-        if (jsonObject != null && jsonObject.containsKey(key)) {
+        if (jsonObject != null && jsonObject.containsKey(key) && jsonObject.get(key) != null) {
             value = jsonObject.get(key).toString();
         }
         return value;
