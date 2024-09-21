@@ -1165,7 +1165,7 @@ class ModuleJsonUtil {
             }
             JSONArray skillArray = abilityObj.getJSONArray(SKILLS);
             for (int j = 0; j < skillArray.size(); ++j) {
-                JSONObject skillObj = skillArray.getJSONObject(i);
+                JSONObject skillObj = skillArray.getJSONObject(j);
                 String entities = getJsonString(skillObj, SKILLS_ENTITIES);
                 String actions = getJsonString(skillObj, SKILLS_ACTIONS);
                 if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(ACTION_SYSTEM_HOME)) {
