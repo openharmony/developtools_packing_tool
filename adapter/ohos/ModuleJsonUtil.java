@@ -22,8 +22,8 @@ import com.alibaba.fastjson.JSONException;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class ModuleJsonUtil {
@@ -44,6 +44,11 @@ class ModuleJsonUtil {
     private static final String VERSION = "version";
     private static final String CODE = "code";
     private static final String NAME = "name";
+    private static final String SKILLS = "skills";
+    private static final String SKILLS_ENTITIES = "entities";
+    private static final String SKILLS_ACTIONS = "actions";
+    private static final String ACTION_SYSTEM_HOME = "action.system.home";
+    private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String MODULE = "module";
     private static final String MODULES = "modules";
     private static final String MODULE_NAME = "moduleName";
@@ -1139,6 +1144,41 @@ class ModuleJsonUtil {
     }
 
     /**
+     * get ability skills map from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return skillsMap key is ability,value indicates whether this door is a home ability
+     */
+    public static Map<String, Boolean> parseAbilitySkillsMap(String jsonString)
+            throws BundleException {
+        Map<String, Boolean> skillsMap = new HashMap<>();
+        JSONObject moduleObj = getModuleObj(jsonString);
+        JSONArray abilityObs = moduleObj.getJSONArray(ABILITIES);
+        if(abilityObs == null) {
+            return skillsMap;
+        }
+        for (int i = 0; i < abilityObs.size(); ++i) {
+            JSONObject abilityObj = abilityObs.getJSONObject(i);
+            String abilityName = getJsonString(abilityObj, NAME);
+            skillsMap.put(abilityName, false);
+            if(!abilityObj.containsKey(SKILLS)) {
+                break;
+            }
+            JSONArray skillArray = abilityObj.getJSONArray(SKILLS);
+            for (int j = 0; j < skillArray.size(); ++j) {
+                JSONObject skillObj = skillArray.getJSONObject(j);
+                String entities = getJsonString(skillObj, SKILLS_ENTITIES);
+                String actions = getJsonString(skillObj, SKILLS_ACTIONS);
+                if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(ACTION_SYSTEM_HOME)) {
+                    skillsMap.put(abilityName, true);
+                    break;
+                }
+            }
+        }
+        return skillsMap;
+    }
+
+    /**
      * parse stage module type.
      *
      * @param jsonString is the json String of module.json or config.json
@@ -1335,6 +1375,10 @@ class ModuleJsonUtil {
             String errMsg = "parse JSONobject failed.";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
+        }
+        if (jsonObj == null) {
+            LOG.error("ModuleJsonUtil::parseStageInstallation jsonObj is null.");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation jsonObj is null.");
         }
         JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
         if (moduleObj == null) {
@@ -1872,7 +1916,7 @@ class ModuleJsonUtil {
      */
     private static String getJsonString(JSONObject jsonObject, String key) {
         String value = "";
-        if (jsonObject != null && jsonObject.containsKey(key)) {
+        if (jsonObject != null && jsonObject.containsKey(key) && jsonObject.get(key) != null) {
             value = jsonObject.get(key).toString();
         }
         return value;

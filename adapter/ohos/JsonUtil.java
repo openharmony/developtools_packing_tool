@@ -2030,7 +2030,7 @@ public class JsonUtil {
      */
     private static String getJsonString(JSONObject jsonObject, String key) {
         String value = "";
-        if (jsonObject != null && jsonObject.containsKey(key)) {
+        if (jsonObject != null && jsonObject.containsKey(key) && jsonObject.get(key) != null) {
             value = jsonObject.get(key).toString();
         }
         return value;
@@ -2046,7 +2046,7 @@ public class JsonUtil {
      */
     private static String getJsonString(JSONObject jsonObject, String key, String defaultValue) {
         String value = defaultValue;
-        if (jsonObject != null && jsonObject.containsKey(key)) {
+        if (jsonObject != null && jsonObject.containsKey(key) && jsonObject.get(key) != null) {
             value = jsonObject.get(key).toString();
         }
         return value;
