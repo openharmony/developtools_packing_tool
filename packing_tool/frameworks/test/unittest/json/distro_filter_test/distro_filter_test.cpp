@@ -163,6 +163,45 @@ HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0200, Function | MediumTest
 }
 
 /*
+ * @tc.name: PolicyValue_ParseFromJson_0300
+ * @tc.desc: ParseFromJson Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0300, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_FALSE(policyValue.ParseFromJson(root));
+}
+
+/*
+ * @tc.name: PolicyValue_ParseFromJsonApiVersion_0100
+ * @tc.desc: ParseFromJsonApiVersion Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_FALSE(policyValue.ParseFromJsonApiVersion(root));
+}
+
+/*
+ * @tc.name: PolicyValue_ParseFromJsonApiVersion_0200
+ * @tc.desc: ParseFromJsonApiVersion Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0200, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(policyValueJsonString2);
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_TRUE(policyValue.ParseFromJsonApiVersion(root));
+}
+
+/*
  * @tc.name: DistroFilter_ParseFromJson_0100
  * @tc.desc: DistroFilter Function Test.
  *           ParseFromJson/ParseApiVersion/ParseScreenShape/ParseScreenDensity/ParseScreenWindow/ParseCountryCode
@@ -204,5 +243,83 @@ HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0200, Function | MediumTes
     "value is xxx screenWindow: policy is xxx, "
     "value is xxx countryCode: policy is xxx, "
     "value is xxx");
+}
+
+/*
+ * @tc.name: DistroFilter_ParseFromJson_0300
+ * @tc.desc: ParseFromJson Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0300, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_FALSE(distroFilter.ParseFromJson(root));
+}
+
+/*
+ * @tc.name: DistroFilter_ParseApiVersion_0100
+ * @tc.desc: ParseApiVersion Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, DistroFilter_ParseApiVersion_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_FALSE(distroFilter.ParseApiVersion(root));
+}
+
+/*
+ * @tc.name: DistroFilter_ParseScreenShape_0100
+ * @tc.desc: ParseScreenShape Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, DistroFilter_ParseScreenShape_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_FALSE(distroFilter.ParseScreenShape(root));
+}
+
+/*
+ * @tc.name: DistroFilter_ParseScreenDensity_0100
+ * @tc.desc: ParseScreenDensity Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, DistroFilter_ParseScreenDensity_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_FALSE(distroFilter.ParseScreenDensity(root));
+}
+
+/*
+ * @tc.name: DistroFilter_ParseScreenWindow_0100
+ * @tc.desc: ParseScreenWindow Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, DistroFilter_ParseScreenWindow_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_FALSE(distroFilter.ParseScreenWindow(root));
+}
+
+/*
+ * @tc.name: DistroFilter_ParseCountryCode_0100
+ * @tc.desc: ParseCountryCode Function Test.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, DistroFilter_ParseCountryCode_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = nullptr;
+    AppPackingTool::DistroFilter distroFilter;
+    EXPECT_FALSE(distroFilter.ParseCountryCode(root));
 }
 }
