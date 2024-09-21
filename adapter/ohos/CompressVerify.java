@@ -1128,7 +1128,8 @@ public class CompressVerify {
             if(optional.isPresent()) {
                 return ModuleJsonUtil.parseStageBundleType(optional.get()).equals(BUNDLE_TYPE_SHARE);
             } else {
-                throw new BundleException("jsonPath content is empty");
+                LOG.error("CompressVerify::isBundleTypeShared jsonPath content invalid");
+                return false;
             }
         } catch (BundleException e) {
             LOG.error("CompressVerify::isBundleTypeShared exception: " + e.getMessage());
@@ -1142,7 +1143,8 @@ public class CompressVerify {
             if(optional.isPresent()) {
                 return ModuleJsonUtil.parseStageBundleType(optional.get()).equals(BUNDLE_TYPE_APP_SERVICE);
             } else {
-                throw new BundleException("jsonPath content is empty");
+                LOG.error("CompressVerify::isBundleTypeAppService jsonPath content invalid");
+                return false;
             }
         } catch (BundleException e) {
             LOG.error("CompressVerify::isBundleTypeAppService exception: " + e.getMessage());
@@ -1156,7 +1158,8 @@ public class CompressVerify {
             if(optional.isPresent()) {
                 return ModuleJsonUtil.parseModuleType(optional.get()).equals(BUNDLE_TYPE_SHARE) && !ModuleJsonUtil.parseAbilityNames(optional.get()).isEmpty();
             } else {
-                throw new BundleException("jsonPath content is empty");
+                LOG.error("CompressVerify::hspHasAbilities jsonPath content invalid");
+                return false;
             }
         } catch (BundleException e) {
             LOG.error("CompressVerify::hspHasAbilities exception: " + e.getMessage());
@@ -1169,7 +1172,8 @@ public class CompressVerify {
             boolean result = false;
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             if(!optional.isPresent()) {
-                throw new BundleException("jsonPath content is empty");
+                LOG.error("CompressVerify::hasHomeAbility jsonPath content invalid");
+                return false;
             }
             Map<String, Boolean> abilitiesMap = ModuleJsonUtil.parseAbilitySkillsMap(optional.get());
             if (abilitiesMap.containsValue(true)) {
