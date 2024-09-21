@@ -47,6 +47,8 @@ class ModuleJsonUtil {
     private static final String SKILLS = "skills";
     private static final String SKILLS_ENTITIES = "entities";
     private static final String SKILLS_ACTIONS = "actions";
+    private static final String ACTION_SYSTEM_HOME = "action.system.home";
+    private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String MODULE = "module";
     private static final String MODULES = "modules";
     private static final String MODULE_NAME = "moduleName";
@@ -1144,34 +1146,32 @@ class ModuleJsonUtil {
      * get ability skills map from json file.
      *
      * @param jsonString is the json String of module.json
-     * @return skills map
+     * @return skillsMap key is ability,value indicates whether this door is a home ability
      */
-    public static Map<String, List<Map<String,String>>> parseAbilitySkillsMap(String jsonString)
+    public static Map<String, Boolean> parseAbilitySkillsMap(String jsonString)
             throws BundleException {
-        Map<String, List<Map<String,String>>> skillsMap = new HashMap<>();
+        Map<String, Boolean> skillsMap = new HashMap<>();
         JSONObject moduleObj = getModuleObj(jsonString);
-        if (moduleObj.containsKey(ABILITIES)) {
-            JSONArray abilityObjs = moduleObj.getJSONArray(ABILITIES);
-            for (int i = 0; i < abilityObjs.size(); ++i) {
-                JSONObject abilityObj = abilityObjs.getJSONObject(i);
-                String abilityName = getJsonString(abilityObj, NAME);
-                if (abilityObj.containsKey(SKILLS)) {
-                    JSONArray skillArray = abilityObj.getJSONArray(SKILLS);
-                    List<Map<String,String>> listSkills = new ArrayList<>();
-                    for (int j = 0; j < skillArray.size(); ++j) {
-                        Map<String,String> mapSkill = new HashMap<>();
-                        JSONObject skillObj = skillArray.getJSONObject(i);
-                        String entities = getJsonString(skillObj, SKILLS_ENTITIES);
-                        String actions = getJsonString(skillObj, SKILLS_ACTIONS);
-                        mapSkill.put(SKILLS_ENTITIES,entities);
-                        mapSkill.put(SKILLS_ACTIONS,actions);
-                        listSkills.add(mapSkill);
-                    }
-                    skillsMap.put(abilityName, listSkills);
-                } else {
-                    skillsMap.put(abilityName, new ArrayList<>());
+        JSONArray abilityObs = moduleObj.getJSONArray(ABILITIES);
+        if(abilityObs == null) {
+            return skillsMap;
+        }
+        for (int i = 0; i < abilityObs.size(); ++i) {
+            JSONObject abilityObj = abilityObs.getJSONObject(i);
+            String abilityName = getJsonString(abilityObj, NAME);
+            skillsMap.put(abilityName, false);
+            if(!abilityObj.containsKey(SKILLS)) {
+                break;
+            }
+            JSONArray skillArray = abilityObj.getJSONArray(SKILLS);
+            for (int j = 0; j < skillArray.size(); ++j) {
+                JSONObject skillObj = skillArray.getJSONObject(i);
+                String entities = getJsonString(skillObj, SKILLS_ENTITIES);
+                String actions = getJsonString(skillObj, SKILLS_ACTIONS);
+                if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(ACTION_SYSTEM_HOME)) {
+                    skillsMap.put(abilityName, true);
+                    break;
                 }
-
             }
         }
         return skillsMap;
@@ -1374,6 +1374,10 @@ class ModuleJsonUtil {
             String errMsg = "parse JSONobject failed.";
             LOG.error(errMsg);
             throw new BundleException(errMsg);
+        }
+        if (jsonObj == null) {
+            LOG.error("ModuleJsonUtil::parseStageInstallation jsonObj is null.");
+            throw new BundleException("ModuleJsonUtil::parseStageInstallation jsonObj is null.");
         }
         JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
         if (moduleObj == null) {
