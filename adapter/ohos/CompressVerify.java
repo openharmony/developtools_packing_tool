@@ -919,7 +919,7 @@ public class CompressVerify {
             return false;
         }
 
-        if(hasHomeAbilities(utility)) {
+        if(hasHomeAbility(utility)) {
             LOG.error("hsp has home ability");
             return false;
         }
@@ -1164,22 +1164,16 @@ public class CompressVerify {
         }
     }
 
-    private static boolean hasHomeAbilities(Utility utility) {
+    private static boolean hasHomeAbility(Utility utility) {
         try {
             boolean result = false;
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             if(!optional.isPresent()) {
                 throw new BundleException("jsonPath content is empty");
             }
-            Map<String, List<Map<String,String>>> skillsMap = ModuleJsonUtil.parseAbilitySkillsMap(optional.get());
-            for (Map.Entry<String, List<Map<String,String>>> entry : skillsMap.entrySet()) {
-                List<Map<String,String>> value = entry.getValue();
-                for(Map<String,String> map : value) {
-                    if ((map.containsKey(SKILLS_ENTITIES) && map.get(SKILLS_ENTITIES).contains(ENTITY_SYSTEM_HOME)) && (map.containsKey(SKILLS_ACTIONS) && map.get(SKILLS_ACTIONS).contains(ACTION_SYSTEM_HOME))) {
-                        result = true;
-                        break;
-                    }
-                }
+            Map<String, Boolean> abilitiesMap = ModuleJsonUtil.parseAbilitySkillsMap(optional.get());
+            if (abilitiesMap.containsValue(true)) {
+                result = true;
             }
             LOG.info("CompressVerify::hasHomeAbilities result = " + result);
             return result;
