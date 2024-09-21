@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * compress comment,command parser.
@@ -67,6 +69,10 @@ public class CompressVerify {
     private static final String BUNDLE_TYPE_SHARE = "shared";
     private static final String BUNDLE_TYPE_APP = "app";
     private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
+    private static final String SKILLS_ENTITIES = "entities";
+    private static final String SKILLS_ACTIONS = "actions";
+    private static final String ACTION_SYSTEM_HOME = "action.system.home";
+    private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String BUNDLE_NAME_PATTERN =
             "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
     private static final int BUNDLE_NAME_LEN_MIN = 7;
@@ -908,6 +914,16 @@ public class CompressVerify {
             return false;
         }
 
+        if((isBundleTypeShared(utility) || isBundleTypeAppService(utility)) && hspHasAbilities(utility)) {
+            LOG.error("System-level/inter-application hsp has abilities");
+            return false;
+        }
+
+        if(hasHomeAbility(utility)) {
+            LOG.error("hsp has home ability");
+            return false;
+        }
+
         if (!utility.getJarPath().isEmpty()
                 && !compatibleProcess(utility, utility.getJarPath(), utility.getFormattedJarPathList(), JAR_SUFFIX)) {
             LOG.error("CompressVerify::isArgsValidInHspMode jar-path is invalid.");
@@ -1102,6 +1118,71 @@ public class CompressVerify {
             HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath.get(0));
             return hapVerifyInfo.getBundleType().equals(BUNDLE_TYPE_SHARE);
         } catch (BundleException e) {
+            return false;
+        }
+    }
+
+    private static boolean isBundleTypeShared(Utility utility) {
+        try {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if(optional.isPresent()) {
+                return ModuleJsonUtil.parseStageBundleType(optional.get()).equals(BUNDLE_TYPE_SHARE);
+            } else {
+                LOG.error("CompressVerify::isBundleTypeShared jsonPath content invalid");
+                return false;
+            }
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::isBundleTypeShared exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean isBundleTypeAppService(Utility utility) {
+        try {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if(optional.isPresent()) {
+                return ModuleJsonUtil.parseStageBundleType(optional.get()).equals(BUNDLE_TYPE_APP_SERVICE);
+            } else {
+                LOG.error("CompressVerify::isBundleTypeAppService jsonPath content invalid");
+                return false;
+            }
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::isBundleTypeAppService exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean hspHasAbilities(Utility utility) {
+        try {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if(optional.isPresent()) {
+                return ModuleJsonUtil.parseModuleType(optional.get()).equals(BUNDLE_TYPE_SHARE) && !ModuleJsonUtil.parseAbilityNames(optional.get()).isEmpty();
+            } else {
+                LOG.error("CompressVerify::hspHasAbilities jsonPath content invalid");
+                return false;
+            }
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::hspHasAbilities exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean hasHomeAbility(Utility utility) {
+        try {
+            boolean result = false;
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if(!optional.isPresent()) {
+                LOG.error("CompressVerify::hasHomeAbility jsonPath content invalid");
+                return false;
+            }
+            Map<String, Boolean> abilitiesMap = ModuleJsonUtil.parseAbilitySkillsMap(optional.get());
+            if (abilitiesMap.containsValue(true)) {
+                result = true;
+            }
+            LOG.info("CompressVerify::hasHomeAbilities result = " + result);
+            return result;
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::hasHomeAbilities exception: " + e.getMessage());
             return false;
         }
     }
