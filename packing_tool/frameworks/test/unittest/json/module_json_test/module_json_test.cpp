@@ -2195,4 +2195,410 @@ HWTEST_F(ModuleJsonTest, GetBundleNameByAppObj_0200, Function | MediumTest | Lev
     moduleJson.GetModuleObject(appObj);
     EXPECT_FALSE(moduleJson.GetBundleNameByAppObj(appObj, bundleName));
 }
+
+/*
+ * @tc.name: SetStageVersionCode
+ * @tc.desc: test set stage version code
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetStageVersionCode_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    int32_t versionCode = 100000;
+    EXPECT_FALSE(moduleJson.SetStageVersionCode(versionCode));
+}
+
+/*
+ * @tc.name: SetStageVersionName
+ * @tc.desc: test set stage version name
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetStageVersionName_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    std::string versionName = "1.0.0";
+    EXPECT_FALSE(moduleJson.SetStageVersionName(versionName));
+}
+
+/*
+ * @tc.name: GetStageVersion
+ * @tc.desc: test get stage version
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageVersion_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    Version version;
+    EXPECT_FALSE(moduleJson.GetStageVersion(version));
+}
+
+/*
+ * @tc.name: GetStageModuleApiVersion
+ * @tc.desc: test get stage module api version
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageModuleApiVersion_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    ModuleApiVersion moduleApiVersion;
+    EXPECT_FALSE(moduleJson.GetStageModuleApiVersion(moduleApiVersion));
+}
+
+/*
+ * @tc.name: GetStageCompileSdkType
+ * @tc.desc: test get stage compilation
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageCompileSdkType_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    std::string compileSdkType = "";
+    EXPECT_FALSE(moduleJson.GetStageCompileSdkType(compileSdkType));
+}
+
+/*
+ * @tc.name: GetStageCompileSdkVersion
+ * @tc.desc: test get stage compile sdk version
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageCompileSdkVersion_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    std::string compileSdkVersion = "";
+    EXPECT_FALSE(moduleJson.GetStageCompileSdkVersion(compileSdkVersion));
+}
+
+/*
+ * @tc.name: GetStageDebug
+ * @tc.desc: test get stage debug
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageDebug_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    bool debug = true;
+    EXPECT_FALSE(moduleJson.GetStageDebug(debug));
+}
+
+/*
+ * @tc.name: GetStageBundleType
+ * @tc.desc: test get stage bundle type
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageBundleType_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    std::string bundleType = "";
+    EXPECT_FALSE(moduleJson.GetStageBundleType(bundleType));
+}
+
+/*
+ * @tc.name: GetStageAsanEnabled
+ * @tc.desc: test get stage asan enabled
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageAsanEnabled_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    bool asanEnabled = true;
+    EXPECT_FALSE(moduleJson.GetStageAsanEnabled(asanEnabled));
+}
+
+/*
+ * @tc.name: GetStageTsanEnabled
+ * @tc.desc: test get stage tsan enabled
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageTsanEnabled_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    bool tsanEnabled = true;
+    EXPECT_FALSE(moduleJson.GetStageTsanEnabled(tsanEnabled));
+}
+
+/*
+ * @tc.name: GetStageCompressNativeLibs
+ * @tc.desc: test get stage compress native libs
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageCompressNativeLibs_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    bool compressNativeLibs = true;
+    EXPECT_FALSE(moduleJson.GetStageCompressNativeLibs(compressNativeLibs));
+}
+
+/*
+ * @tc.name: GetStageApiReleaseType
+ * @tc.desc: test get stage api release type
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageApiReleaseType_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    std::string apiReleaseType = "";
+    EXPECT_FALSE(moduleJson.GetStageApiReleaseType(apiReleaseType));
+}
+
+/*
+ * @tc.name: GetStageHapVerifyInfo
+ * @tc.desc: test get stage hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageHapVerifyInfo_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetStageHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetStageVersionByAppObj
+ * @tc.desc: test get stage version by obj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageVersionByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    Version version;
+    EXPECT_FALSE(moduleJson.GetStageVersionByAppObj(appObj, version));
+}
+
+/*
+ * @tc.name: GetStageModuleApiVersionByAppObj
+ * @tc.desc: test get stage module api version
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageModuleApiVersionByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    ModuleApiVersion moduleApiVersion;
+    EXPECT_FALSE(moduleJson.GetStageModuleApiVersionByAppObj(appObj, moduleApiVersion));
+}
+
+/*
+ * @tc.name: GetStageCompileSdkTypeByAppObj
+ * @tc.desc: test get stage compile sdk type
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageCompileSdkTypeByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    std::string compileSdkType = "";
+    EXPECT_FALSE(moduleJson.GetStageCompileSdkTypeByAppObj(appObj, compileSdkType));
+}
+
+/*
+ * @tc.name: GetStageCompileSdkVersionByAppObj
+ * @tc.desc: test get stage compile sdk version
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageCompileSdkVersionByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    std::string compileSdkVersion = "";
+    EXPECT_FALSE(moduleJson.GetStageCompileSdkVersionByAppObj(appObj, compileSdkVersion));
+}
+
+/*
+ * @tc.name: GetStageDebugByAppObj
+ * @tc.desc: test get stage debug
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageDebugByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    bool debug = true;
+    EXPECT_FALSE(moduleJson.GetStageDebugByAppObj(appObj, debug));
+}
+
+/*
+ * @tc.name: GetStageAsanEnabledByAppObj
+ * @tc.desc: test get stage asan enabled
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageAsanEnabledByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    bool asanEnabled = true;
+    EXPECT_FALSE(moduleJson.GetStageAsanEnabledByAppObj(appObj, asanEnabled));
+}
+
+/*
+ * @tc.name: GetStageTsanEnabledByAppObj
+ * @tc.desc: test get stage tsan enabled
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageTsanEnabledByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    bool tsanEnabled = true;
+    EXPECT_FALSE(moduleJson.GetStageTsanEnabledByAppObj(appObj, tsanEnabled));
+}
+
+/*
+ * @tc.name: GetStageCompressNativeLibsByAppObj
+ * @tc.desc: test get stage compress native libs
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageCompressNativeLibsByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    bool compressNativeLibs = true;
+    EXPECT_FALSE(moduleJson.GetStageCompressNativeLibsByAppObj(appObj, compressNativeLibs));
+}
+
+/*
+ * @tc.name: GetStageApiReleaseTypeByAppObj
+ * @tc.desc: test get stage api release type
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageApiReleaseTypeByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    std::string apiReleaseType = "";
+    EXPECT_FALSE(moduleJson.GetStageApiReleaseTypeByAppObj(appObj, apiReleaseType));
+}
+
+/*
+ * @tc.name: SetStageHapVerifyInfoByAppObj
+ * @tc.desc: test get stage hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetStageHapVerifyInfoByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj = nullptr;
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetStageHapVerifyInfoByAppObj(appObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetStageInstallationFreeByModuleObj
+ * @tc.desc: test get stage installation free
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageInstallationFreeByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj = nullptr;
+    bool installationFree = true;
+    EXPECT_FALSE(moduleJson.GetStageInstallationFreeByModuleObj(moduleObj, installationFree));
+}
+
+/*
+ * @tc.name: GetStageModuleNameByModuleObj
+ * @tc.desc: test get stage module name
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageModuleNameByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj = nullptr;
+    std::string stageModuleName = "";
+    EXPECT_FALSE(moduleJson.GetStageModuleNameByModuleObj(moduleObj, stageModuleName));
+}
+
+/*
+ * @tc.name: GetStageDeviceTypesByModuleObj
+ * @tc.desc: test get stage device types
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageDeviceTypesByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj = nullptr;
+    std::list<std::string> deviceTypes;
+    EXPECT_FALSE(moduleJson.GetStageDeviceTypesByModuleObj(moduleObj, deviceTypes));
+}
+
+/*
+ * @tc.name: GetStageModuleTypeByModuleObj
+ * @tc.desc: test get stage module type
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetStageModuleTypeByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj = nullptr;
+    std::string moduleType = "";
+    EXPECT_FALSE(moduleJson.GetStageModuleTypeByModuleObj(moduleObj, moduleType));
+}
+
+/*
+ * @tc.name: SetStageHapVerifyInfoByModuleObj
+ * @tc.desc: test set stage hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetStageHapVerifyInfoByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj = nullptr;
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetStageHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetStageHapVerifyInfoExtByModuleObj
+ * @tc.desc: test set stage hap verify info ext
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetStageHapVerifyInfoExtByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj = nullptr;
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetStageHapVerifyInfoExtByModuleObj(moduleObj, hapVerifyInfo));
+}
 }
