@@ -109,7 +109,9 @@ HWTEST_F(UnzipWrapperTest, UnzipFile_0300, Function | MediumTest | Level1)
     unzipWrapper.Open();
     int ret = unzipWrapper.UnzipFile(TEMP_PATH);
     EXPECT_EQ(ret, 0);
-    
+    ret = unzipWrapper.Open();
+    EXPECT_EQ(ret, 0);
+
     unzipWrapper.Close();
 
     std::string cmd("rm -rf ");
@@ -118,5 +120,66 @@ HWTEST_F(UnzipWrapperTest, UnzipFile_0300, Function | MediumTest | Level1)
     std::string cmd2("rm -rf ");
     cmd2 += OUT_PATH;
     system(cmd2.c_str());
+}
+
+/*
+ * @tc.name: Open_0400
+ * @tc.desc: Open.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UnzipWrapperTest, Open_0400, Function | MediumTest | Level1)
+{
+    std::string path;
+    OHOS::AppPackingTool::UnzipWrapper unzipWrapper(path);
+    int32_t ret = unzipWrapper.Open();
+    EXPECT_EQ(ret, -1);
+}
+
+/*
+ * @tc.name: ExtractFile_0500
+ * @tc.desc: ExtractFile.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UnzipWrapperTest, ExtractFile_0500, Function | MediumTest | Level1)
+{
+    std::string path;
+    OHOS::AppPackingTool::UnzipWrapper unzipWrapper(path);
+    std::string ret = unzipWrapper.ExtractFile(path);
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: UnzipFile_0600
+ * @tc.desc: UnzipFile.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UnzipWrapperTest, UnzipFile_0600, Function | MediumTest | Level1)
+{
+    std::string path;
+    OHOS::AppPackingTool::UnzipWrapper unzipWrapper(path);
+    int ret = unzipWrapper.UnzipFile(path);
+    EXPECT_EQ(ret, -1);
+}
+
+/*
+ * @tc.name: UnzipFile_0700
+ * @tc.desc: UnzipFile.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UnzipWrapperTest, UnzipFile_0700, Function | MediumTest | Level1)
+{
+    system("touch /data/test_1.hqf");
+    std::string tempPath;
+    OHOS::AppPackingTool::UnzipWrapper unzipWrapper(OUT_PATH);
+    unzipWrapper.Open();
+    int ret = unzipWrapper.UnzipFile(tempPath);
+    EXPECT_EQ(ret, -1);
+
+    unzipWrapper.Close();
+    system("rm -rf /data/test_1.hqf");
 }
 } // namespace OHOS
