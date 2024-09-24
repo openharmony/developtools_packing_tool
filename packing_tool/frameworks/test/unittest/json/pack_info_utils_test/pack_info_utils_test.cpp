@@ -135,6 +135,96 @@ const string PACKING_INFO_STR_2 = "{"
         "}"
     "]"
 "}";
+
+const std::string PACKING_INFO_TEST_STRING_NOTHING = "{"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_ERROR_1 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "}"
+    "}"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_ERROR_2 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "}"
+    "}"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_ERROR_3 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\""
+        "}"
+    "}"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_NOT_SAME_1 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.application\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "}"
+    "}"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_NOT_SAME_2 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 2000000,"
+                "\"name\": \"2.0.0\""
+            "}"
+        "}"
+    "}"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_ERROR_4 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "}"
+    "}"
+"}";
+
+const std::string PACKING_INFO_TEST_STRING_ERROR_5 = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\" : []"
+    "}"
+"}";
+
 }
 
 class PackInfoUtilsTest : public testing::Test {
@@ -173,6 +263,182 @@ HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0100, Function | MediumTest | Leve
 }
 
 /*
+ * @tc.name: MergeTwoPackInfos_0200
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos("", PACKING_INFO_STR_2, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0300
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_STR_1, "", dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0400
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_NOTHING,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0500
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_ERROR_1,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0600
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_STR_1,
+                                                 PACKING_INFO_TEST_STRING_ERROR_1,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0700
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_ERROR_2,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0800
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_ERROR_3,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_0900
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_0900, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_STR_1,
+                                                 PACKING_INFO_TEST_STRING_ERROR_3,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_1000
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_1000, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_NOT_SAME_1,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_1100
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_1100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_NOT_SAME_2,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_1200
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_1200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_ERROR_4,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_1300
+ * @tc.desc: MergeTwoPackInfos.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_1300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::string dstPackInfoJsonStr;
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfos(PACKING_INFO_TEST_STRING_ERROR_5,
+                                                 PACKING_INFO_STR_2,
+                                                 dstPackInfoJsonStr));
+}
+
+/*
  * @tc.name: MergeTwoPackInfosByPackagePair_0100
  * @tc.desc: MergeTwoPackInfosByPackagePair.
  * @tc.type: FUNC
@@ -187,5 +453,90 @@ HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0100, Function | Medi
 
     EXPECT_TRUE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_STR_1, PACKING_INFO_STR_2,
         packagesMap, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfosByPackagePair_0200
+ * @tc.desc: MergeTwoPackInfosByPackagePair.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::map<std::string, std::string> packagesMap;
+    std::string dstPackInfoJsonStr = "";
+    packagesMap.insert((make_pair("entry-default", "entry")));
+
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfosByPackagePair("", PACKING_INFO_STR_2,
+                                                              packagesMap, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfosByPackagePair_0300
+ * @tc.desc: MergeTwoPackInfosByPackagePair.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::map<std::string, std::string> packagesMap;
+    std::string dstPackInfoJsonStr = "";
+    packagesMap.insert((make_pair("entry-default", "entry")));
+
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_STR_1, "",
+                                                              packagesMap, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfosByPackagePair_0400
+ * @tc.desc: MergeTwoPackInfosByPackagePair.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::map<std::string, std::string> packagesMap;
+    std::string dstPackInfoJsonStr = "";
+    packagesMap.insert((make_pair("entry-default", "entry")));
+
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_TEST_STRING_NOTHING, PACKING_INFO_STR_2,
+                                                              packagesMap, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfosByPackagePair_0500
+ * @tc.desc: MergeTwoPackInfosByPackagePair.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::map<std::string, std::string> packagesMap;
+    std::string dstPackInfoJsonStr = "";
+    packagesMap.insert((make_pair("entry-default", "entry")));
+
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_TEST_STRING_ERROR_4, PACKING_INFO_STR_2,
+                                                              packagesMap, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfosByPackagePair_0600
+ * @tc.desc: MergeTwoPackInfosByPackagePair.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoUtils packInfoUtils;
+    std::map<std::string, std::string> packagesMap;
+    std::string dstPackInfoJsonStr = "";
+    packagesMap.insert((make_pair("entry-default", "entry")));
+
+    EXPECT_FALSE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_TEST_STRING_ERROR_5, PACKING_INFO_STR_2,
+                                                              packagesMap, dstPackInfoJsonStr));
 }
 }

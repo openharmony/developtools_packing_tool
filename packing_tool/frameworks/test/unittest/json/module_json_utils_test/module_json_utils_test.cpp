@@ -169,6 +169,77 @@ const std::string CONFIG_JSON_STR = "{"
         "\"package\" : \"test_package\""
     "}"
 "}";
+
+const std::string MODULE_JSON_STR_NOTHING = "{"
+"}";
+
+const std::string CONFIG_JSON_STR_NOTHING = "{"
+"}";
+
+const std::string MODULE_JSON_STR_ERROR_1 = "{"
+    "\"app\": {}"
+    "\"module\":{}"
+"}";
+
+const std::string CONFIG_JSON_STR_ERROR_1 = "{"
+    "\"app\": {}"
+    "\"module\":{}"
+"}";
+
+const std::string MODULE_JSON_STR_SHARED = "{"
+    "\"app\": {"
+        "\"iconId\":16777217,"
+        "\"debug\":true,"
+        "\"minAPIVersion\":9,"
+        "\"icon\":\"media:app_icon\","
+        "\"label\":\"string:app_name\","
+        "\"versionName\":\"1.0.0\","
+        "\"versionCode\":1000000,"
+        "\"compileSdkType\":\"OpenHarmony\","
+        "\"labelId\":16777216,"
+        "\"compileSdkVersion\":\"test_compileSdkVersion\","
+        "\"targetAPIVersion\":9,"
+        "\"vendor\":\"\","
+        "\"bundleName\":\"com.example.demo\","
+        "\"distributedNotificationEnabled\":true,"
+        "\"apiReleaseType\":\"Release\","
+        "\"bundleType\":\"shared\""
+        "},"
+    "\"module\":{"
+        "\"virtualMachine\":\"test_virtualMachine\","
+        "\"mainElement\":\"EntryAbility\","
+        "\"installationFree\":false,"
+        "\"deliveryWithInstall\":true,"
+        "\"description\":\"string:module_desc\","
+        "\"compileMode\":\"esmodule\","
+        "\"type\":\"shared\","
+        "\"dependencies\":[],"
+        "\"abilities\":["
+            "{"
+                "\"iconId\":16777222,"
+                "\"startWindowIconId\":16777222,"
+                "\"visible\":true,"
+                "\"icon\":\"media:icon\","
+                "\"startWindowBackgroundId\":16777221,"
+                "\"startWindowIcon\":\"media:icon\","
+                "\"description\":\"string:EntryAbility_desc\","
+                "\"label\":\"string:EntryAbility_label\","
+                "\"skills\":[{\"entities\":[\"entity.system.home\"],"
+                "\"actions\":[\"action.system.home\"]}],"
+                "\"descriptionId\":16777218,"
+                "\"labelId\":16777219,"
+                "\"startWindowBackground\":\"color:start_window_background\","
+                "\"srcEntrance\":\"./ets/entryability/EntryAbility.ts\","
+                "\"name\":\"EntryAbility\""
+            "}"
+        "],"
+        "\"descriptionId\":16777220,"
+        "\"deviceTypes\":[\"default\",\"tablet\"],"
+        "\"pages\":\"$profile:main_pages\","
+        "\"name\":\"entry\""
+    "}"
+"}";
+
 }
 
 class ModuleJsonUtilsTest : public testing::Test {
@@ -193,13 +264,13 @@ void ModuleJsonUtilsTest::SetUp() {}
 
 void ModuleJsonUtilsTest::TearDown() {}
 
-bool CreateModuleJsonFile(std::string filename)
+bool CreateModuleJsonFile(std::string filename, const std::string& jsonStr)
 {
     std::string module_test(filename);
     FILE *fp = fopen(module_test.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr) {
-        fwrite(MODULE_JSON_STR.c_str(), MODULE_JSON_STR.size(), 1, fp);
+        fwrite(jsonStr.c_str(), jsonStr.size(), 1, fp);
         fclose(fp);
     } else {
         return false;
@@ -207,9 +278,9 @@ bool CreateModuleJsonFile(std::string filename)
     return true;
 }
 
-bool CreateModuleJsonHap(std::string hapFilePath, std::string filename)
+bool CreateModuleJsonHap(std::string hapFilePath, std::string filename, const std::string& jsonStr)
 {
-    EXPECT_TRUE(CreateModuleJsonFile(filename));
+    EXPECT_TRUE(CreateModuleJsonFile(filename, jsonStr));
     ZipWrapper zipWrapper(hapFilePath);
     zipWrapper.Open(APPEND_STATUS_CREATE);
     std::string filepath(filename);
@@ -219,13 +290,13 @@ bool CreateModuleJsonHap(std::string hapFilePath, std::string filename)
     return true;
 }
 
-bool CreateConfigJsonFile(std::string filename)
+bool CreateConfigJsonFile(std::string filename, const std::string& jsonStr)
 {
     std::string config_test(filename);
     FILE *fp = fopen(config_test.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr) {
-        fwrite(CONFIG_JSON_STR.c_str(), CONFIG_JSON_STR.size(), 1, fp);
+        fwrite(jsonStr.c_str(), jsonStr.size(), 1, fp);
         fclose(fp);
     } else {
         return false;
@@ -233,9 +304,9 @@ bool CreateConfigJsonFile(std::string filename)
     return true;
 }
 
-bool CreateConfigJsonHap(std::string hapFilePath, std::string filename)
+bool CreateConfigJsonHap(std::string hapFilePath, std::string filename, const std::string& jsonStr)
 {
-    EXPECT_TRUE(CreateConfigJsonFile(filename));
+    EXPECT_TRUE(CreateConfigJsonFile(filename, jsonStr));
     ZipWrapper zipWrapper(hapFilePath);
     zipWrapper.Open(APPEND_STATUS_CREATE);
     std::string filepath(filename);
@@ -254,9 +325,75 @@ bool CreateConfigJsonHap(std::string hapFilePath, std::string filename)
 HWTEST_F(ModuleJsonUtilsTest, GetStageHapVerifyInfo_0100, Function | MediumTest | Level1)
 {
     std::string hapFilePath(HAP_FILE_PATH_TEST);
-    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE));
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR));
     HapVerifyInfo hapVerifyInfo;
     EXPECT_TRUE(ModuleJsonUtils::GetStageHapVerifyInfo(hapFilePath, hapVerifyInfo));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: GetStageHapVerifyInfo_0200
+ * @tc.desc: GetStageHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetStageHapVerifyInfo_0200, Function | MediumTest | Level1)
+{
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(ModuleJsonUtils::GetStageHapVerifyInfo("", hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetStageHapVerifyInfo_0300
+ * @tc.desc: GetStageHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetStageHapVerifyInfo_0300, Function | MediumTest | Level1)
+{
+    HapVerifyInfo hapVerifyInfo;
+    system("touch /data/demo.hap");
+    EXPECT_FALSE(ModuleJsonUtils::GetStageHapVerifyInfo("/data/demo.hap", hapVerifyInfo));
+    system("rm -f /data/demo.hap");
+}
+
+/*
+ * @tc.name: GetStageHapVerifyInfo_0400
+ * @tc.desc: GetStageHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetStageHapVerifyInfo_0400, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_ERROR_1));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(ModuleJsonUtils::GetStageHapVerifyInfo(hapFilePath, hapVerifyInfo));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: GetStageHapVerifyInfo_0500
+ * @tc.desc: GetStageHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetStageHapVerifyInfo_0500, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_NOTHING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(ModuleJsonUtils::GetStageHapVerifyInfo(hapFilePath, hapVerifyInfo));
 
     std::string cmd = {"rm -f "};
     cmd += HAP_FILE_PATH_TEST;
@@ -274,9 +411,75 @@ HWTEST_F(ModuleJsonUtilsTest, GetStageHapVerifyInfo_0100, Function | MediumTest 
 HWTEST_F(ModuleJsonUtilsTest, GetFaHapVerifyInfo_0100, Function | MediumTest | Level1)
 {
     std::string hapFilePath(HAP_FILE_PATH_FA);
-    EXPECT_TRUE(CreateConfigJsonHap(hapFilePath, CONFIG_JSON_FILE));
+    EXPECT_TRUE(CreateConfigJsonHap(hapFilePath, CONFIG_JSON_FILE, CONFIG_JSON_STR));
     HapVerifyInfo hapVerifyInfo;
     EXPECT_TRUE(ModuleJsonUtils::GetFaHapVerifyInfo(hapFilePath, hapVerifyInfo));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_FA;
+    cmd += " ";
+    cmd += CONFIG_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0200
+ * @tc.desc: GetFaHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetFaHapVerifyInfo_0200, Function | MediumTest | Level1)
+{
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(ModuleJsonUtils::GetFaHapVerifyInfo("", hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0300
+ * @tc.desc: GetFaHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetFaHapVerifyInfo_0300, Function | MediumTest | Level1)
+{
+    HapVerifyInfo hapVerifyInfo;
+    system("touch /data/test.hap");
+    EXPECT_FALSE(ModuleJsonUtils::GetFaHapVerifyInfo("/data/test.hap", hapVerifyInfo));
+    system("rm -f /data/test.hap");
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0400
+ * @tc.desc: GetFaHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetFaHapVerifyInfo_0400, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_FA);
+    EXPECT_TRUE(CreateConfigJsonHap(hapFilePath, CONFIG_JSON_FILE, CONFIG_JSON_STR_ERROR_1));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(ModuleJsonUtils::GetFaHapVerifyInfo(hapFilePath, hapVerifyInfo));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_FA;
+    cmd += " ";
+    cmd += CONFIG_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0500
+ * @tc.desc: GetFaHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, GetFaHapVerifyInfo_0500, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_FA);
+    EXPECT_TRUE(CreateConfigJsonHap(hapFilePath, CONFIG_JSON_FILE, CONFIG_JSON_STR_NOTHING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(ModuleJsonUtils::GetFaHapVerifyInfo(hapFilePath, hapVerifyInfo));
 
     std::string cmd = {"rm -f "};
     cmd += HAP_FILE_PATH_FA;
@@ -313,6 +516,53 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0100, Function | MediumTest 
     EXPECT_TRUE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
 }
 
+/*
+ * @tc.name: CheckSharedAppIsValid_0200
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0200, Function | MediumTest | Level1)
+{
+    std::list<HapVerifyInfo> hapVerifyInfos;
+    bool isOverlay = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0300
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0300, Function | MediumTest | Level1)
+{
+    std::list<HapVerifyInfo> hapVerifyInfos;
+    HapVerifyInfo hapVerifyInfo1;
+    HapVerifyInfo hapVerifyInfo2;
+    hapVerifyInfos.emplace_back(hapVerifyInfo1);
+    hapVerifyInfos.emplace_back(hapVerifyInfo2);
+    bool isOverlay = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0400
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0400, Function | MediumTest | Level1)
+{
+    std::list<HapVerifyInfo> hapVerifyInfos;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetModuleName("test1_module_name");
+    hapVerifyInfos.emplace_back(hapVerifyInfo);
+
+    bool isOverlay = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+}
+
  /*
  * @tc.name: CheckHapsIsValid_0100
  * @tc.desc: CheckHapsIsValid
@@ -322,12 +572,146 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0100, Function | MediumTest 
 HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0100, Function | MediumTest | Level1)
 {
     std::string hapFilePath(HAP_FILE_PATH_TEST);
-    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE));
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR));
 
     std::list<std::string> fileList;
     fileList.emplace_back(hapFilePath);
     bool isSharedApp = false;
     EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0200
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> fileList;
+    fileList.emplace_back("");
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0300
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> fileList;
+    fileList.emplace_back("/");
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0400
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0400, Function | MediumTest | Level1)
+{
+    std::list<std::string> fileList;
+    fileList.emplace_back("/data/demo.txt");
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0500
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0500, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_NOTHING));
+
+    std::list<std::string> fileList;
+    fileList.emplace_back(hapFilePath);
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0600
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0600, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_FA);
+    EXPECT_TRUE(CreateConfigJsonHap(hapFilePath, CONFIG_JSON_FILE, CONFIG_JSON_STR_NOTHING));
+
+    std::list<std::string> fileList;
+    fileList.emplace_back(hapFilePath);
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_FA;
+    cmd += " ";
+    cmd += CONFIG_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0700
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0700, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_SHARED));
+
+    std::list<std::string> fileList;
+    fileList.emplace_back(hapFilePath);
+    bool isSharedApp = true;
+    EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0800
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0800, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_SHARED));
+
+    std::list<std::string> fileList;
+    fileList.emplace_back(hapFilePath);
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
 
     std::string cmd = {"rm -f "};
     cmd += HAP_FILE_PATH_TEST;
@@ -345,7 +729,7 @@ HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0100, Function | MediumTest | Lev
 HWTEST_F(ModuleJsonUtilsTest, IsModuleHap_0100, Function | MediumTest | Level1)
 {
     std::string hapFilePath(HAP_FILE_PATH_TEST);
-    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE));
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR));
     EXPECT_TRUE(ModuleJsonUtils::IsModuleHap(hapFilePath));
 
     std::string cmd = {"rm -f "};
