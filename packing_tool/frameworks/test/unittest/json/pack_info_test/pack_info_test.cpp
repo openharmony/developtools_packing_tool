@@ -219,6 +219,270 @@ const std::string EMPTY_APP_BUNDLE_TYPE_JSON_STRING = "{"
         "}"
     "]"
 "}";
+
+const std::string NO_VERSION_CODE_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+        "]"
+    "}"
+"}";
+
+const std::string ERR_VERSION_CODE_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": \"1.0.0\","
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+        "]"
+    "}"
+"}";
+
+const std::string NO_VERSION_NAME_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000"
+            "}"
+        "},"
+        "\"modules\": ["
+        "]"
+    "}"
+"}";
+
+const std::string ERR_VERSION_NAME_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": 1000000"
+            "}"
+        "},"
+        "\"modules\": ["
+        "]"
+    "}"
+"}";
+
+const std::string COMMON_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true"
+                "},"
+                "\"extensionAbilities\": ["
+                    "{"
+                        "\"name\": \"EntryFormAbility1\","
+                        "\"type\": \"form\","
+                        "\"forms\": ["
+                            "{"
+                                "\"name\": \"form1\","
+                                "\"defaultDimension\": \"2*2\","
+                                "\"supportDimensions\": ["
+                                    "\"2*2\""
+                                "]"
+                            "},"
+                            "{"
+                                "\"defaultDimension\": \"2*2\","
+                                "\"supportDimensions\": ["
+                                    "\"2*2\""
+                                "]"
+                            "},"
+                           "{"
+                                "\"name\": \"form3\""
+                            "},"
+                            "{"
+                                "\"name\": \"form4\","
+                                "\"defaultDimension\": \"defaultDimension\","
+                                "\"supportDimensions\": \"supportDimensions\""
+                            "}"
+                        "]"
+                    "},"
+                    "{"
+                        "\"name\": \"EntryFormAbility2\","
+                        "\"type\": \"form\","
+                        "\"forms\": \"form\""
+                    "},"
+                    "{"
+                        "\"name\": \"EntryFormAbility3\","
+                        "\"type\": \"form\","
+                        "\"forms\": ["
+                            "{"
+                                "\"name\": \"form1\","
+                                "\"defaultDimension\": \"2*2\","
+                                "\"supportDimensions\": ["
+                                    "\"2*2\""
+                                "]"
+                            "}"
+                        "]"
+                    "},"
+                    "{"
+                        "\"name\": \"EntryFormAbility4\","
+                        "\"type\": \"form\","
+                        "\"forms\": ["
+                            "{"
+                                "\"name\": \"form1\","
+                                "\"supportDimensions\": ["
+                                    "\"2*2\""
+                                "]"
+                            "}"
+                        "]"
+                    "},"
+                    "{"
+                        "\"name\": \"EntryFormAbility5\","
+                        "\"type\": \"form\","
+                        "\"forms\": ["
+                            "{"
+                                "\"name\": \"form1\","
+                                "\"defaultDimension\": \"2*2\""
+                            "}"
+                        "]"
+                    "}"
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true"
+        "}"
+    "]"
+"}";
+
+const std::string NO_DISTRO_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "]"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string NO_EXTENSION_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string NO_FORM_NAME_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                    "{"
+                        "\"name\": \"EntryFormAbility2\","
+                        "\"type\": \"form\","
+                        "\"forms\": \"form\""
+                    "}"
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
 }
 
 class PackInfoTest : public testing::Test {
@@ -874,6 +1138,20 @@ HWTEST_F(PackInfoTest, GetExtensionAbilitiesObj_0100, Function | MediumTest | Le
 }
 
 /*
+ * @tc.name: GetExtensionAbilitiesObj_0200
+ * @tc.desc: GetExtensionAbilitiesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    int32_t moduleIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_FALSE(packInfo.GetExtensionAbilitiesObj(moduleIndex, extensionAbilitiesObj));
+}
+
+/*
  * @tc.name: GetExtensionAbilitiesObjByModulesObj_0100
  * @tc.desc: GetExtensionAbilitiesObjByModulesObj.
  * @tc.type: FUNC
@@ -889,6 +1167,152 @@ HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModulesObj_0100, Function | Med
     std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
     EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModulesObj(modulesObj, moduleIndex, extensionAbilitiesObj));
     EXPECT_NE(extensionAbilitiesObj, nullptr);
+}
+
+/*
+ * @tc.name: GetExtensionAbilitiesObjByModulesObj_0200
+ * @tc.desc: GetExtensionAbilitiesObjByModulesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModulesObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    int32_t moduleIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_FALSE(packInfo.GetExtensionAbilitiesObjByModulesObj(modulesObj, moduleIndex, extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: GetExtensionAbilitiesObjByModulesObj_0300
+ * @tc.desc: GetExtensionAbilitiesObjByModulesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModulesObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    packInfo.GetModulesObject(modulesObj);
+    int32_t moduleIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_FALSE(packInfo.GetExtensionAbilitiesObjByModulesObj(modulesObj, moduleIndex, extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: GetExtensionAbilitiesObjByModuleObj_0100
+ * @tc.desc: GetExtensionAbilitiesObjByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: GetExtensionAbilitiesObjByModuleObj_0200
+ * @tc.desc: GetExtensionAbilitiesObjByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_FALSE(packInfo.GetExtensionAbilitiesObjByModuleObj(moduleObj, extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: GetExtensionAbilitiesObjByModuleObj_0300
+ * @tc.desc: GetExtensionAbilitiesObjByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_FALSE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: GetFormsObjByExtensionAbilityObj_0100
+ * @tc.desc: GetFormsObjByExtensionAbilityObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormsObjByExtensionAbilityObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+}
+
+/*
+ * @tc.name: GetFormsObjByExtensionAbilityObj_0200
+ * @tc.desc: GetFormsObjByExtensionAbilityObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormsObjByExtensionAbilityObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_FALSE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj, formsObj));
+}
+
+/*
+ * @tc.name: GetFormsObjByExtensionAbilityObj_0300
+ * @tc.desc: GetFormsObjByExtensionAbilityObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormsObjByExtensionAbilityObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_FALSE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+}
+
+/*
+ * @tc.name: GetFormsObjByExtensionAbilityObj_0400
+ * @tc.desc: GetFormsObjByExtensionAbilityObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormsObjByExtensionAbilityObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_FALSE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(1), formsObj));
 }
 
 /*
@@ -908,6 +1332,35 @@ HWTEST_F(PackInfoTest, GetPackageObject_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: GetPackageObject_0200
+ * @tc.desc: GetPackageObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageObject_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    int32_t packageIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> packageObj;
+    EXPECT_FALSE(packInfo.GetPackageObject(packageIndex, packageObj));
+}
+
+/*
+ * @tc.name: GetPackageObject_0300
+ * @tc.desc: GetPackageObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageObject_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    int32_t packageIndex = 5;
+    std::unique_ptr<AppPackingTool::PtJson> packageObj;
+    EXPECT_FALSE(packInfo.GetPackageObject(packageIndex, packageObj));
+}
+
+/*
  * @tc.name: GetVersion_0100
  * @tc.desc: GetVersion.
  * @tc.type: FUNC
@@ -921,6 +1374,113 @@ HWTEST_F(PackInfoTest, GetVersion_0100, Function | MediumTest | Level1)
     EXPECT_TRUE(packInfo.GetVersion(version));
     EXPECT_EQ(version.code, 1000000);
     EXPECT_EQ(version.name, "1.0.0");
+}
+
+/*
+ * @tc.name: GetVersion_0200
+ * @tc.desc: GetVersion.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersion_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfoVersion version;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    EXPECT_FALSE(packInfo.GetVersion(version));
+}
+
+/*
+ * @tc.name: GetVersionByVersionObj_0100
+ * @tc.desc: GetVersionByVersionObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionByVersionObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    EXPECT_TRUE(packInfo.GetVersionObject(versionObj));
+    OHOS::AppPackingTool::PackInfoVersion version;
+    EXPECT_TRUE(packInfo.GetVersionByVersionObj(versionObj, version));
+}
+
+/*
+ * @tc.name: GetVersionByVersionObj_0200
+ * @tc.desc: GetVersionByVersionObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionByVersionObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    OHOS::AppPackingTool::PackInfoVersion version;
+    EXPECT_FALSE(packInfo.GetVersionByVersionObj(versionObj, version));
+}
+
+/*
+ * @tc.name: GetVersionByVersionObj_0300
+ * @tc.desc: GetVersionByVersionObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionByVersionObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_VERSION_CODE_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    EXPECT_TRUE(packInfo.GetVersionObject(versionObj));
+    OHOS::AppPackingTool::PackInfoVersion version;
+    EXPECT_FALSE(packInfo.GetVersionByVersionObj(versionObj, version));
+}
+
+/*
+ * @tc.name: GetVersionByVersionObj_0400
+ * @tc.desc: GetVersionByVersionObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionByVersionObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(ERR_VERSION_CODE_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    EXPECT_TRUE(packInfo.GetVersionObject(versionObj));
+    OHOS::AppPackingTool::PackInfoVersion version;
+    EXPECT_FALSE(packInfo.GetVersionByVersionObj(versionObj, version));
+}
+
+/*
+ * @tc.name: GetVersionByVersionObj_0500
+ * @tc.desc: GetVersionByVersionObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionByVersionObj_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_VERSION_NAME_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    EXPECT_TRUE(packInfo.GetVersionObject(versionObj));
+    OHOS::AppPackingTool::PackInfoVersion version;
+    EXPECT_FALSE(packInfo.GetVersionByVersionObj(versionObj, version));
+}
+
+/*
+ * @tc.name: GetVersionByVersionObj_0600
+ * @tc.desc: GetVersionByVersionObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionByVersionObj_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(ERR_VERSION_NAME_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    EXPECT_TRUE(packInfo.GetVersionObject(versionObj));
+    OHOS::AppPackingTool::PackInfoVersion version;
+    EXPECT_FALSE(packInfo.GetVersionByVersionObj(versionObj, version));
 }
 
 /*
@@ -938,6 +1498,33 @@ HWTEST_F(PackInfoTest, SetVersionCode_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: SetVersionCode_0200
+ * @tc.desc: SetVersionCode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetVersionCode_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    int versionCode = 1;
+    EXPECT_FALSE(packInfo.SetVersionCode(versionCode));
+}
+
+/*
+ * @tc.name: SetVersionCode_0300
+ * @tc.desc: SetVersionCode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetVersionCode_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_VERSION_CODE_JSON_STRING);
+    int versionCode = 1;
+    EXPECT_FALSE(packInfo.SetVersionCode(versionCode));
+}
+
+/*
  * @tc.name: SetVersionName_0100
  * @tc.desc: SetVersionName.
  * @tc.type: FUNC
@@ -949,6 +1536,99 @@ HWTEST_F(PackInfoTest, SetVersionName_0100, Function | MediumTest | Level1)
     packInfo.ParseFromString(JSON_STRING);
     std::string versionName = "2.0.0";
     EXPECT_TRUE(packInfo.SetVersionName(versionName));
+}
+
+/*
+ * @tc.name: SetVersionName_0200
+ * @tc.desc: SetVersionName.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetVersionName_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string versionName = "2.0.0";
+    EXPECT_FALSE(packInfo.SetVersionName(versionName));
+}
+
+/*
+ * @tc.name: SetVersionName_0300
+ * @tc.desc: SetVersionName.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetVersionName_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_VERSION_NAME_JSON_STRING);
+    std::string versionName = "2.0.0";
+    EXPECT_FALSE(packInfo.SetVersionName(versionName));
+}
+
+/*
+ * @tc.name: SetVersionName_0400
+ * @tc.desc: SetVersionName.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetVersionName_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(ERR_VERSION_NAME_JSON_STRING);
+    std::string versionName = "2.0.0";
+    EXPECT_FALSE(packInfo.SetVersionName(versionName));
+}
+
+/*
+ * @tc.name: GetModuleNameByDistroObj_0100
+ * @tc.desc: GetModuleNameByDistroObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModuleNameByDistroObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> distroObj;
+    EXPECT_TRUE(packInfo.GetDistroObjectByModuleObj(modulesObj->Get(0), distroObj));
+    std::string moduleName = "";
+    EXPECT_TRUE(packInfo.GetModuleNameByDistroObj(distroObj, moduleName));
+    EXPECT_EQ(moduleName, "entry");
+}
+
+/*
+ * @tc.name: GetModuleNameByDistroObj_0200
+ * @tc.desc: GetModuleNameByDistroObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModuleNameByDistroObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> distroObj;
+    std::string moduleName = "";
+    EXPECT_FALSE(packInfo.GetModuleNameByDistroObj(distroObj, moduleName));
+}
+
+/*
+ * @tc.name: GetModuleNameByDistroObj_0300
+ * @tc.desc: GetModuleNameByDistroObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModuleNameByDistroObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> distroObj;
+    EXPECT_TRUE(packInfo.GetDistroObjectByModuleObj(modulesObj->Get(0), distroObj));
+    std::string moduleName = "";
+    EXPECT_TRUE(packInfo.GetModuleNameByDistroObj(distroObj, moduleName));
+    EXPECT_EQ(moduleName, "");
 }
 
 /*
@@ -971,6 +1651,243 @@ HWTEST_F(PackInfoTest, GetNameByPackageObj_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: GetNameByPackageObj_0200
+ * @tc.desc: GetNameByPackageObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByPackageObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> packageObj;
+    std::string name = "";
+    EXPECT_FALSE(packInfo.GetNameByPackageObj(packageObj, name));
+}
+
+/*
+ * @tc.name: GetNameByPackageObj_0300
+ * @tc.desc: GetNameByPackageObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByPackageObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    int32_t packageIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> packageObj;
+    packInfo.GetPackageObject(packageIndex, packageObj);
+    EXPECT_NE(packageObj, nullptr);
+    std::string name = "entry-default";
+    EXPECT_TRUE(packInfo.GetNameByPackageObj(packageObj, name));
+    EXPECT_EQ(name, "");
+}
+
+/*
+ * @tc.name: GetNameByFormObj_0100
+ * @tc.desc: GetNameByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByFormObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::string name = "";
+    EXPECT_TRUE(packInfo.GetNameByFormObj(formsObj->Get(0), name));
+    EXPECT_EQ(name, "form1");
+}
+
+/*
+ * @tc.name: GetNameByFormObj_0200
+ * @tc.desc: GetNameByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByFormObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    std::string name = "";
+    EXPECT_FALSE(packInfo.GetNameByFormObj(formsObj, name));
+}
+
+/*
+ * @tc.name: GetNameByFormObj_0300
+ * @tc.desc: GetNameByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByFormObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::string name = "form";
+    EXPECT_TRUE(packInfo.GetNameByFormObj(formsObj->Get(1), name));
+    EXPECT_EQ(name, "");
+}
+
+/*
+ * @tc.name: GetDefaultDimensionByFormObj_0100
+ * @tc.desc: GetDefaultDimensionByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetDefaultDimensionByFormObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::string defaultDimension = "";
+    EXPECT_TRUE(packInfo.GetDefaultDimensionByFormObj(formsObj->Get(0), defaultDimension));
+}
+
+/*
+ * @tc.name: GetDefaultDimensionByFormObj_0200
+ * @tc.desc: GetDefaultDimensionByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetDefaultDimensionByFormObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    std::string defaultDimension = "";
+    EXPECT_FALSE(packInfo.GetDefaultDimensionByFormObj(formsObj, defaultDimension));
+}
+
+/*
+ * @tc.name: GetDefaultDimensionByFormObj_0300
+ * @tc.desc: GetDefaultDimensionByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetDefaultDimensionByFormObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::string defaultDimension = "";
+    EXPECT_FALSE(packInfo.GetDefaultDimensionByFormObj(formsObj->Get(2), defaultDimension));
+}
+
+/*
+ * @tc.name: GetDefaultDimensionByFormObj_0400
+ * @tc.desc: GetDefaultDimensionByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetDefaultDimensionByFormObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::string defaultDimension = "";
+    EXPECT_FALSE(packInfo.GetDefaultDimensionByFormObj(formsObj->Get(3), defaultDimension));
+}
+
+/*
+ * @tc.name: GetSupportDimensionsByFormObj_0100
+ * @tc.desc: GetSupportDimensionsByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetSupportDimensionsByFormObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::list<std::string> supportDimensions;
+    EXPECT_TRUE(packInfo.GetSupportDimensionsByFormObj(formsObj->Get(0), supportDimensions));
+}
+
+/*
+ * @tc.name: GetSupportDimensionsByFormObj_0200
+ * @tc.desc: GetSupportDimensionsByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetSupportDimensionsByFormObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    std::list<std::string> supportDimensions;
+    EXPECT_FALSE(packInfo.GetSupportDimensionsByFormObj(formsObj, supportDimensions));
+}
+
+/*
+ * @tc.name: GetSupportDimensionsByFormObj_0300
+ * @tc.desc: GetSupportDimensionsByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetSupportDimensionsByFormObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::list<std::string> supportDimensions;
+    EXPECT_FALSE(packInfo.GetSupportDimensionsByFormObj(formsObj->Get(2), supportDimensions));
+}
+
+/*
+ * @tc.name: GetSupportDimensionsByFormObj_0400
+ * @tc.desc: GetSupportDimensionsByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetSupportDimensionsByFormObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::list<std::string> supportDimensions;
+    EXPECT_FALSE(packInfo.GetSupportDimensionsByFormObj(formsObj->Get(3), supportDimensions));
+}
+
+/*
  * @tc.name: GetFormNames_0100
  * @tc.desc: GetFormNames.
  * @tc.type: FUNC
@@ -984,4 +1901,238 @@ HWTEST_F(PackInfoTest, GetFormNames_0100, Function | MediumTest | Level1)
     std::list<std::string> formFullNames;
     EXPECT_TRUE(packInfo.GetFormNames(formNames, formFullNames));
 }
+
+/*
+ * @tc.name: GetFormNames_0200
+ * @tc.desc: GetFormNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNames_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNames(formNames, formFullNames));
 }
+
+/*
+ * @tc.name: GetFormNames_0300
+ * @tc.desc: GetFormNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNames_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_DISTRO_JSON_STRING);
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNames(formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNames_0400
+ * @tc.desc: GetFormNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNames_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_TRUE(packInfo.GetFormNames(formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNames_0500
+ * @tc.desc: GetFormNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNames_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_EXTENSION_JSON_STRING);
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNames(formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNames_0600
+ * @tc.desc: GetFormNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNames_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_FORM_NAME_JSON_STRING);
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNames(formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNamesByExtensionAbilitiesObj_0100
+ * @tc.desc: GetFormNamesByExtensionAbilitiesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByExtensionAbilitiesObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    int32_t moduleIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObj(moduleIndex, extensionAbilitiesObj));
+    EXPECT_NE(extensionAbilitiesObj, nullptr);
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(
+        packInfo.GetFormNamesByExtensionAbilitiesObj(extensionAbilitiesObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNamesByFormsObj_0100
+ * @tc.desc: GetFormNamesByFormsObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByFormsObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(2), formsObj));
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_TRUE(packInfo.GetFormNamesByFormsObj(formsObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNamesByFormsObj_0200
+ * @tc.desc: GetFormNamesByFormsObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByFormsObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNamesByFormsObj(formsObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNamesByFormsObj_0300
+ * @tc.desc: GetFormNamesByFormsObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByFormsObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(3), formsObj));
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNamesByFormsObj(formsObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNamesByFormsObj_0400
+ * @tc.desc: GetFormNamesByFormsObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByFormsObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(COMMON_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(4), formsObj));
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(packInfo.GetFormNamesByFormsObj(formsObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetPackageNames_0100
+ * @tc.desc: GetPackageNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageNames_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::list<std::string> packageNames;
+    EXPECT_TRUE(packInfo.GetPackageNames(packageNames));
+}
+
+/*
+ * @tc.name: GetPackageNames_0200
+ * @tc.desc: GetPackageNames.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageNames_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::list<std::string> packageNames;
+    EXPECT_FALSE(packInfo.GetPackageNames(packageNames));
+}
+
+/*
+ * @tc.name: GetPackageNamesByPackagesObj_0100
+ * @tc.desc: GetPackageNamesByPackagesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageNamesByPackagesObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> packagesObj;
+    EXPECT_TRUE(packInfo.GetPackagesObject(packagesObj));
+    std::list<std::string> packageNames;
+    EXPECT_TRUE(packInfo.GetPackageNamesByPackagesObj(packagesObj, packageNames));
+}
+
+/*
+ * @tc.name: GetPackageNamesByPackagesObj_0200
+ * @tc.desc: GetPackageNamesByPackagesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageNamesByPackagesObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> packagesObj;
+    std::list<std::string> packageNames;
+    EXPECT_FALSE(packInfo.GetPackageNamesByPackagesObj(packagesObj, packageNames));
+}
+} // namespace OHOS
