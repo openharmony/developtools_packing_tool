@@ -464,4 +464,135 @@ HWTEST_F(UtilsTest, GetFormattedPath_2600, Function | MediumTest | Level1)
     std::string formattedPath;
     EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetFormattedPath(path, formattedPath));
 }
+
+/*
+ * @tc.name: CheckContainsAll_2700
+ * @tc.desc: CheckContainsAll.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, CheckContainsAll_2700, Function | MediumTest | Level1)
+{
+    std::list<std::string> list1 = {"111111"};
+    std::list<std::string> list2 = {"111111", "2222222"};
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CheckContainsAll(list1, list2));
+}
+
+/*
+ * @tc.name: GetSha256File_2800
+ * @tc.desc: GetSha256File.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, GetSha256File_2800, Function | MediumTest | Level1)
+{
+    std::string filePath = std::string(FILE_PATH) + "no.txt";
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetSha256File(filePath).empty());
+}
+
+/*
+ * @tc.name: GetSha256Folder_2900
+ * @tc.desc: GetSha256Folder.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, GetSha256File_2900, Function | MediumTest | Level1)
+{
+    std::string filePath(FILE_PATH);
+    EXPECT_TRUE(!OHOS::AppPackingTool::Utils::GetSha256File(filePath).empty());
+}
+
+/*
+ * @tc.name: GetFilePathByDir_3000
+ * @tc.desc: GetFilePathByDir.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, GetFilePathByDir_3000, Function | MediumTest | Level1)
+{
+    std::string dir;
+    std::string filePath(FILE_PATH);
+    std::string ret = OHOS::AppPackingTool::Utils::GetFilePathByDir(dir, filePath);
+    EXPECT_EQ(ret, filePath);
+}
+
+/*
+ * @tc.name: ForceCreateDirectory_3100
+ * @tc.desc: ForceCreateDirectory.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, ForceCreateDirectory_3100, Function | MediumTest | Level1)
+{
+    std::string path("tempdir/new");
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::ForceCreateDirectory(path));
+}
+
+/*
+ * @tc.name: ForceRemoveDirectory_3200
+ * @tc.desc: ForceRemoveDirectory.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, ForceRemoveDirectory_3200, Function | MediumTest | Level1)
+{
+    std::string path;
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::ForceRemoveDirectory(path));
+    path = "etc";
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::ForceRemoveDirectory(path));
+}
+
+/*
+ * @tc.name: GetCeilFileSize_3300
+ * @tc.desc: GetCeilFileSize.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, GetCeilFileSize_3300, Function | MediumTest | Level1)
+{
+    long fileSize = 12 * 1024 * 1024L;
+    int sizeLimit = 12;
+
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetCeilFileSize(fileSize, sizeLimit) >= 12);
+}
+
+/*
+ * @tc.name: IsPositiveInteger_3400
+ * @tc.desc: IsPositiveInteger.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, IsPositiveInteger_3400, Function | MediumTest | Level1)
+{
+    std::string number;
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::IsPositiveInteger(number, 0, 200));
+    number = "123456789123456789";
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::IsPositiveInteger(number, 0, 200));
+}
+
+/*
+ * @tc.name: CheckFileSuffix_3500
+ * @tc.desc: CheckFileSuffix.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, CheckFileSuffix_3500, Function | MediumTest | Level1)
+{
+    std::string filePath = std::string(FILE_PATH) + std::string(FILE_NAME);
+    std::string suffix("xxx");
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CheckFileSuffix(filePath, suffix));
+}
+
+/*
+ * @tc.name: GetFormattedPath_3600
+ * @tc.desc: GetFormattedPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, GetFormattedPath_3600, Function | MediumTest | Level1)
+{
+    std::string path;
+    std::string formattedPath;
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetFormattedPath(path, formattedPath));
+}
 } // namespace OHOS
