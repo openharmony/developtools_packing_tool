@@ -15,6 +15,8 @@
 
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
 #include <string>
 
 #include "constants.h"
@@ -169,5 +171,108 @@ HWTEST_F(ZipWrapperTest, AddEmptyDirToZip_0600, Function | MediumTest | Level1)
     std::string cmd = {"rm -f "};
     cmd += OUT_PATH;
     system(cmd.c_str());
+}
+
+/*
+ * @tc.name: Open_0300
+ * @tc.desc: Open
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, Open_0300, Function | MediumTest | Level1)
+{
+    std::string path(OUT_PATH);
+    AppPackingTool::ZipWrapper zipWrapper(path);
+    zipWrapper.Close();
+    int32_t ret = zipWrapper.Open(APPEND_STATUS_CREATE);
+    ret = zipWrapper.Open(APPEND_STATUS_CREATE);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+}
+
+/*
+ * @tc.name: Open_0400
+ * @tc.desc: Open
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, Open_0400, Function | MediumTest | Level1)
+{
+    AppPackingTool::ZipWrapper zipWrapper;
+    int32_t ret = zipWrapper.Open(APPEND_STATUS_CREATE);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: WriteStringToZip_0100
+ * @tc.desc: WriteStringToZip
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, WriteStringToZip_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::ZipWrapper zipWrapper;
+
+    std::string content = "content";
+    std::string zipPath;
+    int32_t ret = zipWrapper.WriteStringToZip(content, zipPath);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: AddEmptyDirToZip_0100
+ * @tc.desc: AddEmptyDirToZip
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, AddEmptyDirToZip_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::ZipWrapper zipWrapper;
+
+    fs::path fsZipPath;
+    int32_t ret = zipWrapper.AddEmptyDirToZip(fsZipPath);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: AddFileToZip_0100
+ * @tc.desc: AddFileToZip
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, AddFileToZip_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::ZipWrapper zipWrapper;
+
+    std::string filePath = "./test.txt";
+    std::string zipPath = "./test.zip";
+    int32_t ret = zipWrapper.AddFileToZip(filePath, zipPath);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: AddFileToZip_0200
+ * @tc.desc: AddFileToZip
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, AddFileToZip_0200, Function | MediumTest | Level1)
+{
+    AppPackingTool::ZipWrapper zipWrapper;
+
+    fs::path fsFilePath;
+    fs::path fsZipPath;
+    int32_t ret = zipWrapper.AddFileToZip(fsFilePath, fsZipPath);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: AddFileToZip_0300
+ * @tc.desc: AddFileToZip
+ * @tc.type: FUNC
+ */
+HWTEST_F(ZipWrapperTest, AddFileToZip_0300, Function | MediumTest | Level1)
+{
+    AppPackingTool::ZipWrapper zipWrapper("./out.zip");
+    zipWrapper.Open(APPEND_STATUS_CREATE);
+
+    std::ofstream zipf("./test.zip");
+    fs::path fsFilePath("./app");
+    fs::path fsZipPath("./test.zip");
+    int32_t ret = zipWrapper.AddFileToZip(fsFilePath, fsZipPath);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
 }
 } // namespace OHOS
