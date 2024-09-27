@@ -181,6 +181,112 @@ const std::string MODULE_JSON_STR_ERROR_1 = "{"
     "\"module\":{}"
 "}";
 
+const std::string MODULE_JSON_STR_ERROR_2 = "{"
+    "\"app\": {"
+        "\"iconId\":16777217,"
+        "\"debug\":true,"
+        "\"minAPIVersion\":9,"
+        "\"icon\":\"media:app_icon\","
+        "\"label\":\"string:app_name\","
+        "\"versionName\":\"1.0.0\","
+        "\"versionCode\":1000000,"
+        "\"compileSdkType\":\"OpenHarmony\","
+        "\"labelId\":16777216,"
+        "\"compileSdkVersion\":\"test_compileSdkVersion\","
+        "\"targetAPIVersion\":9,"
+        "\"vendor\":\"\","
+        "\"bundleName\":\"\","
+        "\"distributedNotificationEnabled\":true,"
+        "\"apiReleaseType\":\"Release\""
+        "},"
+    "\"module\":{"
+        "\"virtualMachine\":\"test_virtualMachine\","
+        "\"mainElement\":\"EntryAbility\","
+        "\"installationFree\":false,"
+        "\"deliveryWithInstall\":true,"
+        "\"description\":\"string:module_desc\","
+        "\"compileMode\":\"esmodule\","
+        "\"type\":\"entry\","
+        "\"dependencies\":[],"
+        "\"abilities\":["
+            "{"
+                "\"iconId\":16777222,"
+                "\"startWindowIconId\":16777222,"
+                "\"visible\":true,"
+                "\"icon\":\"media:icon\","
+                "\"startWindowBackgroundId\":16777221,"
+                "\"startWindowIcon\":\"media:icon\","
+                "\"description\":\"string:EntryAbility_desc\","
+                "\"label\":\"string:EntryAbility_label\","
+                "\"skills\":[{\"entities\":[\"entity.system.home\"],"
+                "\"actions\":[\"action.system.home\"]}],"
+                "\"descriptionId\":16777218,"
+                "\"labelId\":16777219,"
+                "\"startWindowBackground\":\"color:start_window_background\","
+                "\"srcEntrance\":\"./ets/entryability/EntryAbility.ts\","
+                "\"name\":\"EntryAbility\""
+            "}"
+        "],"
+        "\"descriptionId\":16777220,"
+        "\"deviceTypes\":[\"default\",\"tablet\"],"
+        "\"pages\":\"$profile:main_pages\","
+        "\"name\":\"entry\""
+    "}"
+"}";
+
+const std::string MODULE_JSON_STR_ERROR_3 = "{"
+    "\"app\": {"
+        "\"iconId\":16777217,"
+        "\"debug\":true,"
+        "\"minAPIVersion\":9,"
+        "\"icon\":\"media:app_icon\","
+        "\"label\":\"string:app_name\","
+        "\"versionName\":\"1.0.0\","
+        "\"versionCode\":1000000,"
+        "\"compileSdkType\":\"OpenHarmony\","
+        "\"labelId\":16777216,"
+        "\"compileSdkVersion\":\"test_compileSdkVersion\","
+        "\"targetAPIVersion\":9,"
+        "\"vendor\":\"\","
+        "\"bundleName\":\"test_bundl_name\","
+        "\"distributedNotificationEnabled\":true,"
+        "\"apiReleaseType\":\"Release\""
+        "},"
+    "\"module\":{"
+        "\"virtualMachine\":\"test_virtualMachine\","
+        "\"mainElement\":\"EntryAbility\","
+        "\"installationFree\":false,"
+        "\"deliveryWithInstall\":true,"
+        "\"description\":\"string:module_desc\","
+        "\"compileMode\":\"esmodule\","
+        "\"type\":\"entry\","
+        "\"dependencies\":[],"
+        "\"abilities\":["
+            "{"
+                "\"iconId\":16777222,"
+                "\"startWindowIconId\":16777222,"
+                "\"visible\":true,"
+                "\"icon\":\"media:icon\","
+                "\"startWindowBackgroundId\":16777221,"
+                "\"startWindowIcon\":\"media:icon\","
+                "\"description\":\"string:EntryAbility_desc\","
+                "\"label\":\"string:EntryAbility_label\","
+                "\"skills\":[{\"entities\":[\"entity.system.home\"],"
+                "\"actions\":[\"action.system.home\"]}],"
+                "\"descriptionId\":16777218,"
+                "\"labelId\":16777219,"
+                "\"startWindowBackground\":\"color:start_window_background\","
+                "\"srcEntrance\":\"./ets/entryability/EntryAbility.ts\","
+                "\"name\":\"EntryAbility\""
+            "}"
+        "],"
+        "\"descriptionId\":16777220,"
+        "\"deviceTypes\":[\"default\",\"tablet\"],"
+        "\"pages\":\"$profile:main_pages\","
+        "\"name\":\"\""
+    "}"
+"}";
+
 const std::string CONFIG_JSON_STR_ERROR_1 = "{"
     "\"app\": {}"
     "\"module\":{}"
@@ -706,7 +812,53 @@ HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0700, Function | MediumTest | Lev
 HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0800, Function | MediumTest | Level1)
 {
     std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_ERROR_2));
+
+    std::list<std::string> fileList;
+    fileList.emplace_back(hapFilePath);
+    bool isSharedApp = true;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_0900
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0900, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
     EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_SHARED));
+
+    std::list<std::string> fileList;
+    fileList.emplace_back(hapFilePath);
+    bool isSharedApp = false;
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+
+    std::string cmd = {"rm -f "};
+    cmd += HAP_FILE_PATH_TEST;
+    cmd += " ";
+    cmd += MODULE_JSON_FILE;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_1000
+ * @tc.desc: CheckHapsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_1000, Function | MediumTest | Level1)
+{
+    std::string hapFilePath(HAP_FILE_PATH_TEST);
+    EXPECT_TRUE(CreateModuleJsonHap(hapFilePath, MODULE_JSON_FILE, MODULE_JSON_STR_ERROR_3));
 
     std::list<std::string> fileList;
     fileList.emplace_back(hapFilePath);
