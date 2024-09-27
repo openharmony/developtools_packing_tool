@@ -204,4 +204,48 @@ HWTEST_F(JsonUtilsTest, JsonToFile_0100, Function | MediumTest | Level1)
     EXPECT_TRUE(jsonUtils.JsonToFile(OHOS::AppPackingTool::PtJson::Parse(JSON_STRING), testJsonPath));
     DeleteFilePath(testJsonPath);
 }
+
+/*
+ * @tc.name: JsonFromFile_0200
+ * @tc.desc: JsonFromFile
+ * @tc.type: FUNC
+ */
+HWTEST_F(JsonUtilsTest, JsonFromFile_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::JsonUtils jsonUtils;
+
+    std::string filePath = "./test.json";
+    std::unique_ptr<AppPackingTool::PtJson> ret = jsonUtils.JsonFromFile(filePath);
+    EXPECT_EQ(ret, nullptr);
+}
+
+/*
+ * @tc.name: JsonToFile_0200
+ * @tc.desc: JsonToFile
+ * @tc.type: FUNC
+ */
+HWTEST_F(JsonUtilsTest, JsonToFile_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::JsonUtils jsonUtils;
+
+    std::unique_ptr<AppPackingTool::PtJson> json = nullptr;
+    std::string filePath = "./out.json";
+    bool ret = jsonUtils.JsonToFile(json, filePath);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: StrToFile_0100
+ * @tc.desc: StrToFile
+ * @tc.type: FUNC
+ */
+HWTEST_F(JsonUtilsTest, StrToFile_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::JsonUtils jsonUtils;
+
+    std::string str;
+    std::string filePath;
+    bool ret = jsonUtils.StrToFile(str, filePath);
+    EXPECT_FALSE(ret);
+}
 }
