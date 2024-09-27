@@ -16,11 +16,18 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
 #include <string>
+#include <fstream>
+#include <filesystem>
 
 #include "constants.h"
 #define private public
 #define protected public
 #include "hqf_packager.h"
+#include "utils.h"
+#include "zip_utils.h"
+#include "packager.h"
+#include "zip_wrapper.h"
+#include "zip_constants.h"
 #undef private
 #undef protected
 
@@ -37,7 +44,7 @@ const std::string HQF_JSON_PATH_ONE = HQF_FILE_EXAMPLE_PATH + std::string("patch
 const std::string HQF_RESOURCES_PATH_ONE = HQF_FILE_EXAMPLE_PATH + std::string("resources");
 const std::string OUT_PATH = TEST_PATH + std::string("testPack/testHqfPack.hqf");
 }
-
+namespace fs = std::filesystem;
 class HqfPackagetTest : public testing::Test {
 public:
     HqfPackagetTest() {}
@@ -80,6 +87,7 @@ HWTEST_F(HqfPackagetTest, HqfPackage_0100, Function | MediumTest | Level1)
     OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
     EXPECT_EQ(hqfPackager.PreProcess(), 0);
     EXPECT_EQ(hqfPackager.Process(), 0);
+    EXPECT_EQ(hqfPackager.PostProcess(), 0);
     std::string cmd = {"rm -f "};
     cmd += OUT_PATH;
     system(cmd.c_str());
@@ -127,7 +135,7 @@ HWTEST_F(HqfPackagetTest, PreProcess_0200, Function | MediumTest | Level1)
 }
 
 /*
- * @tc.name: PreProcess_0400
+ * @tc.name: PreProcess_0300
  * @tc.desc: libs path is invalid.
  * @tc.type: FUNC
  * @tc.require:
@@ -148,7 +156,7 @@ HWTEST_F(HqfPackagetTest, PreProcess_0300, Function | MediumTest | Level1)
 }
 
 /*
- * @tc.name: PreProcess_0500
+ * @tc.name: PreProcess_0400
  * @tc.desc: ets path is invalid.
  * @tc.type: FUNC
  * @tc.require:
@@ -169,7 +177,7 @@ HWTEST_F(HqfPackagetTest, PreProcess_0400, Function | MediumTest | Level1)
 }
 
 /*
- * @tc.name: PreProcess_0600
+ * @tc.name: PreProcess_0500
  * @tc.desc: resources path is invalid.
  * @tc.type: FUNC
  * @tc.require:
@@ -187,5 +195,122 @@ HWTEST_F(HqfPackagetTest, PreProcess_0500, Function | MediumTest | Level1)
 
     OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
     EXPECT_EQ(hqfPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0600
+ * @tc.desc: param out path is invalid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HqfPackagetTest, PreProcess_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+
+    OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hqfPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0700
+ * @tc.desc: check force flag is false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HqfPackagetTest, PreProcess_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, HQF_JSON_PATH_ONE},
+        {OHOS::AppPackingTool::Constants::PARAM_RESOURCES_PATH,
+            "/data/test/resource/packingtool/test_file/hqf_packager_file/hqfFileExample1/errresources"},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, ""},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+
+    OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hqfPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0800
+ * @tc.desc: test out put file exists.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HqfPackagetTest, PreProcess_0800, Function | MediumTest | Level1)
+{
+    fs::create_directory(TEST_PATH);
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, HQF_JSON_PATH_ONE},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+
+    std::ofstream jsonFile(parameterMap[OHOS::AppPackingTool::Constants::PARAM_JSON_PATH]);
+    jsonFile << "{}";
+    jsonFile.close();
+
+    std::ofstream outFile(OUT_PATH);
+    outFile.close();
+    
+    OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hqfPackager.PreProcess(), 1);
+    fs::remove_all(TEST_PATH);
+}
+
+/*
+ * @tc.name: InitAllowedParam_0100
+ * @tc.desc: TE.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HqfPackagetTest, InitAllowedParam_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+
+    OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hqfPackager.InitAllowedParam(), 0);
+}
+
+/*
+ * @tc.name: Process_0100
+ * @tc.desc: param json path is invalid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HqfPackagetTest, Process_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, ""},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+
+    OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hqfPackager.Process(), 1);
+}
+
+/*
+ * @tc.name: Process_0200
+ * @tc.desc: write string to zip failure.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HqfPackagetTest, Process_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, HQF_JSON_PATH_ONE},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""}
+    };
+
+    OHOS::AppPackingTool::HqfPackager hqfPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hqfPackager.Process(), 1);
 }
 } // namespace OHOS
