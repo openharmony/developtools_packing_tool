@@ -1279,4 +1279,176 @@ HWTEST_F(HapVerifyUtilsTest, CheckContinueTypeIsValid_0200, Function | MediumTes
     hapVerifyInfos.push_back(hapVerifyInfo4);
     EXPECT_FALSE(utils.CheckContinueTypeIsValid(hapVerifyInfos));
 }
+
+/*
+ * @tc.name: GetDistroFilter_0100
+ * @tc.desc: GetDistroFilter
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetDistroFilter_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    auto ret = info.GetDistroFilter();
+    EXPECT_NE(&ret, nullptr);
+}
+
+/*
+ * @tc.name: IsStageModule_0100
+ * @tc.desc: IsStageModule
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, IsStageModule_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    auto ret = info.IsStageModule();
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: GetDependencies_0100
+ * @tc.desc: GetDependencies
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetDependencies_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    std::list<std::string> dependencies;
+    dependencies.push_front("test");
+    info.SetDependencies(dependencies);
+
+    std::list<std::string> ret = info.GetDependencies();
+    EXPECT_EQ(ret.size(), dependencies.size());
+}
+
+/*
+ * @tc.name: GetProfileStr_0100
+ * @tc.desc: GetProfileStr
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetProfileStr_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    std::string ret = info.GetProfileStr();
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: GetAtomicServiceType_0100
+ * @tc.desc: GetAtomicServiceType
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetAtomicServiceType_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    std::string ret = info.GetAtomicServiceType();
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: SetAtomicServiceType_0100
+ * @tc.desc: SetAtomicServiceType
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, SetAtomicServiceType_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    std::string atomicServiceType = "test";
+    info.SetAtomicServiceType(atomicServiceType);
+
+    std::string ret = info.GetAtomicServiceType();
+    EXPECT_EQ(ret, atomicServiceType);
+}
+
+/*
+ * @tc.name: GetPreloadItems_0100
+ * @tc.desc: GetPreloadItems
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetPreloadItems_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    std::list<AppPackingTool::PreloadItem> ret = info.GetPreloadItems();
+    EXPECT_EQ(ret.size(), 0);
+}
+
+/*
+ * @tc.name: GetTargetModulePriority_0100
+ * @tc.desc: GetTargetModulePriority
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetTargetModulePriority_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    int32_t ret = info.GetTargetModulePriority();
+    EXPECT_EQ(ret, 0);
+}
+
+/*
+ * @tc.name: GetFileLength_0100
+ * @tc.desc: GetFileLength
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetFileLength_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    int64_t ret = info.GetFileLength();
+    EXPECT_EQ(ret, 0L);
+}
+
+/*
+ * @tc.name: GetEntrySizeLimit_0100
+ * @tc.desc: GetEntrySizeLimit
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetEntrySizeLimit_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    int32_t limit = 100;
+    info.SetEntrySizeLimit(limit);
+
+    int32_t ret = info.GetEntrySizeLimit();
+    EXPECT_EQ(ret, limit);
+}
+
+/*
+ * @tc.name: GetNotEntrySizeLimit_0100
+ * @tc.desc: GetNotEntrySizeLimit
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetNotEntrySizeLimit_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    int32_t notEntrySizeLimit = 100;
+    info.SetNotEntrySizeLimit(notEntrySizeLimit);
+
+    int32_t ret = info.GetNotEntrySizeLimit();
+    EXPECT_EQ(ret, notEntrySizeLimit);
+}
+
+/*
+ * @tc.name: GetSumSizeLimit_0100
+ * @tc.desc: GetSumSizeLimit
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, GetSumSizeLimit_0100, Function | MediumTest | Level1)
+{
+    AppPackingTool::HapVerifyInfo info;
+
+    int32_t sumSizeLimit = 100;
+    info.SetSumSizeLimit(sumSizeLimit);
+
+    int32_t ret = info.GetSumSizeLimit();
+    EXPECT_EQ(ret, sumSizeLimit);
+}
 }
