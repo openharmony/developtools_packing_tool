@@ -1,0 +1,50 @@
+# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+config("hqf_verify_config") {
+  include_dirs = [
+    "../../../include",
+    "../../../include/json",
+  ]
+
+  cflags_cc = [ "-fexceptions" ]
+  cflags_objcc = cflags_cc
+}
+
+module_output_path = "developtools/packing_tool"
+
+ohos_unittest("hqf_verify_test") {
+  module_out_path = module_output_path
+  public_configs = [ ":hqf_verify_config" ]
+  sources = [
+    "../../../src/hqf_verify.cpp",
+    "../../../src/log.cpp",
+    "../../../src/utils.cpp",
+    "hqf_verify_test.cpp",
+  ]
+  external_deps = [
+    "bounds_checking_function:libsec_static",
+    "cJSON:cjson_static",
+    "hilog:libhilog",
+    "openssl:libcrypto_shared",
+    "zlib:libz",
+  ]
+}
+
+group("unittest") {
+  testonly = true
+  deps = [ ":hqf_verify_test" ]
+}
