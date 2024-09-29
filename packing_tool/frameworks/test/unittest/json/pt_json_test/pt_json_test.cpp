@@ -497,4 +497,537 @@ HWTEST_F(PtJsonTest, GetAny_2400, Function | MediumTest | Level1)
     std::unique_ptr<OHOS::AppPackingTool::PtJson> Object;
     EXPECT_EQ(ptJson.GetAny("FFF", &Object), OHOS::AppPackingTool::Result::SUCCESS);
 }
+
+/*
+ * @tc.name: Parse_0100
+ * @tc.desc: Parse
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Parse_0100, Function | MediumTest | Level1)
+{
+    std::string data;
+    auto ret = OHOS::AppPackingTool::PtJson::Parse(data);
+    EXPECT_EQ(ret, nullptr);
+}
+
+/*
+ * @tc.name: Stringify_0100
+ * @tc.desc: Stringify
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Stringify_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    std::string ret = ptJson.Stringify();
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: Stringify_0200
+ * @tc.desc: Stringify
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Stringify_0200, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::string ret = ptJson.Stringify();
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: Add_0100
+ * @tc.desc: Add
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Add_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    bool ret = ptJson.Add(nullptr, true);
+    EXPECT_FALSE(ret);
+
+    ret = ptJson.Add("addf", true);
+    ret = ptJson.Add("addf", false);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: Add_0200
+ * @tc.desc: Add
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Add_0200, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    int64_t value = 100;
+    bool ret = ptJson.Add("adda", value);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: Add_0300
+ * @tc.desc: Add
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Add_0300, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    uint32_t value = 100;
+    bool ret = ptJson.Add("addb", value);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: Add_0400
+ * @tc.desc: Add
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Add_0400, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    double value = 100.0;
+    bool ret = ptJson.Add(nullptr, value);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: Add_0500
+ * @tc.desc: Add
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Add_0500, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    bool ret = ptJson.Add(nullptr, "value");
+    EXPECT_FALSE(ret);
+
+    ret = ptJson.Add("addd", nullptr);
+    EXPECT_FALSE(ret);
+
+    ptJson.Add("nullptr", "nullptr");
+    ret = ptJson.Add("nullptr", "nullptr");
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: Add_0700
+ * @tc.desc: Add
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Add_0700, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::unique_ptr<AppPackingTool::PtJson> value = std::make_unique<AppPackingTool::PtJson>();
+    bool ret = ptJson.Add(nullptr, value);
+    EXPECT_FALSE(ret);
+
+    ret = ptJson.Add("aaa", value);
+    EXPECT_FALSE(ret);
+
+    ptJson.Add("bbb", value);
+    ret = ptJson.Add("bbb", value);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: Push_0100
+ * @tc.desc: Push
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Push_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    int64_t value = 100;
+    bool ret = ptJson.Push(value);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: Push_0200
+ * @tc.desc: Push
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Push_0200, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    uint32_t value = 100;
+    bool ret = ptJson.Push(value);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: Push_0300
+ * @tc.desc: Push
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Push_0300, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    cJSON *node = nullptr;
+    bool ret = ptJson.Push(node);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: Push_0400
+ * @tc.desc: Push
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Push_0400, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::unique_ptr<AppPackingTool::PtJson> value = nullptr;
+    bool ret = ptJson.Push(value);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: Remove_0100
+ * @tc.desc: Remove
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, Remove_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    bool ret = ptJson.Remove(nullptr);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @tc.name: GetKey_0100
+ * @tc.desc: GetKey
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetKey_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::string ret = ptJson.GetKey();
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: GetBool_0100
+ * @tc.desc: GetBool
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetBool_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    bool ret = ptJson.GetBool(true);
+    EXPECT_TRUE(ret);
+}
+
+/*
+ * @tc.name: GetInt64_0100
+ * @tc.desc: GetInt64
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetInt64_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    int64_t value = 100;
+    int64_t ret = ptJson.GetInt64(value);
+    EXPECT_EQ(ret, value);
+}
+
+/*
+ * @tc.name: GetUInt_0100
+ * @tc.desc: GetUInt
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetUInt_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    uint32_t value = 100;
+    uint32_t ret = ptJson.GetUInt(value);
+    EXPECT_EQ(ret, value);
+}
+
+/*
+ * @tc.name: GetUInt64_0100
+ * @tc.desc: GetUInt64
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetUInt64_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    uint64_t value = 100;
+    uint64_t ret = ptJson.GetUInt64(value);
+    EXPECT_EQ(ret, value);
+}
+
+/*
+ * @tc.name: GetDouble_0100
+ * @tc.desc: GetDouble
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetDouble_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    double value = 100;
+    double ret = ptJson.GetDouble(value);
+    EXPECT_EQ(ret, value);
+}
+
+/*
+ * @tc.name: GetString_0100
+ * @tc.desc: GetString
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetString_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PtJson ptJson;
+
+    std::string ret = ptJson.GetString();
+    EXPECT_EQ(ret, "");
+}
+
+/*
+ * @tc.name: GetBool_0200
+ * @tc.desc: GetBool
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetBool_0200, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    bool * value = new bool();
+    *value = true;
+    AppPackingTool::Result ret = ptJson.GetBool("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+
+    ptJson.Add("key", "value");
+    ret = ptJson.GetBool("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::TYPE_ERROR);
+}
+
+/*
+ * @tc.name: SetBool_0100
+ * @tc.desc: SetBool
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetBool_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    bool value = true;
+    AppPackingTool::Result ret = ptJson.SetBool("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: SetInt_0100
+ * @tc.desc: SetInt
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetInt_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    int32_t value = 100;
+    AppPackingTool::Result ret = ptJson.SetInt("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: SetInt64_0100
+ * @tc.desc: SetInt64
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetInt64_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    int32_t value = 100;
+    AppPackingTool::Result ret = ptJson.SetInt64("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: SetUInt_0100
+ * @tc.desc: SetUInt
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetUInt_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    uint32_t value = 100;
+    AppPackingTool::Result ret = ptJson.SetUInt("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: SetUInt64_0100
+ * @tc.desc: SetUInt64
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetUInt64_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    uint32_t value = 100;
+    AppPackingTool::Result ret = ptJson.SetUInt64("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: GetDouble_0200
+ * @tc.desc: GetDouble
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetDouble_0200, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    double *value = new double();
+    *value = 100.0;
+    AppPackingTool::Result ret = ptJson.GetDouble("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+
+    ptJson.Add("key", "value");
+    ret = ptJson.GetDouble("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::TYPE_ERROR);
+}
+
+/*
+ * @tc.name: SetDouble_0100
+ * @tc.desc: SetDouble
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetDouble_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    double value = 100.0;
+    AppPackingTool::Result ret = ptJson.SetDouble("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: GetString_0200
+ * @tc.desc: GetString
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetString_0200, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::string *value = new std::string();
+    *value = "value";
+    AppPackingTool::Result ret = ptJson.GetString("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+
+    ptJson.Add("key", true);
+    ret = ptJson.GetString("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::TYPE_ERROR);
+}
+
+/*
+ * @tc.name: SetString_0100
+ * @tc.desc: SetString
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, SetString_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::string value = "value";
+    AppPackingTool::Result ret = ptJson.SetString("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+
+    ptJson.Add("key", true);
+    ret = ptJson.SetString("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::TYPE_ERROR);
+}
+
+/*
+ * @tc.name: GetObject_0100
+ * @tc.desc: GetObject
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetObject_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::unique_ptr<AppPackingTool::PtJson> *value = new std::unique_ptr<AppPackingTool::PtJson>();
+    AppPackingTool::Result ret = ptJson.GetObject("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: GetArray_0100
+ * @tc.desc: GetArray
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetArray_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::unique_ptr<AppPackingTool::PtJson> *value = new std::unique_ptr<AppPackingTool::PtJson>();
+    AppPackingTool::Result ret = ptJson.GetArray("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+
+    ptJson.Add("key", true);
+    ret = ptJson.GetArray("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::TYPE_ERROR);
+}
+
+/*
+ * @tc.name: GetAny_0100
+ * @tc.desc: GetAny
+ * @tc.type: FUNC
+ */
+HWTEST_F(PtJsonTest, GetAny_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+
+    std::unique_ptr<AppPackingTool::PtJson> *value = new std::unique_ptr<AppPackingTool::PtJson>();
+    AppPackingTool::Result ret = ptJson.GetAny("key", value);
+    EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
 } // namespace OHOS
