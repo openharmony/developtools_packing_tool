@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -435,6 +436,11 @@ public class Compressor {
                 LOG.error("checkStageHwasanEnabledValid failed.");
                 throw new BundleException("compressHsp failed.");
             }
+            // check continueBundleName in module.json
+            if (!checkContinueBundleNameIsValid(jsonString)) {
+                LOG.error("checkContinueBundleNameIsValid failed.");
+                throw new BundleException("compressHsp failed.");
+            }
             // check whether is an overlay hsp or not
             if (!checkStageOverlayCfg(jsonString)) {
                 LOG.error("checkStageOverlayCfg failed.");
@@ -750,6 +756,11 @@ public class Compressor {
             LOG.error("checkStageAtomicService failed.");
             return false;
         }
+        // check continueBundleName in module.json
+        if (!checkContinueBundleNameIsValid(jsonString)) {
+            LOG.error("checkContinueBundleNameIsValid failed.");
+            return false;
+        }
         return true;
     }
 
@@ -779,6 +790,24 @@ public class Compressor {
         if (hwasanEnabled && gwpAsanEnabled) {
             LOG.error("hwasanEnabled and GWPAsanEnabled cannot be true at the same time.");
             return false;
+        }
+        return true;
+    }
+
+    private static boolean checkContinueBundleNameIsValid(String jsonString) throws BundleException {
+        Map<String, List<String>> continueBundleNameMap = ModuleJsonUtil.getAbilityContinueBundleNameMap(jsonString);
+        String bundleName = ModuleJsonUtil.parseBundleName(jsonString);
+        for (Map.Entry<String, List<String>> entry : continueBundleNameMap.entrySet()) {
+            List<String> continueBundleNameList = entry.getValue();
+            if (continueBundleNameList == null) {
+                continue;
+            }
+            for (int i = 0; i < continueBundleNameList.size(); i++) {
+                if (bundleName.equals(continueBundleNameList.get(i))) {
+                    LOG.error("continueBundleName cannot include self.");
+                    return false;
+                }
+            }
         }
         return true;
     }
