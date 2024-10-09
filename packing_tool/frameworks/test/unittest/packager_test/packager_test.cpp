@@ -30,6 +30,7 @@ using namespace testing::ext;
 namespace OHOS {
 namespace {
 std::string OUT_PATH = "/data/test/entry-default-unsigned.hap";
+std::string STAGE_JSON_PATH = "/data/test/module.json";
 std::string SUFFIX = ".hap";
 }
 
@@ -134,8 +135,233 @@ HWTEST_F(PackagerTest, IsOutPathValid_0500, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {};
+    system("touch /data/test/entry-default-unsigned.hap");
+    system("touch /data/test/entry-default-unsigned.har");
+    system("touch /data/test/entry-default-unsigned.hsp");
+    system("touch /data/test/entry-default-unsigned.app");
+    system("touch /data/test/entry-default-unsigned.res");
+    system("touch /data/test/entry-default-unsigned.hhh");
+    std::string outPath = "/data/test/entry-default-unsigned.hap";
+    std::string suffix = ".hap";
 
     OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
-    EXPECT_TRUE(packager.IsOutPathValid(OUT_PATH, "true", SUFFIX));
+    EXPECT_TRUE(packager.IsOutPathValid(outPath, "true", suffix));
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "false", suffix));
+    outPath = "/data/test/entry-default-unsigned.har";
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+    suffix = ".har";
+    EXPECT_TRUE(packager.IsOutPathValid(outPath, "true", suffix));
+    outPath = "/data/test/entry-default-unsigned.hsp";
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+    suffix = ".hsp";
+    EXPECT_TRUE(packager.IsOutPathValid(outPath, "true", suffix));
+    outPath = "/data/test/entry-default-unsigned.app";
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+    suffix = ".app";
+    EXPECT_TRUE(packager.IsOutPathValid(outPath, "true", suffix));
+    outPath = "/data/test/entry-default-unsigned.res";
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+    suffix = ".res";
+    EXPECT_TRUE(packager.IsOutPathValid(outPath, "true", suffix));
+    outPath = "/data/test/entry-default-unsigned.hhh";
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+    suffix = ".abc";
+    EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+
+    system("rm -f /data/test/entry-default-unsigned.hap");
+    system("rm -f /data/test/entry-default-unsigned.har");
+    system("rm -f /data/test/entry-default-unsigned.hsp");
+    system("rm -f /data/test/entry-default-unsigned.app");
+    system("rm -f /data/test/entry-default-unsigned.res");
+    system("rm -f /data/test/entry-default-unsigned.hhh");
+}
+
+/*
+ * @tc.name: CheckForceFlag_0600
+ * @tc.desc: CheckForceFlag.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, CheckForceFlag_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "normal"},
+    };
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_FALSE(packager.CheckForceFlag());
+}
+
+/*
+ * @tc.name: SetGenerateBuildHash_0700
+ * @tc.desc: SetGenerateBuildHash.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, SetGenerateBuildHash_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+    };
+    bool generateBuildHash = true;
+    bool buildHashFinish = true;
+    system("touch /data/test/module.json");
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_TRUE(packager.SetGenerateBuildHash(STAGE_JSON_PATH, generateBuildHash, buildHashFinish));
+
+    system("rm -f /data/test/module.json");
+    EXPECT_FALSE(packager.SetGenerateBuildHash(STAGE_JSON_PATH, generateBuildHash, buildHashFinish));
+    EXPECT_FALSE(packager.CopyFileToTempDir(STAGE_JSON_PATH));
+}
+
+/*
+ * @tc.name: BuildHash_0800
+ * @tc.desc: BuildHash.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, BuildHash_0800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    bool generateBuildHash = true;
+    bool buildHashFinish = false;
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_FALSE(packager.BuildHash(buildHashFinish, generateBuildHash, parameterMap, STAGE_JSON_PATH));
+}
+
+/*
+ * @tc.name: PutBuildHash_0900
+ * @tc.desc: PutBuildHash.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, PutBuildHash_0900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    bool buildHashFinish = true;
+    std::string hash;
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_TRUE(packager.PutBuildHash(STAGE_JSON_PATH, hash, buildHashFinish));
+}
+
+/*
+ * @tc.name: IsModuleHap_1000
+ * @tc.desc: IsModuleHap.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, IsModuleHap_1000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    std::string hapPath;
+    system("touch /data/test/entry-default-unsigned.hap");
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_FALSE(packager.IsModuleHap(hapPath));
+    EXPECT_FALSE(packager.IsModuleHap(OUT_PATH));
+    system("rm -f /data/test/entry-default-unsigned.hap");
+}
+
+/*
+ * @tc.name: IsOutDirectoryValid_1100
+ * @tc.desc: IsOutDirectoryValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, IsOutDirectoryValid_1100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_FALSE(packager.IsOutDirectoryValid());
+}
+
+/*
+ * @tc.name: IsOutDirectoryValid_1200
+ * @tc.desc: IsOutDirectoryValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, IsOutDirectoryValid_1200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""},
+    };
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_FALSE(packager.IsOutDirectoryValid());
+}
+
+/*
+ * @tc.name: MakePackage_1300
+ * @tc.desc: MakePackage.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, MakePackage_1300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_EQ(packager.MakePackage(), "");
+}
+
+/*
+ * @tc.name: CompatibleProcess_1400
+ * @tc.desc: CompatibleProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, CompatibleProcess_1400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    const std::string inPutPath = "/data/test";
+    std::list<std::string> fileList;
+    system("touch /data/test/module.json");
+    EXPECT_TRUE(packager.CompatibleProcess(inPutPath, fileList, AppPackingTool::Constants::MODULE_JSON));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: CompatibleProcess_1500
+ * @tc.desc: CompatibleProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, CompatibleProcess_1500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    const std::string inPutPath = "/data/test";
+    std::list<std::string> fileList;
+    std::string extraSuffix = ".hhh";
+    system("touch /data/test/module.json");
+    EXPECT_TRUE(packager.CompatibleProcess(
+        inPutPath, fileList, AppPackingTool::Constants::MODULE_JSON, extraSuffix));
+    EXPECT_TRUE(packager.CompatibleProcess(
+        inPutPath, fileList, extraSuffix, AppPackingTool::Constants::MODULE_JSON));
+    EXPECT_TRUE(packager.CompatibleProcess(
+        STAGE_JSON_PATH, fileList, AppPackingTool::Constants::MODULE_JSON, extraSuffix));
+    EXPECT_TRUE(packager.CompatibleProcess(
+        STAGE_JSON_PATH, fileList, extraSuffix, AppPackingTool::Constants::MODULE_JSON));
+    EXPECT_FALSE(packager.CompatibleProcess(
+        STAGE_JSON_PATH, fileList, extraSuffix, extraSuffix));
+    system("rm -f /data/test/module.json");
 }
 } // namespace OHOS
