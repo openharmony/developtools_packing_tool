@@ -23,7 +23,11 @@
 #include "packager.h"
 #include "multiapp_packager.h"
 #include "zip_wrapper.h"
+#include "zip_utils.h"
 #include "log.h"
+#include <filesystem>
+#include <fstream>
+#include "utils.h"
 #undef private
 #undef protected
 
@@ -41,7 +45,7 @@ const std::string HSP_LIST = "/data/test/resource/packingtool/test_file/multiApp
 const std::string HSP_LIST_WITHOUT_SUFFIX = "/data/test/resource/packingtool/test_file/multiApp/hsp/hspTest";
 const std::string APP_LIST = "/data/test/resource/packingtool/test_file/multiApp/hsp/multiappPackagerHspTest.app";
 }
-
+namespace fs = std::filesystem;
 class MultiAppPackagerTest : public testing::Test {
 public:
     MultiAppPackagerTest() {}
@@ -496,5 +500,341 @@ HWTEST_F(MultiAppPackagerTest, IsVerifyValidInMultiAppMode_0100, Function | Medi
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
     EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), false);
+}
+
+/*
+ * @tc.name: IsVerifyValidInMultiAppMode_0200
+ * @tc.desc: test is valid in multi app mode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, IsVerifyValidInMultiAppMode_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), false);
+}
+
+/*
+ * @tc.name: IsVerifyValidInMultiAppMode_0300
+ * @tc.desc: test is valid in multi app mode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, IsVerifyValidInMultiAppMode_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_APP_LIST, "invalid_app"},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), false);
+}
+
+/*
+ * @tc.name: IsVerifyValidInMultiAppMode_0400
+ * @tc.desc: test is valid in multi app mode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, IsVerifyValidInMultiAppMode_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, "invalid_hap"},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_APP_LIST, APP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), false);
+}
+
+/*
+ * @tc.name: IsVerifyValidInMultiAppMode_0500
+ * @tc.desc: test is valid in multi app mode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, IsVerifyValidInMultiAppMode_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, "invalid_hsp"},
+        {OHOS::AppPackingTool::Constants::PARAM_APP_LIST, APP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), false);
+}
+
+/*
+ * @tc.name: DisposeHapAndHsp_0100
+ * @tc.desc: test dispose hap and hsp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> selectedHaps;
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.DisposeHapAndHsp(selectedHaps, "temp_test_dir", ""), "");
+}
+
+/*
+ * @tc.name: DisposeHapAndHsp_0200
+ * @tc.desc: test dispose hap and hsp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> selectedHaps = {HAP_LIST};
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    multiAppPackager.formattedHapAndHspList_ = {HAP_LIST};
+    EXPECT_NO_THROW(multiAppPackager.DisposeHapAndHsp(selectedHaps, "temp_test_dir", ""));
+}
+
+/*
+ * @tc.name: DisposeHapAndHsp_0300
+ * @tc.desc: test dispose hap and hsp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> selectedHaps;
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    multiAppPackager.formattedHapAndHspList_ = {HAP_LIST};
+    std::string finalPackInfoStr = multiAppPackager.DisposeHapAndHsp(selectedHaps, "temp_test_dir", HAP_LIST);
+    EXPECT_TRUE(finalPackInfoStr.empty());
+    EXPECT_EQ(selectedHaps.size(), 1);
+}
+
+/*
+ * @tc.name: WritePackInfo_0100
+ * @tc.desc: write pack info.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, WritePackInfo_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> selectedHaps;
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::string filePath = "temp_test_dir/pack.info";
+    std::string content = "test content";
+    multiAppPackager.WritePackInfo(filePath, content);
+    std::ifstream freader(filePath);
+    std::string fileContent((std::istreambuf_iterator<char>(freader)), std::istreambuf_iterator<char>());
+    EXPECT_EQ(fileContent, "");
+}
+
+/*
+ * @tc.name: WritePackInfo_0200
+ * @tc.desc: write pack info.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, WritePackInfo_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> selectedHaps;
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::string filePath = "";
+    std::string content = "test content";
+    multiAppPackager.WritePackInfo(filePath, content);
+    std::ifstream freader(filePath);
+    std::string fileContent((std::istreambuf_iterator<char>(freader)), std::istreambuf_iterator<char>());
+    EXPECT_EQ(fileContent, "");
+}
+
+/*
+ * @tc.name: WritePackInfo_0300
+ * @tc.desc: write pack info.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, WritePackInfo_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> selectedHaps;
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::string filePath = "temp_test_dir/pack.info";
+    std::string content = "";
+    multiAppPackager.WritePackInfo(filePath, content);
+    std::ifstream freader(filePath);
+    std::string fileContent((std::istreambuf_iterator<char>(freader)), std::istreambuf_iterator<char>());
+    EXPECT_EQ(fileContent, content);
+}
+
+/*
+ * @tc.name: PrepareFilesForCompression_0100
+ * @tc.desc: prepare files for compression.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "/data/test/resource/packingtool/test_file/temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fs::path tempHapDirPath;
+    fs::path tempSelectedHapDirPath;
+    std::string finalPackInfoStr;
+    std::string finalPackInfoPath;
+    EXPECT_TRUE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath,
+     finalPackInfoStr, finalPackInfoPath));
+}
+
+/*
+ * @tc.name: PrepareFilesForCompression_0200
+ * @tc.desc: prepare files for compression.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fs::path tempHapDirPath;
+    fs::path tempSelectedHapDirPath;
+    std::string finalPackInfoStr;
+    std::string finalPackInfoPath;
+    multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath,
+     finalPackInfoStr, finalPackInfoPath);
+    EXPECT_TRUE(fs::exists(tempHapDirPath));
+    EXPECT_TRUE(fs::exists(tempSelectedHapDirPath));
+}
+
+/*
+ * @tc.name: PrepareFilesForCompression_0300
+ * @tc.desc: prepare files for compression.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fs::path tempHapDirPath;
+    fs::path tempSelectedHapDirPath;
+    std::string finalPackInfoStr;
+    std::string finalPackInfoPath;
+    multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
+        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath);
+    EXPECT_TRUE(finalPackInfoStr.empty());
+    EXPECT_FALSE(finalPackInfoPath.empty());
+}
+
+/*
+ * @tc.name: PrepareFilesForCompression_0400
+ * @tc.desc: prepare files for compression.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fs::path tempHapDirPath;
+    fs::path tempSelectedHapDirPath;
+    std::string finalPackInfoStr;
+    std::string finalPackInfoPath;
+    EXPECT_TRUE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
+       tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath));
+    EXPECT_TRUE(fileList.empty());
 }
 } // namespace OHOS
