@@ -108,4 +108,37 @@ HWTEST_F(PatchJsonUtilsTest, ParsePatchByJsonStr_0100, Function | MediumTest | L
     EXPECT_TRUE(OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonStr(JSON_STRING, hqfInfo));
 }
 
+/*
+ * @@tc.name: ParsePatchByJsonFilePath_0200
+ * @tc.desc: ParsePatchByJsonFilePath
+ * @tc.type: FUNC
+ */
+HWTEST_F(PatchJsonUtilsTest, ParsePatchByJsonFilePath_0200, Function | MediumTest | Level1)
+{
+    std::string patchJsonFilePath;
+    OHOS::AppPackingTool::HqfInfo hqfInfo;
+    bool ret = OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonFilePath(patchJsonFilePath, hqfInfo);
+    EXPECT_FALSE(ret);
+
+    patchJsonFilePath = "test.json";
+    ret = OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonFilePath(patchJsonFilePath, hqfInfo);
+    EXPECT_FALSE(ret);
+}
+
+/*
+ * @@tc.name: ParsePatchByJsonStr_0200
+ * @tc.desc: ParsePatchByJsonStr
+ * @tc.type: FUNC
+ */
+HWTEST_F(PatchJsonUtilsTest, ParsePatchByJsonStr_0200, Function | MediumTest | Level1)
+{
+    std::string patchJsonStr;
+    OHOS::AppPackingTool::HqfInfo hqfInfo;
+    bool ret = OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonStr(patchJsonStr, hqfInfo);
+    EXPECT_FALSE(ret);
+
+    patchJsonStr = "{\"name\": \"JSON.CN\"}";
+    ret = OHOS::AppPackingTool::PatchJsonUtils::ParsePatchByJsonStr(patchJsonStr, hqfInfo);
+    EXPECT_FALSE(ret);
+}
 }
