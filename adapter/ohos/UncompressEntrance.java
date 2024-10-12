@@ -438,26 +438,27 @@ public class UncompressEntrance {
      * @param args command line
      */
     public static void main(String[] args) {
-        Utility utility = new Utility();
-
-        if (!CommandParser.commandParser(utility, args)) {
-            LOG.error("UncompressEntrance::main exit, parser failed");
-            ShowHelp.uncompressHelp();
-            System.exit(EXIT_STATUS_EXCEPTION);
-        }
-
-        if (!UncompressVerify.commandVerify(utility)) {
-            LOG.error("UncompressEntrance::main exit, verify failed");
-            ShowHelp.uncompressHelp();
-            System.exit(EXIT_STATUS_EXCEPTION);
-        }
-
-        if (!Uncompress.unpackageProcess(utility)) {
-            LOG.error("UncompressEntrance::main exit, uncompress failed");
-            ShowHelp.uncompressHelp();
-            System.exit(EXIT_STATUS_EXCEPTION);
-        }
-
-        System.exit(EXIT_STATUS_NORMAL);
+        parseHap("D:\\Project\\MyApplication0926\\entry\\build\\default\\outputs\\default\\entry-default-unsigned.hap");
+//        Utility utility = new Utility();
+//
+//        if (!CommandParser.commandParser(utility, args)) {
+//            LOG.error("UncompressEntrance::main exit, parser failed");
+//            ShowHelp.uncompressHelp();
+//            System.exit(EXIT_STATUS_EXCEPTION);
+//        }
+//
+//        if (!UncompressVerify.commandVerify(utility)) {
+//            LOG.error("UncompressEntrance::main exit, verify failed");
+//            ShowHelp.uncompressHelp();
+//            System.exit(EXIT_STATUS_EXCEPTION);
+//        }
+//
+//        if (!Uncompress.unpackageProcess(utility)) {
+//            LOG.error("UncompressEntrance::main exit, uncompress failed");
+//            ShowHelp.uncompressHelp();
+//            System.exit(EXIT_STATUS_EXCEPTION);
+//        }
+//
+//        System.exit(EXIT_STATUS_NORMAL);
     }
 }

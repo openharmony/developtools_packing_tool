@@ -62,6 +62,7 @@ public class CommandParser {
     private static final String CMD_FORCE = "--force";
     private static final String CMD_OUT_PATH = "--out-path";
     private static final String CMD_PACK_INFO_PATH = "--pack-info-path";
+    private static final String CMD_ENCRYPT_PATH = "--encrypt-path";
     private static final String CMD_BIN_PATH = "--bin-path";
     private static final String CMD_JAR_PATH = "--jar-path";
     private static final String CMD_TXT_PATH = "--txt-path";
@@ -213,6 +214,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_PACK_INFO_PATH, entry -> {
             entry.getKey().setPackInfoPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_ENCRYPT_PATH, entry -> {
+            entry.getKey().setEncryptPath(entry.getValue());
             return true;
         });
         commandFuncs.put(CMD_BIN_PATH, entry -> {
