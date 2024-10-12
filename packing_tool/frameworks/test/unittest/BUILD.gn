@@ -22,6 +22,7 @@ group("unittest") {
     "fast_app_packager_test:unittest",
     "hap_packager_test:unittest",
     "hqf_packager_test:unittest",
+    "hqf_verify_test:unittest",
     "hsp_packager_test:unittest",
     "json/distro_filter_test:unittest",
     "json/hap_verify_utils_test:unittest",
