@@ -140,6 +140,7 @@ public class Compressor {
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String RAW_FILE_PATH = "resources/rawfile";
     private static final String RES_FILE_PATH = "resources/resfile";
+    private static final String ENCRYPT_JSON_FILE = "encrypt.json";
     private static final String SUMMARY = "summary";
     private static final String VERSION_CODE = "versionCode";
     private static final String VERSION_NAME = "versionName";
@@ -1215,8 +1216,14 @@ public class Compressor {
             }
             File file = new File(utility.getPackInfoPath());
             compressFile(utility, file, NULL_DIR_NAME, false);
+            //compressing encrypt.json file
+            if (!utility.getEncryptPath().isEmpty()) {
+                pathToFile(utility, utility.getEncryptPath(), NULL_DIR_NAME, false);
+            } else {
+                LOG.info("Compressor::compressAppMode has no encrypt.json");
+            }
         } catch (BundleException e) {
-            LOG.error("Compressor::compressAppMode compress failed.");
+            LOG.error("Compressor::compressAppMode compress failed. msg: " + e.getMessage());
             throw new BundleException("Compressor::compressAppMode compress failed.");
         } finally {
             // delete temp file
@@ -1271,6 +1278,12 @@ public class Compressor {
     private void packFastApp(Utility utility, List<String> fileList) throws BundleException {
         // pack.info
         pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        // encrypt.json
+        if (!utility.getEncryptPath().isEmpty()) {
+            pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        } else {
+            LOG.info("Compressor::packFastApp has no encrypt.json");
+        }
         // hap/hsp
         for (String hapPath : fileList) {
             HapVerifyInfo hapVerifyInfo = hapVerifyInfoMap.get(getFileNameByPath(hapPath));
@@ -2398,7 +2411,7 @@ public class Compressor {
             if (!entryName.contains(RAW_FILE_PATH) && !entryName.contains(RES_FILE_PATH) &&
                     srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
                 zipEntry.setMethod(ZipEntry.STORED);
-                if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
+                if (!entryName.equals(ENCRYPT_JSON_FILE) && jsonSpecialProcess(utility, srcFile, zipEntry)) {
                     return;
                 }
             }
@@ -2492,6 +2505,7 @@ public class Compressor {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
+            LOG.error("Compressor::getCrcFromFile FileNotFoundException : " + ignored.getMessage());
             throw new BundleException("Get Crc from file failed: " + file.getName());
         } catch (IOException exception) {
             LOG.error("Compressor::getCrcFromFile io exception: " + exception.getMessage());
