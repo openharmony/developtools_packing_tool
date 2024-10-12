@@ -38,6 +38,7 @@ ohos_unittest("packager_test") {
     "../../../src/log.cpp",
     "../../../src/packager.cpp",
     "../../../src/utils.cpp",
+    "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
     "packager_test.cpp",
   ]
