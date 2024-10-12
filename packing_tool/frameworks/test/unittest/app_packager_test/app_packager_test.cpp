@@ -20,13 +20,14 @@
 #include "constants.h"
 #define private public
 #define protected public
-#include "packager.h"
 #include "app_packager.h"
+#include "mock/mock_module_json_utils.h"
+#include "utils.h"
 #include "zip_wrapper.h"
-#include "log.h"
 #undef private
 #undef protected
 
+using namespace OHOS::AppPackingTool;
 using namespace testing;
 using namespace testing::ext;
 
@@ -63,7 +64,13 @@ void AppPackagerTest::TearDownTestCase() {}
 
 void AppPackagerTest::SetUp() {}
 
-void AppPackagerTest::TearDown() {}
+void AppPackagerTest::TearDown()
+{
+    MockModuleJsonUtils::Reset();
+    std::string cmd = {"rm -f "};
+    cmd += OUT_PATH;
+    system(cmd.c_str());
+}
 
 /*
  * @tc.name: InitAllowedParam_0100
@@ -86,13 +93,1181 @@ HWTEST_F(AppPackagerTest, InitAllowedParam_0100, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-    EXPECT_EQ(appPackager.InitAllowedParam(), 0);
-    EXPECT_EQ(appPackager.PreProcess(), 0);
-    EXPECT_EQ(appPackager.Process(), 0);
-    EXPECT_EQ(appPackager.PostProcess(), 0);
+    EXPECT_EQ(appPackager.InitAllowedParam(), ERR_OK);
+    EXPECT_EQ(appPackager.PreProcess(), ERR_OK);
+    EXPECT_EQ(appPackager.Process(), ERR_OK);
+    EXPECT_EQ(appPackager.PostProcess(), ERR_OK);
+}
 
-    std::string cmd = {"rm -f "};
-    cmd += OUT_PATH;
-    system(cmd.c_str());
+/*
+ * @tc.name: PreProcess_0200
+ * @tc.desc: PreProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, PreProcess_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "invalidValue"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, HSP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, SIGNATURE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, CERTIFICATE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, PACK_RES_PATH},
+    };
+
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(appPackager.PreProcess(), ERR_INVALID_VALUE);
+}
+
+/*
+ * @tc.name: PreProcess_0300
+ * @tc.desc: PreProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, PreProcess_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HSP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, SIGNATURE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, CERTIFICATE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, PACK_RES_PATH},
+    };
+
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(appPackager.PreProcess(), ERR_INVALID_VALUE);
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_0400
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(false, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_0500
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    series.emplace_back(true, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_0600
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    series.emplace_back(false, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_0700
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(false, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_0800
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_0800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    series.emplace_back(true, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_0900
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_0900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    series.emplace_back(false, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_1000
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_1000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    EXPECT_TRUE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_1100
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_1100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    EXPECT_TRUE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_1200
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_1200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath(HSP_PATH);
+
+    EXPECT_TRUE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckBundleTypeConsistency_1300
+ * @tc.desc: CheckBundleTypeConsistency.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckBundleTypeConsistency_1300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath;
+
+    EXPECT_TRUE(appPackager.CheckBundleTypeConsistency(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: VerifyIsSharedApp_1400
+ * @tc.desc: VerifyIsSharedApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsSharedApp_1400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    std::list<std::string> hspPath;
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(false, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.VerifyIsSharedApp(hspPath));
+}
+
+/*
+ * @tc.name: VerifyIsSharedApp_1500
+ * @tc.desc: VerifyIsSharedApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsSharedApp_1500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    std::list<std::string> hspPath;
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.VerifyIsSharedApp(hspPath));
+}
+
+/*
+ * @tc.name: VerifyIsSharedApp_1600
+ * @tc.desc: VerifyIsSharedApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsSharedApp_1600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    std::list<std::string> hspPath;
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.VerifyIsSharedApp(hspPath));
+}
+
+/*
+ * @tc.name: IsSharedApp_1700
+ * @tc.desc: IsSharedApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSharedApp_1700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath("not empty");
+    const std::string hspPath;
+
+    EXPECT_FALSE(appPackager.IsSharedApp(hapPath, hspPath));
+    EXPECT_FALSE(appPackager.isSharedApp_);
+}
+
+/*
+ * @tc.name: IsSharedApp_1800
+ * @tc.desc: IsSharedApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSharedApp_1800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath;
+
+    EXPECT_FALSE(appPackager.IsSharedApp(hapPath, hspPath));
+    EXPECT_FALSE(appPackager.isSharedApp_);
+}
+
+/*
+ * @tc.name: IsSharedApp_1900
+ * @tc.desc: IsSharedApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSharedApp_1900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.IsSharedApp(hapPath, hspPath));
+    EXPECT_TRUE(appPackager.isSharedApp_);
+}
+
+/*
+ * @tc.name: VerifyIsAppService_2000
+ * @tc.desc: VerifyIsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsAppService_2000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    std::list<std::string> modulePathList;
+
+    EXPECT_FALSE(appPackager.VerifyIsAppService(modulePathList));
+}
+
+/*
+ * @tc.name: VerifyIsAppService_2100
+ * @tc.desc: VerifyIsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsAppService_2100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    std::list<std::string> modulePathList = { "dummyPath" };
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(false, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.VerifyIsAppService(modulePathList));
+}
+
+/*
+ * @tc.name: VerifyIsAppService_2200
+ * @tc.desc: VerifyIsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsAppService_2200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    std::list<std::string> modulePathList = { "dummyPath" };
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.VerifyIsAppService(modulePathList));
+}
+
+/*
+ * @tc.name: VerifyIsAppService_2300
+ * @tc.desc: VerifyIsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, VerifyIsAppService_2300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    std::list<std::string> modulePathList = { "dummyPath" };
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.VerifyIsAppService(modulePathList));
+}
+
+/*
+ * @tc.name: IsAppService_2400
+ * @tc.desc: IsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsAppService_2400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.IsAppService(hapPath, hspPath));
+    EXPECT_TRUE(appPackager.isAppService_);
+}
+
+/*
+ * @tc.name: IsAppService_2500
+ * @tc.desc: IsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsAppService_2500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath;
+
+    EXPECT_FALSE(appPackager.IsAppService(hapPath, hspPath));
+    EXPECT_FALSE(appPackager.isAppService_);
+}
+
+/*
+ * @tc.name: IsAppService_2600
+ * @tc.desc: IsAppService.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsAppService_2600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.IsAppService(hapPath, hspPath));
+    EXPECT_TRUE(appPackager.isAppService_);
+}
+
+/*
+ * @tc.name: CheckInputModulePath_2700
+ * @tc.desc: CheckInputModulePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_2700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(false, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_2800
+ * @tc.desc: CheckInputModulePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_2800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_2900
+ * @tc.desc: CheckInputModulePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_2900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_3000
+ * @tc.desc: CheckInputModulePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_3000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath;
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(false, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_3100
+ * @tc.desc: CheckInputModulePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_3100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath(HSP_PATH);
+
+    EXPECT_TRUE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: IsFileValid_3200
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, ""},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3300
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, TEST_FILE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3400
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, TEST_FILE_PATH + "incorrect.filename"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3500
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, TEST_FILE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3600
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, TEST_FILE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3700
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_ENTRYCARD_PATH, PACK_INFO_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3800
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, TEST_FILE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsFileValid_3900
+ * @tc.desc: IsFileValid.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsFileValid_3900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(appPackager.IsFileValid());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4000
+ * @tc.desc: IsVerifyValidInAppMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    series.emplace_back(true, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4100
+ * @tc.desc: IsVerifyValidInAppMode, CheckInputModulePath returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    series.emplace_back(true, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4200
+ * @tc.desc: IsVerifyValidInAppMode, CompatibleProcess returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, "invalid.file"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4300
+ * @tc.desc: IsVerifyValidInAppMode, CompatibleProcess returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, "invalid.file"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    ResultSeries series;
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SHARED);
+    series.emplace_back(true, hapVerifyInfo);
+
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4400
+ * @tc.desc: IsVerifyValidInAppMode, IsFileValid returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, TEST_FILE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4500
+ * @tc.desc: IsVerifyValidInAppMode, IsOutPathValid returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInAppMode_4600
+ * @tc.desc: IsVerifyValidInAppMode, IsOutPathValid returns true.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(appPackager.IsVerifyValidInAppMode());
+}
+
+/*
+ * @tc.name: PrepareDirectoriesAndFiles_4700
+ * @tc.desc: PrepareDirectoriesAndFiles, CompressHapAndHspFiles returns true.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, PrepareDirectoriesAndFiles_4700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    MockModuleJsonUtils::MockCheckHapsIsValid(true);
+    EXPECT_TRUE(appPackager.PrepareDirectoriesAndFiles(OUT_PATH));
+}
+
+/*
+ * @tc.name: PrepareDirectoriesAndFiles_4800
+ * @tc.desc: PrepareDirectoriesAndFiles, CompressHapAndHspFiles returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, PrepareDirectoriesAndFiles_4800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.PrepareDirectoriesAndFiles(OUT_PATH));
+}
+
+/*
+ * @tc.name: CompressHapAndHspFiles_4900
+ * @tc.desc: CompressHapAndHspFiles
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_4900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    auto tempPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
+        Utils::GenerateUUID());
+    auto hspTempDirPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
+        Utils::GenerateUUID());
+    MockModuleJsonUtils::MockCheckHapsIsValid(true);
+    EXPECT_TRUE(appPackager.CompressHapAndHspFiles(tempPath, hspTempDirPath));
+}
+
+/*
+ * @tc.name: CompressHapAndHspFiles_5000
+ * @tc.desc: CompressHapAndHspFiles, CheckHapsIsValid returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_5000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    auto tempPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
+        Utils::GenerateUUID());
+    auto hspTempDirPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
+        Utils::GenerateUUID());
+    MockModuleJsonUtils::MockCheckHapsIsValid(false);
+    EXPECT_FALSE(appPackager.CompressHapAndHspFiles(tempPath, hspTempDirPath));
+}
+
+/*
+ * @tc.name: CompressHapAndHspFiles_5100
+ * @tc.desc: CompressHapAndHspFiles, AddHapListToApp returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_5100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    auto tempPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
+        Utils::GenerateUUID());
+    auto hspTempDirPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
+        Utils::GenerateUUID());
+    if (!fs::exists(tempPath)) {
+        fs::create_directories(tempPath);
+    }
+    if (!fs::exists(hspTempDirPath)) {
+        fs::create_directories(hspTempDirPath);
+    }
+    MockModuleJsonUtils::MockCheckHapsIsValid(true);
+    appPackager.formattedHapPathList_.emplace_back(HAP_PATH);
+    EXPECT_FALSE(appPackager.CompressHapAndHspFiles(tempPath, hspTempDirPath));
+}
+
+/*
+ * @tc.name: AddHapListToApp_5200
+ * @tc.desc: AddHapListToApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, AddHapListToApp_5200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(appPackager.AddHapListToApp(appPackager.formattedHapPathList_));
+    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_DEFAULT);
+}
+
+/*
+ * @tc.name: AddHapListToApp_5300
+ * @tc.desc: AddHapListToApp, AddFileOrDirectoryToZip returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, AddHapListToApp_5300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    appPackager.formattedHapPathList_.emplace_back(HAP_PATH);
+    EXPECT_FALSE(appPackager.AddHapListToApp(appPackager.formattedHapPathList_));
+    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_DEFAULT);
+}
+
+/*
+ * @tc.name: AddHapListToApp_5400
+ * @tc.desc: AddHapListToApp, AddFileOrDirectoryToZip returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, AddHapListToApp_5400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    MockModuleJsonUtils::MockIsModuleHap(true);
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetDebug(true);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    appPackager.formattedHapPathList_.emplace_back(HAP_PATH);
+    EXPECT_FALSE(appPackager.AddHapListToApp(appPackager.formattedHapPathList_));
+    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_0);
+}
+
+/*
+ * @tc.name: AddHapListToApp_5500
+ * @tc.desc: AddHapListToApp, AddFileOrDirectoryToZip returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, AddHapListToApp_5500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    MockModuleJsonUtils::MockIsModuleHap(false);
+    HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetDebug(true);
+    MockModuleJsonUtils::MockGetFaHapVerifyInfo(true, hapVerifyInfo);
+    appPackager.formattedHapPathList_.emplace_back(HAP_PATH);
+    EXPECT_FALSE(appPackager.AddHapListToApp(appPackager.formattedHapPathList_));
+    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_0);
+}
+
+/*
+ * @tc.name: CompressOtherFiles_5600
+ * @tc.desc: CompressOtherFiles.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressOtherFiles_5600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(appPackager.CompressOtherFiles());
+}
+
+/*
+ * @tc.name: CompressOtherFiles_5700
+ * @tc.desc: CompressOtherFiles.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressOtherFiles_5700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_ENTRYCARD_PATH, PACK_INFO_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    appPackager.formattedEntryCardPathList_.emplace_back(HAP_PATH);
+    EXPECT_FALSE(appPackager.CompressOtherFiles());
+}
+
+/*
+ * @tc.name: CompressOtherFiles_5800
+ * @tc.desc: CompressOtherFiles.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressOtherFiles_5800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.CompressOtherFiles());
+}
+
+/*
+ * @tc.name: CompressOtherFiles_5900
+ * @tc.desc: CompressOtherFiles.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressOtherFiles_5900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, SIGNATURE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.CompressOtherFiles());
+}
+
+/*
+ * @tc.name: CompressOtherFiles_6000
+ * @tc.desc: CompressOtherFiles.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressOtherFiles_6000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, CERTIFICATE_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    EXPECT_FALSE(appPackager.CompressOtherFiles());
+}
+
+/*
+ * @tc.name: CompressAppMode_6100
+ * @tc.desc: CompressAppMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressAppMode_6100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    MockModuleJsonUtils::MockCheckHapsIsValid(true);
+    EXPECT_TRUE(appPackager.CompressAppMode());
+}
+
+/*
+ * @tc.name: CompressAppMode_6200
+ * @tc.desc: CompressAppMode, PrepareDirectoriesAndFiles returns false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CompressAppMode_6200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+
+    MockModuleJsonUtils::MockCheckHapsIsValid(false);
+    EXPECT_FALSE(appPackager.CompressAppMode());
 }
 } // namespace OHOS

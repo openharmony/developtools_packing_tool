@@ -37,7 +37,6 @@ ohos_unittest("app_packager_test") {
     "../../../src/json/module_json.cpp",
     "../../../src/json/module_json_fa.cpp",
     "../../../src/json/module_json_stage.cpp",
-    "../../../src/json/module_json_utils.cpp",
     "../../../src/json/pt_json.cpp",
     "../../../src/log.cpp",
     "../../../src/packager.cpp",
@@ -46,6 +45,7 @@ ohos_unittest("app_packager_test") {
     "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
     "app_packager_test.cpp",
+    "mock/mock_module_json_utils.cpp",
   ]
   external_deps = [
     "bounds_checking_function:libsec_static",
