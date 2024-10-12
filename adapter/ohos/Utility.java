@@ -67,6 +67,7 @@ public class Utility {
     private String forceRewrite = "false";
     private String outPath = "";
     private String packInfoPath = "";
+    private String encryptPath = "";
     private String binPath = "";
     private boolean isCompressNativeLibs = false;
     private String moduleName = "";
@@ -407,6 +408,16 @@ public class Utility {
     public void setPackInfoPath(String packInfoPath) {
         if (!packInfoPath.startsWith(CMD_PREFIX)) {
             this.packInfoPath = getFormattedPath(packInfoPath);
+        }
+    }
+
+    public String getEncryptPath() {
+        return encryptPath;
+    }
+
+    public void setEncryptPath(String encryptPath) {
+        if (!encryptPath.startsWith(CMD_PREFIX)) {
+            this.encryptPath = getFormattedPath(encryptPath);
         }
     }
 
