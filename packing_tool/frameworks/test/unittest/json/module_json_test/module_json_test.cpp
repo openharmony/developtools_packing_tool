@@ -267,16 +267,6 @@ const std::string MODULE_JSON_TEST_STRING_ERROR = "{"
         "],"
         "\"virtualMachine\": \"test_virtualMachine\","
         "\"compileMode\": \"esmodule\","
-        "\"dependencies\": ["
-            "{"
-                "\"bundleName\": \"test_modules_dependency_1\","
-                "\"moduleName\": \"entry_1\""
-            "},"
-            "{"
-                "\"bundleName\": \"test_modules_dependency_2\","
-                "\"moduleName\": \"entry_1\""
-            "}"
-        "],"
         "\"descriptionId\": 16777220,"
         "\"preloads\": ["
             "{"
@@ -316,12 +306,229 @@ const std::string MODULE_JSON_TEST_STRING_ERROR = "{"
         "],"
         "\"extensionAbilities\": ["
             "{"
-                "\"name\": \"test_extension_abilities\""
             "}"
         "]"
     "},"
     "\"deviceConfig\": {"
         "\"default\": {\"debug\": true}"
+    "}"
+"}";
+
+const std::string METADATA_NAME_TEST_JSON_STRING = "{"
+    "\"module\": {"
+        "\"metadata\": ["
+            "{"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string METADATA_VALUE_TEST_JSON_STRING = "{"
+    "\"module\": {"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string METADATA_RESOURCE_TEST_JSON_STRING = "{"
+    "\"module\": {"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string DEPENDENCIES_NO_BUNDLE_NAME_JSON_STRING = "{"
+    "\"app\": {"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"dependencies\": ["
+            "{"
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string DEPENDENCIES_NO_MODULE_NAME_JSON_STRING = "{"
+    "\"app\": {"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULE_NO_ATOMICSERVICE_JSON_STRING = "{"
+    "\"module\": {"
+    "}"
+"}";
+
+const std::string ATOMICSERVIC_NO_PRELOADS_JSON_STRING = "{"
+    "\"module\": {"
+        "\"atomicService\": {"
+        "}"
+    "}"
+"}";
+
+const std::string PRELOADS_NO_MODULE_NAME_JSON_STRING = "{"
+    "\"module\": {"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"moduleName\": \"test_moduleName\","
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "}"
+    "}"
+"}";
+
+const std::string ABILITY_CONTINUE_TYPE_TEST_JSON_STRING = "{"
+    "\"module\": {"
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"continueType\":[ \"test_1\", \"test_2\"]"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string NO_MULTI_APP_MODE_TYPE_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"multiAppMode\": {"
+            "\"maxCount\": 9"
+        "}"
+    "}"
+"}";
+
+const std::string NO_MULTI_APP_MODE_NUMBER_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\""
+        "}"
+    "}"
+"}";
+
+const std::string NO_BUNDLE_TYPE_TEST_JSON_STRING = "{"
+    "\"app\": {"
+    "},"
+    "\"module\": {"
+        "\"installationFree\": true,"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "}"
+    "}"
+"}";
+
+const std::string APP_BUNDLE_TYPE_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"test_atomicService\""
+    "},"
+    "\"module\": {"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "}"
+    "}"
+"}";
+
+const std::string NO_ABILITY_NAME_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"atomicService\""
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"installationFree\": true,"
+        "\"abilities\": ["
+            "{"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULE_TYPE_ERROE_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"atomicService\""
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"test_entry\","
+        "\"installationFree\": true,"
+        "\"abilities\": ["
+        "]"
+    "}"
+"}";
+
+const std::string NO_ABILITY_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"atomicService\""
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"installationFree\": true,"
+        "\"abilities\": ["
+        "]"
+    "}"
+"}";
+
+const std::string SHARED_TYPE_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"shared\""
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"shared\","
+        "\"installationFree\": true"
+    "}"
+"}";
+
+const std::string NO_ASAN_ENABLED_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"tsanEnabled\": \"test\""
+    "}"
+"}";
+
+const std::string NO_TSAN_ENABLED_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"asanEnabled\": \"test\""
+    "}"
+"}";
+
+const std::string NO_BOOL_ASAN_ENABLED_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"tsanEnabled\": \"test\","
+        "\"asanEnabled\": \"test\""
+    "}"
+"}";
+
+const std::string TSAN_ENABLED_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"tsanEnabled\": true,"
+        "\"asanEnabled\": true"
     "}"
 "}";
 }
@@ -3810,5 +4017,855 @@ HWTEST_F(ModuleJsonTest, GetProxyDataUrisByProxyDatasObj_0200, Function | Medium
     proxyDatasObj->Push(testJson);
     std::list<std::string> proxyDataUris;
     EXPECT_FALSE(moduleJson.GetProxyDataUrisByProxyDatasObj(proxyDatasObj, proxyDataUris));
+}
+
+/*
+ * @tc.name: GetModuleMetadatasByModuleObj_0200
+ * @tc.desc: test GetModuleMetadatasByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleMetadatasByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    map<std::string, std::string> resourceMap;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    EXPECT_TRUE(moduleJson.GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos));
+}
+
+/*
+ * @tc.name: GetModuleMetadatasByModuleObj_0300
+ * @tc.desc: test GetModuleMetadatasByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleMetadatasByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    map<std::string, std::string> resourceMap;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    EXPECT_FALSE(moduleJson.GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos));
+}
+
+/*
+ * @tc.name: GetModuleMetadatasByModuleObj_0400
+ * @tc.desc: test GetModuleMetadatasByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleMetadatasByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(METADATA_NAME_TEST_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    map<std::string, std::string> resourceMap;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    EXPECT_TRUE(moduleJson.GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos));
+}
+
+/*
+ * @tc.name: GetModuleMetadatasByModuleObj_0500
+ * @tc.desc: test GetModuleMetadatasByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleMetadatasByModuleObj_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(METADATA_VALUE_TEST_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    map<std::string, std::string> resourceMap;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    EXPECT_TRUE(moduleJson.GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos));
+}
+
+/*
+ * @tc.name: GetModuleMetadatasByModuleObj_0600
+ * @tc.desc: test GetModuleMetadatasByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetModuleMetadatasByModuleObj_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(METADATA_RESOURCE_TEST_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    map<std::string, std::string> resourceMap;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    EXPECT_TRUE(moduleJson.GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos));
+}
+
+/*
+ * @tc.name: GetExtensionAbilityNamesByExtensionAbilityObj_0100
+ * @tc.desc: test GetExtensionAbilityNamesByExtensionAbilityObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetExtensionAbilityNamesByExtensionAbilityObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    std::list<std::string> extensionAbilityNames;
+    EXPECT_FALSE(
+        moduleJson.GetExtensionAbilityNamesByExtensionAbilityObj(extensionAbilitiesObj, extensionAbilityNames));
+}
+
+/*
+ * @tc.name: GetExtensionAbilityNamesByModuleObj_0100
+ * @tc.desc: test GetExtensionAbilityNamesByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetExtensionAbilityNamesByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    std::list<std::string> extensionAbilityNames;
+    EXPECT_FALSE(moduleJson.GetExtensionAbilityNamesByModuleObj(moduleObj, extensionAbilityNames));
+}
+
+/*
+ * @tc.name: GetExtensionAbilityNamesByModuleObj_0200
+ * @tc.desc: test GetExtensionAbilityNamesByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetExtensionAbilityNamesByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    std::list<std::string> extensionAbilityNames;
+    EXPECT_FALSE(moduleJson.GetExtensionAbilityNamesByModuleObj(moduleObj, extensionAbilityNames));
+}
+
+/*
+ * @tc.name: GetExtensionAbilityNamesByModuleObj_0300
+ * @tc.desc: test GetExtensionAbilityNamesByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetExtensionAbilityNamesByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<std::string> extensionAbilityNames;
+    EXPECT_TRUE(moduleJson.GetExtensionAbilityNamesByModuleObj(moduleObj, extensionAbilityNames));
+}
+
+/*
+ * @tc.name: GetDependencyItems_0200
+ * @tc.desc: test GetDependencyItems
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyItems_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::list<DependencyItem> dependencyItems;
+    std::string defaultBundleName = "";
+    EXPECT_FALSE(moduleJson.GetDependencyItems(dependencyItems, defaultBundleName));
+}
+
+/*
+ * @tc.name: GetDependencyItemsByModuleObj_0100
+ * @tc.desc: test GetDependencyItemsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyItemsByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    std::list<DependencyItem> dependencyItems;
+    std::string defaultBundleName = "";
+    EXPECT_FALSE(moduleJson.GetDependencyItemsByModuleObj(moduleObj, dependencyItems, defaultBundleName));
+}
+
+/*
+ * @tc.name: GetDependencyItemsByModuleObj_0200
+ * @tc.desc: test GetDependencyItemsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyItemsByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(DEPENDENCIES_NO_BUNDLE_NAME_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<DependencyItem> dependencyItems;
+    std::string defaultBundleName = "";
+    EXPECT_TRUE(moduleJson.GetDependencyItemsByModuleObj(moduleObj, dependencyItems, defaultBundleName));
+}
+
+/*
+ * @tc.name: GetDependencyItemsByModuleObj_0300
+ * @tc.desc: test GetDependencyItemsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyItemsByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(DEPENDENCIES_NO_BUNDLE_NAME_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<DependencyItem> dependencyItems;
+    std::string defaultBundleName = "";
+    EXPECT_TRUE(moduleJson.GetDependencyItemsByModuleObj(moduleObj, dependencyItems, defaultBundleName));
+}
+
+/*
+ * @tc.name: GetDependencyItemsByModuleObj_0400
+ * @tc.desc: test GetDependencyItemsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyItemsByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(DEPENDENCIES_NO_MODULE_NAME_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<DependencyItem> dependencyItems;
+    std::string defaultBundleName = "";
+    EXPECT_TRUE(moduleJson.GetDependencyItemsByModuleObj(moduleObj, dependencyItems, defaultBundleName));
+}
+
+/*
+ * @tc.name: GetDependencyBundleNameByDependencyItemObj_0100
+ * @tc.desc: test GetDependencyBundleNameByDependencyItemObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyBundleNameByDependencyItemObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> dependencyItemObj;
+    std::string bundleName = "";
+    std::string defaultBundleName = "";
+    EXPECT_FALSE(
+        moduleJson.GetDependencyBundleNameByDependencyItemObj(dependencyItemObj, bundleName, defaultBundleName));
+}
+
+/*
+ * @tc.name: GetDependencyModuleNameByDependencyItemObj_0100
+ * @tc.desc: test GetDependencyModuleNameByDependencyItemObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDependencyModuleNameByDependencyItemObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> dependencyItemObj;
+    std::string moduleName = "";
+    EXPECT_FALSE(moduleJson.GetDependencyModuleNameByDependencyItemObj(dependencyItemObj, moduleName));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0100
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "app";
+    bool installationFree = false;
+    EXPECT_TRUE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0200
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "app";
+    bool installationFree = true;
+    EXPECT_FALSE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0300
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "";
+    bool installationFree = false;
+    EXPECT_FALSE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0400
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "atomicService";
+    bool installationFree = false;
+    EXPECT_FALSE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0500
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "shared";
+    std::string bundleType = "shared";
+    bool installationFree = false;
+    EXPECT_TRUE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0600
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "shared";
+    bool installationFree = false;
+    EXPECT_FALSE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0700
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "appService";
+    bool installationFree = false;
+    EXPECT_TRUE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: GetAtomicServicePreloads_0200
+ * @tc.desc: test GetAtomicServicePreloads
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAtomicServicePreloads_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::list<PreloadItem> preloadItems;
+    EXPECT_FALSE(moduleJson.GetAtomicServicePreloads(preloadItems));
+}
+
+/*
+ * @tc.name: GetAtomicServicePreloadsByModuleObj_0100
+ * @tc.desc: test GetAtomicServicePreloadsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAtomicServicePreloadsByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    std::list<PreloadItem> preloadItems;
+    EXPECT_FALSE(moduleJson.GetAtomicServicePreloadsByModuleObj(moduleObj, preloadItems));
+}
+
+/*
+ * @tc.name: GetAtomicServicePreloadsByModuleObj_0200
+ * @tc.desc: test GetAtomicServicePreloadsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAtomicServicePreloadsByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_NO_ATOMICSERVICE_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<PreloadItem> preloadItems;
+    EXPECT_TRUE(moduleJson.GetAtomicServicePreloadsByModuleObj(moduleObj, preloadItems));
+}
+
+/*
+ * @tc.name: GetAtomicServicePreloadsByModuleObj_0300
+ * @tc.desc: test GetAtomicServicePreloadsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAtomicServicePreloadsByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(ATOMICSERVIC_NO_PRELOADS_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<PreloadItem> preloadItems;
+    EXPECT_TRUE(moduleJson.GetAtomicServicePreloadsByModuleObj(moduleObj, preloadItems));
+}
+
+/*
+ * @tc.name: GetAtomicServicePreloadsByModuleObj_0400
+ * @tc.desc: test GetAtomicServicePreloadsByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAtomicServicePreloadsByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(PRELOADS_NO_MODULE_NAME_JSON_STRING));
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::list<PreloadItem> preloadItems;
+    EXPECT_TRUE(moduleJson.GetAtomicServicePreloadsByModuleObj(moduleObj, preloadItems));
+}
+
+/*
+ * @tc.name: GetAbilityContinueTypeMap_0200
+ * @tc.desc: test GetAbilityContinueTypeMap
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAbilityContinueTypeMap_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::map<std::string, std::list<std::string>> abilityContinueTypeMap;
+    EXPECT_FALSE(moduleJson.GetAbilityContinueTypeMap(abilityContinueTypeMap));
+}
+
+/*
+ * @tc.name: GetAbilityNameByAbilityObj_0100
+ * @tc.desc: test GetAbilityNameByAbilityObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAbilityNameByAbilityObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> abilityObj;
+    std::string abilityName = "";
+    EXPECT_FALSE(moduleJson.GetAbilityNameByAbilityObj(abilityObj, abilityName));
+}
+
+/*
+ * @tc.name: GetContinueTypesByAbilityObj_0100
+ * @tc.desc: test GetContinueTypesByAbilityObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetContinueTypesByAbilityObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> abilityObj;
+    std::list<std::string> continueTypes;
+    EXPECT_FALSE(moduleJson.GetContinueTypesByAbilityObj(abilityObj, continueTypes));
+}
+
+/*
+ * @tc.name: GetAbilityContinueTypeMapByModuleObj_0100
+ * @tc.desc: test GetAbilityContinueTypeMapByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAbilityContinueTypeMapByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> moduleObj;
+    std::map<std::string, std::list<std::string>> abilityContinueTypeMap;
+    EXPECT_FALSE(moduleJson.GetAbilityContinueTypeMapByModuleObj(moduleObj, abilityContinueTypeMap));
+}
+
+/*
+ * @tc.name: GetAbilityContinueTypeMapByModuleObj_0200
+ * @tc.desc: test GetAbilityContinueTypeMapByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetAbilityContinueTypeMapByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(ABILITY_CONTINUE_TYPE_TEST_JSON_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    std::map<std::string, std::list<std::string>> abilityContinueTypeMap;
+    EXPECT_TRUE(moduleJson.GetAbilityContinueTypeMapByModuleObj(moduleObj, abilityContinueTypeMap));
+}
+
+/*
+ * @tc.name: GetMultiAppMode_0200
+ * @tc.desc: test GetMultiAppMode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMultiAppMode_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    MultiAppMode multiAppMode;
+    EXPECT_FALSE(moduleJson.GetMultiAppMode(multiAppMode));
+}
+
+/*
+ * @tc.name: GetMultiAppModeByAppObj_0100
+ * @tc.desc: test GetMultiAppModeByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMultiAppModeByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj;
+    MultiAppMode multiAppMode;
+    EXPECT_FALSE(moduleJson.GetMultiAppModeByAppObj(appObj, multiAppMode));
+}
+
+/*
+ * @tc.name: GetMultiAppModeByAppObj_0200
+ * @tc.desc: test GetMultiAppModeByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMultiAppModeByAppObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_MULTI_APP_MODE_TYPE_TEST_JSON_STRING));
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    MultiAppMode multiAppMode;
+    EXPECT_TRUE(moduleJson.GetMultiAppModeByAppObj(appObj, multiAppMode));
+}
+
+/*
+ * @tc.name: GetMultiAppModeByAppObj_0300
+ * @tc.desc: test GetMultiAppModeByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMultiAppModeByAppObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_MULTI_APP_MODE_NUMBER_TEST_JSON_STRING));
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    MultiAppMode multiAppMode;
+    EXPECT_TRUE(moduleJson.GetMultiAppModeByAppObj(appObj, multiAppMode));
+}
+
+/*
+ * @tc.name: IsExistedStageRequestPermissions_0200
+ * @tc.desc: test IsExistedStageRequestPermissions
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsExistedStageRequestPermissions_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.IsExistedStageRequestPermissions());
+}
+
+/*
+ * @tc.name: IsExistedStageModuleTargetPriority_0200
+ * @tc.desc: test IsExistedStageModuleTargetPriority
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsExistedStageModuleTargetPriority_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.IsExistedStageModuleTargetPriority());
+}
+
+/*
+ * @tc.name: IsExistedStageAppTargetPriority_0200
+ * @tc.desc: test IsExistedStageAppTargetPriority
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsExistedStageAppTargetPriority_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.IsExistedStageAppTargetPriority());
+}
+
+/*
+ * @tc.name: IsModuleAtomicServiceValid_0200
+ * @tc.desc: test IsModuleAtomicServiceValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsModuleAtomicServiceValid_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.IsModuleAtomicServiceValid());
+}
+
+/*
+ * @tc.name: IsModuleAtomicServiceValid_0300
+ * @tc.desc: test IsModuleAtomicServiceValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsModuleAtomicServiceValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_ABILITY_NAME_TEST_JSON_STRING));
+    EXPECT_TRUE(moduleJson.IsModuleAtomicServiceValid());
+}
+
+/*
+ * @tc.name: IsModuleAtomicServiceValid_0400
+ * @tc.desc: test IsModuleAtomicServiceValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsModuleAtomicServiceValid_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_BUNDLE_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.IsModuleAtomicServiceValid());
+}
+
+/*
+ * @tc.name: IsModuleAtomicServiceValid_0500
+ * @tc.desc: test IsModuleAtomicServiceValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, IsModuleAtomicServiceValid_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_BUNDLE_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.IsModuleAtomicServiceValid());
+}
+
+/*
+ * @tc.name: CheckEntryInAtomicService_0200
+ * @tc.desc: test CheckEntryInAtomicService
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckEntryInAtomicService_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.CheckEntryInAtomicService());
+}
+
+/*
+ * @tc.name: CheckEntryInAtomicService_0300
+ * @tc.desc: test CheckEntryInAtomicService
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckEntryInAtomicService_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_ABILITY_NAME_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckEntryInAtomicService());
+}
+
+/*
+ * @tc.name: CheckEntryInAtomicService_0400
+ * @tc.desc: test CheckEntryInAtomicService
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckEntryInAtomicService_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_TYPE_ERROE_TEST_JSON_STRING));
+    EXPECT_TRUE(moduleJson.CheckEntryInAtomicService());
+}
+
+/*
+ * @tc.name: CheckEntryInAtomicService_0500
+ * @tc.desc: test CheckEntryInAtomicService
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckEntryInAtomicService_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_ABILITY_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckEntryInAtomicService());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0200
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0300
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_MULTI_APP_MODE_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0400
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(ABILITY_CONTINUE_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0500
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_BUNDLE_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0600
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_BUNDLE_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0700
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SHARED_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckStageAsanTsanEnabledValid_0200
+ * @tc.desc: test CheckStageAsanTsanEnabledValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageAsanTsanEnabledValid_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.CheckStageAsanTsanEnabledValid());
+}
+
+/*
+ * @tc.name: CheckStageAsanTsanEnabledValid_0300
+ * @tc.desc: test CheckStageAsanTsanEnabledValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageAsanTsanEnabledValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_BOOL_ASAN_ENABLED_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckStageAsanTsanEnabledValid());
+}
+
+/*
+ * @tc.name: CheckStageAsanTsanEnabledValid_0400
+ * @tc.desc: test CheckStageAsanTsanEnabledValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageAsanTsanEnabledValid_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_ASAN_ENABLED_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckStageAsanTsanEnabledValid());
+}
+
+/*
+ * @tc.name: CheckStageAsanTsanEnabledValid_0500
+ * @tc.desc: test CheckStageAsanTsanEnabledValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageAsanTsanEnabledValid_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(NO_TSAN_ENABLED_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckStageAsanTsanEnabledValid());
+}
+
+/*
+ * @tc.name: CheckStageAsanTsanEnabledValid_0600
+ * @tc.desc: test CheckStageAsanTsanEnabledValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageAsanTsanEnabledValid_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(TSAN_ENABLED_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckStageAsanTsanEnabledValid());
 }
 }
