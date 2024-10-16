@@ -609,6 +609,24 @@ HWTEST_F(PackInfoTest, GetSummaryObject_0300, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: GetSummaryObject_0400
+ * @tc.desc: GetSummaryObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetSummaryObject_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string jsonString = R"({
+        "summary": "invalid_object"
+    })";
+    packInfo.ParseFromString(jsonString);
+    std::unique_ptr<AppPackingTool::PtJson> summaryObj;
+    EXPECT_FALSE(packInfo.GetSummaryObject(summaryObj));
+    EXPECT_EQ(summaryObj, nullptr);
+}
+
+/*
  * @tc.name: GetPackagesObject_0100
  * @tc.desc: GetPackagesObject.
  * @tc.type: FUNC
@@ -650,6 +668,24 @@ HWTEST_F(PackInfoTest, GetPackagesObject_0300, Function | MediumTest | Level1)
     std::unique_ptr<AppPackingTool::PtJson> summaryObj;
     EXPECT_FALSE(packInfo.GetPackagesObject(summaryObj));
     EXPECT_EQ(summaryObj, nullptr);
+}
+
+/*
+ * @tc.name: GetPackagesObject_0400
+ * @tc.desc: GetPackagesObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackagesObject_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string jsonString = R"({
+        "packages": "invalid_array"
+    })";
+    packInfo.ParseFromString(jsonString);
+    std::unique_ptr<AppPackingTool::PtJson> packagesObj;
+    EXPECT_FALSE(packInfo.GetPackagesObject(packagesObj));
+    EXPECT_EQ(packagesObj, nullptr);
 }
 
 /*
@@ -697,6 +733,44 @@ HWTEST_F(PackInfoTest, GetAppObject_0300, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: GetAppObject_0400
+ * @tc.desc: GetAppObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetAppObject_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string jsonString = R"({
+        "summary": {}
+    })";
+    packInfo.ParseFromString(jsonString);
+    std::unique_ptr<AppPackingTool::PtJson> appObj;
+    EXPECT_FALSE(packInfo.GetAppObject(appObj));
+    EXPECT_EQ(appObj, nullptr);
+}
+
+/*
+ * @tc.name: GetAppObject_0500
+ * @tc.desc: GetAppObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetAppObject_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string jsonString = R"({
+        "summary": {
+            "app": "invalid_object"
+        }
+    })";
+    packInfo.ParseFromString(jsonString);
+    std::unique_ptr<AppPackingTool::PtJson> appObj;
+    EXPECT_FALSE(packInfo.GetAppObject(appObj));
+    EXPECT_EQ(appObj, nullptr);
+}
+
+/*
  * @tc.name: GetModulesObject_0100
  * @tc.desc: GetModulesObject.
  * @tc.type: FUNC
@@ -738,6 +812,44 @@ HWTEST_F(PackInfoTest, GetModulesObject_0300, Function | MediumTest | Level1)
     std::unique_ptr<AppPackingTool::PtJson> summaryObj;
     EXPECT_FALSE(packInfo.GetModulesObject(summaryObj));
     EXPECT_EQ(summaryObj, nullptr);
+}
+
+/*
+ * @tc.name: GetModulesObject_0400
+ * @tc.desc: GetModulesObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModulesObject_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string jsonString = R"({
+        "summary": {}
+    })";
+    packInfo.ParseFromString(jsonString);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_FALSE(packInfo.GetModulesObject(modulesObj));
+    EXPECT_EQ(modulesObj, nullptr);
+}
+
+/*
+ * @tc.name: GetModulesObject_0500
+ * @tc.desc: GetModulesObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModulesObject_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string jsonString = R"({
+        "summary": {
+            "modules": "invalid_array"
+        }
+    })";
+    packInfo.ParseFromString(jsonString);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_FALSE(packInfo.GetModulesObject(modulesObj));
+    EXPECT_EQ(modulesObj, nullptr);
 }
 
 /*
@@ -2134,5 +2246,20 @@ HWTEST_F(PackInfoTest, GetPackageNamesByPackagesObj_0200, Function | MediumTest 
     std::unique_ptr<AppPackingTool::PtJson> packagesObj;
     std::list<std::string> packageNames;
     EXPECT_FALSE(packInfo.GetPackageNamesByPackagesObj(packagesObj, packageNames));
+}
+
+/*
+ * @tc.name: Release_0100
+ * @tc.desc: Release.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, Release_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    ASSERT_TRUE(packInfo.ParseFromString(JSON_STRING));
+    EXPECT_NE(packInfo.root_, nullptr);
+    packInfo.Release();
+    EXPECT_EQ(packInfo.root_, nullptr);
 }
 } // namespace OHOS
