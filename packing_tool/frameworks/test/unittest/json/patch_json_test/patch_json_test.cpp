@@ -776,4 +776,19 @@ HWTEST_F(PatchJsonTest, GetHqfInfo_0200, Function | MediumTest | Level1)
     ret = patchJson.GetHqfInfo(hqfInfo);
     EXPECT_FALSE(ret);
 }
+
+/*
+ * @tc.name: GetHqfInfo_0300
+ * @tc.desc: GetHqfInfo
+ * @tc.type: FUNC
+ */
+HWTEST_F(PatchJsonTest, GetHqfInfo_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PatchJson patchJson;
+
+    AppPackingTool::HqfInfo hqfInfo;
+    patchJson.ParseFromString("{\"name\": \"Json.CN\",\"app\": {},\"module\": {}}");
+    bool ret = patchJson.GetHqfInfo(hqfInfo);
+    EXPECT_FALSE(ret);
+}
 } // namespace OHOS
