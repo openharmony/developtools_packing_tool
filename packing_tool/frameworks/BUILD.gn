@@ -63,7 +63,6 @@ ohos_executable("ohos_packing_tool") {
   configs = []
   cflags = []
   external_deps = [
-    "hilog:libhilog",
     "openssl:libcrypto_shared",
     "zlib:libz",
   ]
@@ -72,10 +71,19 @@ ohos_executable("ohos_packing_tool") {
       "//build/lite/config/component/cJSON:cjson_static",
       "//third_party/bounds_checking_function:libsec_static",
     ]
+    if (ohos_kernel_type == "liteos_m") {
+      include_dirs = [ "//base/hiviewdfx/hilog_lite/interfaces/native/kits" ]
+      deps += [ "//base/hiviewdfx/hilog_lite/frameworks/mini:hilog_lite" ]
+    } else {
+      include_dirs =
+          [ "//base/hiviewdfx/hilog_lite/interfaces/native/innerkits" ]
+      deps += [ "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared" ]
+    }
   } else {
     external_deps += [
       "bounds_checking_function:libsec_static",
       "cJSON:cjson_static",
+      "hilog:libhilog",
     ]
   }
   install_enable = false

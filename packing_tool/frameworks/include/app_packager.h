@@ -36,13 +36,19 @@ public:
     bool VerifyIsAppService(const std::list<std::string> &modulePathList);
     bool IsAppService(const std::string &hapPath, const std::string &hspPath);
     bool CheckInputModulePath(const std::string &hapPath, const std::string &hspPath);
-    bool IsFileValid();
     bool IsVerifyValidInAppMode();
     bool PrepareDirectoriesAndFiles(const std::string outPath);
     bool CompressHapAndHspFiles(const fs::path &tempPath, const fs::path &hspTempDirPath);
     bool AddHapListToApp(const std::list<std::string> &fileList);
     bool CompressOtherFiles();
     bool CompressAppMode();
+    bool GetAndCheckOutPath(std::string &outPath);
+    bool GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string &hspPath);
+    bool GetAndCheckPackInfoPath(std::string &packInfoPath);
+    bool CheckSignaturePath();
+    bool CheckCertificatePath();
+    bool CheckEntrycardPath();
+    bool CheckPackResPath();
 
 protected:
     int32_t InitAllowedParam() override;

@@ -27,10 +27,6 @@
 
 namespace OHOS {
 namespace AppPackingTool {
-namespace {
-const int32_t APP_SUFFIX_LENGTH = 4;
-}
-
 MultiAppPackager::MultiAppPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
@@ -66,7 +62,7 @@ int32_t MultiAppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("MultiApp DoPackage failed.");
+        LOGE("MultiApp Process failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -77,56 +73,92 @@ int32_t MultiAppPackager::PostProcess()
     return ERR_OK;
 }
 
-bool MultiAppPackager::IsVerifyValidInMultiAppMode()
+bool MultiAppPackager::GetAndCheckOutPath(std::string &outPath)
 {
-    std::string hapListStr;
-    std::string appListStr;
-    if (parameterMap_.find(Constants::PARAM_APP_LIST) != parameterMap_.end()) {
-        appListStr = parameterMap_.at(Constants::PARAM_APP_LIST);
+    if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
+        LOGE("input out-path are null.");
+        return false;
+    }
+    outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+    if (outPath.empty()) {
+        LOGE("input out-path are empty.");
+        return false;
+    }
+    if (outPath.find('.') == std::string::npos ||
+        outPath.substr(outPath.size() - Constants::APP_SUFFIX_LENGTH) != Constants::APP_SUFFIX) {
+        LOGE("out-path must end with .app.");
+        return false;
+    }
+    return true;
+}
+
+bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr, std::string &hspListStr,
+    std::string &appListStr)
+{
+    if (parameterMap_.find(Constants::PARAM_HAP_LIST) == parameterMap_.end() &&
+        parameterMap_.find(Constants::PARAM_HSP_LIST) == parameterMap_.end() &&
+        parameterMap_.find(Constants::PARAM_APP_LIST) == parameterMap_.end()) {
+        LOGE("input hap-list, hsp-list and app-list are all null.");
+        return false;
     }
     if (parameterMap_.find(Constants::PARAM_HAP_LIST) != parameterMap_.end()) {
         hapListStr = parameterMap_.at(Constants::PARAM_HAP_LIST);
     }
-
-    if (hapListStr.empty() && appListStr.empty()) {
-        LOGE("isVerifyValidInMultiAppMode input app-list and hap-list are null.");
-        return false;
+    if (parameterMap_.find(Constants::PARAM_HSP_LIST) != parameterMap_.end()) {
+        hspListStr = parameterMap_.at(Constants::PARAM_HSP_LIST);
     }
-    if (!appListStr.empty()) {
-        if (!CompatibleProcess(appListStr, formattedAppList_, Constants::APP_SUFFIX)) {
-            LOGE("isVerifyValidInMultiAppMode app-list is invalid.");
-            return false;
-        }
+    if (parameterMap_.find(Constants::PARAM_APP_LIST) != parameterMap_.end()) {
+        appListStr = parameterMap_.at(Constants::PARAM_APP_LIST);
+    }
+    if (hapListStr.empty() && hspListStr.empty() && appListStr.empty()) {
+        LOGE("input hap-list, hsp-list and app-list are all empty.");
+        return false;
     }
     if (!hapListStr.empty()) {
         if (!CompatibleProcess(hapListStr, formattedHapAndHspList_, Constants::HAP_SUFFIX)) {
-            LOGE("isVerifyValidInMultiAppMode hap-list is invalid.");
+            LOGE("hap-list is invalid.");
             return false;
         }
     }
-    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_HSP_LIST);
-    if (it != parameterMap_.end() && !it->second.empty()) {
-        if (!CompatibleProcess(it->second, formattedHapAndHspList_, Constants::HSP_SUFFIX)) {
-            LOGE("isVerifyValidInMultiAppMode hsp-list is invalid.");
+    if (!hspListStr.empty()) {
+        if (!CompatibleProcess(hspListStr, formattedHapAndHspList_, Constants::HSP_SUFFIX)) {
+            LOGE("hsp-list is invalid.");
             return false;
         }
     }
-    it = parameterMap_.find(Constants::PARAM_OUT_PATH);
-    if (it != parameterMap_.end() && !it->second.empty()) {
-        std::string outPath = it->second;
-        it = parameterMap_.find(Constants::PARAM_FORCE);
-        if (it != parameterMap_.end() && !it->second.empty()) {
-            if (Utils::IsFileExists(outPath) && it->second == "false") {
-                LOGE("isVerifyValidInMultiAppMode out file already existed.");
-                return false;
-            }
-            if (outPath.find('.') == std::string::npos || outPath.substr(outPath.size() - APP_SUFFIX_LENGTH) !=
-                Constants::APP_SUFFIX) {
-                LOGE("isVerifyValidInMultiAppMode out-path must end with .app.");
-                return false;
-            }
+    if (!appListStr.empty()) {
+        if (!CompatibleProcess(appListStr, formattedAppList_, Constants::APP_SUFFIX)) {
+            LOGE("app-list is invalid.");
+            return false;
         }
     }
+    return true;
+}
+
+bool MultiAppPackager::IsVerifyValidInMultiAppMode()
+{
+    std::string hapListStr;
+    std::string hspListStr;
+    std::string appListStr;
+    if (!GetAndCheckHapAndHspAndAppListStr(hapListStr, hspListStr, appListStr)) {
+        LOGE("GetAndCheckHapAndHspAndAppListStr failed!");
+        return false;
+    }
+
+    std::string outPath;
+    if (!GetAndCheckOutPath(outPath)) {
+        LOGE("GetAndCheckOutPath failed!");
+        return false;
+    }
+
+    auto it = parameterMap_.find(Constants::PARAM_FORCE);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (Utils::IsFileExists(outPath) && it->second == "false") {
+            LOGE("out-path file already existed.");
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -246,13 +278,12 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
                                                const std::string &tempDir, std::string finalPackInfoStr)
 {
     if (formattedHapAndHspList_.empty()) {
-        LOGE("MultiAppPackager::DisposeHapAndHsp hapList is empty.");
         return finalPackInfoStr;
     }
     for (const auto &hapPath : formattedHapAndHspList_) {
         fs::path hapPathFile(hapPath);
         if (std::find(selectedHaps.begin(), selectedHaps.end(), hapPathFile.filename()) != selectedHaps.end()) {
-            LOGE("DisposeHapAndHsp file duplicated, file is %s", hapPathFile.filename().c_str());
+            LOGE("file duplicated, file is %s", hapPathFile.filename().c_str());
         }
         fs::path hapFile(hapPath);
         selectedHaps.push_back(hapFile.filename());
@@ -260,7 +291,7 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
         Utils::CopyFile(hapPath, dstDirString);
         std::string packInfo = GetJsonInZips(hapFile, Constants::PACK_INFO);
         if (packInfo.empty()) {
-            LOGE("MultiAppPackager::DisposeHapAndHsp failed, hap has no pack.info.");
+            LOGW("hap has no pack.info.");
         }
         if (finalPackInfoStr.empty()) {
             finalPackInfoStr = packInfo;

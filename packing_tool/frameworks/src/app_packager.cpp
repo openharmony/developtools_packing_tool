@@ -58,7 +58,7 @@ int32_t AppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("App DoPackage failed.");
+        LOGE("App Process failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -201,47 +201,122 @@ bool AppPackager::CheckInputModulePath(const std::string &hapPath, const std::st
     return true;
 }
 
-bool AppPackager::IsFileValid()
+bool AppPackager::GetAndCheckOutPath(std::string &outPath)
 {
-    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PACK_INFO_PATH);
-    if (it != parameterMap_.end()) {
-        if (it->second.empty()) {
-            LOGW("pack-info-path is empty.");
-            return false;
-        }
-        std::string filePath = it->second;
-        if (!fs::is_regular_file(filePath) || fs::path(filePath).filename() != Constants::PACK_INFO) {
-            LOGE("pack-info-path is invalid.");
-            return false;
-        }
+    if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
+        LOGE("input out-path are null.");
+        return false;
     }
-    it = parameterMap_.find(Constants::PARAM_SIGNATURE_PATH);
+    outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+    if (outPath.empty()) {
+        LOGE("input out-path are empty.");
+        return false;
+    }
+    if (outPath.find('.') == std::string::npos ||
+        outPath.substr(outPath.size() - Constants::APP_SUFFIX_LENGTH) != Constants::APP_SUFFIX) {
+        LOGE("out-path must end with .app.");
+        return false;
+    }
+    return true;
+}
+
+bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string &hspPath)
+{
+    if (parameterMap_.find(Constants::PARAM_HAP_PATH) == parameterMap_.end() &&
+        parameterMap_.find(Constants::PARAM_HSP_PATH) == parameterMap_.end()) {
+        LOGE("input hap-path or hsp-path are all null.");
+        return false;
+    }
+    if (parameterMap_.find(Constants::PARAM_HAP_PATH) != parameterMap_.end()) {
+        hapPath = parameterMap_.at(Constants::PARAM_HAP_PATH);
+    }
+    if (parameterMap_.find(Constants::PARAM_HSP_PATH) != parameterMap_.end()) {
+        hspPath = parameterMap_.at(Constants::PARAM_HSP_PATH);
+    }
+    if (hapPath.empty() && hspPath.empty()) {
+        LOGE("input hap-path or hsp-path are all empty.");
+        return false;
+    }
+    if (!CheckBundleTypeConsistency(hapPath, hspPath)) {
+        LOGE("bundleType is inconsistent.");
+        return false;
+    }
+    if (!CheckInputModulePath(hapPath, hspPath)) {
+        LOGE("input hap-path or hsp-path is invalid.");
+    }
+    if (!hapPath.empty() && !CompatibleProcess(hapPath, formattedHapPathList_, Constants::HAP_SUFFIX)) {
+        LOGE("hap-path is invalid.");
+        return false;
+    }
+    if (!hspPath.empty() && !CompatibleProcess(hspPath, formattedHspPathList_, Constants::HSP_SUFFIX)) {
+        LOGE("hsp-path is invalid.");
+        return false;
+    }
+    return true;
+}
+
+bool AppPackager::GetAndCheckPackInfoPath(std::string &packInfoPath)
+{
+    if (parameterMap_.find(Constants::PARAM_PACK_INFO_PATH) == parameterMap_.end()) {
+        LOGE("input pack-info-path is null.");
+        return false;
+    }
+    packInfoPath = parameterMap_.at(Constants::PARAM_PACK_INFO_PATH);
+    if (packInfoPath.empty()) {
+        LOGE("input pack-info-path is empty.");
+        return false;
+    }
+    if (!fs::is_regular_file(packInfoPath) || fs::path(packInfoPath).filename() != Constants::PACK_INFO) {
+        LOGE("pack-info-path is invalid.");
+        return false;
+    }
+    return true;
+}
+
+bool AppPackager::CheckSignaturePath()
+{
+    auto it = parameterMap_.find(Constants::PARAM_SIGNATURE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        std::string filePath = it->second;
-        if (!fs::is_regular_file(filePath)) {
+        if (!fs::is_regular_file(it->second)) {
             LOGE("signature-path is invalid.");
             return false;
         }
     }
-    it = parameterMap_.find(Constants::PARAM_CERTIFICATE_PATH);
+    return true;
+}
+
+bool AppPackager::CheckCertificatePath()
+{
+    auto it = parameterMap_.find(Constants::PARAM_CERTIFICATE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        std::string filePath = it->second;
-        if (!fs::is_regular_file(filePath)) {
+        if (!fs::is_regular_file(it->second)) {
             LOGE("certificate-path is invalid.");
             return false;
         }
     }
-    it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
-    if (it != parameterMap_.end() && !it->second.empty() &&
-        !CompatibleProcess(it->second,
-            formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
-        LOGE("entrycard-path is invalid.");
-        return false;
+    return true;
+}
+
+bool AppPackager::CheckEntrycardPath()
+{
+    auto it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (!CompatibleProcess(it->second, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
+            LOGE("entrycard-path is invalid.");
+            return false;
+        }
     }
-    it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
-    if (it != parameterMap_.end() && !it->second.empty() && !IsPathValid(it->second, true, Constants::FILE_PACK_RES)) {
-        LOGE("pack-res-path is invalid.");
-        return false;
+    return true;
+}
+
+bool AppPackager::CheckPackResPath()
+{
+    auto it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (!IsPathValid(it->second, true, Constants::FILE_PACK_RES)) {
+            LOGE("pack-res-path is invalid.");
+            return false;
+        }
     }
     return true;
 }
@@ -250,33 +325,26 @@ bool AppPackager::IsVerifyValidInAppMode()
 {
     std::string hapPath;
     std::string hspPath;
-    if (parameterMap_.find(Constants::PARAM_HAP_PATH) != parameterMap_.end()) {
-        hapPath = parameterMap_.at(Constants::PARAM_HAP_PATH);
-    }
-    if (parameterMap_.find(Constants::PARAM_HSP_PATH) != parameterMap_.end()) {
-        hspPath = parameterMap_.at(Constants::PARAM_HSP_PATH);
-    }
-    if (!CheckBundleTypeConsistency(hapPath, hspPath)) {
-        LOGE("bundleType is inconsistent.");
+    if (!GetAndCheckHapPathAndHspPath(hapPath, hspPath)) {
+        LOGE("GetAndCheckHapPathAndHspPath failed!");
         return false;
     }
-    if (!CheckInputModulePath(hapPath, hspPath)) {
-        LOGW("input hap-path or hspPath is invalid.");
-    }
-    if (!hapPath.empty() && !CompatibleProcess(hapPath, formattedHapPathList_, Constants::HAP_SUFFIX)) {
-        LOGE("AppPackager::PreProcess hap-path is invalid.");
+
+    std::string packInfoPath;
+    if (!GetAndCheckPackInfoPath(packInfoPath)) {
+        LOGE("GetAndCheckPackInfoPath failed!");
         return false;
     }
-    if (!hspPath.empty() && !CompatibleProcess(hspPath, formattedHspPathList_, Constants::HSP_SUFFIX)) {
-        LOGE("AppPackager::PreProcess hsp-path is invalid.");
+
+    if (!CheckSignaturePath() || !CheckCertificatePath() || !CheckEntrycardPath() || !CheckPackResPath()) {
+        LOGE("CheckSignaturePath or CheckCertificatePath or CheckEntrycardPath or CheckPackResPath failed!");
         return false;
     }
-    if (!IsFileValid()) {
-        return false;
-    }
+
     std::string outPath;
-    if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
-        outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+    if (!GetAndCheckOutPath(outPath)) {
+        LOGE("GetAndCheckOutPath failed!");
+        return false;
     }
     std::string force;
     if (parameterMap_.find(Constants::PARAM_FORCE) != parameterMap_.end()) {

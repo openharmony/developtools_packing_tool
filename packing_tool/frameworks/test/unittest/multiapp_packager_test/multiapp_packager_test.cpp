@@ -139,6 +139,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0300, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
         {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
     };
@@ -157,6 +158,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0400, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
         {OHOS::AppPackingTool::Constants::PARAM_APP_LIST, ""},
     };
@@ -175,6 +177,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0500, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
         {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
     };
@@ -193,6 +196,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0600, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
         {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, ""},
     };
@@ -211,6 +215,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0700, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
         {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
         {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, ""},
@@ -230,6 +235,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0800, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
         {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
         {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
@@ -256,7 +262,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_0900, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
-    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
 }
 
 /*
@@ -296,7 +302,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1100, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
-    EXPECT_EQ(multiAppPackager.PreProcess(), 0);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
 }
 
 /*
@@ -358,7 +364,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1400, Function | MediumTest | Level1)
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
     EXPECT_EQ(multiAppPackager.PreProcess(), 1);
-    EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), false);
+    EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), true);
 }
 
 /*
@@ -402,7 +408,7 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1600, Function | MediumTest | Level1)
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
     EXPECT_EQ(multiAppPackager.PreProcess(), 1);
-    EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), 0);
+    EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), true);
 }
 
 /*
@@ -518,7 +524,7 @@ HWTEST_F(MultiAppPackagerTest, IsVerifyValidInMultiAppMode_0200, Function | Medi
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
-    EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), false);
+    EXPECT_EQ(multiAppPackager.IsVerifyValidInMultiAppMode(), true);
 }
 
 /*
