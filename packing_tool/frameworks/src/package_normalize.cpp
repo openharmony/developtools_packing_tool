@@ -43,15 +43,15 @@ int32_t PackageNormalize::PreProcess()
     }
     auto it = parameterMap_.find(Constants::PARAM_HSP_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("PackageNormalizeMode hsp-list is empty.");
+        LOGE("hsp-list is empty.");
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspList_, Constants::HSP_SUFFIX)) {
-        LOGE("PackageNormalizeMode hsp-list is invalid.");
+        LOGE("hsp-list is invalid.");
         return ERR_INVALID_VALUE;
     }
     if (hspList_.empty()) {
-        LOGE("PackageNormalizeMode hsp-list is empty.");
+        LOGE("hsp-list is empty.");
         return ERR_INVALID_VALUE;
     }
 
@@ -59,13 +59,13 @@ int32_t PackageNormalize::PreProcess()
     std::regex pattern(Constants::BUNDLE_NAME_PATTERN);
     if (it == parameterMap_.end() || it->second.length() < Constants::BUNDLE_NAME_LEN_MIN ||
         it->second.length() > Constants::BUNDLE_NAME_LEN_MAX || !std::regex_match(it->second, pattern)) {
-        LOGE("PackageNormalizeMode bundle-name is invalid.");
+        LOGE("bundle-name is invalid.");
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it == parameterMap_.end() || !Utils::IsPositiveInteger(it->second)) {
-        LOGE("PackageNormalizeMode version-code is invalid.");
+        LOGE("version-code is invalid.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;

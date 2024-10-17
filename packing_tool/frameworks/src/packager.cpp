@@ -43,22 +43,22 @@ Packager::~Packager()
 std::string Packager::MakePackage()
 {
     if (InitAllowedParam() != ERR_OK) {
-        LOGE("PreCheck err");
+        LOGE("InitAllowedParam err");
         return "";
     }
 
     if (PreProcess() != ERR_OK) {
-        LOGE("PreCheck err");
+        LOGE("PreProcess err");
         return "";
     }
 
     if (Process() != ERR_OK) {
-        LOGE("DoPackage err");
+        LOGE("Process err");
         return "";
     }
 
     if (PostProcess() != ERR_OK) {
-        LOGE("PostCheck err");
+        LOGE("PostProcess err");
         return "";
     }
     return "OHOS::ERR_OK";
@@ -66,19 +66,19 @@ std::string Packager::MakePackage()
 
 int32_t Packager::PreProcess()
 {
-    resultReceiver_.append("do PreCheck\n");
+    resultReceiver_.append("do PreProcess\n");
     return ERR_OK;
 }
 
 int32_t Packager::Process()
 {
-    resultReceiver_.append("do DoPackage\n");
+    resultReceiver_.append("do Process\n");
     return ERR_OK;
 }
 
 int32_t Packager::PostProcess()
 {
-    resultReceiver_.append("do PostCheck\n");
+    resultReceiver_.append("do PostProcess\n");
     return ERR_OK;
 }
 

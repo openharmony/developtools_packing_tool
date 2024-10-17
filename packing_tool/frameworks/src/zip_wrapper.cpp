@@ -175,7 +175,7 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZ
     int32_t result = ZIP_ERR_SUCCESS;
     if (fs::file_size(fsFilePath) > 0) {
         result = ZIP_ERR_SUCCESS;
-        char buffer[MAX_ZIP_BUFFER_SIZE];
+        char buffer[MAX_ZIP_BUFFER_SIZE] = {0};
         while (!file.eof()) {
             file.read(buffer, sizeof(buffer));
             if (file.fail() && !file.eof()) {
@@ -183,9 +183,12 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZ
                 break;
             }
             auto bytesRead = file.gcount();
-            if (bytesRead <= 0) {
+            if (bytesRead < 0) {
                 LOGE("read file bytes error![filePath=%s][bytesRead=%u]", fsFilePath.c_str(), bytesRead);
                 result = ZIP_ERR_FAILURE;
+                break;
+            }
+            if (bytesRead == 0) {
                 break;
             }
             if (zipWriteInFileInZip(zipFile_, buffer, bytesRead) < 0) {

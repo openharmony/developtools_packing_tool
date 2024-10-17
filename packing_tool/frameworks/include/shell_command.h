@@ -29,10 +29,10 @@ namespace {
 const int OFFSET_REQUIRED_ARGUMENT = 2;
 const std::string HELP_MSG_NO_OPTION = "error: you must specify an option at least.";
 const std::string STRING_CODE = "code:";
-const std::string TOOL_NAME = "apt";
+const std::string TOOL_NAME = "ohos_packing_tool";
 
-const std::string HELP_MSG = "usage: apt <command> <options>\n"
-                             "These are common apt commands list:\n"
+const std::string HELP_MSG = "usage: ohos_packing_tool <command> <options>\n"
+                             "These are common ohos_packing_tool commands list:\n"
                              "  help    list available commands\n"
                              "  pack    pack a bundle  with options\n";
 

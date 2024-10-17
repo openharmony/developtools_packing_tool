@@ -53,7 +53,7 @@ int32_t HspPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("Hsp DoPackage failed!");
+        LOGE("Hsp Process failed!");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
