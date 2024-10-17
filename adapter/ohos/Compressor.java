@@ -80,6 +80,7 @@ public class Compressor {
     private static final String MODULE_JSON = "module.json";
     private static final String PATCH_JSON = "patch.json";
     private static final String ADDITION_JSON = "addition.json";
+    private static final String PKG_CONTEXT_INFO = "pkgContextInfo.json";
     private static final String NAME = "name";
     private static final String NULL_DIR_NAME = "";
     private static final String RES_DIR_NAME = "res/";
@@ -3398,6 +3399,9 @@ public class Compressor {
                         break;
                     case RPCID:
                         utility.setRpcid(filePath);
+                        break;
+                    case PKG_CONTEXT_INFO:
+                        utility.setPkgContextPath(filePath);
                         break;
                 }
             });
