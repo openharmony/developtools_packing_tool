@@ -65,7 +65,7 @@ int32_t FastAppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("FastAppMode DoPackage failed.");
+        LOGE("FastApp Process failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -87,12 +87,12 @@ bool FastAppPackager::IsVerifyValidInFastAppMode()
     }
 
     if (!ModuleJsonAndPackInfoExists(formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("FastAppPackager::isVerifyValidInFastAppMode hap-path or hsp-path is invalid.");
+        LOGE("hap-path or hsp-path is invalid.");
         return false;
     }
     
     if (!CheckBundleTypeConsistency(formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("FastAppPackager::isVerifyValidInFastAppMode bundleType is inconsistent.");
+        LOGE("bundleType is inconsistent.");
         return false;
     }
     
@@ -102,7 +102,7 @@ bool FastAppPackager::IsVerifyValidInFastAppMode()
         packInfoPath = it->second;
     }
     if (!IsPackInfoValid(fs::path(packInfoPath), formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("FastAppPackager::isVerifyValidInFastAppMode pack.info is invalid.");
+        LOGE("pack.info is invalid.");
         return false;
     }
     

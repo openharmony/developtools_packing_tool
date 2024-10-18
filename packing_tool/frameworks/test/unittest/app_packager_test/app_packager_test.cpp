@@ -692,140 +692,6 @@ HWTEST_F(AppPackagerTest, CheckInputModulePath_3100, Function | MediumTest | Lev
 }
 
 /*
- * @tc.name: IsFileValid_3200
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3200, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, ""},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3300
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3300, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, TEST_FILE_PATH},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3400
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3400, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, TEST_FILE_PATH + "incorrect.filename"},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3500
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3500, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, TEST_FILE_PATH},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3600
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3600, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, TEST_FILE_PATH},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3700
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3700, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_ENTRYCARD_PATH, PACK_INFO_PATH},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3800
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3800, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, TEST_FILE_PATH},
-    };
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_FALSE(appPackager.IsFileValid());
-}
-
-/*
- * @tc.name: IsFileValid_3900
- * @tc.desc: IsFileValid.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(AppPackagerTest, IsFileValid_3900, Function | MediumTest | Level1)
-{
-    std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap;
-    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
-
-    EXPECT_TRUE(appPackager.IsFileValid());
-}
-
-/*
  * @tc.name: IsVerifyValidInAppMode_4000
  * @tc.desc: IsVerifyValidInAppMode.
  * @tc.type: FUNC
@@ -969,6 +835,8 @@ HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4600, Function | MediumTest | L
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
     };
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
 

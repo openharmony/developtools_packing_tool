@@ -43,6 +43,8 @@ public:
     bool CopyHapAndHspFromApp(const std::string &appPath, std::list<std::string> &selectedHapsInApp,
         std::list<std::string> &selectedHaps, const std::string &tempDir);
     void WritePackInfo(const std::string &filePath, const std::string &packInfoStr);
+    bool GetAndCheckOutPath(std::string &outPath);
+    bool GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr, std::string &hspListStr, std::string &appListStr);
 
 protected:
     int32_t InitAllowedParam() override;
