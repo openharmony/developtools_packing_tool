@@ -80,7 +80,7 @@ int32_t HapPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("Hap DoPackage failed.");
+        LOGE("Hap Process failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
