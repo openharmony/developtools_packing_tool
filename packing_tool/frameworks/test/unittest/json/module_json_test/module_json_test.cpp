@@ -849,6 +849,311 @@ const std::string APP_AND_MODULE_EMPTY_TEST_JSON_STRING = "{"
     "\"module\": {"
     "}"
 "}";
+
+const std::string MODULE_JSON_DISTROFILTER_NOTSTRING_STRING = "{"
+    "\"module\": {"
+        "\"distroFilter\": {"
+            "\"error1\": \"error1\","
+            "\"error2\": \"error2\""
+        "}"
+    "}"
+"}";
+
+const std::string MODULE_JSON_DISTROFILTER_IS_NULL_STRING_STRING = "{"
+    "\"module\": {"
+        "\"distroFilter\": \"\""
+    "}"
+"}";
+
+const std::string MODULE_JSON_DISTROFILTER_ONLY_APIVERSION_STRING = "{"
+    "\"module\": {"
+        "\"distroFilter\": \"{"
+        "}\""
+    "}"
+"}";
+
+const std::string MODULE_JSON_APP_NOT_NULL_STRING = "{"
+    "\"app\": {"
+        "\"ISNULL\": false"
+    "}"
+"}";
+
+const std::string MODULE_JSON_GETFAHAPVERIFYINFO_NOT_APPBUNDLENAME_STRING = "{"
+    "\"app\": {"
+        "\"notbundleName\": \"test_bundle_name\""
+    "},"
+    "\"module\": {"
+        "\"distro\": {"
+        "}"
+    "}"
+"}";
+
+const std::string MODULE_JSON_GETFAHAPVERIFYINFO_NOT_MOD_DISTRO_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"notbundleType\": \"atomicService\""
+    "},"
+    "\"module\": {"
+        "\"notdistro\": {"
+        "}"
+    "}"
+"}";
+
+const std::string MODULE_JSON_GETFAHAPVERIFYINFO_DEPENDENCIES_NOTARRAY_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\""
+    "},"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"dependencies\": {"
+            "\"error\": \"error\""
+        "}"
+    "}"
+"}";
+
+const std::string MODULE_JSON_GETFAHAPVERIFYINFO_NOT_SETBYAPP_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\""
+    "},"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULE_JSON_GETFAHAPVERIFYINFO_NOT_DISTRO_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "}"
+    "},"
+    "\"module\": {"
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"distroFilter\":{"
+            "\"error\": \"error\""
+        "}"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYAPPOBJ_JSON_NOT_APPVENDOR_STRING = "{"
+    "\"app\": {"
+        "\"vendor\": {"
+            "\"error\": \"error\""
+        "}"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYAPPOBJ_NOT_APIVERSION_STRING = "{"
+    "\"app\": {"
+        "\"vendor\": \"\","
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"notapiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "}"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYAPPOBJ__APISDKTYPE_NOTSTRING_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": {"
+                "\"error\": \"error\""
+            "},"
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "}"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYAPPOBJ_APISDKVERSION_NOTSTRING_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": {"
+                "\"error\": \"error\""
+            "},"
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "}"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYMODULEOBJ_ERROR_DISTROFILTER_STRING = "{"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"distroFilter\": \"{"
+        "}\""
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYMODULEOBJ_NOT_DEVICETYPES_STRING = "{"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"notdeviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "]"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYMODULEOBJ_ABILITIES_NOTARRAY_STRING = "{"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"abilities\": {"
+            "\"name\": \"EntryAbility\""
+        "}"
+
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYMODULEOBJ_DISTRO_MOULETYPE_NOTSTRING_STRING = "{"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": {"
+                "\"error\": \"error\""
+            "},"
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYMODULEOBJ_NOT_PACKAGE_STRING = "{"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\""
+            "}"
+        "],"
+        "\"notpackage\": \"test_package\""
+    "}"
+"}";
+
+const std::string SETFAHAPVERIFYINFOBYMODULEOBJ_DISTRO_INSTALLATIONFREE_NOTBOOL_STRING = "{"
+    "\"module\": {"
+        "\"distro\": {"
+            "\"installationFree\": \"error\","
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\""
+            "}"
+        "],"
+        "\"package\": \"test_package\""
+    "}"
+"}";
 }
 class ModuleJsonTest : public testing::Test {
 public:
@@ -5911,5 +6216,297 @@ HWTEST_F(ModuleJsonTest, SetBuildHash_0200, Function | MediumTest | Level1)
     EXPECT_TRUE(moduleJson.ParseFromString(APP_GENERATE_BUILD_HASH_ERROR_TEST_JSON_STRING));
     std::string buildHash = "0";
     EXPECT_FALSE(moduleJson.SetBuildHash(buildHash));
+}
+
+/*
+ * @tc.name: GetFaDistroFilterByModuleObj_0200
+ * @tc.desc: test GetFaDistroFilterByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaDistroFilterByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_DISTROFILTER_NOTSTRING_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    DistroFilter distroFilter;
+    EXPECT_FALSE(moduleJson.GetFaDistroFilterByModuleObj(moduleObj, distroFilter));
+}
+
+/*
+ * @tc.name: GetFaDistroFilterByModuleObj_0300
+ * @tc.desc: test GetFaDistroFilterByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaDistroFilterByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_DISTROFILTER_IS_NULL_STRING_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    DistroFilter distroFilter;
+    EXPECT_FALSE(moduleJson.GetFaDistroFilterByModuleObj(moduleObj, distroFilter));
+}
+
+/*
+ * @tc.name: GetFaDistroFilterByModuleObj_0400
+ * @tc.desc: test GetFaDistroFilterByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaDistroFilterByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_DISTROFILTER_ONLY_APIVERSION_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    DistroFilter distroFilter;
+    EXPECT_FALSE(moduleJson.GetFaDistroFilterByModuleObj(moduleObj, distroFilter));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0300
+ * @tc.desc: test get fa hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaHapVerifyInfo_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_APP_NOT_NULL_STRING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetFaHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0400
+ * @tc.desc: test get fa hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaHapVerifyInfo_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_GETFAHAPVERIFYINFO_NOT_APPBUNDLENAME_STRING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetFaHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0500
+ * @tc.desc: test get fa hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaHapVerifyInfo_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_GETFAHAPVERIFYINFO_NOT_MOD_DISTRO_STRING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetFaHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0600
+ * @tc.desc: test get fa hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaHapVerifyInfo_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_GETFAHAPVERIFYINFO_DEPENDENCIES_NOTARRAY_STRING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetFaHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0700
+ * @tc.desc: test get fa hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaHapVerifyInfo_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_GETFAHAPVERIFYINFO_NOT_SETBYAPP_STRING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetFaHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: GetFaHapVerifyInfo_0800
+ * @tc.desc: test get fa hap verify info
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetFaHapVerifyInfo_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_GETFAHAPVERIFYINFO_NOT_DISTRO_STRING));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.GetFaHapVerifyInfo(hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByAppObj_0300
+ * @tc.desc: test SetFaHapVerifyInfoByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByAppObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYAPPOBJ_JSON_NOT_APPVENDOR_STRING));
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByAppObj(appObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByAppObj_0400
+ * @tc.desc: test SetFaHapVerifyInfoByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByAppObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYAPPOBJ_NOT_APIVERSION_STRING));
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByAppObj(appObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByAppObj_0500
+ * @tc.desc: test SetFaHapVerifyInfoByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByAppObj_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYAPPOBJ__APISDKTYPE_NOTSTRING_STRING));
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByAppObj(appObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByAppObj_0600
+ * @tc.desc: test SetFaHapVerifyInfoByAppObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByAppObj_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYAPPOBJ_APISDKVERSION_NOTSTRING_STRING));
+    std::unique_ptr<PtJson> appObj;
+    EXPECT_TRUE(moduleJson.GetAppObject(appObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByAppObj(appObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByModuleObj_0300
+ * @tc.desc: test SetFaHapVerifyInfoByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYMODULEOBJ_ERROR_DISTROFILTER_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByModuleObj_0400
+ * @tc.desc: test SetFaHapVerifyInfoByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYMODULEOBJ_NOT_DEVICETYPES_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByModuleObj_0500
+ * @tc.desc: test SetFaHapVerifyInfoByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByModuleObj_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYMODULEOBJ_ABILITIES_NOTARRAY_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByModuleObj_0600
+ * @tc.desc: test SetFaHapVerifyInfoByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByModuleObj_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYMODULEOBJ_DISTRO_MOULETYPE_NOTSTRING_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByModuleObj_0700
+ * @tc.desc: test SetFaHapVerifyInfoByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByModuleObj_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYMODULEOBJ_NOT_PACKAGE_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: SetFaHapVerifyInfoByModuleObj_0800
+ * @tc.desc: test SetFaHapVerifyInfoByModuleObj
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetFaHapVerifyInfoByModuleObj_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(SETFAHAPVERIFYINFOBYMODULEOBJ_DISTRO_INSTALLATIONFREE_NOTBOOL_STRING));
+    std::unique_ptr<PtJson> moduleObj;
+    EXPECT_TRUE(moduleJson.GetModuleObject(moduleObj));
+    HapVerifyInfo hapVerifyInfo;
+    EXPECT_FALSE(moduleJson.SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo));
 }
 }
