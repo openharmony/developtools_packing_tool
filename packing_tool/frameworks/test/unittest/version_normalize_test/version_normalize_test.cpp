@@ -40,6 +40,8 @@ namespace OHOS {
 #define STAGE_RESOURCES_PATH "/data/test/resource/packingtool/test_file/stage/resources"
 #define STAGE_JSON_PATH "/data/test/resource/packingtool/test_file/stage/module.json"
 #define STAGE_RPCID_PATH "/data/test/resource/packingtool/test_file/stage/rpcid.sc"
+#define PATH "/data/test/resource/packingtool/test_file/stage"
+const int32_t ORIGIN_VERSION_CODE = 100;
 class VersionNormalizeTest : public testing::Test {
 public:
     VersionNormalizeTest() {}
@@ -240,5 +242,232 @@ HWTEST_F(VersionNormalizeTest, PreProcess_0600, Function | MediumTest | Level1)
     system("mkdir /data/test/versionnormalize_packing");
     OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
     EXPECT_EQ(versionNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: VerifyModuleVersion_0100
+ * @tc.desc: VerifyModuleVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, VerifyModuleVersion_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    OHOS::AppPackingTool::NormalizeVersion normalizeVersion;
+    normalizeVersion.originVersionCode = ORIGIN_VERSION_CODE;
+    normalizeVersion.originVersionName = VERSION_NAME;
+    auto res = versionNormalize.VerifyModuleVersion(normalizeVersion, 0, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: VerifyModuleVersion_0200
+ * @tc.desc: VerifyModuleVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, VerifyModuleVersion_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    OHOS::AppPackingTool::NormalizeVersion normalizeVersion;
+    normalizeVersion.originVersionCode = ORIGIN_VERSION_CODE;
+    normalizeVersion.originVersionName = VERSION_NAME;
+    auto res = versionNormalize.VerifyModuleVersion(normalizeVersion, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_TRUE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0100
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ModifyModuleJson_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    OHOS::AppPackingTool::NormalizeVersion normalizeVersion;
+    normalizeVersion.originVersionCode = ORIGIN_VERSION_CODE;
+    normalizeVersion.originVersionName = VERSION_NAME;
+    auto res = versionNormalize.ModifyModuleJson("", normalizeVersion, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0200
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ModifyModuleJson_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    OHOS::AppPackingTool::NormalizeVersion normalizeVersion;
+    normalizeVersion.originVersionCode = ORIGIN_VERSION_CODE;
+    normalizeVersion.originVersionName = VERSION_NAME;
+    auto res = versionNormalize.ModifyModuleJson(INPUT_LIST, normalizeVersion, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ModifyConfigJson_0100
+ * @tc.desc: ModifyConfigJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ModifyConfigJson_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    OHOS::AppPackingTool::NormalizeVersion normalizeVersion;
+    normalizeVersion.originVersionCode = ORIGIN_VERSION_CODE;
+    normalizeVersion.originVersionName = VERSION_NAME;
+    auto res = versionNormalize.ModifyConfigJson("", normalizeVersion, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ModifyConfigJson_0200
+ * @tc.desc: ModifyConfigJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ModifyConfigJson_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    OHOS::AppPackingTool::NormalizeVersion normalizeVersion;
+    normalizeVersion.originVersionCode = ORIGIN_VERSION_CODE;
+    normalizeVersion.originVersionName = VERSION_NAME;
+    auto res = versionNormalize.ModifyConfigJson(INPUT_LIST, normalizeVersion, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0100
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ModifyPackInfo_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    auto res = versionNormalize.ModifyPackInfo("", ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0200
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ModifyPackInfo_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    auto res = versionNormalize.ModifyPackInfo(INPUT_LIST, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
+}
+
+/*
+ * @tc.name: ProcessJsonFiles_0100
+ * @tc.desc: ProcessJsonFiles
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, ProcessJsonFiles_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, "-123456"},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+
+    system("mkdir /data/test/versionnormalize_packing");
+    std::list<OHOS::AppPackingTool::NormalizeVersion> normalizeVersionList;
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    auto res = versionNormalize.ProcessJsonFiles(PATH, normalizeVersionList, ORIGIN_VERSION_CODE, VERSION_NAME);
+    EXPECT_FALSE(res);
+    system("rm -rf /data/test/versionnormalize_packing");
 }
 } // namespace OHOS
