@@ -798,6 +798,11 @@ public class PackageUtil {
             LOG.error("CompressVerify::isVerifyValidInFastAppMode pack.info is invalid.");
             return false;
         }
+        if (!utility.getEncryptPath().isEmpty()
+                && !isFileValid(utility.getEncryptPath(), Constants.FILE_ENCRYPT_JSON)) {
+            LOG.error("CompressVerify::isVerifyValidInFastAppMode encrypt-path is invalid.");
+            return false;
+        }
         Path outPath = Paths.get(utility.getOutPath());
         if (utility.getForceRewrite().equals(Constants.FALSE) && Files.exists(outPath)) {
             LOG.error("CompressVerify::isVerifyValidInFastAppMode out file already existed.");
