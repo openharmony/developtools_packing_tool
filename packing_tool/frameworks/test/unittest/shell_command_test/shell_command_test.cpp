@@ -225,4 +225,181 @@ HWTEST_F(ShellCommandTest, RunAsUnpackCommand_0700, Function | MediumTest | Leve
     OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char**>(argv), OHOS::AppPackingTool::TOOL_NAME);
     EXPECT_EQ(shellcmd.RunAsUnpackCommand(), 0);
 }
+
+/*
+ * @tc.name: OnCommand_0800
+ * @tc.desc: OnCommand.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ShellCommandTest, OnCommand_0800, Function | MediumTest | Level1)
+{
+    int32_t argc = 4;
+    const char *argv[] = {
+        "ohos_packing_tool",
+        "pack",
+        "--mode",
+        "hqf",
+    };
+
+    OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char **>(argv), OHOS::AppPackingTool::TOOL_NAME);
+    int32_t ret = shellcmd.CreateCommandMap();
+    EXPECT_EQ(ret, 0);
+
+    shellcmd.commandMap_.emplace(shellcmd.cmd_, nullptr);
+    ret = shellcmd.OnCommand();
+    EXPECT_EQ(ret, 0);
+}
+
+/*
+ * @tc.name: getPackager_0900
+ * @tc.desc: getPackager.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ShellCommandTest, getPackager_0900, Function | MediumTest | Level1)
+{
+    int32_t argc = 16;
+    const char *argv[] = {
+        "ohos_packing_tool",
+        "pack",
+        "--mode",
+        "hap",
+        "--json-path",
+        "/data/testunpack/test_hqf_unpacking/patch.json",
+        "--lib-path",
+        "/data/testunpack/test_hqf_unpacking/libs",
+        "--resources-path",
+        "/data/testunpack/test_hqf_unpacking/resources",
+        "--ets-pat",
+        "/data/testunpack/test_hqf_unpacking/ets",
+        "--out-path",
+        "/data/hqfpacking/test_1.hqf",
+        "--force",
+        "true",
+    };
+
+    OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char **>(argv), OHOS::AppPackingTool::TOOL_NAME);
+    int32_t ret = shellcmd.ParseParam();
+    EXPECT_EQ(ret, 0);
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_HAP;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager = shellcmd.getPackager();
+    EXPECT_TRUE(packager != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_APP;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager2 = shellcmd.getPackager();
+    EXPECT_TRUE(packager2 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] =
+        OHOS::AppPackingTool::Constants::MODE_MULTIAPP;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager3 = shellcmd.getPackager();
+    EXPECT_TRUE(packager3 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] =
+        OHOS::AppPackingTool::Constants::MODE_FAST_APP;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager4 = shellcmd.getPackager();
+    EXPECT_TRUE(packager4 != nullptr);
+}
+
+/*
+ * @tc.name: getPackager_1000
+ * @tc.desc: getPackager.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ShellCommandTest, getPackager_1000, Function | MediumTest | Level1)
+{
+    int32_t argc = 16;
+    const char *argv[] = {
+        "ohos_packing_tool",
+        "pack",
+        "--mode",
+        "hap",
+        "--json-path",
+        "/data/testunpack/test_hqf_unpacking/patch.json",
+        "--lib-path",
+        "/data/testunpack/test_hqf_unpacking/libs",
+        "--resources-path",
+        "/data/testunpack/test_hqf_unpacking/resources",
+        "--ets-pat",
+        "/data/testunpack/test_hqf_unpacking/ets",
+        "--out-path",
+        "/data/hqfpacking/test_1.hqf",
+        "--force",
+        "true",
+    };
+
+    OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char **>(argv), OHOS::AppPackingTool::TOOL_NAME);
+    int32_t ret = shellcmd.ParseParam();
+    EXPECT_EQ(ret, 0);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] =
+        OHOS::AppPackingTool::Constants::MODE_VERSION_NORMALIZE;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager1 = shellcmd.getPackager();
+    EXPECT_TRUE(packager1 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_HQF;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager2 = shellcmd.getPackager();
+    EXPECT_TRUE(packager2 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_APPQF;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager3 = shellcmd.getPackager();
+    EXPECT_TRUE(packager3 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] =
+        OHOS::AppPackingTool::Constants::MODE_PACKAGE_NORMALIZE;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager4 = shellcmd.getPackager();
+    EXPECT_TRUE(packager4 != nullptr);
+}
+
+/*
+ * @tc.name: RunAsPackCommand_1100
+ * @tc.desc: RunAsPackCommand.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ShellCommandTest, RunAsPackCommand_1100, Function | MediumTest | Level1)
+{
+    int32_t argc = 16;
+    const char *argv[] = {
+        "ohos_packing_tool",
+        "pack",
+        "--mode",
+        "hap",
+        "--json-path",
+        "/data/testunpack/test_hqf_unpacking/patch.json",
+        "--lib-path",
+        "/data/testunpack/test_hqf_unpacking/libs",
+        "--resources-path",
+        "/data/testunpack/test_hqf_unpacking/resources",
+        "--ets-pat",
+        "/data/testunpack/test_hqf_unpacking/ets",
+        "--out-path",
+        "/data/hqfpacking/test_1.hqf",
+        "--force",
+        "true",
+    };
+
+    OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char **>(argv), OHOS::AppPackingTool::TOOL_NAME);
+    int32_t ret = shellcmd.ParseParam();
+    EXPECT_EQ(ret, 0);
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] = "";
+    EXPECT_EQ(shellcmd.RunAsPackCommand(), 0);
+}
+
+/*
+ * @tc.name: ParseParam_1200
+ * @tc.desc: ParseParam.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ShellCommandTest, ParseParam_1200, Function | MediumTest | Level1)
+{
+    int32_t argc = 0;
+    const char *argv[] = {};
+
+    OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char **>(argv), OHOS::AppPackingTool::TOOL_NAME);
+    int32_t ret = shellcmd.ParseParam();
+    EXPECT_EQ(ret, 1);
+}
 } // namespace OHOS
