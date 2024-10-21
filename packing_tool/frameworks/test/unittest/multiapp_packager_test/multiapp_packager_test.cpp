@@ -745,6 +745,10 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0100, Function | Mediu
 {
     std::string resultReceiver;
     std::string tempDir = "/data/test/resource/packingtool/test_file/temp_test_dir";
+    fs::path parentDir = fs::path(tempDir).parent_path();
+    if (!fs::exists(parentDir)) {
+        fs::create_directories(parentDir);
+    }
     fs::create_directory(tempDir);
     std::string outPath = tempDir + "/output.app";
     std::map<std::string, std::string> parameterMap = {
@@ -757,8 +761,10 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0100, Function | Mediu
     fs::path tempSelectedHapDirPath;
     std::string finalPackInfoStr;
     std::string finalPackInfoPath;
-    EXPECT_TRUE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath,
-     finalPackInfoStr, finalPackInfoPath));
+    multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
+        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath);
+    EXPECT_TRUE(finalPackInfoStr.empty());
+    EXPECT_FALSE(finalPackInfoPath.empty());
 }
 
 /*
@@ -798,7 +804,11 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0200, Function | Mediu
 HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0300, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
-    std::string tempDir = "temp_test_dir";
+    std::string tempDir = "/data/test/resource/packingtool/test_file/temp_test_dir";
+    fs::path parentDir = fs::path(tempDir).parent_path();
+    if (!fs::exists(parentDir)) {
+        fs::create_directories(parentDir);
+    }
     fs::create_directory(tempDir);
     std::string outPath = tempDir + "/output.app";
     std::map<std::string, std::string> parameterMap = {
@@ -842,5 +852,143 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0400, Function | Mediu
     EXPECT_TRUE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath));
     EXPECT_TRUE(fileList.empty());
+}
+
+/*
+ * @tc.name: DisposeApp_0100
+ * @tc.desc: dispose app.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, DisposeApp_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::list<std::string> selectedHaps;
+    std::string tempDir = "temp_test_dir";
+    std::string result = multiAppPackager.DisposeApp(selectedHaps, tempDir);
+    EXPECT_TRUE(result.empty());
+}
+
+/*
+ * @tc.name: CompressAppModeForMultiProject_0100
+ * @tc.desc: compress appmode for multiproject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, CompressAppModeForMultiProject_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        { OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath },
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fs::path tempHapDirPath;
+    fs::path tempSelectedHapDirPath;
+    std::string finalPackInfoStr;
+    std::string finalPackInfoPath;
+    EXPECT_FALSE(multiAppPackager.CompressAppModeForMultiProject());
+}
+
+/*
+ * @tc.name: CompressAppModeForMultiProject_0200
+ * @tc.desc: compress appmode for multiproject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, CompressAppModeForMultiProject_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        { OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath },
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    fs::path tempHapDirPath = tempDir + "/tempHapDir";
+    fs::path tempSelectedHapDirPath = tempDir + "/tempSelectedHapDir";
+    fs::create_directory(tempHapDirPath);
+    fs::create_directory(tempSelectedHapDirPath);
+    std::ofstream(tempHapDirPath / "hap1").close();
+    std::ofstream(tempHapDirPath / "hap2").close();
+    std::list<std::string> fileList;
+    fileList.push_back((tempHapDirPath / "hap1").string());
+    fileList.push_back((tempHapDirPath / "hap2").string());
+    EXPECT_FALSE(multiAppPackager.CompressAppModeForMultiProject());
+    fs::remove_all(tempDir);
+}
+
+/*
+ * @tc.name: CompressAppModeForMultiProject_0300
+ * @tc.desc: compress appmode for multiproject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, CompressAppModeForMultiProject_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        { OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath },
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    fs::path tempHapDirPath = tempDir + "/tempHapDir";
+    fs::path tempSelectedHapDirPath = tempDir + "/tempSelectedHapDir";
+    fs::create_directory(tempHapDirPath);
+    fs::create_directory(tempSelectedHapDirPath);
+    std::ofstream(tempHapDirPath / "hap1").close();
+    std::ofstream(tempHapDirPath / "hap2").close();
+    std::list<std::string> fileList;
+    fileList.push_back((tempHapDirPath / "hap1").string());
+    fileList.push_back((tempHapDirPath / "hap2").string());
+    std::string invalidHapPath = tempHapDirPath / "invalid_hap";
+    fileList.push_back(invalidHapPath);
+    EXPECT_FALSE(multiAppPackager.CompressAppModeForMultiProject());
+    fs::remove_all(tempDir);
+}
+
+/*
+ * @tc.name: CompressAppModeForMultiProject_0400
+ * @tc.desc: compress appmode for multiproject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, CompressAppModeForMultiProject_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::string tempDir = "temp_test_dir";
+    fs::create_directory(tempDir);
+    std::string outPath = tempDir + "/output.app";
+    std::map<std::string, std::string> parameterMap = {
+        { OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, outPath },
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    fs::path tempHapDirPath = tempDir + "/tempHapDir";
+    fs::path tempSelectedHapDirPath = tempDir + "/tempSelectedHapDir";
+    fs::create_directory(tempHapDirPath);
+    fs::create_directory(tempSelectedHapDirPath);
+    std::ofstream(tempHapDirPath / "hap1").close();
+    std::ofstream(tempHapDirPath / "hap2").close();
+    std::list<std::string> fileList;
+    fileList.push_back((tempHapDirPath / "hap1").string());
+    fileList.push_back((tempHapDirPath / "hap2").string());
+    std::string finalPackInfoPath = tempDir + "/finalPackInfo";
+    std::ofstream(finalPackInfoPath).close();
+    std::string invalidFinalPackInfoPath = tempDir + "/invalid_finalPackInfo";
+    EXPECT_FALSE(multiAppPackager.CompressAppModeForMultiProject());
+    fs::remove_all(tempDir);
 }
 } // namespace OHOS
