@@ -505,6 +505,11 @@ public class CompressVerify {
             return false;
         }
 
+        if (!isValidEncryptJsonFile(utility)) {
+            LOG.error("CompressVerify::isVerifyValidInAppMode encrypt-path is invalid.");
+            return false;
+        }
+
         if (!utility.getSignaturePath().isEmpty() && !(new File(utility.getSignaturePath())).isFile()) {
             LOG.error("CompressVerify::isArgsValidInAppMode signature-path is invalid.");
             return false;
@@ -607,6 +612,11 @@ public class CompressVerify {
                 LOG.error("CompressVerify::isVerifyValidInMultiAppMode hsp-list is invalid.");
                 return false;
             }
+        }
+
+        if (!isValidEncryptJsonFile(utility)) {
+            LOG.error("CompressVerify::isVerifyValidInMultiAppMode encrypt-path is invalid.");
+            return false;
         }
 
         File outFile = new File(utility.getOutPath());
@@ -1185,5 +1195,21 @@ public class CompressVerify {
             LOG.error("CompressVerify::hasHomeAbilities exception: " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Indicates whether the "--encrypt-path" parameter is valid.
+     *
+     * @param utility - compress parameters
+     * @return true if "--encrypt-path" param exists and the file name is encrypt.json, or the "--encrypt-path"
+     *         param is empty, or has no "--encrypt-path" param
+     *         false other situations
+     */
+    private static boolean isValidEncryptJsonFile(Utility utility) {
+        if (!utility.getEncryptPath().isEmpty()) {
+            File fileEncryptJson = new File(utility.getEncryptPath());
+            return fileEncryptJson.isFile() && Constants.FILE_ENCRYPT_JSON.equals(fileEncryptJson.getName());
+        }
+        return true;
     }
 }
