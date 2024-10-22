@@ -33,6 +33,7 @@ ohos_unittest("patch_json_test") {
     "../../../../src/json/patch_json.cpp",
     "../../../../src/json/pt_json.cpp",
     "../../../../src/log.cpp",
+    "../../../../src/utils.cpp",
     "patch_json_test.cpp",
   ]
   external_deps = [

@@ -46,7 +46,7 @@ protected:
 
 private:
     unzFile unzFile_ = nullptr;
-    unz_global_info64 unzGlobalInfo_;
+    unz_global_info64 unzGlobalInfo_ = { 0, 0 };
     std::string unzFilePath_;
 };
 }  // namespace AppPackingTool

@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "log.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -159,9 +160,14 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZ
         LOGE("filePath is not regular file![filePath=%s]", fsFilePath.string().c_str());
         return ZIP_ERR_FAILURE;
     }
-    std::ifstream file(fsFilePath.string(), std::ios::binary);
+    std::string realFilePath;
+    if (!Utils::GetRealPath(fsFilePath.string(), realFilePath)) {
+        LOGE("get real file path failed![filePath=%s]", fsFilePath.string().c_str());
+        return false;
+    }
+    std::ifstream file(realFilePath, std::ios::binary);
     if (!file.is_open()) {
-        LOGE("open file failed![filePath=%s]", fsFilePath.string().c_str());
+        LOGE("open file failed![filePath=%s][realFilePath=%s]", fsFilePath.string().c_str(), realFilePath.c_str());
         return ZIP_ERR_FAILURE;
     }
     zipFileInfo_.external_fa = ZIP_FILE_ATTR_DEFAULT;
@@ -173,7 +179,7 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZ
         return ZIP_ERR_FAILURE;
     }
     int32_t result = ZIP_ERR_SUCCESS;
-    if (fs::file_size(fsFilePath) > 0) {
+    if (fs::file_size(realFilePath) > 0) {
         result = ZIP_ERR_SUCCESS;
         char buffer[MAX_ZIP_BUFFER_SIZE] = {0};
         while (!file.eof()) {

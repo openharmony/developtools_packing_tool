@@ -83,8 +83,8 @@ bool HQFVerify::CheckModuleIsDuplicated(const HqfInfo& hqfVerifyInfoLeft, const 
 
 bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& hqfInfos)
 {
-    for (int i = 0; i < hqfInfos.size(); ++i) {
-        for (int j = i + 1; j < hqfInfos.size(); ++j) {
+    for (size_t i = 0; i < hqfInfos.size(); ++i) {
+        for (size_t j = i + 1; j < hqfInfos.size(); ++j) {
             if (CheckModuleIsDuplicated(hqfInfos[i], hqfInfos[j])) {
                 LOGE("input hqf file moduleName duplicated.");
                 return false;

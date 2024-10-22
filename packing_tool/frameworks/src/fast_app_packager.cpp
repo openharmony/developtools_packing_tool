@@ -334,7 +334,12 @@ std::string FastAppPackager::GetModuleJsonContentFromPath(const fs::path &path)
 
 std::string FastAppPackager::ReadFileToString(const fs::path &path)
 {
-    std::ifstream file(path.string(), std::ios::in | std::ios::binary);
+    std::string realPath;
+    if (!Utils::GetRealPath(path.string(), realPath)) {
+        LOGE("get real path failed! path=%s", path.string().c_str());
+        return "";
+    }
+    std::ifstream file(realPath, std::ios::in | std::ios::binary);
     if (!file.is_open()) {
         return "";
     }
