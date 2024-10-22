@@ -56,6 +56,7 @@ ohos_unittest("shell_command_test") {
     "../../../src/multiapp_packager.cpp",
     "../../../src/package_normalize.cpp",
     "../../../src/packager.cpp",
+    "../../../src/res_packager.cpp",
     "../../../src/shell_command.cpp",
     "../../../src/unzip_wrapper.cpp",
     "../../../src/utils.cpp",
