@@ -673,8 +673,10 @@ bool FastAppPackager::PackFastApp(const std::list<std::string> &fileList)
     std::string moduleName;
     it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        std::string entryCardPath = Constants::ENTRYCARD_NAME + moduleName + Constants::LINUX_FILE_SEPARATOR +
-        Constants::ENTRYCARD_BASE_NAME + Constants::ENTRYCARD_SNAPSHOT_NAME;
+        std::string entryCardPath = Constants::ENTRYCARD_NAME + Constants::LINUX_FILE_SEPARATOR +
+            moduleName + Constants::LINUX_FILE_SEPARATOR +
+            Constants::ENTRYCARD_BASE_NAME + Constants::LINUX_FILE_SEPARATOR +
+            Constants::ENTRYCARD_SNAPSHOT_NAME + Constants::LINUX_FILE_SEPARATOR;
         for (auto itemFormattedEntryCardPath : formattedEntryCardPathList_) {
             if (zipWrapper_.AddFileOrDirectoryToZip(itemFormattedEntryCardPath, entryCardPath +
                 fs::path(itemFormattedEntryCardPath).filename().string()) !=
