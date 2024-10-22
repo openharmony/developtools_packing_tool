@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "log.h"
 #include "utils.h"
 
 namespace OHOS {
@@ -45,8 +46,14 @@ bool JsonUtils::IsPatchJson(const std::string& filePath)
 
 std::unique_ptr<PtJson> JsonUtils::JsonFromFile(const std::string& filePath)
 {
-    std::ifstream inFile(filePath, std::ios::in);
+    std::string realFilePath;
+    if (!Utils::GetRealPath(filePath, realFilePath)) {
+        LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        return nullptr;
+    }
+    std::ifstream inFile(realFilePath, std::ios::in);
     if (!inFile.is_open()) {
+        LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
         return nullptr;
     }
     std::string fileContent((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
@@ -64,8 +71,14 @@ bool JsonUtils::JsonToFile(const std::unique_ptr<PtJson>& json, const std::strin
 
 bool JsonUtils::StrToFile(const std::string& str, const std::string& filePath)
 {
-    std::ofstream outFile(filePath, std::ios::out);
+    std::string realFilePath;
+    if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
+        LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        return false;
+    }
+    std::ofstream outFile(realFilePath, std::ios::out);
     if (!outFile.is_open()) {
+        LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
         return false;
     }
     outFile << str;

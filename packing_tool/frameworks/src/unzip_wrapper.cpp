@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "log.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -75,21 +76,23 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     if (fileInfo.external_fa == ZIP_FILE_ATTR_DIRECTORY ||
         (fsUnzipPath.string().rfind('/') == fsUnzipPath.string().length() - 1)) {
         if (!fs::exists(fsFullFilePath)) {
-            LOGD("fsFullFilePath not exist, create: %s", fsFullFilePath.string().c_str());
             fs::create_directories(fsFullFilePath.string());
         }
         return fsFullFilePath.string();
     }
     if (!fs::exists(fsFullFilePath.parent_path())) {
-        LOGD("fsFullFilePath not exists, create : %s", fsFullFilePath.parent_path().string().c_str());
         fs::create_directories(fsFullFilePath.parent_path().string());
     }
     if (unzOpenCurrentFile(unzFile_) != UNZ_OK) {
         LOGE("open current file in zip failed![filename=%s]", filename);
         return "";
     }
-    std::fstream file;
-    file.open(fsFullFilePath.string(), std::ios_base::out | std::ios_base::binary);
+    std::string realFullFilePath;
+    if (!Utils::GetRealPathOfNoneExistFile(fsFullFilePath.string(), realFullFilePath)) {
+        LOGE("get real full file path failed! jsonFile=%s", fsFullFilePath.string().c_str());
+        return "";
+    }
+    std::fstream file(realFullFilePath, std::ios_base::out | std::ios_base::binary);
     if (!file.is_open()) {
         LOGE("open file failed![fsFullFilePath=%s]", fsFullFilePath.string().c_str());
         return "";
@@ -107,7 +110,7 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     } while (bytesRead > 0);
     file.close();
     unzCloseCurrentFile(unzFile_);
-    return fsFullFilePath.string();
+    return realFullFilePath;
 }
 
 int32_t UnzipWrapper::UnzipFile(std::string filePath)
