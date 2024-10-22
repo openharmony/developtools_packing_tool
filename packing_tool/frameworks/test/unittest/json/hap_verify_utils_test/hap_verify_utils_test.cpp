@@ -53,6 +53,7 @@ void HapVerifyUtilsTest::TearDown() {}
 namespace {
     OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo1;
     OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo2;
+    const int64_t FILE_LENGTH_1M = 1024 * 1024;
 }
 
 void InitHapVerifyInfo1()
@@ -1450,5 +1451,624 @@ HWTEST_F(HapVerifyUtilsTest, GetSumSizeLimit_0100, Function | MediumTest | Level
 
     int32_t ret = info.GetSumSizeLimit();
     EXPECT_EQ(ret, sumSizeLimit);
+}
+
+/*
+ * @tc.name: CheckPolicyValueCovered_0100
+ * @tc.desc: CheckPolicyValueCovered
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckPolicyValueCovered_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    OHOS::AppPackingTool::PolicyValue policyValue;
+    policyValue.policy = "exclude";
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    EXPECT_TRUE(hapVerifyUtils.CheckPolicyValueCovered(policyValue, include, exclude));
+}
+
+/*
+ * @tc.name: CheckPolicyValueCovered_0200
+ * @tc.desc: CheckPolicyValueCovered
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckPolicyValueCovered_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    OHOS::AppPackingTool::PolicyValue policyValue;
+    policyValue.policy = "include";
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    EXPECT_TRUE(hapVerifyUtils.CheckPolicyValueCovered(policyValue, include, exclude));
+}
+
+/*
+ * @tc.name: CheckCoveredExcludePolicyValue_0100
+ * @tc.desc: CheckCoveredExcludePolicyValue
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCoveredExcludePolicyValue_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<std::string> value;
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    EXPECT_TRUE(hapVerifyUtils.CheckCoveredExcludePolicyValue(value, include, exclude));
+}
+
+/*
+ * @tc.name: CheckCoveredExcludePolicyValue_0200
+ * @tc.desc: CheckCoveredExcludePolicyValue
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCoveredExcludePolicyValue_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<std::string> value;
+    std::list<std::string> include;
+    include.push_back("test");
+    std::list<std::string> exclude;
+    EXPECT_FALSE(hapVerifyUtils.CheckCoveredExcludePolicyValue(value, include, exclude));
+}
+
+/*
+ * @tc.name: CheckCoveredExcludePolicyValue_0300
+ * @tc.desc: CheckCoveredExcludePolicyValue
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCoveredExcludePolicyValue_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<std::string> value;
+    std::list<std::string> include;
+    include.push_back("test");
+    std::list<std::string> exclude;
+    exclude.push_back("test");
+    EXPECT_TRUE(hapVerifyUtils.CheckCoveredExcludePolicyValue(value, include, exclude));
+}
+
+/*
+ * @tc.name: CheckCoveredIncludePolicyValue_0100
+ * @tc.desc: CheckCoveredIncludePolicyValue
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCoveredIncludePolicyValue_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<std::string> value;
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    EXPECT_TRUE(hapVerifyUtils.CheckCoveredIncludePolicyValue(value, include, exclude));
+}
+
+/*
+ * @tc.name: CheckCoveredIncludePolicyValue_0200
+ * @tc.desc: CheckCoveredIncludePolicyValue
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCoveredIncludePolicyValue_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<std::string> value;
+    std::list<std::string> include;
+    include.push_back("test");
+    std::list<std::string> exclude;
+    EXPECT_TRUE(hapVerifyUtils.CheckCoveredIncludePolicyValue(value, include, exclude));
+}
+
+/*
+ * @tc.name: CheckCoveredIncludePolicyValue_0300
+ * @tc.desc: CheckCoveredIncludePolicyValue
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCoveredIncludePolicyValue_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<std::string> value;
+    std::list<std::string> include;
+    include.push_back("test");
+    std::list<std::string> exclude;
+    exclude.push_back("test");
+    EXPECT_TRUE(hapVerifyUtils.CheckCoveredIncludePolicyValue(value, include, exclude));
+}
+
+/*
+ * @tc.name: IsSameHapVerifyInfo_0100
+ * @tc.desc: IsSameHapVerifyInfo
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, IsSameHapVerifyInfo_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    hapVerifyInfo1.SetModuleName("test1");
+    hapVerifyInfo2.SetModuleName("test2");
+    EXPECT_FALSE(hapVerifyUtils.IsSameHapVerifyInfo(hapVerifyInfo1, hapVerifyInfo2));
+}
+
+/*
+ * @tc.name: GetDeviceHapVerifyInfoMap_0100
+ * @tc.desc: GetDeviceHapVerifyInfoMap
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, GetDeviceHapVerifyInfoMap_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    std::map<std::string, std::list<AppPackingTool::HapVerifyInfo>> deviceInfosMap;
+    EXPECT_FALSE(hapVerifyUtils.GetDeviceHapVerifyInfoMap(hapVerifyInfos, deviceInfosMap));
+}
+
+/*
+ * @tc.name: GetDeviceHapVerifyInfoMap_0200
+ * @tc.desc: GetDeviceHapVerifyInfoMap
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, GetDeviceHapVerifyInfoMap_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    std::list<std::string> deviceTypes = { "phone" };
+    hapVerifyInfo3.SetDeviceTypes(deviceTypes);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    std::map<std::string, std::list<AppPackingTool::HapVerifyInfo>> deviceInfosMap;
+    deviceInfosMap.insert(std::make_pair("phone", hapVerifyInfos));
+    EXPECT_TRUE(hapVerifyUtils.GetDeviceHapVerifyInfoMap(hapVerifyInfos, deviceInfosMap));
+}
+
+/*
+ * @tc.name: CheckAtomicServicePreloadsIsValid_0100
+ * @tc.desc: CheckAtomicServicePreloadsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServicePreloadsIsValid_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServicePreloadsIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServicePreloadsIsValid_0200
+ * @tc.desc: CheckAtomicServicePreloadsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServicePreloadsIsValid_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("module3");
+    std::list<OHOS::AppPackingTool::PreloadItem> preloadItems;
+    OHOS::AppPackingTool::PreloadItem preloadItem;
+    preloadItem.moduleName = "module3";
+    preloadItems.push_back(preloadItem);
+    hapVerifyInfo3.SetPreloadItems(preloadItems);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServicePreloadsIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServicePreloadsIsValid_0300
+ * @tc.desc: CheckAtomicServicePreloadsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServicePreloadsIsValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("module3");
+    std::list<OHOS::AppPackingTool::PreloadItem> preloadItems;
+    OHOS::AppPackingTool::PreloadItem preloadItem1;
+    preloadItem1.moduleName = "module4";
+    preloadItems.push_back(preloadItem1);
+    OHOS::AppPackingTool::PreloadItem preloadItem2;
+    preloadItem2.moduleName = "module4";
+    preloadItems.push_back(preloadItem2);
+    hapVerifyInfo3.SetPreloadItems(preloadItems);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetModuleName("module4");
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServicePreloadsIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServicePreloadsIsValid_0400
+ * @tc.desc: CheckAtomicServicePreloadsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServicePreloadsIsValid_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("module3");
+    std::list<OHOS::AppPackingTool::PreloadItem> preloadItems;
+    OHOS::AppPackingTool::PreloadItem preloadItem1;
+    preloadItem1.moduleName = "module4";
+    preloadItems.push_back(preloadItem1);
+    hapVerifyInfo3.SetPreloadItems(preloadItems);
+    hapVerifyInfo3.SetModuleType("entry3");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetModuleName("module4");
+    hapVerifyInfo4.SetModuleType("entry");
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServicePreloadsIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServicePreloadsIsValid_0500
+ * @tc.desc: CheckAtomicServicePreloadsIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServicePreloadsIsValid_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("module3");
+    std::list<OHOS::AppPackingTool::PreloadItem> preloadItems;
+    OHOS::AppPackingTool::PreloadItem preloadItem1;
+    preloadItem1.moduleName = "module4";
+    preloadItems.push_back(preloadItem1);
+    hapVerifyInfo3.SetPreloadItems(preloadItems);
+    hapVerifyInfo3.SetModuleType("entry3");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetModuleName("module4");
+    hapVerifyInfo4.SetModuleType("entry4");
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_TRUE(hapVerifyUtils.CheckAtomicServicePreloadsIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckFileSizeIsValid_0100
+ * @tc.desc: CheckFileSizeIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckFileSizeIsValid_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    EXPECT_FALSE(hapVerifyUtils.CheckFileSizeIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckFileSizeIsValid_0200
+ * @tc.desc: CheckFileSizeIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckFileSizeIsValid_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetEntrySizeLimit(1);
+    hapVerifyInfo3.SetNotEntrySizeLimit(1);
+    hapVerifyInfo3.SetModuleType("moduleType");
+    hapVerifyInfo3.SetFileLength(FILE_LENGTH_1M);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_FALSE(hapVerifyUtils.CheckFileSizeIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckFileSizeIsValid_0300
+ * @tc.desc: CheckFileSizeIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckFileSizeIsValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetEntrySizeLimit(100);
+    hapVerifyInfo3.SetNotEntrySizeLimit(100);
+    hapVerifyInfo3.SetModuleType("moduleType");
+    hapVerifyInfo3.SetFileLength(1024);
+    std::list<std::string> deviceTypes = { "phone" };
+    hapVerifyInfo3.SetDeviceTypes(deviceTypes);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_TRUE(hapVerifyUtils.CheckFileSizeIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServiceModuleSize_0100
+ * @tc.desc: CheckAtomicServiceModuleSize
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServiceModuleSize_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServiceModuleSize(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServiceModuleSize_0200
+ * @tc.desc: CheckAtomicServiceModuleSize
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServiceModuleSize_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetEntrySizeLimit(1);
+    hapVerifyInfo3.SetNotEntrySizeLimit(1);
+    hapVerifyInfo3.SetModuleType("entry");
+    hapVerifyInfo3.SetFileLength(FILE_LENGTH_1M);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServiceModuleSize(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServiceModuleSize_0300
+ * @tc.desc: CheckAtomicServiceModuleSize
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServiceModuleSize_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetEntrySizeLimit(1);
+    hapVerifyInfo3.SetNotEntrySizeLimit(1);
+    hapVerifyInfo3.SetModuleType("moduleType");
+    hapVerifyInfo3.SetFileLength(FILE_LENGTH_1M);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_FALSE(hapVerifyUtils.CheckAtomicServiceModuleSize(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckAtomicServiceModuleSize_0400
+ * @tc.desc: CheckAtomicServiceModuleSize
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAtomicServiceModuleSize_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetEntrySizeLimit(100);
+    hapVerifyInfo3.SetNotEntrySizeLimit(100);
+    hapVerifyInfo3.SetModuleType("moduleType");
+    hapVerifyInfo3.SetFileLength(100);
+    std::list<std::string> dependencies;
+    dependencies.push_back("test4");
+    hapVerifyInfo3.SetDependencies(dependencies);
+    AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetBundleName("test4");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_TRUE(hapVerifyUtils.CheckAtomicServiceModuleSize(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: FindAtomicServiceHapVerifyInfo_0100
+ * @tc.desc: FindAtomicServiceHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, FindAtomicServiceHapVerifyInfo_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::string moduleName;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    ASSERT_EQ(hapVerifyUtils.FindAtomicServiceHapVerifyInfo(moduleName, hapVerifyInfos), nullptr);
+}
+
+/*
+ * @tc.name: FindAtomicServiceHapVerifyInfo_0200
+ * @tc.desc: FindAtomicServiceHapVerifyInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, FindAtomicServiceHapVerifyInfo_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::string moduleName = "test";
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("test");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    ASSERT_NE(hapVerifyUtils.FindAtomicServiceHapVerifyInfo(moduleName, hapVerifyInfos), nullptr);
+}
+
+/*
+ * @tc.name: CheckTargetModuleNameIsExisted_0200
+ * @tc.desc: CheckTargetModuleNameIsExisted
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckTargetModuleNameIsExisted_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetTargetModuleName("moduleName");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetModuleType("moduleType");
+    hapVerifyInfo4.SetModuleName("moduleName");
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_TRUE(hapVerifyUtils.CheckTargetModuleNameIsExisted(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckContinueTypeIsValid_0300
+ * @tc.desc: CheckContinueTypeIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckContinueTypeIsValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    std::list<std::string> abilityNames = { "abilityName1", "abilityName2" };
+    hapVerifyInfo3.SetAbilityNames(abilityNames);
+    std::map<std::string, std::list<std::string>> continueTypeMap;
+    std::string type1 = "test1";
+    std::list<std::string> strList = { "test" };
+    continueTypeMap.insert(std::make_pair(type1, strList));
+    hapVerifyInfo3.SetContinueTypeMap(continueTypeMap);
+    EXPECT_TRUE(hapVerifyUtils.CheckContinueTypeIsValid(hapVerifyInfo3));
+}
+
+/*
+ * @tc.name: CheckContinueTypeIsValid_0400
+ * @tc.desc: CheckContinueTypeIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckContinueTypeIsValid_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    std::list<std::string> abilityNames = { "abilityName1", "abilityName2" };
+    hapVerifyInfo3.SetAbilityNames(abilityNames);
+    std::map<std::string, std::list<std::string>> continueTypeMap;
+    std::string type1 = "abilityName1";
+    std::list<std::string> strList = { "test" };
+    continueTypeMap.insert(std::make_pair(type1, strList));
+    hapVerifyInfo3.SetContinueTypeMap(continueTypeMap);
+    EXPECT_TRUE(hapVerifyUtils.CheckContinueTypeIsValid(hapVerifyInfo3));
+}
+
+/*
+ * @tc.name: CheckContinueTypeIsValid_0500
+ * @tc.desc: CheckContinueTypeIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckContinueTypeIsValid_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    std::list<std::string> abilityNames = { "abilityName1", "abilityName2" };
+    hapVerifyInfo3.SetAbilityNames(abilityNames);
+    std::map<std::string, std::list<std::string>> continueTypeMap;
+    std::string type1 = "abilityName1";
+    std::list<std::string> strList1 = { "test1" };
+    continueTypeMap.insert(std::make_pair(type1, strList1));
+    std::string type2 = "abilityName2";
+    std::list<std::string> strList2 = { "test2" };
+    continueTypeMap.insert(std::make_pair(type2, strList2));
+    hapVerifyInfo3.SetContinueTypeMap(continueTypeMap);
+    EXPECT_TRUE(hapVerifyUtils.CheckContinueTypeIsValid(hapVerifyInfo3));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0100
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckSharedAppIsValid_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    EXPECT_FALSE(hapVerifyUtils.CheckSharedAppIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0200
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckSharedAppIsValid_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("moduleName3");
+    OHOS::AppPackingTool::DependencyItem dependencyItem;
+    dependencyItem.bundleName = "test";
+    dependencyItem.moduleName = "test";
+    std::list<OHOS::AppPackingTool::DependencyItem> dependencyItemList;
+    dependencyItemList.push_back(dependencyItem);
+    hapVerifyInfo3.SetDependencyItemList(dependencyItemList);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_FALSE(hapVerifyUtils.CheckSharedAppIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0300
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckSharedAppIsValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("moduleName3");
+    hapVerifyInfo3.SetModuleType("test");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    EXPECT_FALSE(hapVerifyUtils.CheckSharedAppIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0400
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckSharedAppIsValid_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("moduleName3");
+    hapVerifyInfo3.SetModuleType("shared");
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetModuleName("moduleName4");
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_FALSE(hapVerifyUtils.CheckSharedAppIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckSharedAppIsValid_0500
+ * @tc.desc: CheckSharedAppIsValid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckSharedAppIsValid_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetModuleName("moduleName3");
+    hapVerifyInfo3.SetModuleType("shared");
+    std::list<std::string> deviceTypes;
+    deviceTypes.push_back("test");
+    hapVerifyInfo3.SetDeviceTypes(deviceTypes);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetModuleName("moduleName3");
+    hapVerifyInfo4.SetModuleType("shared");
+    hapVerifyInfo4.SetDeviceTypes(deviceTypes);
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    EXPECT_FALSE(hapVerifyUtils.CheckSharedAppIsValid(hapVerifyInfos));
 }
 }
