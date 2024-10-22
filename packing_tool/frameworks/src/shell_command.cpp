@@ -31,6 +31,7 @@
 #include "multiapp_packager.h"
 #include "packager.h"
 #include "package_normalize.h"
+#include "res_packager.h"
 #include "version_normalize.h"
 
 namespace OHOS {
@@ -179,6 +180,10 @@ std::unique_ptr<Packager> ShellCommand::getPackager()
     } else if (mode == Constants::MODE_PACKAGE_NORMALIZE) {
         std::unique_ptr<Packager> packager =
             std::make_unique<PackageNormalize>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_RES) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<ResPackager>(parameterMap_, resultReceiver_);
         return packager;
     }
     resultReceiver_.append("not support --mode: ").append(mode).append("\n");
