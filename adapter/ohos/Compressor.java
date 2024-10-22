@@ -2428,10 +2428,12 @@ public class Compressor {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
             isEntryOpen = true;
-            if (!entryName.contains(RAW_FILE_PATH) && !entryName.contains(RES_FILE_PATH) &&
-                    srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
+            if (!entryName.contains(RAW_FILE_PATH)
+                    && !entryName.contains(RES_FILE_PATH)
+                    && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)
+                    && !entryName.equals(Constants.FILE_ENCRYPT_JSON)) {
                 zipEntry.setMethod(ZipEntry.STORED);
-                if (!entryName.equals(Constants.FILE_ENCRYPT_JSON) && jsonSpecialProcess(utility, srcFile, zipEntry)) {
+                if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
                     return;
                 }
             }
