@@ -69,6 +69,8 @@ public:
     static bool CheckFileSuffix(const std::string& filePath, const std::string& suffix);
     static bool CopyFile(const std::string& srcFile, const std::string& dstFile);
     static bool GetFormattedPath(const std::string& path, std::string& formattedPath);
+    static bool GetRealPath(const std::string& path, std::string& realPath);
+    static bool GetRealPathOfNoneExistFile(const std::string& path, std::string& realPath);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

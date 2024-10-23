@@ -287,8 +287,13 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
         LOGE("ModuleJson::ToString failed");
         return false;
     }
-    
-    std::ofstream outFile(jsonPath);
+
+    std::string realJsonPath;
+    if (!Utils::GetRealPath(jsonPath, realJsonPath)) {
+        LOGE("get real json Path failed! jsonPath=%s", jsonPath.c_str());
+        return false;
+    }
+    std::ofstream outFile(realJsonPath);
     if (outFile.is_open()) {
         outFile << prettyJsonString.c_str();
         outFile.close();
@@ -349,8 +354,13 @@ bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash
         LOGE("ModuleJson::ToString failed");
         return false;
     }
-    
-    std::ofstream outFile(jsonPath);
+
+    std::string realJsonPath;
+    if (!Utils::GetRealPath(jsonPath, realJsonPath)) {
+        LOGE("get real json path failed! jsonFile=%s", jsonPath.c_str());
+        return false;
+    }
+    std::ofstream outFile(realJsonPath);
     if (outFile.is_open()) {
         outFile << prettyJsonString.c_str();
         outFile.close();
@@ -387,9 +397,19 @@ void Packager::CompressPackinfoIntoHap(const std::string& hapPathItem, const std
         }
     }
 
-    std::ifstream packInfoFile(packInfoPath, std::ios::binary);
-    std::ofstream destFile(unzipPathString + fs::path::preferred_separator +
-        Constants::PACK_INFO, std::ios::binary | std::ios::trunc);
+    std::string realPackInfoPath;
+    if (!Utils::GetRealPath(packInfoPath, realPackInfoPath)) {
+        LOGE("get real pack info path failed! packInfoPath=%s", packInfoPath.c_str());
+        return;
+    }
+    std::string destFilePath = unzipPathString + fs::path::preferred_separator + Constants::PACK_INFO;
+    std::string realDestFilePath;
+    if (!Utils::GetRealPathOfNoneExistFile(destFilePath, realDestFilePath)) {
+        LOGE("get real dest file path failed! destFilePath=%s", destFilePath.c_str());
+        return;
+    }
+    std::ifstream packInfoFile(realPackInfoPath, std::ios::binary);
+    std::ofstream destFile(realDestFilePath, std::ios::binary | std::ios::trunc);
     destFile << packInfoFile.rdbuf();
     destFile.close();
     packInfoFile.close();

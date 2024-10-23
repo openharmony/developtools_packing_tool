@@ -18,6 +18,7 @@
 #include <fstream>
 
 #include "log.h"
+#include "utils.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -49,9 +50,14 @@ bool PatchJson::ParseFromString(const std::string& jsonString)
 bool PatchJson::ParseFromFile(const std::string& jsonFile)
 {
     Release();
-    std::ifstream inFile(jsonFile, std::ios::in);
+    std::string realJsonFile;
+    if (!Utils::GetRealPath(jsonFile, realJsonFile)) {
+        LOGE("get real json file failed! jsonFile=%s", jsonFile.c_str());
+        return false;
+    }
+    std::ifstream inFile(realJsonFile, std::ios::in);
     if (!inFile.is_open()) {
-        LOGE("Open json file failed! jsonFile=%s", jsonFile.c_str());
+        LOGE("Open json file failed! jsonFile=%s, realJsonFile=%s", jsonFile.c_str(), realJsonFile.c_str());
         return false;
     }
     std::string fileContent((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
