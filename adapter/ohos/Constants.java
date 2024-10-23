@@ -147,6 +147,11 @@ public class Constants {
     public static final String FILE_PACK_INFO = "pack.info";
 
     /**
+     * Indicates the file name: encrypt.json
+     */
+    public static final String FILE_ENCRYPT_JSON = "encrypt.json";
+
+    /**
      * Indicates the file name: module.json
      */
     public static final String FILE_MODULE_JSON = "module.json";

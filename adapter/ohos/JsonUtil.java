@@ -1449,7 +1449,13 @@ public class JsonUtil {
             String fileName = moduleMetadataInfo.resource;
             fileName = fileName.replace(PROFILE, "");
             fileName = fileName + JSON_SUFFIX;
-            moduleMetadataInfo.resource = profileJson.get(fileName);
+            String resourceValue = profileJson.get(fileName);
+            if (resourceValue == null) {
+                LOG.warning("JsonUtil::parseModuleMetadata : metadata.resource value is null");
+                moduleMetadataInfo.resource = "";
+            } else {
+                moduleMetadataInfo.resource = profileJson.get(fileName);
+            }
         }
         return moduleMetadataInfo;
     }
@@ -1568,7 +1574,7 @@ public class JsonUtil {
         // find shortcut and parse in metadata
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String jsonStr = moduleMetadataInfo.resource;
-            if (jsonStr.isEmpty()) {
+            if (jsonStr == null || jsonStr.isEmpty()) {
                 continue;
             }
             try {
