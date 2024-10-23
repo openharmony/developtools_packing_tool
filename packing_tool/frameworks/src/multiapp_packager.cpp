@@ -308,14 +308,19 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
 
 void MultiAppPackager::WritePackInfo(const std::string &filePath, const std::string &packInfoStr)
 {
-    std::ofstream fwriter(filePath);
+    std::string realFilePath;
+    if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
+        LOGE("get real pack info path failed! packInfoPath=%s", filePath.c_str());
+        return;
+    }
+    std::ofstream fwriter(realFilePath);
     if (!fwriter) {
-        LOGE("MultiAppPackager:WritePackInfo failed. Unable to open file: %s", filePath.c_str());
+        LOGE("open file failed![filePath=%s][realFilePath=%s]", filePath.c_str(), realFilePath.c_str());
         return;
     }
     fwriter << packInfoStr;
     if (fwriter.fail()) {
-        LOGE("MultiAppPackager:WritePackInfo failed. Error writing to file: %s", filePath.c_str());
+        LOGE("write pack info failed. Error writing to file: %s", filePath.c_str());
         return;
     }
     fwriter.close();

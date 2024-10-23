@@ -32,6 +32,7 @@ ohos_unittest("unzip_wrapper_test") {
   sources = [
     "../../../src/log.cpp",
     "../../../src/unzip_wrapper.cpp",
+    "../../../src/utils.cpp",
     "../../../src/zip_wrapper.cpp",
     "unzip_wrapper_test.cpp",
   ]

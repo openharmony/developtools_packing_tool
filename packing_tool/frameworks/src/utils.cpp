@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <dirent.h>
 #include <fstream>
@@ -47,8 +48,14 @@ const int TEN = 10;
 
 std::string Utils::GetFileContent(const std::string filePath)
 {
-    std::ifstream inFile(filePath, std::ios::in);
+    std::string realFilePath;
+    if (!Utils::GetRealPath(filePath, realFilePath)) {
+        LOGE("get real file path failed! filePath=%s", filePath.c_str());
+        return nullptr;
+    }
+    std::ifstream inFile(realFilePath, std::ios::in);
     if (!inFile.is_open()) {
+        LOGE("open file path failed![filePath=%s][realFilePath=%s]", filePath.c_str(), realFilePath.c_str());
         return nullptr;
     }
     std::string fileContent((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
@@ -162,7 +169,12 @@ std::string Utils::GetSha256Str(const std::string &str)
 
 std::string Utils::GetSha256File(const std::string &filePath)
 {
-    std::ifstream file(filePath, std::ios::binary);
+    std::string realFilePath;
+    if (!GetRealPath(filePath, realFilePath)) {
+        LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        return "";
+    }
+    std::ifstream file(realFilePath, std::ios::binary);
     if (!file) {
         return "";
     }
@@ -373,14 +385,28 @@ std::string Utils::GenerateUUID()
 
 bool Utils::CopyFile(const std::string& srcPath, const std::string& dstPath)
 {
-    std::ifstream srcFile(srcPath, std::ios::binary);
-    std::ofstream dstFile(dstPath, std::ios::binary);
+    std::string realSrcPath;
+    std::string realDstPath;
+    if (!GetRealPath(srcPath, realSrcPath)) {
+        LOGE("get real src path failed! srcPath=%s", srcPath.c_str());
+        return false;
+    }
+    fs::path fsDstPath(dstPath);
+    std::string parentOfDstPath = fsDstPath.parent_path().string();
+    std::string dstFileName = fsDstPath.filename();
+    if (!GetRealPathOfNoneExistFile(parentOfDstPath, realDstPath)) {
+        LOGE("get real dst path failed! dstPath=%s", dstPath.c_str());
+        return false;
+    }
+    realDstPath += fs::path::preferred_separator + dstFileName;
+    std::ifstream srcFile(realSrcPath, std::ios::binary);
+    std::ofstream dstFile(realDstPath, std::ios::binary);
     if (!srcFile.is_open()) {
-        LOGE("Open srcPath[%s] failed!", srcPath.c_str());
+        LOGE("Open srcPath failed![srcPath=%s][realSrcPath=%s]", srcPath.c_str(), realSrcPath.c_str());
         return false;
     }
     if (!dstFile.is_open()) {
-        LOGE("Open dstPath[%s] failed!", dstPath.c_str());
+        LOGE("Open dstPath failed![dstPath=%s][realDstPath=%s]", dstPath.c_str(), realDstPath.c_str());
         return false;
     }
     dstFile << srcFile.rdbuf();
@@ -401,6 +427,35 @@ bool Utils::GetFormattedPath(const std::string& path, std::string& formattedPath
         LOGE("GetFormattedPath exception: ", err.what());
         return false;
     }
+    return true;
+}
+
+bool Utils::GetRealPath(const std::string& path, std::string& realPath)
+{
+    if (path.length() >= PATH_MAX) {
+        return false;
+    }
+    char buffer[PATH_MAX] = {0};
+    if (realpath(path.c_str(), buffer) == nullptr) {
+        return false;
+    }
+    realPath = std::string(buffer);
+    return true;
+}
+
+bool Utils::GetRealPathOfNoneExistFile(const std::string& path, std::string& realPath)
+{
+    fs::path fsPath = fs::path(path);
+    std::string filePath = fsPath.parent_path().string();
+    std::string fileName = fsPath.filename().string();
+    if (path.length() >= PATH_MAX) {
+        return false;
+    }
+    char buffer[PATH_MAX] = {0};
+    if (realpath(filePath.c_str(), buffer) == nullptr) {
+        return false;
+    }
+    realPath = std::string(buffer) + fs::path::preferred_separator + fileName;
     return true;
 }
 } // namespace AppPackingTool
