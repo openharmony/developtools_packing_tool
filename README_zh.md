@@ -237,7 +237,7 @@ java -jar path\app_packing_tool.jar --mode packageNormalize --hsp-list path\1.hs
 #### 1.10.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode fastApp [--hap-path <path>] [--hsp-path <path>] --out-path <path> [--signature-path <path>] [--certificate-path <path>] [--pack-info-path <path>] --force <option> [--encrypt-path <path>]
+java -jar app_packing_tool.jar --mode fastApp --hap-path <option> --hsp-path <option> --out-path [option] --signature-path [option] --certificate-path [option] --pack-info-path [option] --force [option]
 ```
 
 #### 1.10.2 参数含义及规范
