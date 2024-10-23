@@ -27,6 +27,7 @@ group("unittest") {
     "json/distro_filter_test:unittest",
     "json/hap_verify_utils_test:unittest",
     "json/json_utils_test:unittest",
+    "json/module_json_stage_test:unittest",
     "json/module_json_test:unittest",
     "json/module_json_utils_test:unittest",
     "json/normalize_version_utils_test:unittest",
