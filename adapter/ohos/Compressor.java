@@ -1243,8 +1243,10 @@ public class Compressor {
             }
             File file = new File(utility.getPackInfoPath());
             compressFile(utility, file, NULL_DIR_NAME, false);
+            //pack encrypt.json file
+            packEncryptJsonFile(utility);
         } catch (BundleException e) {
-            LOG.error("Compressor::compressAppMode compress failed.");
+            LOG.error("Compressor::compressAppMode compress failed. msg: " + e.getMessage());
             throw new BundleException("Compressor::compressAppMode compress failed.");
         } finally {
             // delete temp file
@@ -1299,6 +1301,8 @@ public class Compressor {
     private void packFastApp(Utility utility, List<String> fileList) throws BundleException {
         // pack.info
         pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
+        // pack encrypt.json file
+        packEncryptJsonFile(utility);
         // hap/hsp
         for (String hapPath : fileList) {
             HapVerifyInfo hapVerifyInfo = hapVerifyInfoMap.get(getFileNameByPath(hapPath));
@@ -1373,6 +1377,8 @@ public class Compressor {
             }
             File file = new File(finalPackInfoPath);
             compressFile(utility, file, NULL_DIR_NAME, false);
+            //pack encrypt.json file
+            packEncryptJsonFile(utility);
         } catch (BundleException | IOException exception) {
             String errMsg = "Compressor::compressAppModeForMultiProject file failed: " + exception.getMessage();
             LOG.error(errMsg);
@@ -2423,8 +2429,10 @@ public class Compressor {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipArchiveEntry zipEntry = new ZipArchiveEntry(entryName);
             isEntryOpen = true;
-            if (!entryName.contains(RAW_FILE_PATH) && !entryName.contains(RES_FILE_PATH) &&
-                    srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)) {
+            if (!entryName.contains(RAW_FILE_PATH)
+                    && !entryName.contains(RES_FILE_PATH)
+                    && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)
+                    && !entryName.equals(Constants.FILE_ENCRYPT_JSON)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
                     return;
@@ -2520,6 +2528,7 @@ public class Compressor {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
+            LOG.error("Compressor::getCrcFromFile FileNotFoundException : " + ignored.getMessage());
             throw new BundleException("Get Crc from file failed: " + file.getName());
         } catch (IOException exception) {
             LOG.error("Compressor::getCrcFromFile io exception: " + exception.getMessage());
@@ -3493,5 +3502,13 @@ public class Compressor {
     private static String getFileNameByPath(String path) {
         Path filePath = Paths.get(path);
         return filePath.getFileName().toString();
+    }
+
+    private void packEncryptJsonFile(Utility utility) throws BundleException {
+        if (!utility.getEncryptPath().isEmpty()) {
+            pathToFile(utility, utility.getEncryptPath(), NULL_DIR_NAME, false);
+        } else {
+            LOG.info("Compressor::packEncryptJsonFile has no encrypt.json");
+        }
     }
 }
