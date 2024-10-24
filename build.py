@@ -191,9 +191,10 @@ def main():
     toolchain = tool_list[-1]
     toolchain += "_" + args.compileTarget
     
-    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson-1.2.83.jar')
-    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/commons-compress-1.26.1.jar')
-    io_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/commons-io-2.15.1.jar')
+    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson/fastjson-1.2.83.jar')
+    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/compress/commons-compress-1.26.1.jar')
+    io_jar = os.path.join(root_dir,
+        '../../prebuilts/packing_tool/io/commons-io-2.15.1-bin/commons-io-2.15.1/commons-io-2.15.1.jar')
     print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar)
 
     # compile haptobin_tool.jar
