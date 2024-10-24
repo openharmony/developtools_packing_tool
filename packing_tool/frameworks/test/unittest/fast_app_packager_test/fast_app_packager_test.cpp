@@ -34,6 +34,78 @@ const std::string HAP_PATH = "/data/test/resource/packingtool/test_file/hap/entr
 const std::string PACK_INFO_PATH = "/data/test/resource/packingtool/test_file/pack.info";
 const std::string HSP_PATH = "/data/test/resource/packingtool/test_file/fastAppPackagerHspTest.hsp";
 const std::string TEST_PATH = "/data/test/pack.info";
+const std::string MODULE_JSON_TEST_STRING = "{"
+    "\"app\": {"
+        "\"apiVersion\": {"
+        "}"
+    "},"
+    "\"module\": {"
+        "\"type\": \"entry\","
+        "\"name\": \"entry\","
+        "\"packages\": \"entry\","
+        "\"requestPermissions\": true,"
+        "\"proxyData\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"generateBuildHash\": true"
+    "}"
+"}";
+const std::string JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true,"
+            "\"name\": \"entry-default\""
+        "}"
+    "]"
+"}";
 }
 
 class FastAppPackagerTest : public testing::Test {
@@ -602,7 +674,6 @@ HWTEST_F(FastAppPackagerTest, fastAppPackager_3000, Function | MediumTest | Leve
     EXPECT_FALSE(res);
 }
 
-
 /*
  * @tc.name: fastAppPackager_3100
  * @tc.desc: AddSignatureAndCertificateToApp
@@ -991,12 +1062,12 @@ HWTEST_F(FastAppPackagerTest, fastAppPackager_5100, Function | MediumTest | Leve
     formatPathList.push_back("/data/test");
     auto res = fastAppackager.IsHapPathValid(formatPathList);
     EXPECT_TRUE(res);
-    std::list<std::string> formatPathList2;
-    formatPathList2.push_back(TEST_PATH);
+    std::list<std::string> pathList;
+    pathList.push_back(TEST_PATH);
     system("touch /data/test/pack.info");
-    res = fastAppackager.IsHspPathValid(formatPathList2, resultReceiver);
+    res = fastAppackager.IsHspPathValid(pathList, resultReceiver);
     EXPECT_TRUE(res);
-    res = fastAppackager.IsHspPathValid(formatPathList2, TEST_PATH);
+    res = fastAppackager.IsHspPathValid(pathList, TEST_PATH);
     EXPECT_FALSE(res);
     system("rm -f /data/test/pack.info");
 }
@@ -1033,12 +1104,575 @@ HWTEST_F(FastAppPackagerTest, fastAppPackager_5300, Function | MediumTest | Leve
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap;
     OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
-    std::list<std::string> List1;
-    std::list<std::string> List2;
-    List1.push_back(TEST_PATH);
-    auto res = fastAppackager.CheckBundleTypeConsistency(List1, List2);
+    std::list<std::string> hapPathList;
+    std::list<std::string> hspPathList;
+    hapPathList.push_back(TEST_PATH);
+    auto res = fastAppackager.CheckBundleTypeConsistency(hapPathList, hspPathList);
     EXPECT_FALSE(res);
-    res = fastAppackager.CheckBundleTypeConsistency(List2, List1);
+    res = fastAppackager.CheckBundleTypeConsistency(hspPathList, hapPathList);
     EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_5400
+ * @tc.desc: GetBundleTypeFromModuleJson
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_5400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.GetBundleTypeFromModuleJson(JSON_STRING);
+    EXPECT_TRUE(res.empty());
+    res = fastAppackager.GetBundleTypeFromModuleJson(TEST_PATH);
+    EXPECT_TRUE(res.empty());
+}
+
+/*
+ * @tc.name: fastAppPackager_5500
+ * @tc.desc: GetPackageNameFromPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_5500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path path("/data/test.json");
+    std::list<std::string> packageNameList;
+    auto res = fastAppackager.GetPackageNameFromPath(path, packageNameList);
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_5600
+ * @tc.desc: GetPackageNameFromPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_5600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path path("/data/test/pack.info");
+    system("touch /data/test/pack.info");
+    system("chmod 777 /data/test/pack.info");
+    std::ofstream file("/data/test/pack.info");
+    if (file.is_open()) {
+        file << TEST_PATH;
+        file.close();
+    }
+    std::list<std::string> packageNameList;
+    auto res = fastAppackager.GetPackageNameFromPath(path, packageNameList);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_5700
+ * @tc.desc: CompressFastAppMode
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_5700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    parameterMap.emplace(OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, "/mockdirectory/test/");
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.CompressFastAppMode();
+    EXPECT_FALSE(res);
+    system("rm -rf /mockdirectory");
+}
+
+/*
+ * @tc.name: fastAppPackager_5800
+ * @tc.desc: CompressFastAppMode
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_5800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    parameterMap.emplace(OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, "/data/test/");
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHapPathList_.emplace_back("das");
+    auto res = fastAppackager.CompressFastAppMode();
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_5900
+ * @tc.desc: Pack
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_5900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHspPathList_.emplace_back(TEST_PATH);
+    fs::path tmpDir(TEST_PATH);
+    std::list<std::string> fileList;
+    system("touch /data/test/pack.info");
+    auto res = fastAppackager.Pack(tmpDir, fileList);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_6000
+ * @tc.desc: Pack
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path inputPath(TEST_PATH);
+    fs::path appPackInfo("");
+    fs::path packInf(TEST_PATH);
+    fs::path outPath("");
+    fs::path path("");
+    system("touch /data/test/pack.info");
+    auto res = fastAppackager.Pack(inputPath, appPackInfo, outPath, path);
+    EXPECT_FALSE(res);
+    res = fastAppackager.Pack(inputPath, packInf, outPath, path);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_6100
+ * @tc.desc: PackFastApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, "/data/test/pack.info"},
+        {OHOS::AppPackingTool::Constants::PARAM_ENTRYCARD_PATH, "/data/test/pack.info"},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, "/data/test/pack.info"},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fileList.emplace_back(TEST_PATH);
+    fastAppackager.packInfoPath_ = "/data/test/pack.info";
+    system("touch /data/test/pack.info");
+    fastAppackager.formattedEntryCardPathList_.emplace_back(TEST_PATH);
+    auto res = fastAppackager.PackFastApp(fileList);
+    EXPECT_TRUE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_6200
+ * @tc.desc: AddSignatureAndCertificateToApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    parameterMap.emplace(OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, "/data/test");
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.AddSignatureAndCertificateToApp();
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_6300
+ * @tc.desc: AddSignatureAndCertificateToApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    parameterMap.emplace(OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, "/data/test");
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.AddSignatureAndCertificateToApp();
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_6400
+ * @tc.desc: packSingleThread
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path inputPath(TEST_PATH);
+    fs::path appPackInfo("");
+    fs::path outHap("");
+    fs::path path("");
+    system("touch /data/test/pack.info");
+    auto res = fastAppackager.packSingleThread(inputPath, appPackInfo, outHap, path);
+    EXPECT_FALSE(res);
+    system("rm -f  /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_6500
+ * @tc.desc: AddOtherFileToZip
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path entry("/data/test/pack.txt");
+    system("touch /data/test/pack.txt");
+    fastAppackager.isGenerateBuildHash_ = true;
+    auto res = fastAppackager.AddOtherFileToZip(entry);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.txt");
+}
+
+/*
+ * @tc.name: fastAppPackager_6600
+ * @tc.desc: GenBuildHash
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    std::string jsonString;
+    fs::path Path("/data/test");
+    system("touch /data/test/module.json");
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << MODULE_JSON_TEST_STRING;
+        file.close();
+    }
+    fastAppackager.GenBuildHash(Path, jsonString);
+    EXPECT_FALSE(jsonString.empty());
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: fastAppPackager_6700
+ * @tc.desc: FormatPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, TEST_PATH},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHapPathList_.emplace_back(TEST_PATH);
+    auto res = fastAppackager.FormatPath();
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_6800
+ * @tc.desc: FormatPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, TEST_PATH},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHapPathList_.emplace_back(TEST_PATH);
+    system("touch /data/test/pack.info");
+    auto res = fastAppackager.FormatPath();
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_6900
+ * @tc.desc: FormatPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_6900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, "/data/test"},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, "/data/test"},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.FormatPath();
+    EXPECT_TRUE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_7000
+ * @tc.desc: FormatPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, TEST_PATH},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHapPathList_.emplace_back(TEST_PATH);
+    auto res = fastAppackager.FormatPath();
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_7100
+ * @tc.desc: FormatPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, TEST_PATH},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHapPathList_.emplace_back(TEST_PATH);
+    system("touch /data/test/pack.info");
+    auto res = fastAppackager.FormatPath();
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_7200
+ * @tc.desc: FormatPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.FormatPath();
+    EXPECT_FALSE(res);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_HAP_PATH] = "";
+    OHOS::AppPackingTool::FastAppPackager appPackager(parameterMap, resultReceiver);
+    res = appPackager.FormatPath();
+    EXPECT_FALSE(res);
+    OHOS::AppPackingTool::FastAppPackager fastPackager(parameterMap, resultReceiver);
+    res = fastPackager.FormatPath();
+    EXPECT_FALSE(res);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_HSP_PATH] = "";
+    OHOS::AppPackingTool::FastAppPackager fap(parameterMap, resultReceiver);
+    res = fap.FormatPath();
+    EXPECT_FALSE(res);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_HSP_PATH] = "/data/test";
+    OHOS::AppPackingTool::FastAppPackager packager(parameterMap, resultReceiver);
+    res = packager.FormatPath();
+    EXPECT_TRUE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_7300
+ * @tc.desc: CheckBundleTypeConsistency
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    std::list<std::string> hapPathList;
+    std::list<std::string> hspPathList;
+    hapPathList.push_back("/data/test/module.json");
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << MODULE_JSON_TEST_STRING;
+        file.close();
+    }
+    auto res = fastAppackager.CheckBundleTypeConsistency(hapPathList, hspPathList);
+    EXPECT_TRUE(res);
+    hapPathList.push_back("/data/test/pack.info");
+    res = fastAppackager.CheckBundleTypeConsistency(hapPathList, hspPathList);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: fastAppPackager_7400
+ * @tc.desc: CheckBundleTypeConsistency
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    std::list<std::string> hapPathList;
+    std::list<std::string> hspPathList;
+    hspPathList.push_back("/data/test/module.json");
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << MODULE_JSON_TEST_STRING;
+        file.close();
+    }
+    auto res = fastAppackager.CheckBundleTypeConsistency(hapPathList, hspPathList);
+    EXPECT_TRUE(res);
+    hspPathList.push_back("/data/test/pack.info");
+    res = fastAppackager.CheckBundleTypeConsistency(hapPathList, hspPathList);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: fastAppPackager_7500
+ * @tc.desc: GetModuleJsonContentFromPath
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path path("/data/test/module.json");
+    system("touch /data/test/module.json");
+    auto res = fastAppackager.GetModuleJsonContentFromPath(path);
+    EXPECT_TRUE(res.empty());
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: fastAppPackager_7600
+ * @tc.desc: IsPackInfoValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path path("/data/test/test.hsp");
+    std::list<std::string> hspPathList;
+    hspPathList.emplace_back(TEST_PATH);
+    std::list<std::string> hapPathList;
+    system("touch /data/test/test.hsp");
+    auto res = fastAppackager.IsPackInfoValid(path, hapPathList, hspPathList);
+    EXPECT_FALSE(res);
+    res = fastAppackager.IsPackInfoValid(path, hspPathList, hapPathList);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/test.hsp");
+}
+
+/*
+ * @tc.name: fastAppPackager_7700
+ * @tc.desc: CompressFastAppMode
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    parameterMap.emplace(OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, "");
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fastAppackager.formattedHapPathList_.emplace_back("das");
+    auto res = fastAppackager.CompressFastAppMode();
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_7800
+ * @tc.desc: PackDir
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path inputPath("/data/test");
+    fs::path appPackInfo("");
+    fs::path outPath("");
+    fs::path path("");
+    system("touch /data/test/pack.info");
+    system("chmod 777 /data/test/pack.info");
+    std::ofstream file("/data/test/pack.info");
+    if (file.is_open()) {
+        file << JSON_STRING;
+        file.close();
+    }
+    auto res = fastAppackager.PackDir(inputPath, appPackInfo, outPath, path);
+    EXPECT_FALSE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_7900
+ * @tc.desc: RepackHsp
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_7900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    fs::path inputPath("");
+    fs::path appPackInfo("");
+    fs::path outPath("");
+    fs::path path("");
+    auto res = fastAppackager.RepackHsp(inputPath, appPackInfo, outPath, path);
+    EXPECT_FALSE(res);
+}
+
+/*
+ * @tc.name: fastAppPackager_8000
+ * @tc.desc: PackFastApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_8000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, "/data/test/pack.info"},
+        {OHOS::AppPackingTool::Constants::PARAM_ENTRYCARD_PATH, ""},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, ""},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    std::list<std::string> fileList;
+    fileList.emplace_back(TEST_PATH);
+    fastAppackager.packInfoPath_ = "/data/test/pack.info";
+    system("touch /data/test/pack.info");
+    fastAppackager.formattedEntryCardPathList_.emplace_back(TEST_PATH);
+    auto res = fastAppackager.PackFastApp(fileList);
+    EXPECT_TRUE(res);
+    system("rm -f /data/test/pack.info");
+}
+
+/*
+ * @tc.name: fastAppPackager_8100
+ * @tc.desc: AddSignatureAndCertificateToApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, fastAppPackager_8100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    auto res = fastAppackager.AddSignatureAndCertificateToApp();
+    EXPECT_TRUE(res);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH] = "";
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH] = "";
+    OHOS::AppPackingTool::FastAppPackager fastPackager(parameterMap, resultReceiver);
+    res = fastPackager.AddSignatureAndCertificateToApp();
+    EXPECT_TRUE(res);
 }
 } // namespace OHOS
