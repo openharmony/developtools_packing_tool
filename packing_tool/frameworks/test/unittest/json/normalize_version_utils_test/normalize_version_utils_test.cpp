@@ -69,6 +69,60 @@ HWTEST_F(NormalizeVersionUtilsTest, ToString_0100, Function | MediumTest | Level
 }
 
 /*
+ * @tc.name: ToString_0200
+ * @tc.desc: ToString.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(NormalizeVersionUtilsTest, ToString_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::NormalizeVersion moduleNameTestVersion;
+    moduleNameTestVersion.originVersionCode = 100;
+    moduleNameTestVersion.originVersionName = "versionNameTest";
+    moduleNameTestVersion.moduleName = "";
+
+    OHOS::AppPackingTool::NormalizeVersionUtils utils;
+    EXPECT_EQ(utils.ToString(moduleNameTestVersion),
+        "{\"moduleName\":\"\",\"originVersionCode\":100,\"originVersionName\":\"versionNameTest\"}");
+}
+
+/*
+ * @tc.name: ToString_0300
+ * @tc.desc: ToString.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(NormalizeVersionUtilsTest, ToString_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::NormalizeVersion codeTestVersion;
+    codeTestVersion.originVersionCode = 0;
+    codeTestVersion.originVersionName = "versionNameTest";
+    codeTestVersion.moduleName = "nameTest";
+
+    OHOS::AppPackingTool::NormalizeVersionUtils utils;
+    EXPECT_EQ(utils.ToString(codeTestVersion),
+        "{\"moduleName\":\"nameTest\",\"originVersionCode\":0,\"originVersionName\":\"versionNameTest\"}");
+}
+
+/*
+ * @tc.name: ToString_0400
+ * @tc.desc: ToString.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(NormalizeVersionUtilsTest, ToString_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::NormalizeVersion nameTestVersion;
+    nameTestVersion.originVersionCode = 100;
+    nameTestVersion.originVersionName = "";
+    nameTestVersion.moduleName = "nameTest";
+
+    OHOS::AppPackingTool::NormalizeVersionUtils utils;
+    EXPECT_EQ(utils.ToString(nameTestVersion),
+        "{\"moduleName\":\"nameTest\",\"originVersionCode\":100,\"originVersionName\":\"\"}");
+}
+
+/*
  * @tc.name: ArrayToString_0100
  * @tc.desc: ArrayToString.
  * @tc.type: FUNC
@@ -94,5 +148,19 @@ HWTEST_F(NormalizeVersionUtilsTest, ArrayToString_0100, Function | MediumTest | 
     EXPECT_EQ(utils.ArrayToString(normalizeVersions), "[{\"moduleName\":\"nameTest\",\"originVersionCode\":100,"
         "\"originVersionName\":\"versionNameTest\"},{\"moduleName\":\"nameTest2\",\"originVersionCode\":200,"
         "\"originVersionName\":\"versionNameTest2\"}]");
+}
+
+/*
+ * @tc.name: ArrayToString_0200
+ * @tc.desc: ArrayToString.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(NormalizeVersionUtilsTest, ArrayToString_0200, Function | MediumTest | Level1)
+{
+    std::list<OHOS::AppPackingTool::NormalizeVersion> emptyArrayTestVersion;
+
+    OHOS::AppPackingTool::NormalizeVersionUtils utils;
+    EXPECT_EQ(utils.ArrayToString(emptyArrayTestVersion), "[]");
 }
 }

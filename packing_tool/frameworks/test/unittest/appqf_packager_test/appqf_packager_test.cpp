@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
 #include <string>
+#include <iostream>
 
 #include "constants.h"
 #define private public
@@ -43,6 +44,7 @@ const std::string HQF_OUT_PATH_TWO = "/data/test/testPack/testHqfPack2.hqf";
 const std::string HQF_RESOURCES_PATH_ONE = APPQF_PACKAGER_FILE_PATH + std::string("hqfFileExample2/resources");
 const std::string HQF_RESOURCES_PATH_TWO = APPQF_PACKAGER_FILE_PATH + std::string("hqfFileExample2/resources");
 const std::string OUT_PATH = "/data/test/testAppQFPack/testappqfPack.appqf";
+const std::string TEST_HQF_LIST = "/data/test/testPack/testHqfPackerr.hqf";
 }
 
 class AppqfPackagetTest : public testing::Test {
@@ -167,5 +169,89 @@ HWTEST_F(AppqfPackagetTest, PreProcess_0300, Function | MediumTest | Level1)
 
     OHOS::AppPackingTool::APPQFPackager appQFPackager(parameterMap1, resultReceiver);
     EXPECT_EQ(appQFPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PostProcess_0100
+ * @tc.desc: PostProcessTest
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppqfPackagetTest, PostProcessTest_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap1 = {
+        {OHOS::AppPackingTool::Constants::PARAM_HQF_LIST, TEST_HQF_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+    OHOS::AppPackingTool::APPQFPackager localAPPQFPackager(parameterMap1, resultReceiver);
+    auto ret = localAPPQFPackager.PostProcess();
+    EXPECT_EQ(ret, OHOS::AppPackingTool::ERR_OK);
+}
+
+/*
+ * @tc.name: InitAllowedParam_0100
+ * @tc.desc: InitAllowedParamTest
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppqfPackagetTest, InitAllowedParam_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap1 = {
+        {OHOS::AppPackingTool::Constants::PARAM_HQF_LIST, TEST_HQF_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+    OHOS::AppPackingTool::APPQFPackager localAPPQFPackager(parameterMap1, resultReceiver);
+    auto ret = localAPPQFPackager.InitAllowedParam();
+    EXPECT_EQ(ret, OHOS::AppPackingTool::ERR_OK);
+}
+
+/*
+ * @tc.name: CheckHqfList_0100
+ * @tc.desc: CheckHqfListTest
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppqfPackagetTest, Casdsdasdsast_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap1 = {
+        {OHOS::AppPackingTool::Constants::PARAM_HQF_LIST, TEST_HQF_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+    OHOS::AppPackingTool::APPQFPackager localAPPQFPackager(parameterMap1, resultReceiver);
+    std::list<std::string> hqfList;
+    auto localHqfList_ = localAPPQFPackager.hqfList_;
+    localAPPQFPackager.hqfList_.clear();
+    auto ret = localAPPQFPackager.CheckHqfList(hqfList);
+    localAPPQFPackager.hqfList_ = localHqfList_;
+    EXPECT_EQ(ret, false);
+    hqfList.push_back(TEST_HQF_LIST);
+    localAPPQFPackager.hqfList_.push_back(TEST_HQF_LIST);
+    ret = localAPPQFPackager.CheckHqfList(hqfList);
+    EXPECT_EQ(ret, false);
+}
+
+/*
+ * @tc.name: Process_0100
+ * @tc.desc: ProcessTest
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppqfPackagetTest, ProcessTest_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap1 = {
+        {OHOS::AppPackingTool::Constants::PARAM_HQF_LIST, TEST_HQF_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+    OHOS::AppPackingTool::APPQFPackager localAPPQFPackager(parameterMap1, resultReceiver);
+    auto ret = localAPPQFPackager.Process();
+    EXPECT_EQ(ret, OHOS::AppPackingTool::ERR_OK);
 }
 } // namespace OHOS
