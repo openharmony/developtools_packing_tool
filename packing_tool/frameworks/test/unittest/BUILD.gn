@@ -39,6 +39,7 @@ group("unittest") {
     "multiapp_packager_test:unittest",
     "package_normalize_test:unittest",
     "packager_test:unittest",
+    "res_packager_test:unittest",
     "shell_command_test:unittest",
     "unzip_wrapper_test:unittest",
     "utils_Test:unittest",

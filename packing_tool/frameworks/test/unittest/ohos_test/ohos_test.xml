@@ -115,4 +115,9 @@
       <option name="push" value="../test_file/package_normalize_file/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/resources/base/profile/" src="res" />
     </preparer>
   </target>
+  <target name="res_packager_test">
+    <preparer>
+      <option name="push" value="../test_file/res_packager_file/pack.json -> /data/test/resource/packingtool/test_file/" src="res" />
+    </preparer>
+  </target>
 </configuration>
