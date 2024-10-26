@@ -925,7 +925,7 @@ public class CompressVerify {
         }
 
         if((isBundleTypeShared(utility) || isBundleTypeAppService(utility)) && hspHasAbilities(utility)) {
-            LOG.error("System-level/inter-application hsp has abilities");
+            LOG.error("shared/appService hsp has abilities");
             return false;
         }
 
