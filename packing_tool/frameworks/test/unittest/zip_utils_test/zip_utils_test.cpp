@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
 #include <string>
+#include <fstream>
 
 #include "constants.h"
 #include "zip_constants.h"
@@ -284,5 +285,295 @@ HWTEST_F(ZipUtilsTest, AddToResourceMap_0800, Function | MediumTest | Level1)
     EXPECT_TRUE(zipUtils.AddToResourceMap(unzipFile, filePathInZip, resourceMap));
 
     DeleteFilePath(OUT_PATH);
+}
+
+/*
+ * @tc.name: Zip_0200
+ * @tc.desc: Zip
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, Zip_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string filePath(FILE_PATH);
+    std::string zipPath(OUT_PATH);
+    int ret = zipUtils.Zip(filePath,
+                           zipPath,
+                           OHOS::AppPackingTool::Constants::LIB_PATH,
+                           OHOS::AppPackingTool::ZipLevel::ZIP_LEVEL_DEFAULT,
+                           -1);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: Zip_0300
+ * @tc.desc: Zip
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, Zip_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string filePath(FILE_PATH);
+    std::string zipPath(OUT_PATH);
+    int ret = zipUtils.Zip(filePath,
+                           zipPath,
+                           OHOS::AppPackingTool::Constants::LIB_PATH,
+                           OHOS::AppPackingTool::ZipLevel::ZIP_LEVEL_2,
+                           0);
+    EXPECT_EQ(ret, AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+    DeleteFilePath(OUT_PATH);
+}
+
+/*
+ * @tc.name: Unzip_0300
+ * @tc.desc: Unzip
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, Unzip_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string invalidZipPath = "/invalid/path/to/zipfile.zip";
+    std::string tempPath(TEMP_PATH);
+    int ret = zipUtils.Unzip(invalidZipPath, tempPath);
+    EXPECT_EQ(ret, OHOS::AppPackingTool::ZipErrCode::ZIP_ERR_FAILURE);
+}
+
+/*
+ * @tc.name: IsFileExistsInZip_0400
+ * @tc.desc: IsFileExistsInZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, IsFileExistsInZip_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string invalidZipPath = "invalid.zip";
+    bool exist = zipUtils.IsFileExistsInZip(invalidZipPath, FILE_NAME);
+    EXPECT_FALSE(exist);
+}
+
+/*
+ * @tc.name: IsFileExistsInZip_0500
+ * @tc.desc: IsFileExistsInZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, IsFileExistsInZip_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string emptyZipPath = std::string(OUT_PATH) + "/empty.zip";
+    std::ofstream ofs(emptyZipPath);
+    ofs.close();
+    bool exist = zipUtils.IsFileExistsInZip(emptyZipPath, FILE_NAME);
+    EXPECT_FALSE(exist);
+    DeleteFilePath(emptyZipPath);
+}
+
+/*
+ * @tc.name: IsFileExistsInZip_0600
+ * @tc.desc: IsFileExistsInZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, IsFileExistsInZip_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string filePath = std::string(FILE_PATH) + std::string(FILE_NAME);
+    std::string zipPath(OUT_PATH);
+    std::string nonExistentFile = "nonexistent.txt";
+    zipUtils.Zip(filePath, zipPath, FILE_NAME);
+    bool exist = zipUtils.IsFileExistsInZip(zipPath, nonExistentFile);
+    EXPECT_FALSE(exist);
+    DeleteFilePath(zipPath);
+}
+
+/*
+ * @tc.name: IsFileNameExistsInZip_0500
+ * @tc.desc: IsFileNameExistsInZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, IsFileNameExistsInZip_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string invalidZipPath = "invalid.zip";
+    bool exist = zipUtils.IsFileNameExistsInZip(invalidZipPath, FILE_NAME);
+    EXPECT_FALSE(exist);
+}
+
+/*
+ * @tc.name: IsFileNameExistsInZip_0600
+ * @tc.desc: IsFileNameExistsInZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, IsFileNameExistsInZip_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string emptyZipPath = std::string(OUT_PATH) + "/empty.zip";
+    std::ofstream ofs(emptyZipPath);
+    ofs.close();
+    bool exist = zipUtils.IsFileNameExistsInZip(emptyZipPath, FILE_NAME);
+    EXPECT_FALSE(exist);
+    DeleteFilePath(emptyZipPath);
+}
+
+/*
+ * @tc.name: IsFileNameExistsInZip_0700
+ * @tc.desc: IsFileNameExistsInZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, IsFileNameExistsInZip_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string filePath = std::string(FILE_PATH) + std::string(FILE_NAME);
+    std::string zipPath(OUT_PATH);
+    std::string nonExistentFile = "nonexistent.txt";
+    bool exist = zipUtils.IsFileNameExistsInZip(zipPath, nonExistentFile);
+    EXPECT_FALSE(exist);
+    DeleteFilePath(OUT_PATH);
+}
+
+/*
+ * @tc.name: GetFileContentFromZip_0600
+ * @tc.desc: GetFileContentFromZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetFileContentFromZip_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string invalidZipPath = "invalid.zip";
+    std::string fileContent;
+    bool result = zipUtils.GetFileContentFromZip(invalidZipPath, FILE_NAME, fileContent);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(fileContent.empty());
+}
+
+/*
+ * @tc.name: GetFileContentFromZip_0700
+ * @tc.desc: GetFileContentFromZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetFileContentFromZip_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string zipPath(OUT_PATH);
+    std::string nonExistentFile = "nonexistent.txt";
+    std::string fileContent;
+    bool result = zipUtils.GetFileContentFromZip(zipPath, nonExistentFile, fileContent);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(fileContent.empty());
+    DeleteFilePath(OUT_PATH);
+}
+/*
+ * @tc.name: GetUnzipCurrentFileContent_0700
+ * @tc.desc: GetUnzipCurrentFileContent.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetUnzipCurrentFileContent_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    unzFile unzipFile = nullptr;
+    std::string fileContent;
+    bool result = zipUtils.GetUnzipCurrentFileContent(unzipFile, fileContent);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(fileContent.empty());
+}
+
+/*
+ * @tc.name: GetUnzipCurrentFileContent_0800
+ * @tc.desc: GetUnzipCurrentFileContent.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetUnzipCurrentFileContent_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string filePath = std::string(FILE_PATH) + std::string(FILE_NAME);
+    std::string zipPath(OUT_PATH);
+    std::string fileContent;
+    zipUtils.Zip(filePath, zipPath, FILE_NAME);
+    unzFile unzipFile = unzOpen64(zipPath.c_str());
+    unzClose(unzipFile);
+    bool result = zipUtils.GetUnzipCurrentFileContent(unzipFile, fileContent);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(fileContent.empty());
+    DeleteFilePath(OUT_PATH);
+}
+
+/*
+ * @tc.name: GetUnzipCurrentFileContent_0900
+ * @tc.desc: GetUnzipCurrentFileContent.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetUnzipCurrentFileContent_0900, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string filePath = std::string(FILE_PATH) + std::string(FILE_NAME);
+    std::string zipPath(OUT_PATH);
+    std::string fileContent;
+    zipUtils.Zip(filePath, zipPath, FILE_NAME);
+    unzFile unzipFile = unzOpen64(zipPath.c_str());
+    unzClose(unzipFile);
+    bool result = zipUtils.GetUnzipCurrentFileContent(unzipFile, fileContent);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(fileContent.empty());
+    DeleteFilePath(OUT_PATH);
+}
+
+/*
+ * @tc.name: AddToResourceMap_0900
+ * @tc.desc: AddToResourceMap.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, AddToResourceMap_0900, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    unzFile unzipFile = nullptr;
+    std::map<std::string, std::string> resourceMap;
+    bool result = zipUtils.AddToResourceMap(unzipFile, FILE_NAME, resourceMap);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(resourceMap.empty());
+}
+
+/*
+ * @tc.name: GetResourceMapFromZip_0800
+ * @tc.desc: GetResourceMapFromZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetResourceMapFromZip_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string invalidZipPath = "invalid.zip";
+    std::map<std::string, std::string> resourceMap;
+    bool result = zipUtils.GetResourceMapFromZip(invalidZipPath, resourceMap);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(resourceMap.empty());
+}
+
+/*
+ * @tc.name: GetResourceMapFromZip_0900
+ * @tc.desc: GetResourceMapFromZip.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ZipUtilsTest, GetResourceMapFromZip_0900, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ZipUtils zipUtils;
+    std::string nonRegularFilePath = "/path/to/non_regular_file.zip";
+    std::map<std::string, std::string> resourceMap;
+    bool result = zipUtils.GetResourceMapFromZip(nonRegularFilePath, resourceMap);
+    EXPECT_FALSE(result);
+    EXPECT_TRUE(resourceMap.empty());
 }
 } // namespace OHOS
