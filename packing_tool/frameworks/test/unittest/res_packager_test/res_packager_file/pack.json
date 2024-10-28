@@ -1,0 +1,18 @@
+{
+    "app": {
+        "bundleName": "com.example.testquickfix",
+        "versionCode": 1000000,
+        "versionName": "1.0.0.1",
+        "patchVersionCode": 1000000,
+        "patchVersionName": "1.0.0.1"
+    },
+    "module": {
+        "name": "entry1",
+        "type": "patch",
+        "deviceTypes": [
+            "default1",
+            "tablet1"
+        ],
+        "originalModuleHash": "c97441c96c84b2ffcb7c85570fb60a0be114ca1f438f8af51b33004081ddb782"
+    }
+}
