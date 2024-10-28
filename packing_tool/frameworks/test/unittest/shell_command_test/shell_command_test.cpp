@@ -350,6 +350,11 @@ HWTEST_F(ShellCommandTest, getPackager_1000, Function | MediumTest | Level1)
         OHOS::AppPackingTool::Constants::MODE_PACKAGE_NORMALIZE;
     std::unique_ptr<OHOS::AppPackingTool::Packager> packager4 = shellcmd.getPackager();
     EXPECT_TRUE(packager4 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] =
+        OHOS::AppPackingTool::Constants::MODE_RES;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager5 = shellcmd.getPackager();
+    EXPECT_TRUE(packager5 != nullptr);
 }
 
 /*
