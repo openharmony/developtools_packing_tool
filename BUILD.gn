@@ -60,7 +60,7 @@ ohos_prebuilt_etc("app_check_tool") {
 }
 
 ohos_prebuilt_etc("fastjson-1.2.83") {
-  source = "//prebuilts/packing_tool/fastjson-1.2.83.jar"
+  source = "//prebuilts/packing_tool/fastjson/fastjson-1.2.83.jar"
   install_enable = false
 }
 
