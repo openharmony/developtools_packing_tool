@@ -483,6 +483,117 @@ const std::string NO_FORM_NAME_JSON_STRING = "{"
         "]"
     "}"
 "}";
+
+const std::string MODULES_NOT_ARRAY_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": \"test\""
+    "}"
+"}";
+
+const std::string APP_EMPTY_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+        "}"
+    "}"
+"}";
+
+const std::string APP_BUNDLE_NAME_NOT_STRING_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": ["
+            "]"
+        "}"
+    "}"
+"}";
+
+const std::string APP_VERSION_NOT_OBJECT_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"version\": \"test\""
+        "}"
+    "}"
+"}";
+
+const std::string MODULES_DISTRO_NOT_OBJECT_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"distro\": \"test\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_EXTENSION_ABILITIES_NOT_ARRAY_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"extensionAbilities\": \"test\""
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_DISTRO_MODULE_NAME_NOT_STRING_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"distro\": {"
+                    "\"moduleName\": {"
+                    "}"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string PACKAGES_NAME_NOT_STRING_TEST_JSON_STRING = "{"
+    "\"packages\":["
+        "{"
+            "\"name\": ["
+            "]"
+        "}"
+    "]"
+"}";
+
+const std::string MODULES_EXTENSION_ABILITIES_FORMS_NAME_NOT_STRING_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"extensionAbilities\": ["
+                    "{"
+                        "\"forms\": ["
+                            "{"
+                                "\"name\": ["
+                                "]"
+                            "}"
+                        "]"
+                    "}"
+                "]"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_EXTENSION_ABILITIES_FORMS_DEFAULT_DIMENSION_NOT_STRING_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"extensionAbilities\": ["
+                    "{"
+                        "\"forms\": ["
+                            "{"
+                                "\"name\": \"test\","
+                                "\"defaultDimension\": ["
+                                "]"
+                            "}"
+                        "]"
+                    "}"
+                "]"
+            "}"
+        "]"
+    "}"
+"}";
 }
 
 class PackInfoTest : public testing::Test {
@@ -2261,5 +2372,247 @@ HWTEST_F(PackInfoTest, Release_0100, Function | MediumTest | Level1)
     EXPECT_NE(packInfo.root_, nullptr);
     packInfo.Release();
     EXPECT_EQ(packInfo.root_, nullptr);
+}
+
+/*
+ * @tc.name: GetModulesObject_0600
+ * @tc.desc: GetModulesObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModulesObject_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_NOT_ARRAY_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> summaryObj;
+    EXPECT_FALSE(packInfo.GetModulesObject(summaryObj));
+    ASSERT_EQ(summaryObj, nullptr);
+}
+
+/*
+ * @tc.name: GetBundleNameByAppObj_0400
+ * @tc.desc: GetBundleNameByAppObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetBundleNameByAppObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(APP_BUNDLE_NAME_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> appObj;
+    EXPECT_TRUE(packInfo.GetAppObject(appObj));
+    std::string bundleName = "";
+    EXPECT_FALSE(packInfo.GetBundleNameByAppObj(appObj, bundleName));
+}
+
+/*
+ * @tc.name: GetBundleTypeByAppObj_0400
+ * @tc.desc: GetBundleTypeByAppObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetBundleTypeByAppObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(APP_EMPTY_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> appObj;
+    EXPECT_TRUE(packInfo.GetAppObject(appObj));
+    std::string bundleType = "";
+    std::string defaultBundleType = "app";
+    EXPECT_TRUE(packInfo.GetBundleTypeByAppObj(appObj, bundleType, defaultBundleType));
+}
+
+/*
+ * @tc.name: GetVersionObject_0400
+ * @tc.desc: GetVersionObject.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetVersionObject_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(APP_VERSION_NOT_OBJECT_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> versionObj;
+    EXPECT_FALSE(packInfo.GetVersionObject(versionObj));
+    ASSERT_EQ(versionObj, nullptr);
+}
+
+/*
+ * @tc.name: GetDistroObjectByModuleObj_0400
+ * @tc.desc: GetDistroObjectByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetDistroObjectByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_DISTRO_NOT_OBJECT_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> distroObj;
+    EXPECT_FALSE(packInfo.GetDistroObjectByModuleObj(modulesObj->Get(0), distroObj));
+}
+
+/*
+ * @tc.name: GetExtensionAbilitiesObjByModuleObj_0400
+ * @tc.desc: GetExtensionAbilitiesObjByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetExtensionAbilitiesObjByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_EXTENSION_ABILITIES_NOT_ARRAY_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_FALSE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: GetModuleNameByDistroObj_0400
+ * @tc.desc: GetModuleNameByDistroObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetModuleNameByDistroObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_DISTRO_MODULE_NAME_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> distroObj;
+    EXPECT_TRUE(packInfo.GetDistroObjectByModuleObj(modulesObj->Get(0), distroObj));
+    std::string moduleName = "";
+    EXPECT_FALSE(packInfo.GetModuleNameByDistroObj(distroObj, moduleName));
+}
+
+/*
+ * @tc.name: GetNameByPackageObj_0400
+ * @tc.desc: GetNameByPackageObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByPackageObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(PACKAGES_NAME_NOT_STRING_TEST_JSON_STRING);
+    int32_t packageIndex = 0;
+    std::unique_ptr<AppPackingTool::PtJson> packageObj;
+    packInfo.GetPackageObject(packageIndex, packageObj);
+    EXPECT_NE(packageObj, nullptr);
+    std::string name = "entry-default";
+    EXPECT_FALSE(packInfo.GetNameByPackageObj(packageObj, name));
+}
+
+/*
+ * @tc.name: GetNameByFormObj_0400
+ * @tc.desc: GetNameByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetNameByFormObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_EXTENSION_ABILITIES_FORMS_NAME_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    ASSERT_NE(extensionAbilitiesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    ASSERT_NE(formsObj, nullptr);
+    std::string name = "form";
+    EXPECT_FALSE(packInfo.GetNameByFormObj(formsObj->Get(0), name));
+}
+
+/*
+ * @tc.name: GetDefaultDimensionByFormObj_0500
+ * @tc.desc: GetDefaultDimensionByFormObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetDefaultDimensionByFormObj_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_EXTENSION_ABILITIES_FORMS_DEFAULT_DIMENSION_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    ASSERT_NE(extensionAbilitiesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    ASSERT_NE(formsObj, nullptr);
+    std::string defaultDimension = "";
+    EXPECT_FALSE(packInfo.GetDefaultDimensionByFormObj(formsObj->Get(0), defaultDimension));
+}
+
+/*
+ * @tc.name: GetFormNamesByExtensionAbilitiesObj_0200
+ * @tc.desc: GetFormNamesByExtensionAbilitiesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByExtensionAbilitiesObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_EXTENSION_ABILITIES_FORMS_DEFAULT_DIMENSION_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_FALSE(
+        packInfo.GetFormNamesByExtensionAbilitiesObj(extensionAbilitiesObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetFormNamesByFormsObj_0500
+ * @tc.desc: GetFormNamesByFormsObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetFormNamesByFormsObj_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_EXTENSION_ABILITIES_FORMS_NAME_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> extensionAbilitiesObj;
+    EXPECT_TRUE(packInfo.GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(0), extensionAbilitiesObj));
+    ASSERT_NE(extensionAbilitiesObj, nullptr);
+    std::unique_ptr<AppPackingTool::PtJson> formsObj;
+    EXPECT_TRUE(packInfo.GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(0), formsObj));
+    std::string moduleName = "";
+    std::list<std::string> formNames;
+    std::list<std::string> formFullNames;
+    EXPECT_TRUE(packInfo.GetFormNamesByFormsObj(formsObj, moduleName, formNames, formFullNames));
+}
+
+/*
+ * @tc.name: GetPackageNamesByPackagesObj_0300
+ * @tc.desc: GetPackageNamesByPackagesObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetPackageNamesByPackagesObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(PACKAGES_NAME_NOT_STRING_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> packagesObj;
+    EXPECT_TRUE(packInfo.GetPackagesObject(packagesObj));
+    std::list<std::string> packageNames;
+    EXPECT_FALSE(packInfo.GetPackageNamesByPackagesObj(packagesObj, packageNames));
 }
 } // namespace OHOS
