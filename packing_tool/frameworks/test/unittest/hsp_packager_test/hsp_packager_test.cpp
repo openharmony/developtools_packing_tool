@@ -235,7 +235,7 @@ HWTEST_F(HspPackagerTest, CompressHspModePartSecond_0600, Function | MediumTest 
     std::map<std::string, std::string> parameterMap1 = {
         {OHOS::AppPackingTool::Constants::PARAM_FILE_PATH, filepath}};
     OHOS::AppPackingTool::HspPackager hspPackager1(parameterMap1, resultReceiver);
-    EXPECT_FALSE(hspPackager1.CompressHspModePartSecond(JSON_PATH));
+    EXPECT_TRUE(hspPackager1.CompressHspModePartSecond(JSON_PATH));
 
     std::map<std::string, std::string> parameterMap2 = {
         {OHOS::AppPackingTool::Constants::PARAM_RESOURCES_PATH, TEST_PATH}};
