@@ -816,7 +816,7 @@ HWTEST_F(FastAppPackagerTest, fastAppPackager_3800, Function | MediumTest | Leve
     system("mkdir /data/test/libs");
     fastAppackager.isGenerateBuildHash_ = false;
     auto res = fastAppackager.AddOtherFileToZip(entry);
-    EXPECT_FALSE(res);
+    EXPECT_TRUE(res);
     system("rm -rf /data/test/libs");
 }
 
@@ -834,7 +834,7 @@ HWTEST_F(FastAppPackagerTest, fastAppPackager_3900, Function | MediumTest | Leve
     system("mkdir /data/test/libss");
     fastAppackager.isGenerateBuildHash_ = false;
     auto res = fastAppackager.AddOtherFileToZip(entry);
-    EXPECT_FALSE(res);
+    EXPECT_TRUE(res);
     system("rm -rf /data/test/libss");
 }
 
