@@ -2071,4 +2071,476 @@ HWTEST_F(HapVerifyUtilsTest, CheckSharedAppIsValid_0500, Function | MediumTest |
     hapVerifyInfos.push_back(hapVerifyInfo4);
     EXPECT_FALSE(hapVerifyUtils.CheckSharedAppIsValid(hapVerifyInfos));
 }
+
+/*
+ * @tc.name: CheckHapIsValid_0300
+ * @tc.desc: CheckHapIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    EXPECT_FALSE(hapVerifyUtils.CheckHapIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckHapIsValid_0400
+ * @tc.desc: CheckHapIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    EXPECT_FALSE(hapVerifyUtils.CheckHapIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckHapIsValid_0500
+ * @tc.desc: CheckHapIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetPackageName("packageName");
+    std::list<std::string> deviceType;
+    deviceType.push_back("deviceType");
+    hapVerifyInfo.SetDeviceTypes(deviceType);
+    OHOS::AppPackingTool::CountryCode countryCode;
+    countryCode.policy = "exclude";
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    distroFilter.countryCode = countryCode;
+    hapVerifyInfo.SetDistroFilter(distroFilter);
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleNameDiff");
+    hapVerifyInfoDiff.SetPackageName("packageName");
+    hapVerifyInfoDiff.SetDeviceTypes(deviceType);
+    hapVerifyInfoDiff.SetDistroFilter(distroFilter);
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    hapVerifyInfos.push_back(hapVerifyInfoDiff);
+    EXPECT_FALSE(hapVerifyUtils.CheckHapIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckHapIsValid_0600
+ * @tc.desc: CheckHapIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetModuleType("entry");
+    std::list<std::string> deviceType;
+    deviceType.push_back("deviceType");
+    hapVerifyInfo.SetDeviceTypes(deviceType);
+    OHOS::AppPackingTool::CountryCode countryCode;
+    countryCode.policy = "exclude";
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    distroFilter.countryCode = countryCode;
+    hapVerifyInfo.SetDistroFilter(distroFilter);
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleNameDiff");
+    hapVerifyInfoDiff.SetModuleType("entry");
+    hapVerifyInfoDiff.SetDeviceTypes(deviceType);
+    hapVerifyInfoDiff.SetDistroFilter(distroFilter);
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    hapVerifyInfos.push_back(hapVerifyInfoDiff);
+    EXPECT_FALSE(hapVerifyUtils.CheckHapIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckHapIsValid_0700
+ * @tc.desc: CheckHapIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetInstallationFree(true);
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleNameDiff");
+    hapVerifyInfoDiff.SetInstallationFree(false);
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    hapVerifyInfos.push_back(hapVerifyInfoDiff);
+    EXPECT_FALSE(hapVerifyUtils.CheckHapIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: ShowCheckTips_0100
+ * @tc.desc: ShowCheckTips
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, ShowCheckTips_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    std::list<std::string> deviceType;
+    deviceType.push_back("deviceType");
+    hapVerifyInfo.SetDeviceTypes(deviceType);
+    OHOS::AppPackingTool::CountryCode countryCode;
+    countryCode.policy = "exclude";
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    distroFilter.countryCode = countryCode;
+    hapVerifyInfo.SetDistroFilter(distroFilter);
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleName");
+    hapVerifyInfoDiff.SetDeviceTypes(deviceType);
+    hapVerifyInfoDiff.SetDistroFilter(distroFilter);
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    hapVerifyInfos.push_back(hapVerifyInfoDiff);
+    EXPECT_FALSE(hapVerifyUtils.CheckModuleNameIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckDuplicatedIsValid_0100
+ * @tc.desc: CheckDuplicatedIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDuplicatedIsValid_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    std::list<std::string> deviceType;
+    deviceType.push_back("deviceType");
+    hapVerifyInfo.SetDeviceTypes(deviceType);
+    OHOS::AppPackingTool::ApiVersion apiVersionExclude;
+    apiVersionExclude.policy = "exclude";
+    OHOS::AppPackingTool::DistroFilter distroFilterExclude;
+    distroFilterExclude.apiVersion = apiVersionExclude;
+    hapVerifyInfo.SetDistroFilter(distroFilterExclude);
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleName");
+    hapVerifyInfoDiff.SetDeviceTypes(deviceType);
+    OHOS::AppPackingTool::ApiVersion apiVersionInclude;
+    apiVersionInclude.policy = "include";
+    OHOS::AppPackingTool::DistroFilter distroFilterInclude;
+    distroFilterInclude.apiVersion = apiVersionInclude;
+    hapVerifyInfoDiff.SetDistroFilter(distroFilterInclude);
+
+    EXPECT_TRUE(hapVerifyUtils.CheckDuplicatedIsValid(hapVerifyInfo, hapVerifyInfoDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0200
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+    initDistroFilter(distroFilter, distroFilterDiff);
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    OHOS::AppPackingTool::ApiVersion apiVersion;
+    apiVersion.policy = "exclude";
+    distroFilter.apiVersion = apiVersion;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0300
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+    initDistroFilter(distroFilter, distroFilterDiff);
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    OHOS::AppPackingTool::ScreenShape screenShape;
+    screenShape.policy = "exclude";
+    distroFilter.screenShape = screenShape;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0400
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+    initDistroFilter(distroFilter, distroFilterDiff);
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    OHOS::AppPackingTool::ScreenDensity screenDensity;
+    screenDensity.policy = "exclude";
+    distroFilter.screenDensity = screenDensity;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0500
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+    initDistroFilter(distroFilter, distroFilterDiff);
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    OHOS::AppPackingTool::ScreenWindow screenWindow;
+    screenWindow.policy = "exclude";
+    distroFilter.screenWindow = screenWindow;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0600
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+    initDistroFilter(distroFilter, distroFilterDiff);
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    OHOS::AppPackingTool::CountryCode countryCode;
+    countryCode.policy = "exclude";
+    distroFilter.countryCode = countryCode;
+    distroFilterDiff.countryCode = countryCode;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0700
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+
+    OHOS::AppPackingTool::CountryCode countryCode;
+    countryCode.policy = "";
+    distroFilter.countryCode = countryCode;
+    distroFilterDiff.countryCode = countryCode;
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckDistroFilterDisjoint_0800
+ * @tc.desc: CheckDistroFilterDisjoint
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDistroFilterDisjoint_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    OHOS::AppPackingTool::DistroFilter distroFilterDiff;
+
+    OHOS::AppPackingTool::ApiVersion apiVersion;
+    apiVersion.policy = "";
+    distroFilter.apiVersion = apiVersion;
+    distroFilterDiff.apiVersion = apiVersion;
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+
+    EXPECT_FALSE(utils.CheckDistroFilterDisjoint(distroFilter, distroFilterDiff));
+}
+
+/*
+ * @tc.name: CheckCountryCodeCovered_0200
+ * @tc.desc: CheckCountryCodeCovered
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCountryCodeCovered_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    OHOS::AppPackingTool::CountryCode countryCode;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> entryHaps;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    OHOS::AppPackingTool::ApiVersion apiVersion;
+    apiVersion.policy = "include";
+    OHOS::AppPackingTool::DistroFilter distroFilter;
+    distroFilter.apiVersion = apiVersion;
+    hapVerifyInfo.SetDistroFilter(distroFilter);
+
+    entryHaps.push_back(hapVerifyInfo);
+    EXPECT_TRUE(utils.CheckCountryCodeCovered(countryCode, entryHaps));
+}
+
+/*
+ * @tc.name: CheckCountryCodeCovered_0300
+ * @tc.desc: CheckCountryCodeCovered
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckCountryCodeCovered_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    OHOS::AppPackingTool::CountryCode countryCode;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> entryHaps;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+
+    entryHaps.push_back(hapVerifyInfo);
+    EXPECT_TRUE(utils.CheckCountryCodeCovered(countryCode, entryHaps));
+}
+
+/*
+ * @tc.name: CheckEntryPolicyValueCoverAll_0100
+ * @tc.desc: CheckEntryPolicyValueCoverAll
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckEntryPolicyValueCoverAll_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    include.push_back("test");
+    exclude.push_back("test");
+
+    EXPECT_TRUE(utils.CheckEntryPolicyValueCoverAll(include, exclude));
+}
+
+/*
+ * @tc.name: CheckEntryPolicyValueCoverAll_0200
+ * @tc.desc: CheckEntryPolicyValueCoverAll
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckEntryPolicyValueCoverAll_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    exclude.push_back("test");
+
+    EXPECT_FALSE(utils.CheckEntryPolicyValueCoverAll(include, exclude));
+}
+
+/*
+ * @tc.name: CheckEntryPolicyValueCoverAll_0300
+ * @tc.desc: CheckEntryPolicyValueCoverAll
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckEntryPolicyValueCoverAll_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    std::list<std::string> include;
+    std::list<std::string> exclude;
+    include.push_back("test");
+
+    EXPECT_FALSE(utils.CheckEntryPolicyValueCoverAll(include, exclude));
+}
+
+/*
+ * @tc.name: CheckDependencyInFileList_0100
+ * @tc.desc: CheckDependencyInFileList
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDependencyInFileList_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    OHOS::AppPackingTool::DependencyItem dependencyItem;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfos.push_back(hapVerifyInfo);
+
+    dependencyItem.bundleName = "bundleName";
+    dependencyItem.moduleName = "moduleName";
+
+    EXPECT_FALSE(utils.CheckDependencyInFileList(dependencyItem, hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckDependencyInFileList_0200
+ * @tc.desc: CheckDependencyInFileList
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDependencyInFileList_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    OHOS::AppPackingTool::DependencyItem dependencyItem;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfos.push_back(hapVerifyInfo);
+
+    dependencyItem.bundleName = "bundleName";
+    dependencyItem.moduleName = "moduleName";
+
+    EXPECT_FALSE(utils.CheckDependencyInFileList(dependencyItem, hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckDependencyInFileList_0300
+ * @tc.desc: CheckDependencyInFileList
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckDependencyInFileList_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    OHOS::AppPackingTool::DependencyItem dependencyItem;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfos.push_back(hapVerifyInfo);
+
+    dependencyItem.bundleName = "bundleName";
+    dependencyItem.moduleName = "moduleName";
+
+    EXPECT_FALSE(utils.CheckDependencyInFileList(dependencyItem, hapVerifyInfos));
+}
 }
