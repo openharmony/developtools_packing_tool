@@ -206,6 +206,16 @@ public class AbilityInfo {
     private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
+     * Indicates the iconID of ability.
+     */
+    private int iconID = 0;
+
+    /**
+     * Indicates the labelID of ability.
+     */
+    private int labelID = 0;
+
+    /**
      * get the customize Data value defined in this ability.
      */
     public String getCustomizeDataValue(String customizeDataName) {
@@ -231,5 +241,21 @@ public class AbilityInfo {
 
     public HashMap<String, String> getDescriptions() {
         return descriptions;
+    }
+
+    public int getIconID() {
+        return iconID;
+    }
+
+    public void setIconID(int iconID) {
+        this.iconID = iconID;
+    }
+
+    public int getLabelID() {
+        return labelID;
+    }
+
+    public void setLabelID(int labelID) {
+        this.labelID = labelID;
     }
 }

@@ -428,7 +428,13 @@ public class JsonUtil {
         moduleAppInfo.bundleName = getJsonString(appJson, BUNDLENAME);
         moduleAppInfo.debug = getJsonBooleanValue(appJson, DEBUG, false);
         moduleAppInfo.icon = parseIconById(appJson, data);
+        if (appJson.containsKey("iconId")) {
+            moduleAppInfo.setIconID(appJson.getIntValue("iconId"));
+        }
         moduleAppInfo.label = parseResourceByKey(appJson, data, LABEL, LABEL_ID);
+        if (appJson.containsKey(LABEL_ID)) {
+            moduleAppInfo.setLabelID(appJson.getIntValue(LABEL_ID));
+        }
         moduleAppInfo.setLabels(parseResourceMapByKey(appJson, data, LABEL_ID));
         moduleAppInfo.description = parseResourceByKey(appJson, data, DESCRIPTION, DESCRIPTION_ID);
         moduleAppInfo.setDescriptions(parseResourceMapByKey(appJson, data, DESCRIPTION_ID));
@@ -1282,8 +1288,14 @@ public class JsonUtil {
             moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
         }
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
+        if (extensionAbilityJson.containsKey("iconId")) {
+            moduleExtensionAbilityInfo.setIconID(extensionAbilityJson.getIntValue("iconId"));
+        }
         moduleExtensionAbilityInfo.label =
                 parseResourceByKey(extensionAbilityJson, data, LABEL, LABEL_ID);
+        if (extensionAbilityJson.containsKey(LABEL_ID)) {
+            moduleExtensionAbilityInfo.setLabelID(extensionAbilityJson.getIntValue(LABEL_ID));
+        }
         moduleExtensionAbilityInfo.setLabels(parseResourceMapByKey(extensionAbilityJson, data, LABEL_ID));
         moduleExtensionAbilityInfo.description =
                 parseResourceByKey(extensionAbilityJson, data, DESCRIPTION, DESCRIPTION_ID);
@@ -1375,7 +1387,13 @@ public class JsonUtil {
         moduleAbilityInfo.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
 
         moduleAbilityInfo.icon = parseIconById(abilityJson, data);
+        if (abilityJson.containsKey("iconId")) {
+            moduleAbilityInfo.setIconID(abilityJson.getIntValue("iconId"));
+        }
         moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
+        if (abilityJson.containsKey(LABEL_ID)) {
+            moduleAbilityInfo.setLabelID(abilityJson.getIntValue(LABEL_ID));
+        }
         moduleAbilityInfo.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
         if (abilityJson.containsKey(PERMISSIONS)) {
             moduleAbilityInfo.permissions = JSONObject.parseArray(
