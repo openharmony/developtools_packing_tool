@@ -92,6 +92,16 @@ public class ExtensionAbilityInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
+    /**
+     * Indicates the iconID of module ModuleJson.
+     */
+    private int iconID = 0;
+
+    /**
+     * Indicates the labelID of module ModuleJson.
+     */
+    private int labelID = 0;
+
     public HashMap<String, String> getLabels() {
         return labels;
     }
@@ -106,5 +116,21 @@ public class ExtensionAbilityInfo {
 
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;
+    }
+
+    public int getIconID() {
+        return iconID;
+    }
+
+    public void setIconID(int iconID) {
+        this.iconID = iconID;
+    }
+
+    public int getLabelID() {
+        return labelID;
+    }
+
+    public void setLabelID(int labelID) {
+        this.labelID = labelID;
     }
 }
