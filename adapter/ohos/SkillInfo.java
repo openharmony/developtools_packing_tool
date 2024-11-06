@@ -37,4 +37,20 @@ public class SkillInfo {
      * Indicates the uris of SkillInfo.
      */
     public List<UriInfo> uris = new ArrayList<UriInfo>();
+
+    private Boolean domainVerify = false;
+
+    /**
+     * get domainVerify
+     */
+    public Boolean getDomainVerify() {
+        return domainVerify;
+    }
+
+    /**
+     * set domainVerify
+     */
+    public void setDomainVerify(Boolean domainVerify) {
+        this.domainVerify = domainVerify;
+    }
 }
