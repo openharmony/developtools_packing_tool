@@ -142,6 +142,16 @@ public class AppInfo {
     private HashMap<String, String> descriptions = new HashMap<>();
 
     /**
+     * Indicates the iconId of app AppJson.
+     */
+    private int iconId = 0;
+
+    /**
+     * Indicates the labelId of app AppJson.
+     */
+    private int labelId = 0;
+
+    /**
      * Get shell version code.
      *
      * @return shell version code
@@ -267,5 +277,21 @@ public class AppInfo {
 
     public void setTargetPriority(int targetPriority) {
         this.targetPriority = targetPriority;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
+    }
+
+    public int getLabelId() {
+        return labelId;
+    }
+
+    public void setLabelId(int labelId) {
+        this.labelId = labelId;
     }
 }

@@ -94,6 +94,16 @@ class ModuleAbilityInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
+    /**
+     * Indicates the iconId of module ModuleJson.
+     */
+    private int iconId = 0;
+
+    /**
+     * Indicates the labelId of module ModuleJson.
+     */
+    private int labelId = 0;
+
     public void setLabels(HashMap<String, String> labels) {
         this.labels = labels;
     }
@@ -108,5 +118,21 @@ class ModuleAbilityInfo {
 
     public HashMap<String, String> getLabels() {
         return labels;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
+    }
+
+    public int getLabelId() {
+        return labelId;
+    }
+
+    public void setLabelId(int labelId) {
+        this.labelId = labelId;
     }
 }

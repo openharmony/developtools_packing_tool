@@ -72,6 +72,7 @@ public class JsonUtil {
     private static final String MODULE = "module";
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String TYPE = "type";
+    private static final String ICON_ID = "iconId";
     private static final String LABEL = "label";
     private static final String LABEL_ID = "labelId";
     private static final String DESCRIPTION = "description";
@@ -428,7 +429,13 @@ public class JsonUtil {
         moduleAppInfo.bundleName = getJsonString(appJson, BUNDLENAME);
         moduleAppInfo.debug = getJsonBooleanValue(appJson, DEBUG, false);
         moduleAppInfo.icon = parseIconById(appJson, data);
+        if (appJson.containsKey(ICON_ID)) {
+            moduleAppInfo.setIconId(appJson.getIntValue(ICON_ID));
+        }
         moduleAppInfo.label = parseResourceByKey(appJson, data, LABEL, LABEL_ID);
+        if (appJson.containsKey(LABEL_ID)) {
+            moduleAppInfo.setLabelId(appJson.getIntValue(LABEL_ID));
+        }
         moduleAppInfo.setLabels(parseResourceMapByKey(appJson, data, LABEL_ID));
         moduleAppInfo.description = parseResourceByKey(appJson, data, DESCRIPTION, DESCRIPTION_ID);
         moduleAppInfo.setDescriptions(parseResourceMapByKey(appJson, data, DESCRIPTION_ID));
@@ -1282,8 +1289,14 @@ public class JsonUtil {
             moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
         }
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
+        if (extensionAbilityJson.containsKey(ICON_ID)) {
+            moduleExtensionAbilityInfo.setIconId(extensionAbilityJson.getIntValue(ICON_ID));
+        }
         moduleExtensionAbilityInfo.label =
                 parseResourceByKey(extensionAbilityJson, data, LABEL, LABEL_ID);
+        if (extensionAbilityJson.containsKey(LABEL_ID)) {
+            moduleExtensionAbilityInfo.setLabelId(extensionAbilityJson.getIntValue(LABEL_ID));
+        }
         moduleExtensionAbilityInfo.setLabels(parseResourceMapByKey(extensionAbilityJson, data, LABEL_ID));
         moduleExtensionAbilityInfo.description =
                 parseResourceByKey(extensionAbilityJson, data, DESCRIPTION, DESCRIPTION_ID);
@@ -1375,7 +1388,13 @@ public class JsonUtil {
         moduleAbilityInfo.setDescriptions(parseResourceMapByKey(abilityJson, data, DESCRIPTION_ID));
 
         moduleAbilityInfo.icon = parseIconById(abilityJson, data);
+        if (abilityJson.containsKey(ICON_ID)) {
+            moduleAbilityInfo.setIconId(abilityJson.getIntValue(ICON_ID));
+        }
         moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
+        if (abilityJson.containsKey(LABEL_ID)) {
+            moduleAbilityInfo.setLabelId(abilityJson.getIntValue(LABEL_ID));
+        }
         moduleAbilityInfo.setLabels(parseResourceMapByKey(abilityJson, data, LABEL_ID));
         if (abilityJson.containsKey(PERMISSIONS)) {
             moduleAbilityInfo.permissions = JSONObject.parseArray(
