@@ -79,7 +79,9 @@ class ModuleAdaption {
         appInfo.bundleName = moduleAppInfo.bundleName;
         appInfo.debug = moduleAppInfo.debug;
         appInfo.icon = moduleAppInfo.icon;
+        appInfo.setIconId(moduleAppInfo.getIconId());
         appInfo.label = moduleAppInfo.label;
+        appInfo.setLabelId(moduleAppInfo.getLabelId());
         appInfo.setLabels(moduleAppInfo.getLabels());
         appInfo.description = moduleAppInfo.description;
         appInfo.setDescriptions(moduleAppInfo.getDescriptions());
@@ -233,8 +235,10 @@ class ModuleAdaption {
             abilityInfo.setDescriptions(info.getDescriptions());
             abilityInfo.launchType = info.launchType;
             abilityInfo.icon = info.icon;
+            abilityInfo.setIconId(info.getIconId());
             abilityInfo.iconPath = info.icon;
             abilityInfo.label = info.label;
+            abilityInfo.setLabelId(info.getLabelId());
             abilityInfo.setLabels(info.getLabels());
             abilityInfo.labelRes = info.label;
             abilityInfo.permissions = info.permissions;

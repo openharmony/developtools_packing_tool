@@ -147,6 +147,16 @@ class ModuleAppInfo {
      */
     private HashMap<String, String> labels = new HashMap<>();
 
+    /**
+     * Indicates the iconId of app AppJson.
+     */
+    private int iconId = 0;
+
+    /**
+     * Indicates the labelId of app AppJson.
+     */
+    private int labelId = 0;
+
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
     }
@@ -211,5 +221,21 @@ class ModuleAppInfo {
 
     public void setTargetPriority(int targetPriority) {
         this.targetPriority = targetPriority;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
+    }
+
+    public int getLabelId() {
+        return labelId;
+    }
+
+    public void setLabelId(int labelId) {
+        this.labelId = labelId;
     }
 }
