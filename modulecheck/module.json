@@ -369,7 +369,8 @@
                 "preferMultiWindowOrientation",
                 "isolationProcess",
                 "continueType",
-                "continueBundleName"
+                "continueBundleName",
+                "process"
               ]
             },
             "properties": {
@@ -781,6 +782,12 @@
                   "maxLength": 128,
                   "minLength": 7
                 }
+              },
+              "process": {
+                "description": "Running process tag the ability.",
+                "type": "string",
+                "maxLength": 31,
+                "pattern": "^[:][0-9a-zA-Z_]+$"
               }
             }
           }
@@ -790,73 +797,113 @@
           "type": "array",
           "items": {
             "type": "object",
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "dataShare"
-                }
-              }
-            },
-            "then": {
-              "oneOf": [
-                {
-                  "required": [
-                    "name",
-                    "srcEntrance",
-                    "type",
-                    "uri"
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "const": "dataShare"
+                    }
+                  }
+                },
+                "then": {
+                  "oneOf": [
+                    {
+                      "required": [
+                        "name",
+                        "srcEntrance",
+                        "type",
+                        "uri"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "name",
+                        "srcEntry",
+                        "type",
+                        "uri"
+                      ]
+                    }
                   ]
                 },
-                {
-                  "required": [
-                    "name",
-                    "srcEntry",
-                    "type",
-                    "uri"
+                "else": {
+                  "oneOf": [
+                    {
+                      "required": [
+                        "name",
+                        "srcEntrance",
+                        "type"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "name",
+                        "srcEntry",
+                        "type"
+                      ]
+                    }
                   ]
                 }
-              ]
-            },
-            "else": {
-              "oneOf": [
-                {
-                  "required": [
-                    "name",
-                    "srcEntrance",
-                    "type"
-                  ]
+              },
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "const": "embeddedUI"
+                    }
+                  }
                 },
-                {
-                  "required": [
-                    "name",
-                    "srcEntry",
-                    "type"
-                  ]
+                "then": {
+                    "propertyNames": {
+                      "enum": [
+                        "priority",
+                        "name",
+                        "srcEntrance",
+                        "srcEntry",
+                        "icon",
+                        "label",
+                        "description",
+                        "type",
+                        "permissions",
+                        "uri",
+                        "readPermission",
+                        "writePermission",
+                        "visible",
+                        "exported",
+                        "skills",
+                        "metadata",
+                        "extensionProcessMode",
+                        "dataGroupIds",
+                        "process"
+                      ]
+                    }
+                  },
+                  "else": {
+                    "propertyNames": {
+                      "enum": [
+                        "priority",
+                        "name",
+                        "srcEntrance",
+                        "srcEntry",
+                        "icon",
+                        "label",
+                        "description",
+                        "type",
+                        "permissions",
+                        "uri",
+                        "readPermission",
+                        "writePermission",
+                        "visible",
+                        "exported",
+                        "skills",
+                        "metadata",
+                        "extensionProcessMode",
+                        "dataGroupIds"
+                      ]
+                    }
+                  }
                 }
-              ]
-            },
-            "propertyNames": {
-              "enum": [
-                "priority",
-                "name",
-                "srcEntrance",
-                "srcEntry",
-                "icon",
-                "label",
-                "description",
-                "type",
-                "permissions",
-                "uri",
-                "readPermission",
-                "writePermission",
-                "visible",
-                "exported",
-                "skills",
-                "metadata",
-                "extensionProcessMode",
-                "dataGroupIds"
-              ]
-            },
+            ],
             "properties": {
               "priority": {
                 "description": "Indicates the priority of the ability.Only for system application.This field is used for implicit query.Range from 0 to 10, default value is 0.",
@@ -1163,6 +1210,12 @@
                   "maxLength": 1024,
                   "pattern": "^[\\x00-\\x7F]*$"
                 }
+              },
+              "process": {
+                "description": "Running process tag the extension ability.",
+                "type": "string",
+                "maxLength": 31,
+                "pattern": "^[:][0-9a-zA-Z_]+$"
               }
             },
             "if": {
