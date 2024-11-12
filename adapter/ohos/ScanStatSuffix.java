@@ -364,11 +364,12 @@ public class ScanStatSuffix {
     private static HashMap<String, List<FileInfo>> accountFileType(HashMap<String, List<FileInfo>> map, String path) {
         File file = new File(path);
         String[] split = file.getName().split(SPLIT_POINT);
-        if (split.length == SCAN_LEVEL) {
-            if (map.containsKey(split[1])) {
-                accountType(map, file, split[1]);
+        if (split.length > 1) {
+            String suffix = split[split.length - 1];
+            if (map.containsKey(suffix)) {
+                accountType(map, file, suffix);
             } else {
-                accountTypeUnknown(map, file, split[1]);
+                accountTypeUnknown(map, file, suffix);
             }
         } else if (split.length == 1) { // no suffix
             if (map.containsKey(SUFFIX_TYPE_UNKNOWN)) {
