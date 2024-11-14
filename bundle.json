@@ -1,5 +1,5 @@
 {
-    "name": "packing_tool",
+    "name": "@ohos/packing_tool",
     "version": "3.2",
     "license": "Apache License 2.0",
     "publishAs": "code-segment",
