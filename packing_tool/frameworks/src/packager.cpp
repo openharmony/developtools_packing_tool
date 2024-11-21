@@ -40,28 +40,32 @@ Packager::Packager(const std::map<std::string, std::string> &parameterMap, std::
 Packager::~Packager()
 {}
 
-std::string Packager::MakePackage()
+int32_t Packager::MakePackage()
 {
-    if (InitAllowedParam() != ERR_OK) {
+    int32_t ret = ERR_OK;
+    ret = InitAllowedParam();
+    if (ret != ERR_OK) {
         LOGE("InitAllowedParam err");
-        return "";
+        return ret;
     }
 
-    if (PreProcess() != ERR_OK) {
+    ret = PreProcess();
+    if (ret != ERR_OK) {
         LOGE("PreProcess err");
-        return "";
+        return ret;
     }
-
-    if (Process() != ERR_OK) {
+    ret = Process();
+    if (ret != ERR_OK) {
         LOGE("Process err");
-        return "";
+        return ret;
     }
 
-    if (PostProcess() != ERR_OK) {
+    ret = PostProcess();
+    if (ret != ERR_OK) {
         LOGE("PostProcess err");
-        return "";
+        return ret;
     }
-    return "OHOS::ERR_OK";
+    return ret;
 }
 
 int32_t Packager::PreProcess()

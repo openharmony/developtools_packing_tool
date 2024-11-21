@@ -51,7 +51,7 @@ public:
     Packager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver);
     virtual ~Packager();
 
-    std::string MakePackage();
+    int32_t MakePackage();
 
     virtual int32_t InitAllowedParam() = 0;
     virtual int32_t PreProcess() = 0;

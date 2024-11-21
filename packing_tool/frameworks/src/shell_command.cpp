@@ -94,29 +94,34 @@ int32_t ShellCommand::OnCommand()
     if (respond == nullptr) {
         resultReceiver_.append("not support command: ").append(cmd_).append("\n");
         respond = commandMap_[Constants::CMD_HELP];
+        respond();
+        return ERR_INVALID_VALUE;
     }
-    respond();
-    return ERR_OK;
+    return respond();
 }
 
-std::string ShellCommand::ExecCommand()
+std::string ShellCommand::ExecCommand(int32_t& ret)
 {
     int32_t result = CreateCommandMap();
     if (result != ERR_OK) {
         resultReceiver_.append("failed to create command map.\n");
+        ret = ERR_INVALID_VALUE;
         return resultReceiver_;
     }
     result = ParseParam();
     if (result != ERR_OK) {
         resultReceiver_.append("failed to init parameter map.\n");
+        ret = ERR_INVALID_VALUE;
         return resultReceiver_;
     }
 
     result = OnCommand();
     if (result != ERR_OK) {
         resultReceiver_.append("failed to execute your command.\n");
+        ret = ERR_INVALID_VALUE;
         return resultReceiver_;
     }
+    ret = ERR_OK;
     return resultReceiver_;
 }
 
@@ -131,9 +136,9 @@ int32_t ShellCommand::RunAsPackCommand()
     LOGI("RunAsPackCommand ");
     std::unique_ptr<Packager> packager = getPackager();
     if (packager != nullptr) {
-        packager->MakePackage();
+        return packager->MakePackage();
     }
-    return ERR_OK;
+    return ERR_INVALID_VALUE;
 }
 
 int32_t ShellCommand::RunAsUnpackCommand()

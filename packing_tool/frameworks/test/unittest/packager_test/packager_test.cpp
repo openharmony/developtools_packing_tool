@@ -314,7 +314,7 @@ HWTEST_F(PackagerTest, MakePackage_1300, Function | MediumTest | Level1)
     std::map<std::string, std::string> parameterMap;
 
     OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
-    EXPECT_EQ(packager.MakePackage(), "");
+    EXPECT_EQ(packager.MakePackage(), AppPackingTool::ERR_INVALID_VALUE);
 }
 
 /*
