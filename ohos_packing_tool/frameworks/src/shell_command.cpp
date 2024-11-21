@@ -121,12 +121,12 @@ int ShellCommand::RunAsHelpCommand()
     return ERR_OK;
 }
 
-int ShellCommand::RunAsPackCommand()
+int32_t ShellCommand::RunAsPackCommand()
 {
     std::cout << "RunAsPackCommand " << std::endl;
     std::unique_ptr<Packager> packager = getPackager();
     if (packager != nullptr) {
-        packager->MakePackage();
+        return packager->MakePackage();
     }
     return ERR_OK;
 }

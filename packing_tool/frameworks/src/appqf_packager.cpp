@@ -85,7 +85,7 @@ int32_t APPQFPackager::PreProcess()
         std::string outputPath = it->second;
         std::transform(outputPath.begin(), outputPath.end(), outputPath.begin(), ::tolower);
         if (!Utils::EndsWith(outputPath, Constants::APPQF_SUFFIX)) {
-            LOGE("Input output file must end with .apphqf.");
+            LOGE("Input output file must end with .appqf.");
             return ERR_INVALID_VALUE;
         }
     }
