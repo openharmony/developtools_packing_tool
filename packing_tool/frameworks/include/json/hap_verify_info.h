@@ -101,6 +101,8 @@ public:
     void SetContinueTypeMap(const std::map<std::string, std::list<std::string>>& continueTypeMap);
     const MultiAppMode& GetMultiAppMode() const;
     void SetMultiAppMode(const MultiAppMode& multiAppMode);
+    const std::string& GetFileType() const;
+    void SetFileType(const std::string& fileType);
 
 private:
     void ConvertToDependency();
@@ -141,6 +143,7 @@ private:
     std::list<std::string> proxyDataUris_;
     std::map<std::string, std::list<std::string>> continueTypeMap_;
     MultiAppMode multiAppMode_;
+    std::string fileType_ = "";
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
