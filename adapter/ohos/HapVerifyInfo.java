@@ -141,6 +141,8 @@ class HapVerifyInfo {
 
     private MultiAppMode multiAppMode = new MultiAppMode();
 
+    private String fileType = "";
+
     /**
      * get bundle name form HapVerifyInfo.
      */
@@ -521,5 +523,13 @@ class HapVerifyInfo {
 
     public void setMultiAppMode(MultiAppMode multiAppMode) {
         this.multiAppMode = multiAppMode;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 }
