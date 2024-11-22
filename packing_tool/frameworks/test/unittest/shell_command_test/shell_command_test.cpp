@@ -165,6 +165,7 @@ HWTEST_F(ShellCommandTest, ExecCommand_0400, Function | MediumTest | Level1)
     int32_t ret = AppPackingTool::ERR_OK;
     std::string resultReceiver = shellcmd.ExecCommand(ret);
     EXPECT_FALSE(resultReceiver.empty());
+    EXPECT_EQ(ret, AppPackingTool::ERR_INVALID_VALUE);
 }
 
 /*
