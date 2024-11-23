@@ -20,6 +20,7 @@
 int main(int argc, char *argv[])
 {
     OHOS::AppPackingTool::ShellCommand cmd(argc, argv, OHOS::AppPackingTool::TOOL_NAME);
-    std::cout << cmd.ExecCommand();
-    quick_exit(0);
+    int32_t ret = 0;
+    std::cout << cmd.ExecCommand(ret);
+    quick_exit(ret);
 }
