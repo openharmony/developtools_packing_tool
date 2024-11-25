@@ -1992,7 +1992,7 @@ public class JsonUtil {
                 iconPath = ResourcesParser.getResourceById(resId, data);
             }
             if (iconPath.contains("resources")) {
-                iconPath = iconPath.substring(iconPath.indexOf("resources"));
+                iconPath = iconPath.substring(iconPath.lastIndexOf("resources"));
             } else {
                 LOG.warning("JsonUtil::parseIconById not found: " + resId);
             }
