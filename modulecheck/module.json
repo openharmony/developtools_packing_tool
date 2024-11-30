@@ -1009,7 +1009,8 @@
                   "sys/visualExtension",
                   "uiService",
                   "recentPhoto",
-                  "callerInfoQuery"
+                  "callerInfoQuery",
+                  "assetAcceleration"
                 ]
               },
               "permissions": {
