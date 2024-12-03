@@ -634,4 +634,18 @@ HWTEST_F(VersionNormalizeTest, Process_0100, Function | MediumTest | Level1)
     EXPECT_EQ(versionNormalize.PostProcess(), 0);
     system("rm -rf /data/test/versionnormalize_packing");
 }
+
+/*
+ * @tc.name: InitAllowedParam_0100
+ * @tc.desc: InitAllowedParam.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(VersionNormalizeTest, InitAllowedParam_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::VersionNormalize versionNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(versionNormalize.InitAllowedParam(), 0);
+}
 } // namespace OHOS
