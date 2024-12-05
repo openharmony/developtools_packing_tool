@@ -29,6 +29,7 @@
               "enum": [
                 "name",
                 "type",
+                "srcEntry",
                 "description",
                 "deliveryWithInstall",
                 "deviceTypes",
