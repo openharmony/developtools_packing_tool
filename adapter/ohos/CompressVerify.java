@@ -1203,12 +1203,12 @@ public class CompressVerify {
                         !ModuleJsonUtil.parseExtensionAbilityName(optional.get()).isEmpty();
             } else {
                 LOG.error("CompressVerify::hspHasExtensionAbilities jsonPath content invalid");
-                return false;
             }
         } catch (BundleException e) {
             LOG.error("CompressVerify::hspHasExtensionAbilities exception: " + e.getMessage());
-            return false;
+            
         }
+        return false;
     }
 
     private static boolean hasHomeAbility(Utility utility) {
