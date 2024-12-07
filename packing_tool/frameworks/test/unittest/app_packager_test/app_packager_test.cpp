@@ -1138,4 +1138,92 @@ HWTEST_F(AppPackagerTest, CompressAppMode_6200, Function | MediumTest | Level1)
     MockModuleJsonUtils::MockCheckHapsIsValid(false);
     EXPECT_FALSE(appPackager.CompressAppMode());
 }
+
+/*
+ * @tc.name: GetAndCheckOutPath_6300
+ * @tc.desc: GetAndCheckOutPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, GetAndCheckOutPath_6300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    std::string outPath;
+    EXPECT_FALSE(appPackager.GetAndCheckOutPath(outPath));
+}
+
+/*
+ * @tc.name: GetAndCheckHapPathAndHspPath_6400
+ * @tc.desc: GetAndCheckHapPathAndHspPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, GetAndCheckHapPathAndHspPath_6400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    std::string hapPath;
+    std::string hspPath;
+    EXPECT_FALSE(appPackager.GetAndCheckHapPathAndHspPath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: GetAndCheckPackInfoPath_6500
+ * @tc.desc: GetAndCheckPackInfoPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, GetAndCheckPackInfoPath_6500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    std::string packInfoPath;
+    EXPECT_FALSE(appPackager.GetAndCheckPackInfoPath(packInfoPath));
+}
+
+/*
+ * @tc.name: CheckSignaturePath_6600
+ * @tc.desc: CheckSignaturePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckSignaturePath_6600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(appPackager.CheckSignaturePath());
+}
+
+/*
+ * @tc.name: CheckCertificatePath_6700
+ * @tc.desc: CheckCertificatePath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckCertificatePath_6700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(appPackager.CheckCertificatePath());
+}
+
+/*
+ * @tc.name: CheckPackResPath_6800
+ * @tc.desc: CheckPackResPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckPackResPath_6800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(appPackager.CheckPackResPath());
+}
 } // namespace OHOS

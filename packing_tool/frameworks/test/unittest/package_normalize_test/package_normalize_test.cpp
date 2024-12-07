@@ -674,4 +674,32 @@ HWTEST_F(PackageNormalizeTest, ModifyPackInfo_1900, Function | MediumTest | Leve
     cmd << "rm -rf " << OUT_PATH;
     system(cmd.str().c_str());
 }
+
+/*
+ * @tc.name: PostProcess_0100
+ * @tc.desc: PostProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackageNormalizeTest, PostProcess_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(packageNormalize.PostProcess(), 0);
+}
+
+/*
+ * @tc.name: InitAllowedParam_0100
+ * @tc.desc: InitAllowedParam.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackageNormalizeTest, InitAllowedParam_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::PackageNormalize packageNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(packageNormalize.InitAllowedParam(), 0);
+}
 } // namespace OHOS
