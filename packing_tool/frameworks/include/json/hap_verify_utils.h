@@ -134,6 +134,8 @@ private:
     static bool CheckContinueTypeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2);
+    static bool AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos,
+        int32_t minCompatibleVersionCode, int32_t targetApiVersion);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

@@ -363,5 +363,15 @@ void HapVerifyInfo::ConvertToDependency()
         }
     }
 }
+
+const std::string& HapVerifyInfo::GetFileType() const
+{
+    return fileType_;
+}
+
+void HapVerifyInfo::SetFileType(const std::string& fileType)
+{
+    fileType_ = fileType;
+}
 } // namespace AppPackingTool
 } // namespace OHOS
