@@ -927,6 +927,7 @@
                   "hms/account",
                   "appAccountAuthorization",
                   "ads",
+                  "fence",
                   "remoteNotification",
                   "remoteLocation",
                   "voip",
