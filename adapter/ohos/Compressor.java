@@ -2931,6 +2931,13 @@ public class Compressor {
         hapVerifyInfo.setStageModule(true);
         ModuleJsonUtil.parseStageHapVerifyInfo(hapVerifyInfo);
         hapVerifyInfo.setFileLength(FileUtils.getFileSize(filePath));
+        File srcFile = new File(filePath);
+        String fileStr = srcFile.getName();
+        if (fileStr.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+            hapVerifyInfo.setFileType(HAP_SUFFIX);
+        } else if (fileStr.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
+            hapVerifyInfo.setFileType(HSP_SUFFIX);
+        }
         return hapVerifyInfo;
     }
 
