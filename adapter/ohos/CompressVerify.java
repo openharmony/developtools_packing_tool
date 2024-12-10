@@ -16,8 +16,6 @@
 package ohos;
 
 import com.alibaba.fastjson.JSONValidator;
-
-import javax.security.auth.login.CredentialException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
