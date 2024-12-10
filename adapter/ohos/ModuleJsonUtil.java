@@ -1184,9 +1184,9 @@ class ModuleJsonUtil {
      * @param jsonString is the json String of module.json
      * @return skillMap key is ability,value indicate whether this door is a home extensionAbility
      */
-    public static Map<String,Boolean> parseExtensionAbilitySkillsMap(String jsonString)
+    public static Map<String, Boolean> parseExtensionAbilitySkillsMap(String jsonString)
         throws BundleException {
-        Map<String,Boolean> skillsMap = new HashMap<>();
+        Map<String, Boolean> skillsMap = new HashMap<>();
         JSONObject moduleObj = getModuleObj(jsonString);
         JSONArray extensionAbilityObs = moduleObj.getJSONArray(EXTENSION_ABILITIES);
         if (extensionAbilityObs == null) {
