@@ -31,9 +31,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
@@ -55,6 +57,8 @@ public class Uncompress {
     private static final String MODULE_JSON = "module.json";
     private static final String RESOURCE_INDEX = "resources.index";
     private static final String RPCID_SC = "rpcid.sc";
+    private static final String LIBS = "libs";
+    private static final String PACKAGEFILE = "packagefile";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String TEMP_PATH = "temp";
     private static final String HAP_SUFFIXI = ".hap";
@@ -73,6 +77,7 @@ public class Uncompress {
     private static final String PATCH_JSON = "patch.json";
     private static final String HAP_PREFIX = "HAP";
     private static final String HSP_SUFFIX = ".hsp";
+    private static final int MAX_CPU_ABI_TYPE_NUM = 128;
 
     private static final Log LOG = new Log(Uncompress.class.toString());
 
@@ -118,7 +123,7 @@ public class Uncompress {
                     uncompressAPPQFFile(utility);
                     break;
                 case Utility.MODE_HSP:
-                    dataTransferAllFiles(utility.getHspPath(), utility.getOutPath());
+                    unpackageHspMode(utility);
                     break;
                 default:
                     LOG.error("Uncompress::unpackageProcess input wrong type!");
@@ -146,6 +151,10 @@ public class Uncompress {
             throw new BundleException("Uncompress::unpackageHapMode input wrong unpack mode");
         }
         try {
+            if (TRUE.equals(utility.getLibs())) {
+                unpackageLibsMode(utility.getHapPath(), utility.getOutPath(), utility.getFormattedCpuAbiList());
+                return;
+            }
             if (TRUE.equals(utility.getRpcid())) {
                 getRpcidFromHap(utility.getHapPath(), utility.getOutPath());
                 return;
@@ -161,6 +170,29 @@ public class Uncompress {
         } catch (BundleException e) {
             LOG.error("Uncompress::unpackageHapMode failed");
             throw new BundleException("Uncompress::unpackageHapMode failed");
+        }
+    }
+
+    /**
+     * unpack hsp.
+     *
+     * @param utility common data
+     */
+    static void unpackageHspMode(Utility utility) throws BundleException {
+        if (!Utility.MODE_HSP.equals(utility.getMode())) {
+            LOG.error("unpackageHspMode input wrong unpack mode: " + utility.getMode());
+            throw new BundleException("Uncompress::unpackageHspMode input wrong unpack mode");
+        }
+        try {
+            if (TRUE.equals(utility.getLibs())) {
+                List<String> cpuAbiList = utility.getFormattedCpuAbiList();
+                unpackageLibsMode(utility.getHspPath(), utility.getOutPath(), cpuAbiList);
+                return;
+            }
+            dataTransferAllFiles(utility.getHspPath(), utility.getOutPath());
+        } catch (BundleException e) {
+            LOG.error("Uncompress::unpackageHspMode failed");
+            throw new BundleException("Uncompress::unpackageHspMode failed");
         }
     }
 
@@ -549,7 +581,7 @@ public class Uncompress {
                     continue;
                 }
                 if (entry.getName().toLowerCase().endsWith(CUT_ENTRY_FILENAME) &&
-                    "false".equals(utility.getUnpackCutEntryApk())) {
+                        "false".equals(utility.getUnpackCutEntryApk())) {
                     continue;
                 }
                 entryName = entry.getName();
@@ -566,7 +598,7 @@ public class Uncompress {
                     }
                 }
                 if (APK_SUFFIX.equals(suffix) && "true".equals(utility.getUnpackApk())
-                    && entryName.contains(LINUX_FILE_SEPARATOR)) {
+                        && entryName.contains(LINUX_FILE_SEPARATOR)) {
                     // only unpack shell apk which in the root directory
                     continue;
                 }
@@ -719,7 +751,7 @@ public class Uncompress {
                     continue;
                 }
                 if (indexEntry != null && !"".equals(indexEntry.getName()) &&
-                    indexEntry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
+                        indexEntry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
                     indexInputStream = zipFile.getInputStream(indexEntry);
                     return getByte(indexInputStream);
                 }
@@ -731,7 +763,7 @@ public class Uncompress {
     }
 
     private static HapZipInfo unZipHapFileFromHapFile(String srcPath)
-        throws BundleException, IOException {
+            throws BundleException, IOException {
         HapZipInfo hapZipInfo = new HapZipInfo();
         ZipFile zipFile = null;
         if (!FileUtils.matchPattern(srcPath)) {
@@ -783,16 +815,16 @@ public class Uncompress {
     }
 
     private static void uncompressPackInfo(String deviceType, HapZipInfo hapZipInfo, UncompressResult uncomperssResult)
-        throws BundleException {
+            throws BundleException {
         List<PackInfo> packInfos = JsonUtil.parseHapList(deviceType, hapZipInfo.getPackInfoJsonStr());
         uncomperssResult.setPackInfoStr(hapZipInfo.getPackInfoJsonStr());
         uncomperssResult.setPackInfos(packInfos);
     }
 
     private static void uncompressProfileInfo(HapZipInfo hapZipInfo, UncompressResult uncomperssResult)
-        throws BundleException {
+            throws BundleException {
         ProfileInfo profileInfo = JsonUtil.parseProfileInfo(hapZipInfo.getHarmonyProfileJsonStr(),
-            hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr(), hapZipInfo.getHapFileName());
+                hapZipInfo.getResDataBytes(), hapZipInfo.getPackInfoJsonStr(), hapZipInfo.getHapFileName());
         profileInfo.hapName = hapZipInfo.getHapFileName();
         profileInfo.appInfo.setBundleType(getFABundleType(profileInfo));
         uncomperssResult.addProfileInfoStr(hapZipInfo.getHarmonyProfileJsonStr());
@@ -842,7 +874,7 @@ public class Uncompress {
     }
 
     private static String readStringFromInputStream(ZipInputStream zipIn, BufferedReader bufferedReader)
-        throws IOException {
+            throws IOException {
         String line;
         StringBuilder sb = new StringBuilder();
         while ((line = bufferedReader.readLine()) != null) {
@@ -1017,7 +1049,7 @@ public class Uncompress {
                     }
                 } else {
                     if (srcFile.getPath().toLowerCase(Locale.ENGLISH).endsWith(APK_SUFFIX) &&
-                        "true".equals(unpackApk)) {
+                            "true".equals(unpackApk)) {
                         continue;
                     }
                     compressFile(srcFile, "", zipOut, false);
@@ -1074,8 +1106,8 @@ public class Uncompress {
         try {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
-	    boolean isNeedCompress = isCompression;
-	    if (srcFile.isFile() && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(SO_SUFFIX)) {
+            boolean isNeedCompress = isCompression;
+            if (srcFile.isFile() && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(SO_SUFFIX)) {
                 isNeedCompress = false;
             }
             if (isNeedCompress) {
@@ -1619,6 +1651,137 @@ public class Uncompress {
             Utility.closeStream(zipFile);
             Utility.closeStream(inputStream);
             Utility.closeStream(outputStream);
+        }
+    }
+
+    /**
+     * unpacking according to the architecture
+     *
+     * @param srcFile Indicates the path of hap or hsp.
+     * @param outPath Indicates the output path of unpacking target path.
+     * @param cpuAbiList Indicates the designated cpuAbi.
+     */
+    static void unpackageLibsMode(String srcFile, String outPath, List<String> cpuAbiList) throws BundleException {
+        srcFile = srcFile.replace("\\", LINUX_FILE_SEPARATOR);
+        outPath = outPath.replace("\\", LINUX_FILE_SEPARATOR);
+        String tempDir = outPath + LINUX_FILE_SEPARATOR + TEMP_PATH;
+        try {
+            List<String> cpuAbiListRes = getLibsFromPackageAndUnpackage(srcFile, tempDir, cpuAbiList);
+            repackPackage(srcFile, outPath, tempDir, cpuAbiListRes);
+        } catch (BundleException  e) {
+            LOG.error("Uncompress::unpackageLibsMode failed." );
+            throw new BundleException("Uncompress::unpackageLibsMode failed");
+        } finally {
+            File deleteFile = new File(tempDir);
+            deleteFile(deleteFile);
+        }
+    }
+
+    /**
+     * get libs directory and unpack other files.
+     *
+     * @param srcFile Indicates the path of hap or hsp.
+     * @param tempDirPath Indicates the temporary directory path.
+     * @param cpuAbiList Indicates the Designated cpuAbi.
+     */
+    static List<String> getLibsFromPackageAndUnpackage(String srcFile, String tempDirPath, List<String> cpuAbiList)
+            throws BundleException {
+        try (ZipFile zipFile = new ZipFile(srcFile)) {
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            Set<String> cpuAbiSetRes = new HashSet<>();
+            while (entries.hasMoreElements()) {
+                final ZipEntry entry = entries.nextElement();
+                if (entry.getName().startsWith(LIBS + LINUX_FILE_SEPARATOR )) {
+                    String cpuAbi = entry.getName().substring(LIBS.length()+1).split(LINUX_FILE_SEPARATOR)[0];
+                    if (!cpuAbiList.isEmpty() && !cpuAbiList.contains(cpuAbi)) {
+                        continue;
+                    }
+                    cpuAbiSetRes.add(cpuAbi);
+                    File tempFile = new File(tempDirPath,  entry.getName().substring(LIBS.length()+1));
+                    FileUtils.createParentDir(tempFile);
+                    try (InputStream inputStream = zipFile.getInputStream(entry);
+                         FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+                        FileUtils.copyStream(inputStream, outputStream);
+                    } catch (IOException e) {
+                        LOG.error("Uncompress::getLibsFromPackageAndUnpackage IOException " + e.getMessage());
+                        throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+                    }
+                } else {
+                    String tempPath = tempDirPath + LINUX_FILE_SEPARATOR + PACKAGEFILE + LINUX_FILE_SEPARATOR
+                            + entry.getName();
+                    File destFile = new File(tempPath);
+                    FileUtils.createParentDir(destFile);
+                    dataTransfer(zipFile, entry, destFile);
+                }
+            }
+            if (cpuAbiSetRes.size() != cpuAbiList.size() && !cpuAbiList.isEmpty()) {
+                List<String> notExistAbi = cpuAbiList.stream()
+                        .filter(item -> !cpuAbiSetRes.contains(item))
+                        .collect(Collectors.toList());
+                LOG.error("The specified abi does not exist, " + notExistAbi);
+                throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+            }
+            if (cpuAbiSetRes.size() > MAX_CPU_ABI_TYPE_NUM && cpuAbiList.isEmpty())
+            {
+                LOG.error("Uncompress::getLibsFromPackageAndUnpackage failed: the architecture type exceeds the " +
+                        "limit and must be less than or equal to 128");
+                throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+            }
+            if (cpuAbiSetRes.isEmpty()) {
+                LOG.error("Uncompress::getLibsFromPackageAndUnpackage failed: libs has no CPU ABI");
+                throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+            }
+            return new ArrayList<>(cpuAbiSetRes);
+        } catch (IOException e) {
+            LOG.error("Uncompress::getLibsFromPackageAndUnpackage IOException " + e.getMessage());
+            throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+        }
+    }
+
+    /**
+     * repack Package
+     *
+     * @param srcPath source file path
+     * @param outPath out file path
+     * @param tempDir temp file name
+     * @param cpuAbiList cpuAbi list
+     * @throws BundleException FileNotFoundException|IOException.
+     */
+    private static void repackPackage(String srcPath, String outPath, String tempDir, List<String> cpuAbiList)
+            throws BundleException {
+        File srcDir = new File(tempDir + LINUX_FILE_SEPARATOR + PACKAGEFILE);
+        File[] srcFiles = srcDir.listFiles();
+        if (srcFiles == null) {
+            return;
+        }
+        try {
+            String[] srcPathItem = srcPath.split(LINUX_FILE_SEPARATOR);
+            if (srcPathItem.length <= 0) {
+                LOG.error("Uncompress::repackPackage failed: Wrong file path");
+                throw new BundleException("Uncompress::repackPackage failed");
+            }
+            String hapName = srcPathItem[srcPathItem.length - 1];
+            for (String cpuAbi : cpuAbiList) {
+                String targetZipPath = outPath + LINUX_FILE_SEPARATOR + cpuAbi + LINUX_FILE_SEPARATOR + hapName;
+                File targetZipFile = new File(targetZipPath);
+                if (targetZipFile.getParentFile() != null && !targetZipFile.getParentFile().exists()) {
+                    targetZipFile.getParentFile().mkdirs();
+                }
+                ZipOutputStream targetZipOutputStream = new ZipOutputStream(new FileOutputStream(targetZipPath));
+                for (File srcFile : srcFiles) {
+                    if (srcFile.isDirectory()) {
+                        compressDirectory(srcFile, "", targetZipOutputStream, false);
+                    } else {
+                        compressFile(srcFile, "", targetZipOutputStream, false);
+                    }
+                }
+                File srcFile = new File(tempDir + LINUX_FILE_SEPARATOR + cpuAbi);
+                compressDirectory(srcFile, LIBS+LINUX_FILE_SEPARATOR, targetZipOutputStream, true);
+                Utility.closeStream(targetZipOutputStream);
+            }
+        } catch (IOException e) {
+            LOG.error("Uncompress::repackPackage IOException " + e.getMessage());
+            throw new BundleException("Uncompress::repackPackage failed");
         }
     }
 

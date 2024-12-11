@@ -365,6 +365,42 @@ java -jar app_unpacking_tool.jar --mode <option> --appqf-path <options> --out-pa
 | --out-path   | 是         | NA          | 拆包目标文件路径。                          |
 | --force      | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。 |
 
+### 2.7 按照架构指数拆分hap/hsp包
+
+#### 2.7.1 示例(hap)
+
+```
+java -jar app_unpacking_tool.jar --mode <option> --hap-path <options> --out-path [option] --force [option] --libs true --cpu-abis [option]
+```
+
+#### 2.7.2 参数含义及规范(hap)
+
+| 指令       | 是否必选项 | 选项          | 描述                                                         |
+| ---------- | ---------- | ------------- | ------------------------------------------------------------ |
+| --mode     | 是         | hap    | 拆包类型。                                                   |
+| --hap-path | 是         | NA            | hap包路径。                                             |
+| --out-path | 是         | NA            | 拆包目标文件路径。                                           |
+| --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
+| --libs     | 否         | true或者false | 是否按照包中libs目录内若干架构指数拆分，如果为true，表示按照架构进行拆分。 |
+| --cpu-abis | 否         | NA            | 指定具体要拆出libs的架构类型，支持多个，用逗号分隔。--libs配置为fasle时该参数不生效 |
+
+#### 2.7.3 示例(hsp)
+
+```
+java -jar app_unpacking_tool.jar --mode <option> --hsp-path <options> --out-path [option] --force [option] --libs true --cpu-abis [option]
+```
+
+#### 2.7.4 参数含义及规范(hsp)
+
+| 指令       | 是否必选项 | 选项          | 描述                                                         |
+| ---------- | ---------- | ------------- | ------------------------------------------------------------ |
+| --mode     | 是         | hsp    | 拆包类型。                                                   |
+| --hsp-path | 是         | NA            | hsp包路径。                                             |
+| --out-path | 是         | NA            | 拆包目标文件路径。                                           |
+| --force    | 否         | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。  |
+| --libs     | 否         | true或者false | 是否按照包中libs目录内若干架构指数拆分，如果为true，表示按照架构进行拆分。 |
+| --cpu-abis | 否         | NA            | 指定具体要拆出libs的架构类型，支持多个，用逗号分隔。--libs配置为fasle时该参数不生效 |
+
 ## 3. 包解析接口
 
 ### 3.1 接口目录
