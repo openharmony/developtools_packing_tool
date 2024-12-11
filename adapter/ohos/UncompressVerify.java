@@ -82,7 +82,15 @@ class UncompressVerify {
             LOG.error("UncompressVerify::isArgsValidInHapMode hap-path must end with.hap!");
             return false;
         }
-
+        
+        if (!(TRUE.equals(utility.getLibs()) || FALSE.equals(utility.getLibs()))) {
+            LOG.error("UncompressVerify::isArgsValidInHapMode --libs must be true or false");
+            return false;
+        }
+        if (TRUE.equals(utility.getLibs())) {
+            utility.setRpcid(Utility.FALSE_STRING);
+            return libsCommandVerify(utility);
+        }
         if (!(TRUE.equals(utility.getRpcid()) || FALSE.equals(utility.getRpcid()))) {
             LOG.error("UncompressVerify::isArgsValidInHapMode --rpcid must be true or false");
             return false;
@@ -101,6 +109,14 @@ class UncompressVerify {
             LOG.error("UncompressVerify::isArgsValidInHspMode hsp-path must end with.hsp!");
             return false;
         }
+
+        if (!(TRUE.equals(utility.getLibs()) || FALSE.equals(utility.getLibs()))) {
+            LOG.error("UncompressVerify::isArgsValidInHapMode --libs must be true or false");
+            return false;
+        }
+        if (TRUE.equals(utility.getLibs())) {
+            return libsCommandVerify(utility);
+        }
         return verifyOutPath(utility, file);
     }
 
@@ -115,6 +131,35 @@ class UncompressVerify {
         if (outPath.exists() && FALSE.equals(utility.getForceRewrite())) {
             LOG.error("UncompressVerify::rpcidCommandVerify outPath already exists");
             return false;
+        }
+        return true;
+    }
+
+    /**
+     * parse and check args if valid in hap or hsp mode.
+     *
+     * @param utility common data
+     * @return isVerifyValidInLibsMode if verify valid in hap or hsp mode.
+     */
+    private static boolean libsCommandVerify(Utility utility) {
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("--out-path is empty!");
+            return false;
+        }
+
+        File outFile = new File(utility.getOutPath());
+        if (("false".equals(utility.getForceRewrite())) && (outFile.exists())) {
+            LOG.error("UncompressVerify::libsCommandVerify out file already existed!");
+            return false;
+        }
+
+        if (!utility.getCpuAbis().isEmpty()) {
+            String[] array = utility.getCpuAbis().split(",");
+            for (String item : array) {
+                if (!utility.getFormattedCpuAbiList().contains(item)) {
+                    utility.getFormattedCpuAbiList().add(item);
+                }
+            }
         }
         return true;
     }
