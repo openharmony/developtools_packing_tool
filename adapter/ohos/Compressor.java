@@ -498,7 +498,7 @@ public class Compressor {
         try {
             json = new FileInputStream(file);
             JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
-            if (!jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
+            if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
                 LOG.error("json file is invalid.");
                 throw new BundleException("json file is invalid.");
             }
