@@ -162,8 +162,10 @@ HWTEST_F(ShellCommandTest, ExecCommand_0400, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char**>(argv), OHOS::AppPackingTool::TOOL_NAME);
-    std::string resultReceiver = shellcmd.ExecCommand();
+    int32_t ret = AppPackingTool::ERR_OK;
+    std::string resultReceiver = shellcmd.ExecCommand(ret);
     EXPECT_FALSE(resultReceiver.empty());
+    EXPECT_EQ(ret, AppPackingTool::ERR_INVALID_VALUE);
 }
 
 /*
@@ -203,7 +205,7 @@ HWTEST_F(ShellCommandTest, RunAsPackCommand_0600, Function | MediumTest | Level1
     };
 
     OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char**>(argv), OHOS::AppPackingTool::TOOL_NAME);
-    EXPECT_EQ(shellcmd.RunAsPackCommand(), 0);
+    EXPECT_EQ(shellcmd.RunAsPackCommand(), AppPackingTool::ERR_INVALID_VALUE);
 }
 
 /*
@@ -248,7 +250,7 @@ HWTEST_F(ShellCommandTest, OnCommand_0800, Function | MediumTest | Level1)
 
     shellcmd.commandMap_.emplace(shellcmd.cmd_, nullptr);
     ret = shellcmd.OnCommand();
-    EXPECT_EQ(ret, 0);
+    EXPECT_EQ(ret, AppPackingTool::ERR_INVALID_VALUE);
 }
 
 /*
@@ -389,7 +391,7 @@ HWTEST_F(ShellCommandTest, RunAsPackCommand_1100, Function | MediumTest | Level1
     int32_t ret = shellcmd.ParseParam();
     EXPECT_EQ(ret, 0);
     shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] = "";
-    EXPECT_EQ(shellcmd.RunAsPackCommand(), 0);
+    EXPECT_EQ(shellcmd.RunAsPackCommand(), AppPackingTool::ERR_INVALID_VALUE);
 }
 
 /*

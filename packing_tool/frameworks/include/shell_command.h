@@ -45,7 +45,7 @@ public:
 
     int32_t ParseParam();
     int32_t OnCommand();
-    std::string ExecCommand();
+    std::string ExecCommand(int32_t& ret);
     int32_t CreateCommandMap();
 
 protected:
