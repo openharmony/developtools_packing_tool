@@ -99,6 +99,7 @@ java -jar app_packing_tool.jar --mode app [--hap-path <path>] [--hsp-path <path>
 
 在对工程内的hap、hsp包打包生成app包时，需要保证被打包的每个hap、hsp在json文件中配置的bundleName，versionCode，minCompatibleVersionCode，minAPIVersion，targetAPIVersion相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
 
+API 16变更：每个hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion相同，hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion要大于等于hsp在json文件中配置的minCompatibleVersionCode、targetAPIVersion。
 #### 1.3.4 打包app时的压缩规则
 
 打包app时，对release模式的hap、hsp包会进行压缩，对debug模式的hap、hsp包不会压缩。
@@ -127,6 +128,7 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list <1.hap,2.hap> --hsp-li
 
 需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
 
+API 16变更：每个hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion相同，hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion要大于等于hsp在json文件中配置的minCompatibleVersionCode、targetAPIVersion。
 ### 1.5 hqf模式打包指令
 
 #### 1.5.1 示例
@@ -259,6 +261,7 @@ java -jar app_packing_tool.jar --mode fastApp --hap-path <option> --hsp-path <op
 
 在对工程内的hap、hsp包打包生成app包时，需要保证被打包的每个hap、hsp在json文件中配置的bundleName，versionCode，minCompatibleVersionCode，minAPIVersion，targetAPIVersion相同，moduleName唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
 
+API 16变更：每个hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion相同，hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion要大于等于hsp在json文件中配置的minCompatibleVersionCode、targetAPIVersion。
 ## 2. 拆包指令说明
 
 ### 2.1 hap包模式拆包指令
