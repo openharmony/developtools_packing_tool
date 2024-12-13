@@ -19,10 +19,12 @@ ohos_executable("ohos_packing_tool") {
   sanitize = {
     boundary_sanitize = true
     cfi = true
+    cfi_cross_dso = true
     debug = false
     integer_overflow = true
     ubsan = true
   }
+
   include_dirs = [ "include" ]
   sources = [
     "src/hap_packager.cpp",
