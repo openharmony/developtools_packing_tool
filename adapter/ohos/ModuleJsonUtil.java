@@ -1179,6 +1179,41 @@ class ModuleJsonUtil {
     }
 
     /**
+     * get extensionAbility skills map from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return skillMap key is ability,value indicate whether this door is a home extensionAbility
+     */
+    public static Map<String, Boolean> parseExtensionAbilitySkillsMap(String jsonString)
+        throws BundleException {
+        Map<String, Boolean> skillsMap = new HashMap<>();
+        JSONObject moduleObj = getModuleObj(jsonString);
+        JSONArray extensionAbilityObs = moduleObj.getJSONArray(EXTENSION_ABILITIES);
+        if (extensionAbilityObs == null) {
+            return skillsMap;
+        }
+        for (int i = 0; i < extensionAbilityObs.size(); ++i) {
+            JSONObject extensionAbilityObj = extensionAbilityObs.getJSONObject(i);
+            String abilityName = getJsonString(extensionAbilityObj, NAME);
+            skillsMap.put(abilityName, false);
+            if (!extensionAbilityObj.containsKey(SKILLS)) {
+                break;
+            }
+            JSONArray skillArray = extensionAbilityObj.getJSONArray(SKILLS);
+            for (int j = 0; j < skillArray.size(); ++j) {
+                JSONObject skillObj = skillArray.getJSONObject(j);
+                String entities = getJsonString(skillObj, SKILLS_ENTITIES);
+                String actions = getJsonString(skillObj, SKILLS_ACTIONS);
+                if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(ACTION_SYSTEM_HOME)) {
+                    skillsMap.put(abilityName, true);
+                    break;
+                }
+            }
+        }
+        return skillsMap;
+    }
+
+    /**
      * parse stage module type.
      *
      * @param jsonString is the json String of module.json or config.json
