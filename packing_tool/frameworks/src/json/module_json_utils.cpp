@@ -62,10 +62,20 @@ bool ModuleJsonUtils::GetStageHapVerifyInfo(const std::string& hapFilePath, HapV
         LOGE("Get resouce map from hap file failed! hapFile=%s", hapFilePath.c_str());
         return false;
     }
+    std::string fileType = "";
+    fs::path fsHapPath(hapFilePath);
+    std::string fileName = fsHapPath.filename().string();
+    std::transform(fileName.begin(), fileName.end(), fileName.begin(), ::tolower);
+    if (Utils::EndsWith(fileName, HAP_SUFFIX)) {
+        fileType = HAP_SUFFIX;
+    } else if (Utils::EndsWith(fileName, HSP_SUFFIX)) {
+        fileType = HSP_SUFFIX;
+    }
     hapVerifyInfo.SetResourceMap(resourceMap);
     hapVerifyInfo.SetProfileStr(fileContent);
     hapVerifyInfo.SetStageModule(true);
     hapVerifyInfo.SetFileLength(fileLength);
+    hapVerifyInfo.SetFileType(fileType);
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromString(fileContent)) {
         LOGE("Parse json string failed!");
