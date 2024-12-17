@@ -86,7 +86,8 @@ public interface ShowHelp {
                 "  --force                        default false; if true, force delete destination\n" +
                 "                                 out file if exists.\n" +
                 "  --signature-path               signature file path.\n" +
-                "  --certificate-path             certificate file path.");
+                "  --certificate-path             certificate file path.\n" +
+                "  --encrypt-path                 encrypt.json file path.");
     }
 
     /**
