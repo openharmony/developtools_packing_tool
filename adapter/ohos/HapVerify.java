@@ -46,6 +46,8 @@ class HapVerify {
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
     private static final double FILE_SIZE_OFFSET_DOUBLE = 0.01d;
     private static final int FILE_SIZE_DECIMAL_PRECISION = 2;
+    private static final String HAP_SUFFIX = ".hap";
+    private static final String HSP_SUFFIX = ".hsp";
 
     /**
      * check hap is verify.
@@ -231,15 +233,16 @@ class HapVerify {
         if (optional.isPresent()) {
             verifyInfo = optional.get();
         }
+        List<HapVerifyInfo> hapList = new ArrayList<>();
+        int hspMinCompatibleVersionCodeMax = -1;
+        int hspTargetApiVersionMax = -1;
         VerifyCollection verifyCollection = new VerifyCollection();
         verifyCollection.bundleName = verifyInfo.getBundleName();
         verifyCollection.setBundleType(verifyInfo.getBundleType());
         verifyCollection.vendor = verifyInfo.getVendor();
         verifyCollection.versionCode = verifyInfo.getVersion().versionCode;
         verifyCollection.versionName = verifyInfo.getVersion().versionName;
-        verifyCollection.minCompatibleVersionCode = verifyInfo.getVersion().minCompatibleVersionCode;
         verifyCollection.compatibleApiVersion = verifyInfo.getApiVersion().getCompatibleApiVersion();
-        verifyCollection.targetApiVersion = verifyInfo.getApiVersion().getTargetApiVersion();
         verifyCollection.releaseType = verifyInfo.getApiVersion().getReleaseType();
         verifyCollection.targetBundleName = verifyInfo.getTargetBundleName();
         verifyCollection.targetPriority = verifyInfo.getTargetPriority();
@@ -253,6 +256,41 @@ class HapVerify {
                         hapVerifyInfo.getModuleName() + ") has different values.");
                 return false;
             }
+            if (hapVerifyInfo.getFileType() == HAP_SUFFIX) {
+                hapList.add(hapVerifyInfo);
+            } else if (hapVerifyInfo.getFileType() == HSP_SUFFIX) {
+                if (hapVerifyInfo.getVersion().minCompatibleVersionCode > hspMinCompatibleVersionCodeMax) {
+                    hspMinCompatibleVersionCodeMax = hapVerifyInfo.getVersion().minCompatibleVersionCode;
+                }
+                if (hapVerifyInfo.getApiVersion().getTargetApiVersion() > hspTargetApiVersionMax) {
+                    hspTargetApiVersionMax = hapVerifyInfo.getApiVersion().getTargetApiVersion();
+                }
+            }
+        }
+        if (!appFieldsIsValid(hapList, hspMinCompatibleVersionCodeMax, hspTargetApiVersionMax)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean appFieldsIsValid(List<HapVerifyInfo> hapVerifyInfos, int minCompatibleVersionCode,
+        int targetApiVersion) {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.warning("hapList empty");
+            return true;
+        }
+        HapVerifyInfo hap = hapVerifyInfos.get(0);
+        for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+            if (hap.getVersion().minCompatibleVersionCode != hapInfo.getVersion().minCompatibleVersionCode ||
+                hap.getApiVersion().getTargetApiVersion() != hapInfo.getApiVersion().getTargetApiVersion()) {
+                LOG.error("hap minCompatibleVersionCode or targetApiVersion different");
+                return false;
+            }
+        }
+        if (hap.getVersion().minCompatibleVersionCode < minCompatibleVersionCode ||
+            hap.getApiVersion().getTargetApiVersion() < targetApiVersion) {
+            LOG.error("minCompatibleVersionCode or targetApiVersion property hap less than hsp");
+            return false;
         }
         return true;
     }
@@ -271,16 +309,8 @@ class HapVerify {
             LOG.error("input module versionCode is different.");
             return false;
         }
-        if (verifyCollection.minCompatibleVersionCode != hapVerifyInfo.getVersion().minCompatibleVersionCode) {
-            LOG.error("input module minCompatibleVersionCode is different.");
-            return false;
-        }
         if (verifyCollection.compatibleApiVersion != hapVerifyInfo.getApiVersion().getCompatibleApiVersion()) {
             LOG.error("input module minApiVersion is different.");
-            return false;
-        }
-        if (verifyCollection.targetApiVersion != hapVerifyInfo.getApiVersion().getTargetApiVersion()) {
-            LOG.error("input module targetApiVersion is different.");
             return false;
         }
         if (!verifyCollection.releaseType.equals(hapVerifyInfo.getApiVersion().getReleaseType())) {

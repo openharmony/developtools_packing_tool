@@ -601,4 +601,25 @@ class FileUtils {
         LOG.error("input " + filePath + " is not a valid file.");
         return 0;
     }
+
+    public static void createParentDir(File file) {
+        if (file != null && file.getParentFile() != null && !file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+    }
+
+    /**
+     * copy Stream
+     *
+     * @param inputStream input stream
+     * @param outputStream out stream
+     * @throws IOException IOException.
+     */
+    public static void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int bytesRead = 0;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+    }
 }

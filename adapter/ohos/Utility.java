@@ -93,6 +93,8 @@ public class Utility {
     private String VersionName = "";
     private boolean isModuleJson = false;
     private String rpcid = FALSE_STRING;
+    private String libs = FALSE_STRING;
+    private String cpuAbi = "";
     private boolean isParse = false;
     private String appqfPath = "";
     private String anPath = "";
@@ -109,6 +111,7 @@ public class Utility {
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
 
+    private List<String> formattedCpuAbiList = new ArrayList<>();
     private List<String> formattedSoPathList = new ArrayList<>();
     private List<String> formattedAbilitySoPathList = new ArrayList<>();
     private List<String> formattedDexPathList = new ArrayList<>();
@@ -569,6 +572,18 @@ public class Utility {
         this.rpcid = rpcid;
     }
 
+    public String getLibs() { return libs; }
+
+    public void setLibs(String libs) {
+        this.libs = libs;
+    }
+
+    public String getCpuAbis() { return cpuAbi; }
+
+    public void setCpuAbis(String cpuAbi) {
+        this.cpuAbi = cpuAbi;
+    }
+
     public String getVersionName() {
         return VersionName;
     }
@@ -583,6 +598,10 @@ public class Utility {
 
     public void setVersionCode(int VersionCode) {
         this.VersionCode = VersionCode;
+    }
+
+    public List<String> getFormattedCpuAbiList() {
+        return formattedCpuAbiList;
     }
 
     public List<String> getFormattedSoPathList() {
