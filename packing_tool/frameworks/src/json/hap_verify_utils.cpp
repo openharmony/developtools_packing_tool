@@ -38,6 +38,8 @@ const std::string ENTRY_NAME = "entryName";
 const std::string ATOMIC_SERVICE = "atomicService";
 const std::string TYPE_SHARED = "shared";
 const std::string HAR = "har";
+const std::string HAP_SUFFIX = ".hap";
+const std::string HSP_SUFFIX = ".hsp";
 const int32_t TWO = 2;
 const long FILE_LENGTH_1M = 1024 * 1024L;
 }
@@ -100,6 +102,9 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
         LOGE("hapVerifyInfos is empty!");
         return false;
     }
+    std::list<HapVerifyInfo> hapList;
+    int32_t hspMinCompatibleVersionCodeMax = -1;
+    int32_t hspTargetApiVersionMax = -1;
     HapVerifyInfo hapVerifyInfo = *hapVerifyInfos.begin();
     VerifyCollection verifyCollection;
     verifyCollection.bundleName = hapVerifyInfo.GetBundleName();
@@ -107,9 +112,7 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
     verifyCollection.vendor = hapVerifyInfo.GetVendor();
     verifyCollection.versionCode = hapVerifyInfo.GetVersion().versionCode;
     verifyCollection.versionName = hapVerifyInfo.GetVersion().versionName;
-    verifyCollection.minCompatibleVersionCode = hapVerifyInfo.GetVersion().minCompatibleVersionCode;
     verifyCollection.compatibleApiVersion = hapVerifyInfo.GetApiVersion().compatibleApiVersion;
-    verifyCollection.targetApiVersion = hapVerifyInfo.GetApiVersion().targetApiVersion;
     verifyCollection.releaseType = hapVerifyInfo.GetApiVersion().releaseType;
     verifyCollection.targetBundleName = hapVerifyInfo.GetTargetBundleName();
     verifyCollection.targetPriority = hapVerifyInfo.GetTargetPriority();
@@ -123,6 +126,43 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
                 verifyCollection.moduleName.c_str(), hapVerifyInfo.GetModuleName().c_str());
             return false;
         }
+
+        if (hapVerifyInfo.GetFileType() == HAP_SUFFIX) {
+            hapList.emplace_back(hapVerifyInfo);
+        } else if (hapVerifyInfo.GetFileType() == HSP_SUFFIX) {
+            if (hapVerifyInfo.GetVersion().minCompatibleVersionCode > hspMinCompatibleVersionCodeMax) {
+                hspMinCompatibleVersionCodeMax = hapVerifyInfo.GetVersion().minCompatibleVersionCode;
+            }
+            if (hapVerifyInfo.GetApiVersion().targetApiVersion > hspTargetApiVersionMax) {
+                hspTargetApiVersionMax = hapVerifyInfo.GetApiVersion().targetApiVersion;
+            }
+        }
+    }
+    if (!AppFieldsIsValid(hapList, hspMinCompatibleVersionCodeMax, hspTargetApiVersionMax)) {
+        return false;
+    }
+    return true;
+}
+
+bool HapVerifyUtils::AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos,
+    int32_t minCompatibleVersionCode, int32_t targetApiVersion)
+{
+    if (hapVerifyInfos.empty()) {
+        LOGW("hapList empty");
+        return true;
+    }
+    HapVerifyInfo hap = *hapVerifyInfos.begin();
+    for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+        if (hap.GetVersion().minCompatibleVersionCode != hapInfo.GetVersion().minCompatibleVersionCode ||
+            hap.GetApiVersion().targetApiVersion != hapInfo.GetApiVersion().targetApiVersion) {
+            LOGE("hap minCompatibleVersionCode or targetApiVersion different");
+            return false;
+        }
+    }
+    if (hap.GetVersion().minCompatibleVersionCode < minCompatibleVersionCode ||
+        hap.GetApiVersion().targetApiVersion < targetApiVersion) {
+        LOGE("minCompatibleVersionCode or targetApiVersion property hap less than hsp");
+        return false;
     }
     return true;
 }
@@ -141,16 +181,14 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
         LOGE("input module bundleType is different.");
         return false;
     }
-    if (verifyCollection.versionCode != hapVerifyInfo.GetVersion().versionCode ||
-        verifyCollection.minCompatibleVersionCode != hapVerifyInfo.GetVersion().minCompatibleVersionCode) {
-        LOGE("input module versionCode or minCompatibleVersionCode is different.");
+    if (verifyCollection.versionCode != hapVerifyInfo.GetVersion().versionCode) {
+        LOGE("input module versionCode is different.");
         return false;
     }
     if (verifyCollection.compatibleApiVersion != hapVerifyInfo.GetApiVersion().compatibleApiVersion ||
-        verifyCollection.targetApiVersion != hapVerifyInfo.GetApiVersion().targetApiVersion ||
         verifyCollection.releaseType != hapVerifyInfo.GetApiVersion().releaseType) {
-        LOGE("input module compatibleApiVersion or targetApiVersion or releaseType is different.");
-        LOGE("Solutions: > Check if the compatibleApiVersion / targetApiVersion / releaseType" \
+        LOGE("input module compatibleApiVersion or releaseType is different.");
+        LOGE("Solutions: > Check if the compatibleApiVersion / releaseType" \
             " is the same in different modules.");
         return false;
     }

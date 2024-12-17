@@ -44,6 +44,8 @@ public class CommandParser {
     private static final String CMD_HNP_PATH = "--hnp-path";
     private static final String CMD_RPCID_PATH = "--rpcid-path";
     private static final String CMD_RPCID = "--rpcid";
+    private static final String CMD_LIBS = "--libs";
+    private static final String CMD_CPU_ABIS = "--cpu-abis";
     private static final String CMD_SO_PATH = "--maple-so-path";
     private static final String CMD_SO_DIR = "--maple-so-dir";
     private static final String CMD_ABILITY_SO_PATH = "--ability-so-path";
@@ -142,6 +144,14 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_RPCID, entry -> {
             entry.getKey().setRpcid(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_LIBS, entry -> {
+            entry.getKey().setLibs(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_CPU_ABIS, entry -> {
+            entry.getKey().setCpuAbis(entry.getValue());
             return true;
         });
         commandFuncs.put(CMD_SO_PATH, entry -> {
