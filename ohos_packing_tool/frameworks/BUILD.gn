@@ -14,6 +14,17 @@
 import("//build/ohos.gni")
 
 ohos_executable("ohos_packing_tool") {
+  branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+    integer_overflow = true
+    ubsan = true
+  }
+
   include_dirs = [ "include" ]
   sources = [
     "src/hap_packager.cpp",
@@ -23,7 +34,9 @@ ohos_executable("ohos_packing_tool") {
     "src/shell_command.cpp",
   ]
   configs = []
-  cflags = []
+
+  cflags = [ "-fstack-protector-strong" ]
+
   external_deps = [
     "json:nlohmann_json_static",
     "zlib:libz",
