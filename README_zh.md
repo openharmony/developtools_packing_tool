@@ -693,6 +693,7 @@ java -jar app_unpacking_tool.jar --mode <option> --hsp-path <options> --out-path
 | -------- | ------------------- |----------------------| ---- |
 | actions  | List\<String>       | 标识能够接收的意图的action值的集合 | NA   |
 | entities | List\<String>       | 标识能够接收的意图的元能力的类别集合   | NA   |
+| domainVerify | boolean       | ability是否支持域校验   | NA   |
 
 ### 4.23 UriInfo结构体信息
 
