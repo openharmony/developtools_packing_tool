@@ -16,7 +16,6 @@
 package ohos;
 
 import com.alibaba.fastjson.JSONValidator;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -924,13 +923,30 @@ public class CompressVerify {
             return false;
         }
 
-        if((isBundleTypeShared(utility) || isBundleTypeAppService(utility)) && hspHasAbilities(utility)) {
-            LOG.error("shared/appService hsp has abilities");
-            return false;
+        if ((isBundleTypeShared(utility) || isBundleTypeAppService(utility))) {
+            boolean hspHasAbilities = hspHasAbilities(utility);
+            boolean hspHasExtensionAbilities = hspHasExtensionAbilities(utility);
+            if (hspHasAbilities && hspHasExtensionAbilities) {
+                LOG.error("shared/appService hsp has abilities and extensionAbilities");
+                return false;
+            }
+            if (hspHasAbilities) {
+                LOG.error("shared/appService hsp has abilities");
+                return false;
+            }
+            if (hspHasExtensionAbilities) {
+                LOG.error("shared/appService hsp has extensionAbilities");
+                return false;
+            }
         }
 
         if(hasHomeAbility(utility)) {
             LOG.error("hsp has home ability");
+            return false;
+        }
+
+        if (hasHomeExtensionAbility(utility)) {
+            LOG.error("hsp has home extensionAbility");
             return false;
         }
 
@@ -1177,6 +1193,21 @@ public class CompressVerify {
         }
     }
 
+    private static boolean hspHasExtensionAbilities(Utility utility) {
+        try {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if (optional.isPresent()) {
+                return ModuleJsonUtil.parseModuleType(optional.get()).equals(BUNDLE_TYPE_SHARE) &&
+                        !ModuleJsonUtil.parseExtensionAbilityName(optional.get()).isEmpty();
+            } else {
+                LOG.error("CompressVerify::hspHasExtensionAbilities jsonPath content invalid");
+            }
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::hspHasExtensionAbilities exception: " + e.getMessage());
+        }
+        return false;
+    }
+
     private static boolean hasHomeAbility(Utility utility) {
         try {
             boolean result = false;
@@ -1211,5 +1242,25 @@ public class CompressVerify {
             return fileEncryptJson.isFile() && Constants.FILE_ENCRYPT_JSON.equals(fileEncryptJson.getName());
         }
         return true;
+    }
+
+    private static boolean hasHomeExtensionAbility(Utility utility) {
+        try {
+            boolean result = false;
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if (!optional.isPresent()) {
+                LOG.error("CompressVerify::hasHomeExtensionAbility jsonPath content invalid");
+                return false;
+            }
+            Map<String, Boolean> extensionAbilitiesMap = ModuleJsonUtil.parseExtensionAbilitySkillsMap(optional.get());
+            if (extensionAbilitiesMap.containsValue(true)) {
+                result = true;
+            }
+            LOG.info("CompressVerify::hasHomeExtensionAbility result = " + result);
+            return result;
+        } catch (BundleException e) {
+            LOG.error("CompressVerify::hasHomeExtensionAbility exception: " + e.getMessage());
+            return false;
+        }
     }
 }
