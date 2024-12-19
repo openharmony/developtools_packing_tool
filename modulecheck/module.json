@@ -958,7 +958,8 @@
                   "sysPicker/filePicker",
                   "sysPicker/audioPicker",
                   "sys/visualExtension",
-                  "recentPhoto"
+                  "recentPhoto",
+                  "callerInfoQuery"
                 ]
               },
               "permissions": {
