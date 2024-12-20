@@ -1669,7 +1669,7 @@ public class Uncompress {
             List<String> cpuAbiListRes = getLibsFromPackageAndUnpackage(srcFile, tempDir, cpuAbiList);
             repackPackage(srcFile, outPath, tempDir, cpuAbiListRes);
         } catch (BundleException  e) {
-            LOG.error("Uncompress::unpackageLibsMode failed." );
+            LOG.error("Uncompress::unpackageLibsMode failed.");
             throw new BundleException("Uncompress::unpackageLibsMode failed");
         } finally {
             File deleteFile = new File(tempDir);
@@ -1691,13 +1691,13 @@ public class Uncompress {
             Set<String> cpuAbiSetRes = new HashSet<>();
             while (entries.hasMoreElements()) {
                 final ZipEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(LIBS + LINUX_FILE_SEPARATOR )) {
-                    String cpuAbi = entry.getName().substring(LIBS.length()+1).split(LINUX_FILE_SEPARATOR)[0];
+                if (entry.getName().startsWith(LIBS + LINUX_FILE_SEPARATOR)) {
+                    String cpuAbi = entry.getName().substring(LIBS.length() + 1).split(LINUX_FILE_SEPARATOR)[0];
                     if (!cpuAbiList.isEmpty() && !cpuAbiList.contains(cpuAbi)) {
                         continue;
                     }
                     cpuAbiSetRes.add(cpuAbi);
-                    File tempFile = new File(tempDirPath,  entry.getName().substring(LIBS.length()+1));
+                    File tempFile = new File(tempDirPath, entry.getName().substring(LIBS.length() + 1));
                     FileUtils.createParentDir(tempFile);
                     try (InputStream inputStream = zipFile.getInputStream(entry);
                          FileOutputStream outputStream = new FileOutputStream(tempFile)) {
@@ -1721,8 +1721,7 @@ public class Uncompress {
                 LOG.error("The specified abi does not exist, " + notExistAbi);
                 throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
             }
-            if (cpuAbiSetRes.size() > MAX_CPU_ABI_TYPE_NUM && cpuAbiList.isEmpty())
-            {
+            if (cpuAbiSetRes.size() > MAX_CPU_ABI_TYPE_NUM && cpuAbiList.isEmpty()) {
                 LOG.error("Uncompress::getLibsFromPackageAndUnpackage failed: the architecture type exceeds the " +
                         "limit and must be less than or equal to 128");
                 throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
@@ -1776,7 +1775,7 @@ public class Uncompress {
                     }
                 }
                 File srcFile = new File(tempDir + LINUX_FILE_SEPARATOR + cpuAbi);
-                compressDirectory(srcFile, LIBS+LINUX_FILE_SEPARATOR, targetZipOutputStream, true);
+                compressDirectory(srcFile, LIBS + LINUX_FILE_SEPARATOR, targetZipOutputStream, true);
                 Utility.closeStream(targetZipOutputStream);
             }
         } catch (IOException e) {

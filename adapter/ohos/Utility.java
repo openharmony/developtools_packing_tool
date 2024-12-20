@@ -572,13 +572,17 @@ public class Utility {
         this.rpcid = rpcid;
     }
 
-    public String getLibs() { return libs; }
+    public String getLibs() {
+        return libs;
+    }
 
     public void setLibs(String libs) {
         this.libs = libs;
     }
 
-    public String getCpuAbis() { return cpuAbi; }
+    public String getCpuAbis() {
+        return cpuAbi;
+    }
 
     public void setCpuAbis(String cpuAbi) {
         this.cpuAbi = cpuAbi;

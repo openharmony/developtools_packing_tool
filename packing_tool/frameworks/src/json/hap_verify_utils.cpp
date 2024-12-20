@@ -16,6 +16,7 @@
 #include "hap_verify_utils.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 
 #include "hap_verify_info.h"
@@ -120,13 +121,30 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
     verifyCollection.moduleName = hapVerifyInfo.GetModuleName();
     verifyCollection.moduleType = hapVerifyInfo.GetModuleType();
     verifyCollection.multiAppMode = hapVerifyInfo.GetMultiAppMode();
+    std::list<std::string> assetAccessGroups = hapVerifyInfo.GetAssetAccessGroups();
+    std::string moduleName = hapVerifyInfo.GetModuleName();
+    auto it = std::find_if(hapVerifyInfos.begin(), hapVerifyInfos.end(),
+        [](const HapVerifyInfo& hapVerifyInfo) {
+            return hapVerifyInfo.GetModuleType() == ENTRY;
+        });
+    std::optional<HapVerifyInfo> entryOptional;
+    if (it != hapVerifyInfos.end()) {
+        entryOptional.emplace(*it);
+        if (entryOptional.has_value()) {
+            moduleName = entryOptional.value().GetModuleName();
+            assetAccessGroups = entryOptional.value().GetAssetAccessGroups();
+        }
+    }
     for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
         if (!AppFieldsIsSame(verifyCollection, hapVerifyInfo)) {
             LOGW("Module: (%s) and Module: (%s) has different values.",
                 verifyCollection.moduleName.c_str(), hapVerifyInfo.GetModuleName().c_str());
             return false;
         }
-
+        if (!AppAssetAccessGroupsIsSame(assetAccessGroups, hapVerifyInfo)) {
+            LOGW("Module: (%s) and Module: (%s) has different values.",
+                moduleName.c_str(), hapVerifyInfo.GetModuleName().c_str());
+        }
         if (hapVerifyInfo.GetFileType() == HAP_SUFFIX) {
             hapList.emplace_back(hapVerifyInfo);
         } else if (hapVerifyInfo.GetFileType() == HSP_SUFFIX) {
@@ -210,6 +228,20 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
             LOGE("multiAppMode is different.");
             return false;
         }
+    }
+    return true;
+}
+
+bool HapVerifyUtils::AppAssetAccessGroupsIsSame(const std::list<std::string>& assetAccessGroups,
+    const HapVerifyInfo& hapVerifyInfo)
+{
+    std::set<std::string> inputSet(assetAccessGroups.begin(), assetAccessGroups.end());
+    std::set<std::string> infoSet(hapVerifyInfo.GetAssetAccessGroups().begin(),
+        hapVerifyInfo.GetAssetAccessGroups().end());
+
+    if (inputSet != infoSet) {
+        LOGW("input module assetAccessGroups is different.");
+        return false;
     }
     return true;
 }
