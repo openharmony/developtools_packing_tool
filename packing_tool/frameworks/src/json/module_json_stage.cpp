@@ -649,6 +649,7 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
     int32_t targetPriority = 0;
     bool debug = false;
     MultiAppMode multiAppMode;
+    std::list<std::string> assetAccessGroups;
     if (!GetVendorByAppObj(appObj, vendor)) {
         LOGE("GetVendorByAppObj failed!");
         return false;
@@ -677,6 +678,10 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
         LOGE("GetMultiAppModeByAppObj failed!");
         return false;
     }
+    if (!GetAssetAccessGroupsByModuleObj(appObj, assetAccessGroups)) {
+        LOGE("GetAssetAccessGroupsByModuleObj failed!");
+        return false;
+    }
     hapVerifyInfo.SetVendor(vendor);
     hapVerifyInfo.SetVersion(version);
     hapVerifyInfo.SetApiVersion(moduleApiVersion);
@@ -684,6 +689,7 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
     hapVerifyInfo.SetTargetPriority(targetPriority);
     hapVerifyInfo.SetDebug(debug);
     hapVerifyInfo.SetMultiAppMode(multiAppMode);
+    hapVerifyInfo.SetAssetAccessGroups(assetAccessGroups);
     return true;
 }
 

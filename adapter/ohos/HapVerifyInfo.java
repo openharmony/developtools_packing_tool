@@ -46,6 +46,11 @@ class HapVerifyInfo {
     private ModuleApiVersion apiVersion = new ModuleApiVersion();
 
     /**
+     * Indicates the assetAccessGroups of module.
+     */
+    private List<String> assetAccessGroups = new ArrayList<>();
+
+    /**
      * Indicates the moduleName of module.
      */
     private String moduleName = "";
@@ -197,6 +202,20 @@ class HapVerifyInfo {
      */
     public void setApiVersion(ModuleApiVersion apiVersion) {
         this.apiVersion = apiVersion;
+    }
+
+    /**
+     * Get assetAccessGroups from HapVerifyInfo.
+     */
+    public List<String> getAssetAccessGroups() {
+        return assetAccessGroups;
+    }
+
+    /**
+     * Set assetAccessGroups for HapVerifyInfo.
+     */
+    public void setAssetAccessGroups(List<String> assetAccessGroups) {
+        this.assetAccessGroups = assetAccessGroups;
     }
 
     /**

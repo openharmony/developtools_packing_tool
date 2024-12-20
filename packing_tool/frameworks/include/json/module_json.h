@@ -171,6 +171,10 @@ public:
     bool GetProxyDataUrisByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& proxyDataUris);
     bool GetProxyDataUrisByProxyDatasObj(std::unique_ptr<PtJson>& proxyDatasObj,
         std::list<std::string>& proxyDataUris);
+
+    bool GetAssetAccessGroups(std::list<std::string>& assetAccessGroups);
+    bool GetAssetAccessGroupsByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& assetAccessGroups);
+
     bool GetMultiAppMode(MultiAppMode& multiAppMode);
     bool GetMultiAppModeByAppObj(std::unique_ptr<PtJson>& appObj, MultiAppMode& multiAppMode);
 

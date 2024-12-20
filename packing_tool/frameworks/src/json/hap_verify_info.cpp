@@ -355,6 +355,16 @@ void HapVerifyInfo::SetMultiAppMode(const MultiAppMode& multiAppMode)
     multiAppMode_ = multiAppMode;
 }
 
+const std::list<std::string>& HapVerifyInfo::GetAssetAccessGroups() const
+{
+    return assetAccessGroups_;
+}
+
+void HapVerifyInfo::SetAssetAccessGroups(const std::list<std::string>& assetAccessGroups)
+{
+    assetAccessGroups_ = assetAccessGroups;
+}
+
 void HapVerifyInfo::ConvertToDependency()
 {
     for (DependencyItem item : dependencyItemList_) {
