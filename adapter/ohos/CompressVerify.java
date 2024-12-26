@@ -589,8 +589,8 @@ public class CompressVerify {
      * @return isVerifyValidInMultiAppMode if verify valid in multiApp mode.
      */
     private static boolean isVerifyValidInMultiAppMode(Utility utility) {
-        if (utility.getAppList().isEmpty() && utility.getHapList().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInMultiAppMode input app-list and hap-list are null.");
+        if (utility.getAppList().isEmpty() && utility.getHapList().isEmpty() && utility.getHspList().isEmpty()) {
+            LOG.error("CompressVerify::isVerifyValidInMultiAppMode input app-list, hap-list and hsp-list are null.");
             return false;
         }
         if (!utility.getAppList().isEmpty()) {

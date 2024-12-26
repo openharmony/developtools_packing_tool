@@ -152,7 +152,7 @@ bool HapVerifyUtils::AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyI
         return true;
     }
     HapVerifyInfo hap = *hapVerifyInfos.begin();
-    for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+    for (const HapVerifyInfo& hapInfo : hapVerifyInfos) {
         if (hap.GetVersion().minCompatibleVersionCode != hapInfo.GetVersion().minCompatibleVersionCode ||
             hap.GetApiVersion().targetApiVersion != hapInfo.GetApiVersion().targetApiVersion) {
             LOGE("hap minCompatibleVersionCode or targetApiVersion different");
