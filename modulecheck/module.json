@@ -1005,6 +1005,7 @@
                   "sysPicker/filePicker",
                   "sysPicker/audioPicker",
                   "sys/visualExtension",
+                  "uiService",
                   "recentPhoto",
                   "callerInfoQuery"
                 ]
