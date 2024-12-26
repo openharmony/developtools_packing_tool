@@ -335,16 +335,22 @@ bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileLi
         LOGE("MultiAppPackager::CompressAppModeForMultiProject: zipWrapper Open failed!");
         return false;
     }
-    if (fs::exists(fs::path(outPath).parent_path().parent_path()) &&
-        fs::path(outPath).parent_path().parent_path() != fs::path("/")) {
-        tempHapDirPath =  fs::path(outPath).parent_path().parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
+
+    char path[PATH_MAX] = {0};
+    if (outPath.length() >= PATH_MAX || realpath(outPath.c_str(), path) == nullptr) {
+        LOGE("get realpath failed");
+        return false;
+    }
+    if (fs::exists(fs::path(path).parent_path().parent_path()) &&
+        fs::path(path).parent_path().parent_path() != fs::path("/")) {
+        tempHapDirPath =  fs::path(path).parent_path().parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
             Utils::GenerateUUID());
-        tempSelectedHapDirPath = fs::path(outPath).parent_path().parent_path() /
+        tempSelectedHapDirPath = fs::path(path).parent_path().parent_path() /
             ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) + Utils::GenerateUUID());
     } else {
-        tempHapDirPath =  fs::path(outPath).parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
+        tempHapDirPath =  fs::path(path).parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
             Utils::GenerateUUID());
-        tempSelectedHapDirPath = fs::path(outPath).parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
+        tempSelectedHapDirPath = fs::path(path).parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
             Utils::GenerateUUID());
     }
     if (!fs::exists(tempHapDirPath)) {
