@@ -131,7 +131,8 @@
             "multiAppMode",
             "hwasanEnabled",
             "cloudFileSyncEnabled",
-            "configuration"
+            "configuration",
+            "assetAccessGroups"
           ]
         }
       },
@@ -176,7 +177,8 @@
             "maxChildProcess",
             "hwasanEnabled",
             "cloudFileSyncEnabled",
-            "configuration"
+            "configuration",
+            "assetAccessGroups"
           ]
         }
       },
@@ -190,7 +192,7 @@
         },
         "bundleType": {
           "description": "Indicates the type of bundle",
-          "type":"string",
+          "type": "string",
           "enum": [
             "app",
             "atomicService",
@@ -207,7 +209,7 @@
           "description": "Indicates the label of the application.",
           "type": "string",
           "maxLength": 63,
-          "pattern":  "^[$]string:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
+          "pattern": "^[$]string:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
         },
         "icon": {
           "description": "Indicates the index to the application icon file, in the format of \"$media:application_icon\".This label can be left blank by default.",
@@ -461,7 +463,7 @@
           "description": "Indicates whether to support hwasan.",
           "type": "boolean",
           "default": false
-         },
+        },
         "cloudFileSyncEnabled": {
           "description": "Indicates whether the application enables cloud file sync.",
           "type": "boolean",
@@ -472,9 +474,20 @@
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
+        },
+        "assetAccessGroups": {
+          "description": "Indicates the asset access groups of the application.",
+          "type": "array",
+          "maxItems": 512,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 127,
+            "minLength": 7,
+            "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+          }
         }
       }
     }
   }
 }
-
