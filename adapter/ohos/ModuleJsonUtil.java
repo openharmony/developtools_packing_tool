@@ -29,6 +29,7 @@ import java.util.Map;
 class ModuleJsonUtil {
     private static final String APP = "app";
     private static final String BUNDLE_TYPE = "bundleType";
+    private static final String ASSETACCESSGROUPS = "assetAccessGroups";
     private static final String ABILITIES = "abilities";
     private static final String VERSIONCODE = "versionCode";
     private static final String VERSIONNAME = "versionName";
@@ -207,6 +208,24 @@ class ModuleJsonUtil {
             moduleApiVersion.setReleaseType(appObj.getString(API_RELEASE_TYPE));
         }
         return moduleApiVersion;
+    }
+
+    /**
+     * Get assetAccessGroups from json file.
+     *
+     * @param jsonString is the json String of module.json or config.json
+     * @return assetAccessGroups
+     */
+    public static List<String> parseAssetAccessGroups(String jsonString) throws BundleException {
+        List<String> assetAccessGroups = new ArrayList<>();
+        JSONObject appObj = getAppObj(jsonString);
+        if (appObj.containsKey(ASSETACCESSGROUPS)) {
+            JSONArray assetAccessGroupObjs = appObj.getJSONArray(ASSETACCESSGROUPS);
+            for (int i = 0; i < assetAccessGroupObjs.size(); ++i) {
+                assetAccessGroups.add(assetAccessGroupObjs.getString(i));
+            }
+        }
+        return assetAccessGroups;
     }
 
     /**
@@ -889,6 +908,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setVendor(parseVendor(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setVersion(parseStageVersion(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setApiVersion(parseStageModuleApiVersion(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setAssetAccessGroups(parseAssetAccessGroups(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setModuleName(parseStageModuleName(hapVerifyInfo.getProfileStr()));
         List<ModuleMetadataInfo> moduleMetadataInfos =
                 parseModuleAllMetadata(hapVerifyInfo.getProfileStr(), hapVerifyInfo.getResourceMap());

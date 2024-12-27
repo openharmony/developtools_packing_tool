@@ -103,6 +103,8 @@ public:
     void SetMultiAppMode(const MultiAppMode& multiAppMode);
     const std::string& GetFileType() const;
     void SetFileType(const std::string& fileType);
+    const std::list<std::string>& GetAssetAccessGroups() const;
+    void SetAssetAccessGroups(const std::list<std::string>& assetAccessGroups);
 
 private:
     void ConvertToDependency();
@@ -141,6 +143,7 @@ private:
     std::string compileSdkVersion_ = "";
     std::string compileSdkType_ = "";
     std::list<std::string> proxyDataUris_;
+    std::list<std::string> assetAccessGroups_;
     std::map<std::string, std::list<std::string>> continueTypeMap_;
     MultiAppMode multiAppMode_;
     std::string fileType_ = "";

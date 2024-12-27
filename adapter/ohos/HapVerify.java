@@ -250,11 +250,25 @@ class HapVerify {
         verifyCollection.setModuleName(verifyInfo.getModuleName());
         verifyCollection.setModuleType(verifyInfo.getModuleType());
         verifyCollection.setMultiAppMode(verifyInfo.getMultiAppMode());
+
+        List<String> assetAccessGroups = verifyInfo.getAssetAccessGroups();
+        String moduleName = verifyInfo.getModuleName();
+        Optional<HapVerifyInfo> entryOptional = hapVerifyInfos.stream()
+                .filter(hapVerifyInfo -> ENTRY.equals(hapVerifyInfo.getModuleType()))
+                .findFirst();
+        if (entryOptional.isPresent()) {
+            moduleName = entryOptional.get().getModuleName();
+            assetAccessGroups = entryOptional.get().getAssetAccessGroups();
+        }
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (!appFieldsIsSame(verifyCollection, hapVerifyInfo)) {
                 LOG.warning("Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
                         hapVerifyInfo.getModuleName() + ") has different values.");
                 return false;
+            }
+            if (!appAssetAccessGroupsIsSame(assetAccessGroups, hapVerifyInfo)) {
+                LOG.warning("Module: (" + moduleName + ") and Module: (" +
+                        hapVerifyInfo.getModuleName() + ") has different values.");
             }
             if (hapVerifyInfo.getFileType() == HAP_SUFFIX) {
                 hapList.add(hapVerifyInfo);
@@ -342,6 +356,15 @@ class HapVerify {
                 LOG.error("multiAppMode is different.");
                 return false;
             }
+        }
+        return true;
+    }
+
+    private static boolean appAssetAccessGroupsIsSame(List<String> assetAccessGroups, HapVerifyInfo hapVerifyInfo) {
+        if (!new HashSet<>(assetAccessGroups).
+                equals(new HashSet<>(hapVerifyInfo.getAssetAccessGroups()))){
+            LOG.warning("input module assetAccessGroups is different.");
+            return false;
         }
         return true;
     }
