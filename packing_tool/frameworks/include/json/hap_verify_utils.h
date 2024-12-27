@@ -40,6 +40,7 @@ struct VerifyCollection {
     bool debug = false;
     std::list<std::string> moduleNames;
     std::list<std::string> packageNames;
+    std::list<std::string> assetAccessGroups;
 
     bool split = true;
     std::string main = "";
@@ -136,6 +137,8 @@ private:
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2);
     static bool AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos,
         int32_t minCompatibleVersionCode, int32_t targetApiVersion);
+    static bool AppAssetAccessGroupsIsSame(const std::list<std::string>& assetAccessGroups,
+        const HapVerifyInfo& hapVerifyInfo);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

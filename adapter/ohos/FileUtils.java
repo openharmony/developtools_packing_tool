@@ -602,6 +602,11 @@ class FileUtils {
         return 0;
     }
 
+    /**
+     * Create a parent directory for a file
+     *
+     * @param file file
+     */
     public static void createParentDir(File file) {
         if (file != null && file.getParentFile() != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();

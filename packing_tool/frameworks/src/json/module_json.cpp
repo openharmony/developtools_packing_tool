@@ -85,6 +85,7 @@ const std::string MULTI_APP_MODE_TYPE = "multiAppModeType";
 const std::string MULTI_APP_MODE_NUMBER = "maxCount";
 const std::string GENERATE_BUILD_HASH = "generateBuildHash";
 const std::string BUILD_HASH = "buildHash";
+const std::string ASSET_ACCESS_GROUPS = "assetAccessGroups";
 }
 
 bool ModuleJson::ParseFromString(const std::string& jsonString)
@@ -692,6 +693,36 @@ bool ModuleJson::GetProxyDataUrisByProxyDatasObj(std::unique_ptr<PtJson>& proxyD
             return false;
         }
         proxyDataUris.push_back(proxyUri);
+    }
+    return true;
+}
+
+bool ModuleJson::GetAssetAccessGroups(std::list<std::string>& assetAccessGroups)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    return GetAssetAccessGroupsByModuleObj(moduleObj, assetAccessGroups);
+}
+
+bool ModuleJson::GetAssetAccessGroupsByModuleObj(std::unique_ptr<PtJson>& moduleObj,
+    std::list<std::string>& assetAccessGroups)
+{
+    if (!moduleObj) {
+        LOGE("Module node is null!");
+        return false;
+    }
+    if (moduleObj->Contains(ASSET_ACCESS_GROUPS.c_str())) {
+        std::unique_ptr<PtJson> assetAccessGroupObj;
+        if (moduleObj->GetArray(ASSET_ACCESS_GROUPS.c_str(), &assetAccessGroupObj) != Result::SUCCESS) {
+            LOGE("Module node get %s array node failed!", ASSET_ACCESS_GROUPS.c_str());
+            return false;
+        }
+        for (int32_t i = 0; i < assetAccessGroupObj->GetSize(); i++) {
+            assetAccessGroups.push_back(assetAccessGroupObj->Get(i)->GetString());
+        }
     }
     return true;
 }

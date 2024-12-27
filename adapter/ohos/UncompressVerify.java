@@ -82,7 +82,6 @@ class UncompressVerify {
             LOG.error("UncompressVerify::isArgsValidInHapMode hap-path must end with.hap!");
             return false;
         }
-        
         if (!(TRUE.equals(utility.getLibs()) || FALSE.equals(utility.getLibs()))) {
             LOG.error("UncompressVerify::isArgsValidInHapMode --libs must be true or false");
             return false;
