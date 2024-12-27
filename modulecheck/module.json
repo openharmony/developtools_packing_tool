@@ -46,7 +46,8 @@
                 "targetModuleName",
                 "targetPriority",
                 "generateBuildHash",
-                "routerMap"
+                "routerMap",
+                "appStartup"
               ]
             },
             "required": [
@@ -87,7 +88,8 @@
                 "testRunner",
                 "dependencies",
                 "libIsolation",
-                "routerMap"
+                "routerMap",
+                "appStartup"
               ]
             },
             "required": [
