@@ -40,7 +40,8 @@
             "dataProxyEnabled",
             "metadata",
             "fontScaleFollowSystem",
-            "supportShapes"
+            "supportShapes",
+            "previewImages"
           ]
         },
         "required": [
@@ -261,6 +262,14 @@
                 "rect",
                 "circle"
               ]
+            }
+          },
+          "previewImages": {
+            "description": "This label indicates that the form previewImages map corresponds to the \"supportShapes\".",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]$"
             }
           }
         }
