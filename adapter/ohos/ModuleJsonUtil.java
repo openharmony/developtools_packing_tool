@@ -49,7 +49,7 @@ class ModuleJsonUtil {
     private static final String SKILLS_ENTITIES = "entities";
     private static final String SKILLS_ACTIONS = "actions";
     private static final String ACTION_SYSTEM_HOME = "action.system.home";
-    private static final String ACTION_SYSTEM_HOME_2 = "ohos.want.action.home";
+    private static final String OHOS_WANT_ACTION_HOME = "ohos.want.action.home";
     private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String MODULE = "module";
     private static final String MODULES = "modules";
@@ -1194,7 +1194,7 @@ class ModuleJsonUtil {
                     skillsMap.put(abilityName, true);
                     break;
                 }
-                if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(ACTION_SYSTEM_HOME_2)) {
+                if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(OHOS_WANT_ACTION_HOME)) {
                     skillsMap.put(abilityName, true);
                     break;
                 }
