@@ -34,11 +34,13 @@
             "isDefault",
             "updateEnabled",
             "scheduledUpdateTime",
+            "multiScheduledUpdateTime",
             "updateDuration",
             "defaultDimension",
             "supportDimensions",
             "dataProxyEnabled",
             "metadata",
+            "conditionUpdate",
             "fontScaleFollowSystem",
             "supportShapes",
             "previewImages"
@@ -151,6 +153,11 @@
             "type": "string",
             "pattern": "^(([0-1][0-9])|([2][0-3]))[:]+([0-5][0-9])$"
           },
+          "multiScheduledUpdateTime": {
+            "description": "Indicates the time when a card is refreshed at a fixed time. The value is counted in 24 hours, accurate to minute. This tag can be set to the default value.",
+            "type": "string",
+            "pattern": "^(?:([01][0-9]|2[0-3]):([0-5][0-9]))(?:,(?:([01][0-9]|2[0-3]):([0-5][0-9])))*$"
+          },
           "updateDuration": {
             "description": "This tag identifies the update frequency of the card. The unit is 30 minutes. The value is a multiple of 30. The maximum frequency of a card is refreshed every 30 minutes. You can select either refresh or refresh at a fixed point. If both are configured, the card is refreshed at a scheduled time. This label is an integer.",
             "type": "integer",
@@ -191,6 +198,16 @@
                   "maxLength": 255
                 }
               }
+            }
+          },
+          "conditionUpdate": {
+            "description": "This label identifies the card update by condition.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "network"
+              ]
             }
           },
           "formConfigAbility": {
