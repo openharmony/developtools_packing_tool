@@ -41,7 +41,8 @@
             "metadata",
             "fontScaleFollowSystem",
             "supportShapes",
-            "previewImages"
+            "previewImages",
+            "renderingMode"
           ]
         },
         "required": [
@@ -192,6 +193,16 @@
                 }
               }
             }
+          },
+          "renderingMode": {
+            "description": "Indicates the renderingMode of card.",
+            "type": "string",
+            "enum": [
+              "autoColor",
+              "fullColor",
+              "singleColor"
+            ],
+            "default": "fullColor"
           },
           "formConfigAbility": {
             "description": "Indicates the name of the facility or activity for card adjustment.",
