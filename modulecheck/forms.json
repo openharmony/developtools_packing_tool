@@ -156,6 +156,7 @@
           "multiScheduledUpdateTime": {
             "description": "Indicates the time when a card is refreshed at a fixed time. The value is counted in 24 hours, accurate to minute. This tag can be set to the default value.",
             "type": "string",
+            "maxLength": 145,
             "pattern": "^(?:([01][0-9]|2[0-3]):([0-5][0-9]))(?:,(?:([01][0-9]|2[0-3]):([0-5][0-9])))*$"
           },
           "updateDuration": {
