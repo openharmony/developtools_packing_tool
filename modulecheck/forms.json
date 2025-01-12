@@ -42,7 +42,8 @@
             "fontScaleFollowSystem",
             "supportShapes",
             "previewImages",
-            "renderingMode"
+            "renderingMode",
+            "enableBlurBackground"
           ]
         },
         "required": [
@@ -282,6 +283,11 @@
               "type": "string",
               "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]$"
             }
+          },
+          "enableBlurBackground": {
+            "description": "This label indicates whether the form uses blur background.",
+            "type": "boolean",
+            "default": false
           }
         }
       }
