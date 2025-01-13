@@ -82,3 +82,8 @@ ohos_prebuilt_etc("appStartupInnerSchema_json") {
   source = "appStartupInner.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("startWindowSchema_json") {
+  source = "startWindow.json"
+  install_enable = false
+}
