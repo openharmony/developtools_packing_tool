@@ -1233,6 +1233,10 @@ class ModuleJsonUtil {
                     skillsMap.put(abilityName, true);
                     break;
                 }
+                if (entities.contains(ENTITY_SYSTEM_HOME) && actions.contains(OHOS_WANT_ACTION_HOME)) {
+                    skillsMap.put(abilityName, true);
+                    break;
+                }
             }
         }
         return skillsMap;
