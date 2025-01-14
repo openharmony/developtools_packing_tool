@@ -1012,7 +1012,8 @@
                   "uiService",
                   "recentPhoto",
                   "callerInfoQuery",
-                  "assetAcceleration"
+                  "assetAcceleration",
+                  "formEdit"
                 ]
               },
               "permissions": {
