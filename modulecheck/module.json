@@ -355,6 +355,7 @@
                 "skills",
                 "backgroundModes",
                 "continuable",
+                "startWindow",
                 "startWindowIcon",
                 "startWindowBackground",
                 "removeMissionAfterTerminate",
@@ -638,6 +639,12 @@
               "continuable": {
                 "description": "Identifies whether the ability can be migrated. The default value is false.",
                 "type": "boolean"
+              },
+              "startWindow": {
+                "description": "Indicates the startup page configuration. The value is the index to the resource file.",
+                "type": "string",
+                "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+                "maxLength": 255
               },
               "startWindowIcon": {
                 "description": "Indicates the icon of the startup page. The value is the index to the resource file.",
