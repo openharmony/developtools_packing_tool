@@ -16,7 +16,7 @@
       "description": "Indicates the configuration of insightIntents.",
       "type": "array",
       "minItems": 1,
-      "maxItems": 32,
+      "maxItems": 128,
       "uniqueItems": true,
       "items": {
         "type": "object",
@@ -29,7 +29,14 @@
             "uiAbility",
             "serviceExtension",
             "uiExtension",
-            "form"
+            "form",
+            "displayName",
+            "displayDescription",
+            "icon",
+            "keywords",
+            "inputParams",
+            "outputParams",
+            "entities"
           ]
         },
         "required": [
@@ -80,11 +87,11 @@
               "executeMode": {
                 "type": "array",
                 "items": {
-                    "type":"string",
-                    "enum": [
-                        "background",
-                        "foreground"
-                    ]
+                  "type": "string",
+                  "enum": [
+                    "background",
+                    "foreground"
+                  ]
                 }
               }
             }
@@ -152,6 +159,43 @@
                 "maxLength": 127
               }
             }
+          },
+          "displayName": {
+            "description": "Indicates the display name of insightIntent.",
+            "type": "string"
+          },
+          "displayDescription": {
+            "description": "Indicates the display description of insightIntent.",
+            "type": "string"
+          },
+          "icon": {
+            "description": "Indicates the display icon of insightIntent.",
+            "type": "string"
+          },
+          "keywords": {
+            "description": "Indicates the keywords of insightIntent.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "inputParams": {
+            "description": "Indicates the input params of insightIntent.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "outputParams": {
+            "description": "Indicates the output params of insightIntent.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "entities": {
+            "description": "Indicates the entities of insightIntent.",
+            "type": "object"
           }
         }
       }
