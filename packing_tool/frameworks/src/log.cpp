@@ -38,8 +38,8 @@ void Log(char *file, char *func, int32_t line, int32_t level, char *format, ...)
         return;
     }
     auto now = std::chrono::system_clock::now();
-    std::time_t now_t = std::chrono::system_clock::to_time_t(now);
-    std::tm* now_tm = std::localtime(&now_t);
+    std::time_t nowT = std::chrono::system_clock::to_time_t(now);
+    std::tm* nowTm = std::localtime(&nowT);
     std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
     va_list args;
@@ -48,7 +48,7 @@ void Log(char *file, char *func, int32_t line, int32_t level, char *format, ...)
     int len = vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer) - 1, format, args);
     va_end(args);
     if (len >= 0 && len < MAX_LOG_SIZE - 1) {
-        std::cout << "[" << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S")
+        std::cout << "[" << std::put_time(nowTm, "%Y-%m-%d %H:%M:%S")
                 << '.' << std::setfill('0') << std::setw(MS_LEN) << ms.count()
                 << std::setw(0) << "]"
                 << "[" << file << ":" << line << "]"

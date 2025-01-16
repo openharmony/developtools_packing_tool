@@ -372,8 +372,8 @@ void ModuleJsonUtilsTest::TearDown() {}
 
 bool CreateModuleJsonFile(std::string filename, const std::string& jsonStr)
 {
-    std::string module_test(filename);
-    FILE *fp = fopen(module_test.c_str(), "w");
+    std::string moduleTest(filename);
+    FILE *fp = fopen(moduleTest.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr) {
         fwrite(jsonStr.c_str(), jsonStr.size(), 1, fp);
@@ -398,8 +398,8 @@ bool CreateModuleJsonHap(std::string hapFilePath, std::string filename, const st
 
 bool CreateConfigJsonFile(std::string filename, const std::string& jsonStr)
 {
-    std::string config_test(filename);
-    FILE *fp = fopen(config_test.c_str(), "w");
+    std::string configTest(filename);
+    FILE *fp = fopen(configTest.c_str(), "w");
     EXPECT_TRUE(fp != nullptr);
     if (fp != nullptr) {
         fwrite(jsonStr.c_str(), jsonStr.size(), 1, fp);
