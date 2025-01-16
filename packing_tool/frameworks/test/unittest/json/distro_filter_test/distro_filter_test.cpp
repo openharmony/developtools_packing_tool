@@ -29,14 +29,14 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace {
-const std::string policyValueJsonString = "{"
+const std::string POLICY_VALUE_JSON_STRING = "{"
     "\"policy\": \"\","
     "\"value\": ["
         "\"xxx\""
     "]"
 "}";
 
-const std::string distroFilterJsonString = "{"
+const std::string DISTRO_FILTER_JSON_STRING = "{"
     "\"apiVersion\": {"
         "\"policy\": \"\","
         "\"value\": ["
@@ -69,14 +69,14 @@ const std::string distroFilterJsonString = "{"
     "}"
 "}";
 
-const std::string policyValueJsonString2 = "{"
+const std::string POLICY_VALUE_JSON_STRING2 = "{"
     "\"policy\": \"xxx\","
     "\"value\": ["
         "\"xxx\""
     "]"
 "}";
 
-const std::string distroFilterJsonString2 = "{"
+const std::string DISTRO_FILTER_JSON_STRING2 = "{"
     "\"apiVersion\": {"
         "\"policy\": \"xxx\","
         "\"value\": ["
@@ -445,7 +445,7 @@ void DistroFilterTest::TearDown() {}
  */
 HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0100, Function | MediumTest | Level1)
 {
-    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(policyValueJsonString);
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(POLICY_VALUE_JSON_STRING);
     AppPackingTool::PolicyValue policyValue;
     EXPECT_TRUE(policyValue.ParseFromJson(root));
     EXPECT_TRUE(policyValue.IsEmpty());
@@ -460,7 +460,7 @@ HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0100, Function | MediumTest
  */
 HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0200, Function | MediumTest | Level1)
 {
-    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(policyValueJsonString2);
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(POLICY_VALUE_JSON_STRING2);
     AppPackingTool::PolicyValue policyValue;
     EXPECT_TRUE(policyValue.ParseFromJson(root));
     EXPECT_FALSE(policyValue.IsEmpty());
@@ -500,7 +500,7 @@ HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0100, Function | 
  */
 HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0200, Function | MediumTest | Level1)
 {
-    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(policyValueJsonString2);
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(POLICY_VALUE_JSON_STRING2);
     AppPackingTool::PolicyValue policyValue;
     EXPECT_TRUE(policyValue.ParseFromJsonApiVersion(root));
 }
@@ -517,7 +517,7 @@ HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0200, Function | 
  */
 HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0100, Function | MediumTest | Level1)
 {
-    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(distroFilterJsonString);
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(DISTRO_FILTER_JSON_STRING);
     AppPackingTool::DistroFilter distroFilter;
     EXPECT_TRUE(distroFilter.ParseFromJson(root));
     EXPECT_TRUE(distroFilter.IsEmpty());
@@ -536,7 +536,7 @@ HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0100, Function | MediumTes
  */
 HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0200, Function | MediumTest | Level1)
 {
-    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(distroFilterJsonString2);
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(DISTRO_FILTER_JSON_STRING2);
     AppPackingTool::DistroFilter distroFilter;
     EXPECT_TRUE(distroFilter.ParseFromJson(root));
     EXPECT_FALSE(distroFilter.IsEmpty());
