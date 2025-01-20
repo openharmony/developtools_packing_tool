@@ -660,7 +660,7 @@ const std::string MODULE_METADATA_RESOURCE_ERROR_TEST_JSON_STRING = "{"
     "}"
 "}";
 
-const std::string MODULE_ABILITY_NAME_ERROR_TEST_JSON_STRING= "{"
+const std::string MODULE_ABILITY_NAME_ERROR_TEST_JSON_STRING = "{"
     "\"module\": {"
         "\"abilities\": ["
             "{"
