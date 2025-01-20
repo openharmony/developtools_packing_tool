@@ -29,9 +29,9 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace {
-std::string OUT_PATH = "/data/test/entry-default-unsigned.hap";
-std::string STAGE_JSON_PATH = "/data/test/module.json";
-std::string SUFFIX = ".hap";
+const std::string OUT_PATH = "/data/test/entry-default-unsigned.hap";
+std::string g_stageJsonPath = "/data/test/module.json";
+const std::string SUFFIX = ".hap";
 }
 
 class PackagerTest : public testing::Test {
@@ -203,18 +203,18 @@ HWTEST_F(PackagerTest, SetGenerateBuildHash_0700, Function | MediumTest | Level1
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, g_stageJsonPath},
     };
     bool generateBuildHash = true;
     bool buildHashFinish = true;
     system("touch /data/test/module.json");
 
     OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
-    EXPECT_TRUE(packager.SetGenerateBuildHash(STAGE_JSON_PATH, generateBuildHash, buildHashFinish));
+    EXPECT_TRUE(packager.SetGenerateBuildHash(g_stageJsonPath, generateBuildHash, buildHashFinish));
 
     system("rm -f /data/test/module.json");
-    EXPECT_FALSE(packager.SetGenerateBuildHash(STAGE_JSON_PATH, generateBuildHash, buildHashFinish));
-    EXPECT_FALSE(packager.CopyFileToTempDir(STAGE_JSON_PATH));
+    EXPECT_FALSE(packager.SetGenerateBuildHash(g_stageJsonPath, generateBuildHash, buildHashFinish));
+    EXPECT_FALSE(packager.CopyFileToTempDir(g_stageJsonPath));
 }
 
 /*
@@ -231,7 +231,7 @@ HWTEST_F(PackagerTest, BuildHash_0800, Function | MediumTest | Level1)
     bool buildHashFinish = false;
 
     OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
-    EXPECT_FALSE(packager.BuildHash(buildHashFinish, generateBuildHash, parameterMap, STAGE_JSON_PATH));
+    EXPECT_FALSE(packager.BuildHash(buildHashFinish, generateBuildHash, parameterMap, g_stageJsonPath));
 }
 
 /*
@@ -248,7 +248,7 @@ HWTEST_F(PackagerTest, PutBuildHash_0900, Function | MediumTest | Level1)
     std::string hash;
 
     OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
-    EXPECT_TRUE(packager.PutBuildHash(STAGE_JSON_PATH, hash, buildHashFinish));
+    EXPECT_TRUE(packager.PutBuildHash(g_stageJsonPath, hash, buildHashFinish));
 }
 
 /*
@@ -357,11 +357,11 @@ HWTEST_F(PackagerTest, CompatibleProcess_1500, Function | MediumTest | Level1)
     EXPECT_TRUE(packager.CompatibleProcess(
         inPutPath, fileList, extraSuffix, AppPackingTool::Constants::MODULE_JSON));
     EXPECT_TRUE(packager.CompatibleProcess(
-        STAGE_JSON_PATH, fileList, AppPackingTool::Constants::MODULE_JSON, extraSuffix));
+        g_stageJsonPath, fileList, AppPackingTool::Constants::MODULE_JSON, extraSuffix));
     EXPECT_TRUE(packager.CompatibleProcess(
-        STAGE_JSON_PATH, fileList, extraSuffix, AppPackingTool::Constants::MODULE_JSON));
+        g_stageJsonPath, fileList, extraSuffix, AppPackingTool::Constants::MODULE_JSON));
     EXPECT_FALSE(packager.CompatibleProcess(
-        STAGE_JSON_PATH, fileList, extraSuffix, extraSuffix));
+        g_stageJsonPath, fileList, extraSuffix, extraSuffix));
     system("rm -f /data/test/module.json");
 }
 } // namespace OHOS
