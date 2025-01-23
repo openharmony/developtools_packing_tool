@@ -1662,12 +1662,12 @@ public class Uncompress {
      * @param cpuAbiList Indicates the designated cpuAbi.
      */
     static void unpackageLibsMode(String srcFile, String outPath, List<String> cpuAbiList) throws BundleException {
-        srcFile = srcFile.replace("\\", LINUX_FILE_SEPARATOR);
-        outPath = outPath.replace("\\", LINUX_FILE_SEPARATOR);
-        String tempDir = outPath + LINUX_FILE_SEPARATOR + TEMP_PATH;
+        String normalizedSrcFilePath = srcFile.replace("\\", LINUX_FILE_SEPARATOR);
+        String normalizedOutFilePath = outPath.replace("\\", LINUX_FILE_SEPARATOR);
+        String tempDir = normalizedOutFilePath + LINUX_FILE_SEPARATOR + TEMP_PATH;
         try {
-            List<String> cpuAbiListRes = getLibsFromPackageAndUnpackage(srcFile, tempDir, cpuAbiList);
-            repackPackage(srcFile, outPath, tempDir, cpuAbiListRes);
+            List<String> cpuAbiListRes = getLibsFromPackageAndUnpackage(normalizedSrcFilePath, tempDir, cpuAbiList);
+            repackPackage(normalizedSrcFilePath, normalizedOutFilePath, tempDir, cpuAbiListRes);
         } catch (BundleException  e) {
             LOG.error("Uncompress::unpackageLibsMode failed.");
             throw new BundleException("Uncompress::unpackageLibsMode failed");
@@ -1753,34 +1753,42 @@ public class Uncompress {
         if (srcFiles == null) {
             return;
         }
-        try {
-            String[] srcPathItem = srcPath.split(LINUX_FILE_SEPARATOR);
-            if (srcPathItem.length <= 0) {
-                LOG.error("Uncompress::repackPackage failed: Wrong file path");
-                throw new BundleException("Uncompress::repackPackage failed");
-            }
-            String hapName = srcPathItem[srcPathItem.length - 1];
-            for (String cpuAbi : cpuAbiList) {
-                String targetZipPath = outPath + LINUX_FILE_SEPARATOR + cpuAbi + LINUX_FILE_SEPARATOR + hapName;
-                File targetZipFile = new File(targetZipPath);
-                if (targetZipFile.getParentFile() != null && !targetZipFile.getParentFile().exists()) {
-                    targetZipFile.getParentFile().mkdirs();
-                }
-                ZipOutputStream targetZipOutputStream = new ZipOutputStream(new FileOutputStream(targetZipPath));
-                for (File srcFile : srcFiles) {
-                    if (srcFile.isDirectory()) {
-                        compressDirectory(srcFile, "", targetZipOutputStream, false);
-                    } else {
-                        compressFile(srcFile, "", targetZipOutputStream, false);
-                    }
-                }
-                File srcFile = new File(tempDir + LINUX_FILE_SEPARATOR + cpuAbi);
-                compressDirectory(srcFile, LIBS + LINUX_FILE_SEPARATOR, targetZipOutputStream, true);
-                Utility.closeStream(targetZipOutputStream);
-            }
-        } catch (IOException e) {
-            LOG.error("Uncompress::repackPackage IOException " + e.getMessage());
+        String[] srcPathItem = srcPath.split(LINUX_FILE_SEPARATOR);
+        if (srcPathItem.length == 0) {
+            LOG.error("Uncompress::repackPackage failed: Wrong file path");
             throw new BundleException("Uncompress::repackPackage failed");
+        }
+        String hapName = srcPathItem[srcPathItem.length - 1];
+        for (String cpuAbi : cpuAbiList) {
+            processCpuAbi(outPath, hapName, cpuAbi, srcFiles, tempDir);
+        }
+    }
+
+    private static void processCpuAbi(String outPath, String hapName, String cpuAbi, File[] srcFiles, String tempDir)
+            throws BundleException {
+        String targetZipPath = outPath + LINUX_FILE_SEPARATOR + cpuAbi + LINUX_FILE_SEPARATOR + hapName;
+        File targetZipFile = new File(targetZipPath);
+        if (targetZipFile.getParentFile() != null && !targetZipFile.getParentFile().exists()) {
+            targetZipFile.getParentFile().mkdirs();
+        }
+        try (ZipOutputStream targetZipOutputStream = new ZipOutputStream(new FileOutputStream(targetZipPath))) {
+            compressSourceFiles(srcFiles, targetZipOutputStream);
+            File libsDir = new File(tempDir + LINUX_FILE_SEPARATOR + cpuAbi);
+            compressDirectory(libsDir, LIBS + LINUX_FILE_SEPARATOR, targetZipOutputStream, true);
+        } catch (IOException e) {
+            LOG.error("Uncompress::processCpuAbi IOException for path: " + targetZipPath + " - " + e.getMessage());
+            throw new BundleException("Uncompress::processCpuAbi failed for path: " + targetZipPath);
+        }
+    }
+
+    private static void compressSourceFiles(File[] srcFiles, ZipOutputStream targetZipOutputStream)
+            throws IOException, BundleException{
+        for (File srcFile : srcFiles) {
+            if (srcFile.isDirectory()) {
+                compressDirectory(srcFile, "", targetZipOutputStream, false);
+            } else {
+                compressFile(srcFile, "", targetZipOutputStream, false);
+            }
         }
     }
 
