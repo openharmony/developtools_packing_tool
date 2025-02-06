@@ -32,7 +32,8 @@
           "shortcutId": {
             "description": "Identifies a shortcut. The value is a string with a maximum of 63 bytes.",
             "type": "string",
-            "maxLength": 63
+            "maxLength": 63,
+            "pattern": "^[^$].*"
           },
           "label": {
             "description": "Indicates the label of the shortcut, that is, the text description displayed by the shortcut. The value can be a string or a resource index to description. A string can contain a maximum of 63 bytes. If the value exceeds 63 bytes, use the resource index.",
