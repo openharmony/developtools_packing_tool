@@ -48,10 +48,17 @@
         "maxLength": 255
       },
       "startWindowBackgroundImageFit": {
-        "description": "Indicates the background fit the startup page. The value is the index to the resource file.",
+        "description": "Indicates the background fit the startup page. The value is the string",
         "type": "string",
-        "pattern": "^[$]string:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$",
-        "maxLength": 255
+        "enum": [
+          "Contain",
+          "Cover",
+          "Auto",
+          "Fill",
+          "ScaleDown",
+          "None"
+        ],
+        "default": "Cover"
       }
     }
   }
