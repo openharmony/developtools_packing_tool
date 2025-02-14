@@ -941,12 +941,12 @@ public class CompressVerify {
         }
 
         if(hasHomeAbility(utility)) {
-            LOG.error("hsp has home ability");
+            LOG.error("hsp has entry ability");
             return false;
         }
 
         if (hasHomeExtensionAbility(utility)) {
-            LOG.error("hsp has home extensionAbility");
+            LOG.error("hsp has entry extensionAbility");
             return false;
         }
 
