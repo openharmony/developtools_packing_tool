@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -19,6 +19,8 @@ out_build_path=$3
 toolchain=$4
 compile_java=$5
 fastjson_jar=$6
+fastjson2_jar=$7
+fastjson2ext_jar=$8
 final_path=$(pwd)
 
 temp_path="."
@@ -45,7 +47,8 @@ if [ -d "${out_dir}/ohos" ]
         mkdir -p "${out_dir}/ohos"
 fi
 
-compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar} -d ${out_dir} ${compile_java}"
+compile_command="javac -source 1.8 -target 1.8 \
+-cp ${fastjson_jar}:${fastjson2_jar}:${fastjson2ext_jar} -d ${out_dir} ${compile_java}"
 eval ${compile_command}
 cd ${out_dir}
 temp_jar_path="${root_path}/jar/haptobin_${toolchain}/${haptobin_jar_file}"
