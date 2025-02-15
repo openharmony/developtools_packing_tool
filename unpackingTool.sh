@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -20,6 +20,8 @@ big_version=$4
 toolchain=$5
 compile_java=$6
 fastjson_jar=$7
+fastjson2_jar=$8
+fastjson2ext_jar=$9
 final_path=$(pwd)
 
 jar_dir="jar"
@@ -40,10 +42,12 @@ unpack_out_path="${final_path}/${unpack_build_out_path}"
 
 if [ "$big_version" == "true" ]
     then
-        compile_command="javac --release 8 -cp ${fastjson_jar}  -d ${out_dir} ${compile_java}"
+        compile_command="javac --release 8 -cp ${fastjson_jar}:${fastjson2_jar}:${fastjson2ext_jar} \
+        -d ${out_dir} ${compile_java}"
         eval ${compile_command}
     else
-        compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar}  -d ${out_dir} ${compile_java}"
+        compile_command="javac -source 1.8 -target 1.8 -cp ${fastjson_jar}:${fastjson2_jar}:${fastjson2ext_jar} \
+        -d ${out_dir} ${compile_java}"
         eval ${compile_command}
 fi
 
