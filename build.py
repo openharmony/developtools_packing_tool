@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -44,7 +44,7 @@ def get_compile_str(src_path, java_sources):
 
 
 def compile_haptobin_tool(root_path, src_path, jar_output, out_path, 
-                          toolchain, fastjson_jar):
+                          toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar):
     java_sources = [
         'BinaryTool.java',
         'BundleException.java',
@@ -58,14 +58,14 @@ def compile_haptobin_tool(root_path, src_path, jar_output, out_path,
 
     shell_path = os.path.join(root_path, "haptobin.sh")
     command = ['bash', shell_path, root_path, jar_output, out_path, 
-               toolchain, compile_java, fastjson_jar]
+               toolchain, compile_java, fastjson_jar, fastjson2_jar, fastjson2ext_jar]
     print('command: ', command)
     run_cmd('haptobin_tool', command, 5000)
     return
 
 
 def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_version, 
-                           toolchain, fastjson_jar):
+                           toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar):
     java_sources = [
         'AbilityFormInfo.java', 'AbilityInfo.java', 'ApiVersion.java', 
         'AppInfo.java', 'AppModel.java', 'APPQFResult.java',
@@ -92,14 +92,14 @@ def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_versio
 
     shell_path = os.path.join(root_path, "unpackingTool.sh")
     command = ['bash', shell_path, root_path, jar_output, out_path, big_version, 
-               toolchain, compile_java, fastjson_jar]
+               toolchain, compile_java, fastjson_jar, fastjson2_jar, fastjson2ext_jar]
     print('command: ', command)
     run_cmd('app_unpacking_tool', command, 5000)
     return
 
 
 def compile_packing_tool(root_path, src_path, jar_output, out_path, 
-                         toolchain, fastjson_jar, compress_jar, io_jar):
+                         toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar):
     java_sources = [
         'ApiVersion.java',
         'BundleException.java',
@@ -138,14 +138,14 @@ def compile_packing_tool(root_path, src_path, jar_output, out_path,
 
     shell_path = os.path.join(root_path, "packingTool.sh")
     command = ['bash', shell_path, root_path, jar_output, out_path, 
-               toolchain, compile_java, fastjson_jar, compress_jar, io_jar]
+               toolchain, compile_java, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar]
     print('command: ', command)
     run_cmd('app_packing_tool', command, 5000)
     return
 
 
 def compile_check_tool(root_path, src_path, jar_output, out_path, 
-                       toolchain, fastjson_jar):
+                       toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar):
     java_sources = [
         'BundleException.java',
         'CommandParser.java',
@@ -166,7 +166,7 @@ def compile_check_tool(root_path, src_path, jar_output, out_path,
 
     shell_path = os.path.join(root_path, "checkTool.sh")
     command = ['bash', shell_path, root_path, jar_output, out_path, 
-               toolchain, compile_java, fastjson_jar]
+               toolchain, compile_java, fastjson_jar, fastjson2_jar, fastjson2ext_jar]
     print('command: ', command)
     run_cmd('app_check_tool', command, 5000)
     return
@@ -191,15 +191,17 @@ def main():
     toolchain = tool_list[-1]
     toolchain += "_" + args.compileTarget
     
-    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson/fastjson-1.2.83.jar')
+    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2mid/fastjson-2.0.52.jar')
+    fastjson2_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2/fastjson2-2.0.52.jar')
+    fastjson2ext_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2ext/fastjson2-extension-2.0.52.jar')
     compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/compress/commons-compress-1.26.1.jar')
     io_jar = os.path.join(root_dir,
         '../../prebuilts/packing_tool/io/commons-io-2.15.1-bin/commons-io-2.15.1/commons-io-2.15.1.jar')
-    print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar)
+    print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar)
 
     # compile haptobin_tool.jar
     compile_haptobin_tool(root_dir, src_dir, args.haptobinOutput, args.outpath, 
-                          toolchain, fastjson_jar)
+                          toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar)
 
     # compile app_unpacking_tool.jar
     version = subprocess.check_output(['javac', '-version'], stderr=subprocess.STDOUT)
@@ -212,15 +214,15 @@ def main():
     else:
         big_version = 'false'
     compile_unpacking_tool(root_dir, src_dir, args.unpackOutput, args.outpath, big_version, 
-                           toolchain, fastjson_jar)
+                           toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar)
 
     #compile app_packing_tool.jar
     compile_packing_tool(root_dir, src_dir, args.packOutput, args.outpath, 
-                         toolchain, fastjson_jar, compress_jar, io_jar)
+                         toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar)
 
     #compile app_check_tool.jar
     compile_check_tool(root_dir, src_dir, args.checkOutput, args.outpath, 
-                       toolchain, fastjson_jar)
+                       toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar)
 
 if __name__ == '__main__':
     sys.exit(main())
