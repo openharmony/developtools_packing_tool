@@ -48,6 +48,7 @@ class HapVerify {
     private static final int FILE_SIZE_DECIMAL_PRECISION = 2;
     private static final String HAP_SUFFIX = ".hap";
     private static final String HSP_SUFFIX = ".hsp";
+    private static final String APP_PLUGIN = "appPlugin";
 
     /**
      * check hap is verify.
@@ -59,6 +60,11 @@ class HapVerify {
     public static boolean checkHapIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
             LOG.error("HapVerify::checkHapIsValid hapVerifyInfos is empty");
+            return false;
+        }
+        // check app is plugin app
+        if (!checkIsPluginApp(hapVerifyInfos)) {
+            LOG.error("checkIsPluginApp failed");
             return false;
         }
         // check app variable is same
@@ -107,6 +113,23 @@ class HapVerify {
             return false;
         }
         if (!checkContinueTypeIsValid(hapVerifyInfos)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkIsPluginApp(List<HapVerifyInfo> hapVerifyInfos) {
+        boolean hasPluginBundle = hapVerifyInfos.stream()
+            .anyMatch(hapVerifyInfo -> hapVerifyInfo.getBundleType().equals(APP_PLUGIN));
+        if (!hasPluginBundle) {
+            return true;
+        }
+        if (hapVerifyInfos.size() != 1) {
+            LOG.error("plugin App must contain only one element");
+            return false;
+        }
+        if (hapVerifyInfos.get(0).getFileType() != HSP_SUFFIX) {
+            LOG.error("plugin App must be of type hsp");
             return false;
         }
         return true;

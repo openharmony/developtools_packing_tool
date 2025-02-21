@@ -41,6 +41,7 @@ const std::string TYPE_SHARED = "shared";
 const std::string HAR = "har";
 const std::string HAP_SUFFIX = ".hap";
 const std::string HSP_SUFFIX = ".hsp";
+const std::string APP_PLUGIN = "appPlugin";
 const int32_t TWO = 2;
 const long FILE_LENGTH_1M = 1024 * 1024L;
 }
@@ -49,6 +50,10 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
 {
     if (hapVerifyInfos.empty()) {
         LOGE("hapVerifyInfos is empty!");
+        return false;
+    }
+    if (!CheckIsPluginApp(hapVerifyInfos)) {
+        LOGE("CheckIsPluginApp failed");
         return false;
     }
     if (!CheckAppFieldsIsSame(hapVerifyInfos)) {
@@ -93,6 +98,26 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
     if (!CheckContinueTypeIsValid(hapVerifyInfos)) {
         LOGE("CheckContinueTypeIsValid failed.");
         return false;
+    }
+    return true;
+}
+
+bool HapVerifyUtils::CheckIsPluginApp(const std::list<HapVerifyInfo>& hapVerifyInfos)
+{
+    auto it = std::find_if(hapVerifyInfos.begin(), hapVerifyInfos.end(),
+        [](const HapVerifyInfo& hapVerifyInfo) {
+            return hapVerifyInfo.GetBundleType() == APP_PLUGIN;
+        });
+    if (it != hapVerifyInfos.end()) {
+        if (hapVerifyInfos.size() != 1) {
+            LOGE("plugin App must contain only one element");
+            return false;
+        }
+        HapVerifyInfo hapVerifyInfo = *hapVerifyInfos.begin();
+        if (hapVerifyInfo.GetFileType() != HSP_SUFFIX) {
+            LOGE("plugin App must be of type hsp");
+            return false;
+        }
     }
     return true;
 }

@@ -2198,6 +2198,112 @@ HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0700, Function | MediumTest | Level
 }
 
 /*
+ * @tc.name: CheckHapIsValid_0800
+ * @tc.desc: CheckHapIsValid
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckHapIsValid_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetBundleType("appPlugin");
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleNameDiff");
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    hapVerifyInfos.push_back(hapVerifyInfoDiff);
+    EXPECT_FALSE(hapVerifyUtils.CheckHapIsValid(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckIsPluginApp_0100
+ * @tc.desc: CheckIsPluginApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckIsPluginApp_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetBundleType("appPlugin");
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfoDiff;
+    hapVerifyInfoDiff.SetBundleName("bundleName");
+    hapVerifyInfoDiff.SetModuleName("moduleNameDiff");
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    hapVerifyInfos.push_back(hapVerifyInfoDiff);
+    EXPECT_FALSE(hapVerifyUtils.CheckIsPluginApp(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckIsPluginApp_0200
+ * @tc.desc: CheckIsPluginApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckIsPluginApp_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetBundleType("appPlugin");
+    hapVerifyInfo.SetFileType(".hap");
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    EXPECT_FALSE(hapVerifyUtils.CheckIsPluginApp(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckIsPluginApp_0300
+ * @tc.desc: CheckIsPluginApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckIsPluginApp_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+    hapVerifyInfo.SetBundleType("appPlugin");
+    hapVerifyInfo.SetFileType(".hsp");
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    EXPECT_TRUE(hapVerifyUtils.CheckIsPluginApp(hapVerifyInfos));
+}
+
+/*
+ * @tc.name: CheckIsPluginApp_0400
+ * @tc.desc: CheckIsPluginApp
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckIsPluginApp_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyUtils hapVerifyUtils;
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetModuleName("moduleName");
+
+    hapVerifyInfos.push_back(hapVerifyInfo);
+    EXPECT_TRUE(hapVerifyUtils.CheckIsPluginApp(hapVerifyInfos));
+}
+
+/*
  * @tc.name: ShowCheckTips_0100
  * @tc.desc: ShowCheckTips
  * @tc.type: FUNC

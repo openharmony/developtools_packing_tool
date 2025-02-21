@@ -95,6 +95,7 @@ class ModuleJsonUtil {
     private static final String PRELOADS = "preloads";
     private static final String SHARED = "shared";
     private static final String APP_SERVICE = "appService";
+    private static final String APP_PLUGIN = "appPlugin";
     private static final String REQUEST_PERMISSIONS = "requestPermissions";
     private static final String TARGET_MODULE_NAME = "targetModuleName";
     private static final String TARGET_PRIORITY = "targetPriority";
@@ -1353,6 +1354,13 @@ class ModuleJsonUtil {
                 return SHARED;
             } else if (APP_SERVICE.equals(bundleType)) {
                 return APP_SERVICE;
+            } else if (APP_PLUGIN.equals(bundleType)) {
+                if (!SHARED.equals(type)) {
+                    String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is appPlugin.";
+                    LOG.error(errMsg);
+                    throw new BundleException(errMsg);
+                }
+                return APP_PLUGIN;
             } else {
                 LOG.error("bundleType is invalid in app.json.");
                 throw new BundleException("bundleType is invalid in app.json.");
@@ -1962,6 +1970,11 @@ class ModuleJsonUtil {
         } else if (APP_SERVICE.equals(bundleType)) {
             if (installationFree) {
                 LOG.error("installationFree must be false when bundleType is appService.");
+                return false;
+            }
+        } else if (APP_PLUGIN.equals(bundleType)) {
+            if (installationFree) {
+                LOG.error("installationFree must be false when bundleType is appPlugin.");
                 return false;
             }
         } else {
