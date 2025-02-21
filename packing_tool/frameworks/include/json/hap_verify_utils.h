@@ -72,6 +72,7 @@ public:
 
 private:
     static bool CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVerifyInfos);
+    static bool CheckIsPluginApp(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool AppFieldsIsSame(const VerifyCollection& verifyCollection, const HapVerifyInfo& hapVerifyInfo);
     static bool IsEntryOrFeature(const std::string& moduleType);
     static bool CheckModuleNameIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
