@@ -131,8 +131,8 @@ class ModuleJsonUtil {
             version.versionCode = appObj.getIntValue(VERSIONCODE);
             version.versionName = appObj.getString(VERSIONNAME);
         } else {
-            String errMsg = "ModuleJsonUtil:parseStageVersion json file do not contain version.";
-            LOG.error(errMsg);
+            String errMsg = "The module.json file does not contain versionCode or versionName.";
+            LOG.error(PackingToolErrMsg.PARSE_STAGE_JSON_FAILED.toString(errMsg));
             throw new BundleException(errMsg);
         }
         if (appObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
@@ -154,17 +154,19 @@ class ModuleJsonUtil {
         JSONObject appObj = getAppObj(jsonString);
         JSONObject versionObj = appObj.getJSONObject(VERSION);
         if (versionObj == null) {
-            LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
-            throw new BundleException("ModuleJsonUtil:parseFaVersion failed : json file do not version.");
+            String errMsg = "The config.json file does not have 'version'.";
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString(errMsg));
+            throw new BundleException("Parse FaVersion failed: the config.json file does not have 'version'.");
         }
         Version version = new Version();
         if (versionObj.containsKey(CODE) && versionObj.containsKey(NAME)) {
             version.versionName = versionObj.getString(NAME);
             version.versionCode = versionObj.getIntValue(CODE);
         } else {
-            LOG.error("ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
+            String errMsg = "The config.json file does not have 'name' or 'code'.";
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString(errMsg));
             throw new BundleException(
-                    "ModuleJsonUtil:parseFaVersion failed : json file do not version name or version code.");
+                    "Parse FaVersion failed: the config.json file does not have 'name' or 'code'.");
         }
         if (versionObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
             version.minCompatibleVersionCode = versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE);
@@ -239,8 +241,9 @@ class ModuleJsonUtil {
     public static ModuleApiVersion parseFAModuleApiVersion(String jsonString) throws BundleException {
         JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(API_VERSION)) {
-            LOG.error("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
-            throw new BundleException("ModuleJsonUtil::parseFAAPIVersion json file do not contain apiVersion.");
+            String errMsg = "The config.json file does not contain apiVersion.";
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString(errMsg));
+            throw new BundleException("Parse FA module APIVersion --json-path file do not contain apiVersion.");
         }
         JSONObject apiVersionObj = appObj.getJSONObject(API_VERSION);
         ModuleApiVersion moduleApiVersion = new ModuleApiVersion();
@@ -269,8 +272,9 @@ class ModuleJsonUtil {
         if (moduleObj.containsKey(NAME)) {
             moduleName = moduleObj.getString(NAME);
         } else {
-            LOG.error("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
-            throw new BundleException("ModuleJsonUtil:parseStageModuleName failed: json file do not contain module name.");
+            String errMsg = "The module.json file do not contain module name.";
+            LOG.error(PackingToolErrMsg.PARSE_STAGE_JSON_FAILED.toString(errMsg));
+            throw new BundleException(errMsg);
         }
         return moduleName;
     }
@@ -287,13 +291,14 @@ class ModuleJsonUtil {
         JSONObject moduleObj = getModuleObj(jsonString);
         JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
         if (distroObj == null) {
-            LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain distro.");
-            throw new BundleException("ModuleJsonUtil:parseFaModuleName failed: json file do not contain distro.");
+            String errMsg = "The config.json file does not contain distro.";
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString(errMsg));
+            throw new BundleException(errMsg);
         }
         if (!distroObj.containsKey(MODULE_NAME)) {
-            LOG.error("ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
-            throw new BundleException(
-                    "ModuleJsonUtil:parseFaModuleName failed: json file do not contain moduleName.");
+            String errMsg = "The config.json file does not contain moduleName.";
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString(errMsg));
+            throw new BundleException(errMsg);
         }
         moduleName = distroObj.getString(MODULE_NAME);
         return moduleName;
@@ -310,9 +315,9 @@ class ModuleJsonUtil {
         String moduleName;
         JSONObject moduleObj = getModuleObj(jsonString);
         if (!moduleObj.containsKey(NAME)) {
-            LOG.error("ModuleJsonUtil:parsePatchModuleName failed: json file do not contain moduleName.");
-            throw new BundleException(
-                    "ModuleJsonUtil:parsePatchModuleName failed: json file do not contain moduleName.");
+            String errMsg = "The patch.json file do not contain moduleName.";
+            LOG.error(PackingToolErrMsg.PARSE_PATCH_MODULE_NAME_FAILED.toString(errMsg));
+            throw new BundleException(errMsg);
         }
         moduleName = moduleObj.getString(NAME);
         return moduleName;
@@ -331,7 +336,7 @@ class ModuleJsonUtil {
         if (moduleObj.containsKey(PACKAGE)) {
             packageStr = moduleObj.getString(PACKAGE);
         } else {
-            LOG.error("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain package.");
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString("The config.json file do not contain package."));
             throw new BundleException("ModuleJsonUtil:parseFaPackageStr failed: json file do not contain package.");
         }
         return packageStr;
@@ -350,8 +355,8 @@ class ModuleJsonUtil {
         if (appObject.containsKey(BUNDLE_NAME)) {
             bundleName = appObject.getString(BUNDLE_NAME);
         } else {
-            LOG.error("ModuleJsonUtil::parseStageBundleName json object do not contain bundleNames.");
-            throw new BundleException("ModuleJsonUtil::parseStageBundleName json object do not contain bundleNames.");
+            LOG.error(PackingToolErrMsg.PARSE_BUNDLE_NAME_FAILED.toString("json object do not contain bundleName."));
+            throw new BundleException("Parse stage bundleName json object do not contain bundleNames.");
         }
         return bundleName;
     }
@@ -943,8 +948,9 @@ class ModuleJsonUtil {
      */
     public static void parseFAHapVerifyInfo(HapVerifyInfo hapVerifyInfo) throws BundleException {
         if (hapVerifyInfo.getProfileStr().isEmpty()) {
-            LOG.error("ModuleJsonUtil::parseFAHapVerifyInfo failed, config.json is empty.");
-            throw new BundleException("ModuleJsonUtil::parseFAHapVerifyInfo failed, config.json is empty.");
+            String errMsg = "config.json is empty.";
+            LOG.error(PackingToolErrMsg.PARSE_FA_HAP_VERIFY_INFO_FAILED.toString(errMsg));
+            throw new BundleException(errMsg);
         }
         String bundleName = parseBundleName(hapVerifyInfo.getProfileStr());
         hapVerifyInfo.setBundleName(bundleName);
@@ -1071,8 +1077,8 @@ class ModuleJsonUtil {
                 }
             }
         } catch (JSONException exception) {
-            String errMsg = "parse JSONObject failed: " + exception.getMessage();
-            LOG.error(errMsg);
+            String errMsg = "parse metadata info exist JSONException: " + exception.getMessage();
+            LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(exception.getMessage()));
             throw new BundleException(errMsg);
         }
         return distroFilter;
@@ -1310,9 +1316,9 @@ class ModuleJsonUtil {
         JSONObject moduleObj = getModuleObj(jsonString);
         String moduleName = parseStageModuleName(jsonString);
         if (!moduleObj.containsKey(TYPE)) {
-            String errMsg = "parse failed, input module.json is invalid, " +
-                    "module.json has no type in module: " + moduleName;
-            LOG.error(errMsg);
+            String errMsg = "Module: '" + moduleName + "' has no +'type' field in module.json.";
+            String solution = "Ensure the module.json file includes a valid 'type' field for module '" + moduleName + "'.";
+            LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
             throw new BundleException(errMsg);
         }
         String type = moduleObj.getString(TYPE);
@@ -1320,42 +1326,47 @@ class ModuleJsonUtil {
         JSONObject appObj = getAppObj(jsonString);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                String errMessage = "The app.json5 file configuration does not match the installationFree:" +
-                        " true settings. Add the bundleType field to the app.json5 file and set it atomicService.";
-                LOG.error(errMessage);
-                throw new BundleException(errMessage);
+                String errMsg = "The app.json5 file configuration does not match the installationFree true settings.";
+                String solution = "Add the bundleType field to the app.json5 file or set it atomicService.";
+                LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
+                throw new BundleException(errMsg);
             }
             return APP;
         } else {
             String bundleType = getJsonString(appObj, BUNDLE_TYPE);
             if (bundleType.equals(APP)) {
                 if (installationFree) {
-                    String errMsg = "installationFree must be false in module(" +
-                            moduleName + ") when bundleType is app.";
-                    LOG.error(errMsg);
+                    String errMsg = "installationFree must be false in module '" + moduleName + "' when bundleType is app.";
+                    String solution = "Set 'installationFree' to false in the module configuration when 'bundleType' is 'app'.";
+                    LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                     throw new BundleException(errMsg);
                 }
                 return APP;
             } else if (bundleType.equals(ATOMIC_SERVICE)) {
                 if (!installationFree) {
-                    String errMsg = "installationFree must be true in module(" +
-                            moduleName + ") when bundleType is atomicService.";
-                    LOG.error(errMsg);
+                    String errMsg = "installationFree must be true in module '" + moduleName + "' when bundleType is atomicService.";
+                    String solution = "Set 'installationFree' to true in the module configuration when 'bundleType'" +
+                            "is 'atomicService'.";
+                    LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                     throw new BundleException(errMsg);
                 }
                 return ATOMIC_SERVICE;
             } else if (SHARED.equals(bundleType)) {
                 if (!SHARED.equals(type)) {
-                    String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is shared.";
-                    LOG.error(errMsg);
+                    String errMsg = "type must be shared in module '" + moduleName + "' when bundleType is shared.";
+                    String solution = "Set the 'type' to 'shared' in the module configuration when 'bundleType' is 'shared'.";;
+                    LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                     throw new BundleException(errMsg);
                 }
                 return SHARED;
             } else if (APP_SERVICE.equals(bundleType)) {
                 return APP_SERVICE;
             } else {
-                LOG.error("bundleType is invalid in app.json.");
-                throw new BundleException("bundleType is invalid in app.json.");
+                String errMsg = "bundleType is invalid in app.json.";
+                String solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one of" +
+                        "the valid types: 'app', 'atomicService', 'shared', or 'appService'.";
+                LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
+                throw new BundleException(errMsg);
             }
         }
     }
@@ -1393,8 +1404,10 @@ class ModuleJsonUtil {
             for (int i = 0; i < proxyData.size(); ++i) {
                 JSONObject itemObj = proxyData.getJSONObject(i);
                 if (!itemObj.containsKey(PROXY_URI)) {
-                    LOG.error("parse JOSNObject failed in parseProxyDataUri.");
-                    throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+                    String errMsg = "Proxy data object does not contain " + PROXY_URI + ".";
+                    String solution = "Ensure that each item in the " + PROXY_DATA + " array includes a valid " + PROXY_URI + " field.";
+                    LOG.error(PackingToolErrMsg.PARSE_PROXY_DATA_URI_FAILED.toString(errMsg, solution));
+                    throw new BundleException("Parse json object failed in parse proxyData and uri.");
                 }
                 String uri = itemObj.getString(PROXY_URI);
                 proxyDataUris.add(uri);
@@ -1404,8 +1417,10 @@ class ModuleJsonUtil {
             for (int i = 0; i < proxyDatas.size(); ++i) {
                 JSONObject itemObj = proxyDatas.getJSONObject(i);
                 if (!itemObj.containsKey(PROXY_URI)) {
-                    LOG.error("parse JOSNObject failed in parseProxyDataUri.");
-                    throw new BundleException("parse JOSNObject failed in parseProxyDataUri.");
+                    String errMsg = "Proxy data object does not contain " + PROXY_URI + ".";
+                    String solution = "Ensure that each item in the " + PROXY_DATAS + " array includes a valid " + PROXY_URI + " field.";
+                    LOG.error(PackingToolErrMsg.PARSE_PROXY_DATA_URI_FAILED.toString(errMsg, solution));
+                    throw new BundleException("Parse json object failed in parse proxyDatas and uri.");
                 }
                 String uri = itemObj.getString(PROXY_URI);
                 proxyDataUris.add(uri);
@@ -1419,14 +1434,14 @@ class ModuleJsonUtil {
         try {
             jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed.";
-            LOG.error(errMsg);
+            String errMsg = "Parse app object exist JSONException: ";
+            LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(errMsg + exception.getMessage()));
             throw new BundleException(errMsg);
         }
         JSONObject appObj = jsonObject.getJSONObject(APP);
         if (appObj == null) {
-            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain app.");
-            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain app.");
+            LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString("module.json or config.json do not contain app."));
+            throw new BundleException("json do not contain app.");
         }
         return appObj;
     }
@@ -1436,18 +1451,18 @@ class ModuleJsonUtil {
         try {
             jsonObj = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            String errMsg = "parse JSONobject failed.";
-            LOG.error(errMsg);
+            String errMsg = "JSONException: " + exception.getMessage();
+            LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString(errMsg));
             throw new BundleException(errMsg);
         }
         if (jsonObj == null) {
-            LOG.error("ModuleJsonUtil::parseStageInstallation jsonObj is null.");
-            throw new BundleException("ModuleJsonUtil::parseStageInstallation jsonObj is null.");
+            LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString("jsonObj is null."));
+            throw new BundleException("Parse jsonObj is null.");
         }
         JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
         if (moduleObj == null) {
-            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain module.");
-            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain module.");
+            LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString("--json-path file do not contain module."));
+            throw new BundleException("json file do not contain module.");
         }
         return moduleObj;
     }
@@ -1492,8 +1507,8 @@ class ModuleJsonUtil {
         JSONObject moduleObj = getModuleObj(jsonString);
         JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
         if (distroObj == null) {
-            LOG.error("ModuleJsonUtil::parseStageInstallation json do not contain distro.");
-            throw new BundleException("ModuleJsonUtil::parseStageInstallation json do not contain distro.");
+            LOG.error(PackingToolErrMsg.PARSE_FA_JSON_FAILED.toString("The config.json do not contain distro."));
+            throw new BundleException("Parse FA installationFree json do not contain distro.");
         }
         if (distroObj.containsKey(INSTALLATION_FREE)) {
             return distroObj.getBoolean(INSTALLATION_FREE);
@@ -1700,8 +1715,8 @@ class ModuleJsonUtil {
         try {
             jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            LOG.error("parse JOSNObject failed in getStageApiReleaseType.");
-            throw new BundleException("parse JOSNObject failed in getStageApiReleaseType.");
+            PackingToolErrMsg.PARSE_JSON_FAILED.toString("Parse json object failed when get debug in config.json. JSONException: " + exception.getMessage());
+            throw new BundleException("parse JSONObject failed when get debug in config.json.");
         }
         JSONObject deviceConfigObj = jsonObject.getJSONObject(DEVICE_CONFIG);
         if (deviceConfigObj == null) {
@@ -1842,13 +1857,15 @@ class ModuleJsonUtil {
         try {
             jsonObject = JSON.parseObject(jsonString);
         } catch (JSONException exception) {
-            LOG.error("parse JOSNObject failed in isExistedProperty.");
-            throw new BundleException("parse JOSNObject failed in isExistedProperty.");
+            LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(
+                    "Parse json for existence of property, exist JSONException: " + exception.getMessage()));
+            throw new BundleException("Parse JSONObject failed in isExistedProperty.");
         }
         JSONObject appObj = jsonObject.getJSONObject(fatherProperty);
         if (appObj == null) {
-            LOG.error("parse failed, input module.json is invalid, module.json has no " + fatherProperty + ".");
-            throw new BundleException("parse failed, input module.json is invalid, module.json has no " +
+            String errMsg = "Parse failed, input module.json is invalid, module.json has no "+ fatherProperty + ".";
+            LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString(errMsg));
+            throw new BundleException("Parse failed, input module.json is invalid, module.json has no " +
                     fatherProperty + ".");
         }
         return appObj.containsKey(childProperty);
@@ -1899,7 +1916,8 @@ class ModuleJsonUtil {
 
         if (moduleObj.containsKey(ATOMIC_SERVICE) && (!appObj.containsKey(BUNDLE_TYPE) ||
                 !getJsonString(appObj, BUNDLE_TYPE).equals(ATOMIC_SERVICE))) {
-            LOG.error("module can not config atomicService when bundleType is not atomicService.");
+            String errMsg = "Module can not config atomicService when bundleType is not atomicService.";
+            LOG.error(PackingToolErrMsg.CHECK_MODULE_ATOMIC_SERVICE_FAILED.toString(errMsg));
             return false;
         }
         return true;
@@ -1916,7 +1934,9 @@ class ModuleJsonUtil {
             return true;
         }
         if (parseModuleType(jsonString).equals(ENTRY) && parseAbilityNames(jsonString).isEmpty()) {
-            LOG.error("entry module must contain at least one ability.");
+            String moduleName = parseStageModuleName(jsonString);
+            String errMsg = "Entry module(" + moduleName +") must contain at least one ability.";
+            LOG.error(PackingToolErrMsg.CHECK_LEASTONE_ABILITY.toString(errMsg));
             return false;
         }
         return true;
@@ -1936,9 +1956,9 @@ class ModuleJsonUtil {
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                String errMessage = "The app.json5 file configuration does not match the installationFree:" +
-                        " true settings. Add the bundleType field to the app.json5 file and set it atomicService.";
-                LOG.error(errMessage);
+                String errMsg = "The app.json5 file configuration does not match the installationFree true settings.";
+                String solution = "Add the bundleType field to the app.json5 file and set it atomicService.";            
+                LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
             return true;
@@ -1946,26 +1966,38 @@ class ModuleJsonUtil {
         String bundleType = getJsonString(appObj, BUNDLE_TYPE);
         if (bundleType.equals(APP)) {
             if (installationFree) {
-                LOG.error("installationFree must be false when bundleType is app.");
+                String errMsg = "installationFree must be false when bundleType is app.";
+                String solution = "Set 'installationFree' to false in the module configuration when 'bundleType' is 'app'.";
+                LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (bundleType.equals(ATOMIC_SERVICE)) {
             if (!installationFree) {
-                LOG.error("installationFree must be true when bundleType is atomicService.");
+                String errMsg = "installationFree must be true when bundleType is atomicService.";
+                String solution = "Set 'installationFree' to true in the module configuration when 'bundleType'" +
+                        "is 'atomicService'.";
+                LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (SHARED.equals(bundleType)) {
             if (installationFree) {
-                LOG.error("installationFree must be false when bundleType is shared.");
+                String errMsg = "installationFree must be false when bundleType is shared.";
+                String solution = "Set 'installationFree' to false in the module configuration when 'bundleType' is 'shared'.";
+                LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (APP_SERVICE.equals(bundleType)) {
             if (installationFree) {
-                LOG.error("installationFree must be false when bundleType is appService.");
+                String errMsg = "installationFree must be false when bundleType is appService.";
+                String solution = "Set 'installationFree' to false in the module configuration when 'bundleType' is 'appService'.";
+                LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else {
-            LOG.error("bundleType is invalid in app.json.");
+            String errMsg = "bundleType is invalid in app.json.";
+            String solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one of " +
+                    "the valid types: 'app', 'atomicService', 'shared', or 'appService'.";
+            LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
             return false;
         }
         return true;

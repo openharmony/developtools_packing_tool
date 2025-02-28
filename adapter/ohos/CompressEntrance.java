@@ -97,20 +97,20 @@ public class CompressEntrance {
         Utility utility = new Utility();
 
         if (!CommandParser.commandParser(utility, args)) {
-            LOG.error("CompressEntrance::main exit, parser failed");
+            LOG.error(PackingToolErrMsg.EXECUTE_PACKING_TOOL_FAILED.toString("Command parser failed."));
             ShowHelp.compressHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
 
         if (!CompressVerify.commandVerify(utility)) {
-            LOG.error("CompressEntrance::main exit, verify failed");
+            LOG.error(PackingToolErrMsg.EXECUTE_PACKING_TOOL_FAILED.toString("Command verify failed."));
             ShowHelp.compressHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
 
         Compressor compressor = new Compressor();
         if (!compressor.compressProcess(utility)) {
-            LOG.error("CompressEntrance::main exit, compress failed");
+            LOG.error(PackingToolErrMsg.EXECUTE_PACKING_TOOL_FAILED.toString("Compress failed."));
             ShowHelp.compressHelp();
             System.exit(EXIT_STATUS_EXCEPTION);
         }
@@ -118,7 +118,7 @@ public class CompressEntrance {
         if (utility.getGenerateBuildHash()) {
             utility.setForceRewrite("true");
             if (!compressor.compressProcess(utility)) {
-                LOG.error("CompressEntrance::main exit, compress failed");
+                LOG.error(PackingToolErrMsg.EXECUTE_PACKING_TOOL_FAILED.toString("Compress failed."));
                 ShowHelp.compressHelp();
                 System.exit(EXIT_STATUS_EXCEPTION);
             }
