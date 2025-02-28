@@ -155,7 +155,8 @@ class FileUtils {
                 content.append(tempString);
             }
         } catch (IOException msg) {
-            LOG.error("get file content fail, msg is " + msg.getMessage());
+            LOG.error(PackingToolErrMsg.GET_FILE_CONTENT_FAILED.toString(
+                    "IOException: " + msg.getMessage()));
             return Optional.empty();
         } finally {
             closeStream(reader);
@@ -176,7 +177,8 @@ class FileUtils {
                 fileStream.close();
             }
         } catch (IOException msg) {
-            LOG.error("stream close Error, msg is " + msg.getMessage());
+            LOG.error(PackingToolErrMsg.CLOSE_STREAM_EXPECTION.toString(
+                    "Close stream exist IOException: " + msg.getMessage()));
         }
     }
 
@@ -445,8 +447,8 @@ class FileUtils {
                 }
             }
         } catch (IOException e) {
-            LOG.error("FileUtil::getProfileJson IOException: " + e.getMessage());
-            throw new BundleException("FileUtil::getProfileJson failed.");
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Get profile json exist IOExpection: " + e.getMessage()));
+            throw new BundleException("Get ProfileJson failed.");
         }
         return resourceMap;
     }
@@ -598,7 +600,8 @@ class FileUtils {
         if (file.exists() && file.isFile()) {
             return file.length();
         }
-        LOG.error("input " + filePath + " is not a valid file.");
+        String errMsg = "input " + filePath + " is not a valid file.";
+        LOG.error(PackingToolErrMsg.GET_FILE_SIZE_FAILED.toString(errMsg));
         return 0;
     }
 
