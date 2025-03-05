@@ -111,7 +111,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg BUNDLE_TYPE_APPSERVICE_INVALID = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("11")
             .setErrCode("013")
-            .setDescription("Check BundleTypeAppService invalid.")
+            .setDescription("Check the bundleType is appService failed.")
             .setCause("%s")
             .build();
 
@@ -151,7 +151,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg HAS_HOME_EXTENSION_ABILITY_INVALID = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("11")
             .setErrCode("017")
-            .setDescription("Check hsp has entry ExtensionAbility failed.")
+            .setDescription("Check hsp has entry extensionAbility failed.")
             .setCause("%s")
             .build();
 
@@ -183,7 +183,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg COMPRESS_HAP_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("002")
-            .setDescription("Compress Stage Hap failed.")
+            .setDescription("Compress Stage hap failed.")
             .setCause("%s")
             .addSolution("Please check the first error message for more details and modify accordingly.")
             .build();
@@ -194,7 +194,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_STAGE_HAP_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("003")
-            .setDescription("Verify stage hap info failed.")
+            .setDescription("Verify Stage hap info failed.")
             .setCause("%s")
             .addSolution("Please check the first error message for more details and modify accordingly.")
             .build();
@@ -308,7 +308,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg READ_STAGE_HAP_VERIFY_INFO_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("013")
-            .setDescription("Read stage hap verify info io exception.")
+            .setDescription("Read Stage hap verify info exist exception.")
             .setCause("%s")
             .addSolution("Please check the exception message for more details and modify accordingly.")
             .build();
@@ -321,7 +321,7 @@ public class PackingToolErrMsg {
             .setErrCode("014")
             .setDescription("Parallel compress exception.")
             .setCause("%s")
-            .addSolution("Please check the related expection message and modify the operation.")
+            .addSolution("Please check the related exception message and modify the operation.")
             .build();
 
     /**
@@ -341,7 +341,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg INVALID_HAP_FILE = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("016")
-            .setDescription("check input hap or hsp file is invalid.")
+            .setDescription("Check input hap or hsp file is invalid.")
             .setCause("%s")
             .build();
 
@@ -351,7 +351,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_SHARED_APP_INVALID = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("017")
-            .setDescription("Check shared App mode invalid.")
+            .setDescription("Check shared App invalid.")
             .setCause("%s")
             .addSolution("%s")
             .build();
@@ -383,7 +383,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg READ_FA_HAP_VERIFY_INFO_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("020")
-            .setDescription("Read FA hap verify info io exception.")
+            .setDescription("Read FA hap verify info exist exception.")
             .setCause("%s")
             .addSolution("Please check the first error message for more details and modify accordingly.")
             .build();
@@ -396,7 +396,7 @@ public class PackingToolErrMsg {
             .setErrCode("021")
             .setDescription("IO exception when compress app.")
             .setCause("%s")
-            .addSolution("Please check the related expection message and modify the operation.")
+            .addSolution("Please check the related exception message and modify the operation.")
             .build();
 
     /**
@@ -418,7 +418,7 @@ public class PackingToolErrMsg {
             .setErrCode("023")
             .setDescription("Json special process exist exception.")
             .setCause("%s")
-            .addSolution("Please check the expection message and modify.")
+            .addSolution("Please check the exception message and modify.")
             .build();
 
     /**
@@ -427,7 +427,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_ATOMIC_SERVICE_SIZE_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("12")
             .setErrCode("024")
-            .setDescription("Atomic service size check failed.")
+            .setDescription("Check atomicService size failed.")
             .setCause("%s")
             .addSolution("Please check the related size check error message and reduce related module size.")
             .build();
@@ -439,7 +439,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg PARSE_JSON_OBJECT_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("13")
             .setErrCode("001")
-            .setDescription("Parse json Object expection.")
+            .setDescription("Parse json object exception.")
             .setCause("%s")
             .build();
 
@@ -469,7 +469,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg PARSE_STAGE_JSON_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("13")
             .setErrCode("004")
-            .setDescription("Failed to parse module.json for stage module.")
+            .setDescription("Failed to parse module.json for the Stage module.")
             .setCause("%s")
             .build();
 
@@ -501,7 +501,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("13")
             .setErrCode("007")
-            .setDescription("Check module atomicService installationFree invalid.")
+            .setDescription("Check module atomicService and installationFree invalid.")
             .setCause("%s")
             .addSolution("%s")
             .build();
@@ -533,7 +533,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_BUNDLETYPE_CONSISTENCY_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("13")
             .setErrCode("010")
-            .setDescription("BundleType consistency check failed.")
+            .setDescription("Failed to check the consistency of bundleType.")
             .setCause("%s")
             .addSolution("Make sure the bundleType is consistency for different modules.")
             .build();
@@ -564,7 +564,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg PARSE_FA_JSON_FAILED = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("13")
             .setErrCode("013")
-            .setDescription("Failed to parse config.json for FA module.")
+            .setDescription("Failed to parse config.json for the FA module.")
             .setCause("%s")
             .build();
 
@@ -582,24 +582,24 @@ public class PackingToolErrMsg {
             .build();
 
     /**
-     * CLOSE_ZIP_OUTPUT_STREAM_EXPECTION
+     * CLOSE_ZIP_OUTPUT_STREAM_EXCEPTION
      */
-    public static final ErrorMsg CLOSE_ZIP_OUTPUT_STREAM_EXPECTION = ErrorMsg.getPackingToolErrBuilder()
+    public static final ErrorMsg CLOSE_ZIP_OUTPUT_STREAM_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("14")
             .setErrCode("002")
-            .setDescription("close zip output stream exception.")
+            .setDescription("Close zip output stream exception.")
             .setCause("%s")
-            .addSolution("Please check the related error message and modify the operation.")
+            .addSolution("Please check the related exception message and modify the operation.")
             .build();
 
     /**
-     * CLOSE_STREAM_EXPECTION
+     * CLOSE_STREAM_EXCEPTION
      */
-    public static final ErrorMsg CLOSE_STREAM_EXPECTION = ErrorMsg.getPackingToolErrBuilder()
+    public static final ErrorMsg CLOSE_STREAM_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("14")
             .setErrCode("003")
             .setDescription("IO exception when closing stream.")
-            .setCause("%s")
+            .addSolution("Please check the related exception message for more details and modify accordingly.")
             .build();
 
     /**
@@ -610,7 +610,7 @@ public class PackingToolErrMsg {
             .setErrCode("004")
             .setDescription("Get file content failed.")
             .setCause("%s")
-            .addSolution("Please check the related expection message for more details and modify accordingly.")
+            .addSolution("Please check the related exception message for more details and modify accordingly.")
             .build();
 
     /**
@@ -686,14 +686,14 @@ public class PackingToolErrMsg {
             .build();
 
     /*
-     * NULL_POINTER_EXPECTION
+     * NULL_POINTER_EXCEPTION
      */
-    public static final ErrorMsg NULL_POINTER_EXPECTION = ErrorMsg.getPackingToolErrBuilder()
+    public static final ErrorMsg NULL_POINTER_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("15")
             .setErrCode("002")
             .setDescription("Null pointer exception.")
             .setCause("%s")
-            .addSolution("Please review the related error message for further insights.")
+            .addSolution("Please review the related exception message for further insights.")
             .build();
 
     // hap verify error
@@ -758,7 +758,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_HAP_INVALID = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("16")
             .setErrCode("006")
-            .setDescription("Verify hap info is invalid.")
+            .setDescription("Check hap info is invalid.")
             .setCause("%s")
             .addSolution("Please check the first error message for more details and modify accordingly.")
             .build();
@@ -769,7 +769,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_ENTRY_INVALID = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("16")
             .setErrCode("007")
-            .setDescription("Check entry module invalid.")
+            .setDescription("Check entry module is invalid.")
             .setCause("%s")
             .addSolution("%s")
             .build();
@@ -815,7 +815,7 @@ public class PackingToolErrMsg {
             .setErrCode("011")
             .setDescription("Atomicservice preloads is invalid.")
             .setCause("%s")
-            .addSolution("Please check related error message and modify preloads settings.")
+            .addSolution("Please check related preload message and modify preloads settings.")
             .build();
 
     /**
@@ -847,7 +847,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg PROXY_DATA_URI_NOT_UNIQUE = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("16")
             .setErrCode("014")
-            .setDescription("Proxy data uri is not unique.")
+            .setDescription("The values of uri in proxyData of module.json are not unique.")
             .setCause("%s")
             .addSolution("%s")
             .build();
@@ -880,8 +880,8 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_HAP_VERIFY_INFO_LIST_EMPTY = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("16")
             .setErrCode("017")
-            .setDescription("The provided list of HapVerifyInfo is empty, unable to process.")
-            .setCause("Input list of HapVerifyInfo is empty.")
+            .setDescription("The provided list of HapVerifyInfos is empty.")
+            .setCause("%s")
             .build();
 
     /**
@@ -890,7 +890,7 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_ATOMIC_SERVICE_MODULE_SIZE = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("16")
             .setErrCode("018")
-            .setDescription("AtomicService module size check failed.")
+            .setDescription("Check the atomicService module size failed.")
             .setCause("%s")
             .addSolution("Please check and reduced related module size.")
             .build();
@@ -901,19 +901,9 @@ public class PackingToolErrMsg {
     public static final ErrorMsg CHECK_FEATURE_DISTRO_FILTER_INVALID = ErrorMsg.getPackingToolErrBuilder()
             .setTypeCode("16")
             .setErrCode("019")
-            .setDescription("Check feature module distributionFilter is invalid.")
+            .setDescription("Check the entry module distributionFilter is invalid.")
             .setCause("%s")
             .addSolution("Ensure the Entry type module distributionFilter file policy " +
                         "settings is 'exclude' or 'include'.")
-            .build();
-
-    /**
-     * HAP_VERIFY_INFO_NULL
-     */
-    public static final ErrorMsg HAP_VERIFY_INFO_EMPTY = ErrorMsg.getPackingToolErrBuilder()
-            .setTypeCode("16")
-            .setErrCode("020")
-            .setDescription("Hap verify infos is empty.")
-            .setCause("%s")
             .build();
 }

@@ -721,7 +721,7 @@ public class Utility {
             try {
                 stream.close();
             } catch (IOException exception) {
-                LOG.error(PackingToolErrMsg.CLOSE_STREAM_EXPECTION.toString(
+                LOG.error(PackingToolErrMsg.CLOSE_STREAM_EXCEPTION.toString(
                     "Close stream exist IOException: " + exception.getMessage()));
             }
         }

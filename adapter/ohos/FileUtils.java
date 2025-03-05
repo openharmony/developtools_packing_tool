@@ -177,7 +177,7 @@ class FileUtils {
                 fileStream.close();
             }
         } catch (IOException msg) {
-            LOG.error(PackingToolErrMsg.CLOSE_STREAM_EXPECTION.toString(
+            LOG.error(PackingToolErrMsg.CLOSE_STREAM_EXCEPTION.toString(
                     "Close stream exist IOException: " + msg.getMessage()));
         }
     }
@@ -448,7 +448,7 @@ class FileUtils {
             }
         } catch (IOException e) {
             LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Get profile json exist IOExpection: " + e.getMessage()));
-            throw new BundleException("Get ProfileJson failed.");
+            throw new BundleException("Get profile json failed.");
         }
         return resourceMap;
     }
