@@ -241,7 +241,7 @@ public class CompressVerify {
                 return false;
             }
             if (!RPCID_PROFILE.equals(file.getName())) {
-                String errMsg = "--rpcid-path must be rpcid.sc file.";
+                String errMsg = "--rpcid-path must be the rpcid.sc file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
@@ -258,7 +258,7 @@ public class CompressVerify {
                 return false;
             }
             if (!PACK_INFO.equals(file.getName())) {
-                String errMsg = "--pack-info-path must be pack.info file.";
+                String errMsg = "--pack-info-path must be the pack.info file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
@@ -274,7 +274,7 @@ public class CompressVerify {
         }
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
                 && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
-            String errMsg = "--json-path must be config.json file.";
+            String errMsg = "--json-path must be the config.json file or module.json file.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
@@ -293,7 +293,7 @@ public class CompressVerify {
         if (!utility.getProfilePath().isEmpty()) {
             File file = new File(utility.getProfilePath());
             if (!file.isFile() || !PROFILE_NAME.equals(file.getName())) {
-                String errMsg = "--profile-path must be CAPABILITY.profile file.";
+                String errMsg = "--profile-path must be the CAPABILITY.profile file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
@@ -322,7 +322,7 @@ public class CompressVerify {
         if (!utility.getPkgContextPath().isEmpty()) {
             File file = new File(utility.getPkgContextPath());
             if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
-                String errMsg = "--pkg-context-path file must be " + PKG_CONTEXT_INFO + ".";
+                String errMsg = "--pkg-context-path file must be the pkgContextInfo.json file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
@@ -339,7 +339,7 @@ public class CompressVerify {
     private static boolean isVerifyValidInHapMode(Utility utility) {
         File file = new File(utility.getIndexPath());
         if (!utility.getIndexPath().isEmpty() && !file.isFile() && INDEX_PROFILE.equals(file.getName())) {
-            String errMsg = "--index-path must be resources.index file.";
+            String errMsg = "--index-path must be the resources.index file.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
@@ -500,7 +500,7 @@ public class CompressVerify {
      */
     private static boolean isVerifyValidInAppMode(Utility utility) {
         if (!checkBundleTypeConsistency(utility)) {
-            String errMsg = "Check bundleType is inconsistent.";
+            String errMsg = "The bundleType is inconsistent for different HAP and HSP modules.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
@@ -588,7 +588,7 @@ public class CompressVerify {
                 HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hapPath);
                 if (!bundleType.equals(hapVerifyInfo.getBundleType())) {
                     LOG.error(PackingToolErrMsg.CHECK_BUNDLETYPE_CONSISTENCY_FAILED.toString(
-                        "bundleType is not same for different hap modules."));
+                        "The bundleType is not same for different HAP modules."));
                     return false;
                 }
             }
@@ -596,7 +596,7 @@ public class CompressVerify {
                 HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPath);
                 if (!bundleType.equals(hapVerifyInfo.getBundleType())) {
                     LOG.error(PackingToolErrMsg.CHECK_BUNDLETYPE_CONSISTENCY_FAILED.toString(
-                        "bundleType is not same for different hsp modules."));
+                        "The bundleType is not same for different HSP modules."));
                     return false;
                 }
             }
@@ -959,7 +959,7 @@ public class CompressVerify {
         }
 
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
-            String errMsg = "--json-path must be module.json file.";
+            String errMsg = "--json-path must be the module.json file.";
             LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
@@ -1052,7 +1052,7 @@ public class CompressVerify {
         if (!utility.getPkgContextPath().isEmpty()) {
             File file = new File(utility.getPkgContextPath());
             if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
-                String errMsg = "--pkg-context-path file must be "+ PKG_CONTEXT_INFO;
+                String errMsg = "--pkg-context-path file must be the pkgContextInfo.json file.";
                 LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
