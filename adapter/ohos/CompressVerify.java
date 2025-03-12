@@ -977,7 +977,8 @@ public class CompressVerify {
                 return false;
             }
             if (hspHasExtensionAbilities) {
-                LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString("shared/appService hsp has extensionAbilities."));
+                LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(
+                        "shared/appService hsp has extensionAbilities."));
                 return false;
             }
         }
@@ -1260,7 +1261,8 @@ public class CompressVerify {
                 LOG.error(PackingToolErrMsg.HSP_HAS_EXTENSION_ABILITIES_FAILED.toString(errMsg));
             }
         } catch (BundleException e) {
-            LOG.error(PackingToolErrMsg.HSP_HAS_EXTENSION_ABILITIES_FAILED.toString("BundleException: " + e.getMessage()));
+            LOG.error(PackingToolErrMsg.HSP_HAS_EXTENSION_ABILITIES_FAILED.toString(
+                    "BundleException: " + e.getMessage()));
         }
         return false;
     }
@@ -1318,7 +1320,8 @@ public class CompressVerify {
             LOG.info("CompressVerify::hasHomeExtensionAbility result = " + result);
             return result;
         } catch (BundleException e) {
-            LOG.error(PackingToolErrMsg.HAS_HOME_EXTENSION_ABILITY_INVALID.toString("BundleException: " + e.getMessage()));
+            LOG.error(PackingToolErrMsg.HAS_HOME_EXTENSION_ABILITY_INVALID.toString(
+                    "BundleException: " + e.getMessage()));
             return false;
         }
     }

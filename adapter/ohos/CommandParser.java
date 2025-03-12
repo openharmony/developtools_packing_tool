@@ -362,14 +362,16 @@ public class CommandParser {
             try {
                 int compressLevel = Integer.parseInt(level);
                 if (compressLevel < 1 || compressLevel > 9) {
-                    LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString("--compress-level value not number between 1-9."));
+                    LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
+                            "--compress-level value not number between 1-9."));
                     return false;
                 } else {
                     entry.getKey().setCompressLevel(compressLevel);
                     return true;
                 }
             } catch (NumberFormatException ex) {
-                LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString("--compress-level value not number between 1-9."));
+                LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
+                        "--compress-level value not number between 1-9."));
                 return false;
             }
         });
@@ -405,7 +407,8 @@ public class CommandParser {
                 ++i;
             } else if (CMD_PARSE_MODE.equals(key)) {
                 if (i + PARSE_MODE_VALUE_LENGTH >= args.length) {
-                    LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString("Input wrong number value for --p command."));
+                    LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
+                            "Input wrong number value for --p command."));
                     return false;
                 }
                 utility.setParseMode(args[i + 1]);
