@@ -365,10 +365,12 @@ public class Compressor {
             compressExcute(utility);
         } catch (FileNotFoundException exception) {
             compressResult = false;
-            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString("Compress exist FileNotFoundException: " + exception.getMessage()));
+            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString(
+                    "Compress exist FileNotFoundException: " + exception.getMessage()));
         } catch (BundleException ex) {
             compressResult = false;
-            LOG.error(PackingToolErrMsg.COMPRESS_PROCESS_EXCEPTION.toString("Compress exist BundleException: " + ex.getMessage()));
+            LOG.error(PackingToolErrMsg.COMPRESS_PROCESS_EXCEPTION.toString(
+                    "Compress exist BundleException: " + ex.getMessage()));
         } finally {
             closeZipOutputStream();
             Utility.closeStream(zipOut);
@@ -378,8 +380,8 @@ public class Compressor {
 
         if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility)) {
             compressResult = false;
-            String errMsg =
-                "The size of a single module, or the size of a module plus its dependencies, exceeds " + getEntryModuleSizeLimit() + "MB.";
+            String errMsg = "The size of a single module, or the size of a module plus its dependencies, exceeds " +
+                    getEntryModuleSizeLimit() + "MB.";
             LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_SIZE_FAILED.toString(errMsg));
         }
 
@@ -434,29 +436,35 @@ public class Compressor {
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
             if (!checkStageAsanTsanEnabledValid(jsonString)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Check the asanTsanEnabled parameter in the Stage module failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the asanTsanEnabled parameter in the Stage module failed."));
                 throw new BundleException("Compress hsp failed.");
             }
             if (!checkStageHwasanEnabledValid(jsonString)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Check the hwasanEnabled parameter in the Stage module failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the hwasanEnabled parameter in the Stage module failed."));
                 throw new BundleException("Compress hsp failed.");
             }
             if (!checkStageUbsanEnabledValid(jsonString)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Check the ubsanEnabled parameter in the Stage module failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the ubsanEnabled parameter in the Stage module failed."));
                 throw new BundleException("Compress hsp failed.");
             }
             if (!checkStageAtomicService(jsonString)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Check the atomicService parameter in the Stage module failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the atomicService parameter in the Stage module failed."));
                 throw new BundleException("Check stage AtomicService failed.");
             }
             // check continueBundleName in module.json
             if (!checkContinueBundleNameIsValid(jsonString)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Check the continueBundleName parameter in the Stage module failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the continueBundleName parameter in the Stage module failed."));
                 throw new BundleException("Compress hsp failed.");
             }
             // check whether is an overlay hsp or not
             if (!checkStageOverlayCfg(jsonString)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Check the overlay config in the Stage module failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the overlay config in the Stage module failed."));
                 throw new BundleException("Compress hsp failed.");
             }
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
@@ -478,7 +486,8 @@ public class Compressor {
         setGenerateBuildHash(utility);
         if (isModuleJSON(utility.getJsonPath())) {
             if (!checkStageHap(utility)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HAP_FAILED.toString("Verify the module.json file of the Stage HAP package failed."));
+                LOG.error(PackingToolErrMsg.COMPRESS_HAP_FAILED.toString(
+                        "Verify the module.json file of the Stage HAP package failed."));
                 throw new BundleException("Verify the module.json file of the Stage HAP package failed.");
             }
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
@@ -521,7 +530,8 @@ public class Compressor {
                 res = true;
             }
         } catch (BundleException exception) {
-            LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString("Verify has generate build hash exist BundleException: " + exception.getMessage()));
+            LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString(
+                    "Verify has generate build hash exist BundleException: " + exception.getMessage()));
             throw new BundleException("Verify has generate build hash failed.");
         } catch (JSONException | IOException e) {
             LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString(
@@ -572,11 +582,13 @@ public class Compressor {
                     new FileOutputStream(utility.getJsonPath()), StandardCharsets.UTF_8));
             bw.write(pretty);
         } catch (BundleException exception) {
-            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString("Set generate build hash exist BundleException: " + exception.getMessage()));
+            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
+                    "Set generate build hash exist BundleException: " + exception.getMessage()));
             throw new BundleException("Compressor::setGenerateBuildHash failed.");
         } catch (NullPointerException | IOException | JSONException e) {
             LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
-                    "json data err, exist Exception(NullPointerException | IOException | JSONException): " + e.getMessage()));
+                    "json data err, exist Exception(NullPointerException | IOException | JSONException): " +
+                    e.getMessage()));
             throw new BundleException("Set generate build hash failed, json data err.");
         } finally {
             FileUtils.closeStream(json);
@@ -707,7 +719,8 @@ public class Compressor {
             LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Put build hash exist IOException: " + e.getMessage()));
             throw new BundleException("Put build hash failed.");
         } catch (NullPointerException e) {
-            LOG.error(PackingToolErrMsg.NULL_POINTER_EXCEPTION.toString("The json data err, exist NullPointerException: " + e.getMessage()));
+            LOG.error(PackingToolErrMsg.NULL_POINTER_EXCEPTION.toString(
+                    "The json data err, exist NullPointerException: " + e.getMessage()));
             throw new BundleException("Put build hash failed, json data err.");
         } finally {
             FileUtils.closeStream(json);
@@ -753,10 +766,12 @@ public class Compressor {
 
             return HapVerify.checkFileSizeIsValid(hapVerifyInfos);
         } catch (IOException exception) {
-            LOG.error(PackingToolErrMsg.APP_ATOMICSERVICE_COMPRESSED_SIZE_INVALID.toString("IOException: " + exception.getMessage()));
+            LOG.error(PackingToolErrMsg.APP_ATOMICSERVICE_COMPRESSED_SIZE_INVALID.toString(
+                    "IOException: " + exception.getMessage()));
             return false;
         } catch (BundleException ignored) {
-            LOG.error(PackingToolErrMsg.APP_ATOMICSERVICE_COMPRESSED_SIZE_INVALID.toString("BundleException: " + ignored.getMessage()));
+            LOG.error(PackingToolErrMsg.APP_ATOMICSERVICE_COMPRESSED_SIZE_INVALID.toString(
+                    "BundleException: " + ignored.getMessage()));
             return false;
         }
     }
@@ -765,25 +780,30 @@ public class Compressor {
         Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
         String jsonString = optional.get();
         if (!checkStageAsanTsanEnabledValid(jsonString)) {
-            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString("Check the asanTsanEnabled parameter in the Stage module failed."));
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the asanTsanEnabled parameter in the Stage module failed."));
             return false;
         }
         if (!checkStageHwasanEnabledValid(jsonString)) {
-            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString("Check the hwasanEnabled parameter in the Stage module failed."));
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the hwasanEnabled parameter in the Stage module failed."));
             return false;
         }
         if (!checkStageUbsanEnabledValid(jsonString)) {
-            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString("Check the ubsanEnabled parameter in the Stage module failed."));
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the ubsanEnabled parameter in the Stage module failed."));
             return false;
         }
         // check atomicService in module.json
         if (!checkStageAtomicService(jsonString)) {
-            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString("Check the atomicService parameter in the Stage module failed."));
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the atomicService parameter in the Stage module failed."));
             return false;
         }
         // check continueBundleName in module.json
         if (!checkContinueBundleNameIsValid(jsonString)) {
-            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString("Check the continueBundleName parameter in the Stage module failed."));
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the continueBundleName parameter in the Stage module failed."));
             return false;
         }
         return true;
@@ -875,7 +895,8 @@ public class Compressor {
         }
         // check entry module must have ability
         if (!ModuleJsonUtil.checkEntryInAtomicService(jsonString)) {
-            LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_FAILED.toString("Check the atomicService entry module failed."));
+            LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_FAILED.toString(
+                    "Check the atomicService entry module failed."));
             return false;
         }
         // check installationFree
@@ -896,7 +917,8 @@ public class Compressor {
             // check targetModuleName and requestPermission
             if (ModuleJsonUtil.isExistedStageRequestPermissions(jsonString)) {
                 LOG.error(PackingToolErrMsg.CHECK_OVERLAY_CFG_FAILED.toString(
-                        "The module(" + moduleName + ") targetModuleName and requestPermissions cannot be configured at the same time."));
+                        "The module(" + moduleName + ") targetModuleName and requestPermissions " +
+                        "cannot be configured at the same time."));
                 return false;
             }
             // check targetModuleName and name
@@ -908,7 +930,8 @@ public class Compressor {
         } else {
             if (ModuleJsonUtil.isExistedStageModuleTargetPriority(jsonString)) {
                 LOG.error(PackingToolErrMsg.CHECK_OVERLAY_CFG_FAILED.toString(
-                        "The targetPriority cannot be existed without the targetModuleName in module.json. The moduleName is " + moduleName + "."));
+                        "The targetPriority cannot be existed without the targetModuleName in module.json. " +
+                        "The moduleName is " + moduleName + "."));
                 return false;
             }
         }
@@ -916,8 +939,8 @@ public class Compressor {
         String targetBundleName = ModuleJsonUtil.getStageTargetBundleName(jsonString);
         if (!targetBundleName.isEmpty()) {
             if (targetModuleName.isEmpty()) {
-                LOG.error(PackingToolErrMsg.CHECK_OVERLAY_CFG_FAILED.toString(
-                        "The module(" + moduleName + ") targetModuleName settings is necessary in the overlay bundle."));
+                LOG.error(PackingToolErrMsg.CHECK_OVERLAY_CFG_FAILED.toString("The module(" + moduleName +
+                        ") targetModuleName settings is necessary in the overlay bundle."));
                 return false;
             }
             if (targetBundleName.equals(ModuleJsonUtil.parseBundleName(jsonString))) {
@@ -927,8 +950,8 @@ public class Compressor {
             }
         } else {
             if (ModuleJsonUtil.isExistedStageAppTargetPriority(jsonString)) {
-                LOG.error(PackingToolErrMsg.CHECK_OVERLAY_CFG_FAILED.toString(
-                        "The targetPriority cannot be existed without the targetBundleName in app.json. The moduleName is " + moduleName + "."));
+                LOG.error(PackingToolErrMsg.CHECK_OVERLAY_CFG_FAILED.toString("The targetPriority cannot be existed " +
+                        "without the targetBundleName in app.json. The moduleName is " + moduleName + "."));
                 return false;
             }
         }
@@ -2249,7 +2272,8 @@ public class Compressor {
             zipCreator.writeTo(zipOut);
         } catch (IOException | InterruptedException | ExecutionException e) {
             LOG.error(PackingToolErrMsg.COMPRESS_PARALLEL_EXCEPTION.toString(
-                    "Parallel compress exist Exception(IOException | InterruptedException | ExecutionException): " + e.getMessage()));
+                    "Parallel compress exist Exception(IOException | InterruptedException | ExecutionException): " +
+                    e.getMessage()));
             throw new BundleException("Parallel compress exception. " + e.getMessage());
         }
     }
@@ -2421,8 +2445,7 @@ public class Compressor {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString(
-                    "Get Crc from file exist FileNotFoundException: " + ignored.getMessage()));
+            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString("File not found when getting Crc."));
             throw new BundleException("Get Crc from file failed.");
         } catch (IOException exception) {
             LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
@@ -2568,8 +2591,7 @@ public class Compressor {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString(
-                    "Get Crc32 from file exist FileNotFoundException: " + ignored.getMessage()));
+            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString("File not found when getting Crc."));
             throw new BundleException("Get Crc from file failed: " + file.getName());
         } catch (IOException exception) {
             LOG.error(PackingToolErrMsg.FILE_IO_EXCEPTION.toString(
