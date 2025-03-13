@@ -29,12 +29,23 @@ using namespace testing::ext;
 namespace OHOS {
 namespace {
 const std::string OUT_PATH = "/data/test/entry-default-unsigned.hap";
+const std::string STAGE_PATH = "/data/test/resource/packingtool/test_file/stage";
+const std::string STAGE_PACK_JSON_PATH = "/data/test/resource/packingtool/test_file/stage/pack.json";
 const std::string STAGE_INDEX_PATH = "/data/test/resource/packingtool/test_file/stage/resources.index";
 const std::string STAGE_PACK_INFO_PATH = "/data/test/resource/packingtool/test_file/stage/pack.info";
 const std::string STAGE_ETS_PATH = "/data/test/resource/packingtool/test_file/stage/ets";
 const std::string STAGE_RESOURCES_PATH = "/data/test/resource/packingtool/test_file/stage/resources";
 const std::string STAGE_JSON_PATH = "/data/test/resource/packingtool/test_file/stage/module.json";
 const std::string STAGE_RPCID_PATH = "/data/test/resource/packingtool/test_file/stage/rpcid.sc";
+const std::string STAGE_PROFILE_PATH = "/data/test/resource/packingtool/test_file/stage/CAPABILITY.profile";
+const std::string STAGE_ABC_PATH = "/data/test/resource/packingtool/test_file/stage/pack.abc";
+const std::string STAGE_MAPLE_SO_PATH = "/data/test/resource/packingtool/test_file/stage/maple.so";
+const std::string STAGE_ABILITY_SO_PATH = "/data/test/resource/packingtool/test_file/stage/ability.so";
+const std::string STAGE_JAR_PATH = "/data/test/resource/packingtool/test_file/stage/pack.jar";
+const std::string STAGE_TXT_PATH = "/data/test/resource/packingtool/test_file/stage/pack.txt";
+const std::string STAGE_DIR_PATH_LIST = "/data/test/resource/packingtool/test_file/stage";
+const std::string FAIL_JSON_PATH = "/data/test/resource/packingtool/test_file/stage/fail.json";
+const std::string FAIL_PATH = "/data/test/resource/packingtool/test_file/fail";
 
 const std::string FA_INDEX_PATH = "/data/test/resource/packingtool/test_file/fa/resources.index";
 const std::string FA_PACK_INFO_PATH = "/data/test/resource/packingtool/test_file/fa/pack.info";
@@ -66,6 +77,24 @@ void HapPackagerTest::SetUp() {}
 
 void HapPackagerTest::TearDown() {}
 
+void CopyFile(const std::string& srcFile, const std::string& dstFile)
+{
+    std::string cmd = "cp -f " + srcFile + " " + dstFile;
+    system(cmd.c_str());
+}
+
+void TouchFile(const std::string& file)
+{
+    std::string cmd = "touch " + file;
+    system(cmd.c_str());
+}
+
+void DeleteFile(const std::string& file)
+{
+    std::string cmd = "rm -f " + file;
+    system(cmd.c_str());
+}
+
 /*
  * @tc.name: hapPackager_0100
  * @tc.desc: hapPackager.
@@ -86,7 +115,7 @@ HWTEST_F(HapPackagerTest, hapPackager_0100, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
-    system("mv /data/test/resource/packingtool/test_file/stage/pack.json "
+    system("cp -f /data/test/resource/packingtool/test_file/stage/pack.json "
         "/data/test/resource/packingtool/test_file/stage/pack.info");
     system("touch /data/test/resource/packingtool/test_file/stage/resources.index");
     EXPECT_EQ(hapPackager.InitAllowedParam(), 0);
@@ -94,6 +123,7 @@ HWTEST_F(HapPackagerTest, hapPackager_0100, Function | MediumTest | Level1)
     EXPECT_EQ(hapPackager.Process(), 0);
     EXPECT_EQ(hapPackager.PostProcess(), 0);
     system("rm -f /data/test/resource/packingtool/test_file/stage/resources.index");
+    system("rm -f /data/test/resource/packingtool/test_file/stage/pack.info");
 
     std::string cmd = {"rm -f "};
     cmd += OUT_PATH;
@@ -633,5 +663,310 @@ HWTEST_F(HapPackagerTest, hapPackager_3000, Function | MediumTest | Level1)
     };
     OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
     EXPECT_FALSE(hapPackager.AddPkgAndBinFileToZipForStageMaode());
+}
+
+/*
+ * @tc.name: preProcess_001
+ * @tc.desc: PreProcess.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, preProcess_001, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "fail"},
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hapPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: preProcess_002
+ * @tc.desc: PreProcess.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, preProcess_002, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, ""},
+        {OHOS::AppPackingTool::Constants::PARAM_BIN_PATH, "/data/test"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(hapPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: process_001
+ * @tc.desc: Process.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, process_001, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "false"},
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    
+    TouchFile(OUT_PATH);
+
+    EXPECT_EQ(hapPackager.Process(), 1);
+
+    DeleteFile(OUT_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapCommonMode_001
+ * @tc.desc: IsVerifyValidInHapCommonMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_001, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, FAIL_JSON_PATH},
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapCommonMode());
+}
+
+/*
+ * @tc.name: isVerifyValidInHapCommonMode_002
+ * @tc.desc: IsVerifyValidInHapCommonMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_002, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, ""}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapCommonMode());
+}
+
+/*
+ * @tc.name: isVerifyValidInHapCommonMode_003
+ * @tc.desc: IsVerifyValidInHapCommonMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_003, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, STAGE_PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_RPCID_PATH, STAGE_RPCID_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PROFILE_PATH, ""}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    CopyFile(STAGE_PACK_JSON_PATH, STAGE_PACK_INFO_PATH);
+    TouchFile(STAGE_RPCID_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapCommonMode());
+
+    DeleteFile(STAGE_PACK_INFO_PATH);
+    DeleteFile(STAGE_RPCID_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapCommonMode_004
+ * @tc.desc: IsVerifyValidInHapCommonMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_004, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, STAGE_PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_RPCID_PATH, STAGE_RPCID_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PROFILE_PATH, STAGE_PROFILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_ABC_PATH, STAGE_ABC_PATH}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    CopyFile(STAGE_PACK_JSON_PATH, STAGE_PACK_INFO_PATH);
+    TouchFile(STAGE_RPCID_PATH);
+    TouchFile(STAGE_PROFILE_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapCommonMode());
+
+    DeleteFile(STAGE_PACK_INFO_PATH);
+    DeleteFile(STAGE_RPCID_PATH);
+    DeleteFile(STAGE_PROFILE_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapCommonMode_005
+ * @tc.desc: IsVerifyValidInHapCommonMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_005, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, STAGE_PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_RPCID_PATH, STAGE_RPCID_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PROFILE_PATH, STAGE_PROFILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_ABC_PATH, STAGE_ABC_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_DIR_LIST, FAIL_PATH}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    CopyFile(STAGE_PACK_JSON_PATH, STAGE_PACK_INFO_PATH);
+    TouchFile(STAGE_RPCID_PATH);
+    TouchFile(STAGE_PROFILE_PATH);
+    TouchFile(STAGE_ABC_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapCommonMode());
+
+    DeleteFile(STAGE_PACK_INFO_PATH);
+    DeleteFile(STAGE_RPCID_PATH);
+    DeleteFile(STAGE_PROFILE_PATH);
+    DeleteFile(STAGE_ABC_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapCommonMode_006
+ * @tc.desc: IsVerifyValidInHapCommonMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_006, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, STAGE_JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, STAGE_PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_RPCID_PATH, STAGE_RPCID_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PROFILE_PATH, STAGE_PROFILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_ABC_PATH, STAGE_ABC_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_DIR_LIST, STAGE_DIR_PATH_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_PKG_CONTEXT_PATH, ""}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    CopyFile(STAGE_PACK_JSON_PATH, STAGE_PACK_INFO_PATH);
+    TouchFile(STAGE_RPCID_PATH);
+    TouchFile(STAGE_PROFILE_PATH);
+    TouchFile(STAGE_ABC_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapCommonMode());
+
+    DeleteFile(STAGE_PACK_INFO_PATH);
+    DeleteFile(STAGE_RPCID_PATH);
+    DeleteFile(STAGE_PROFILE_PATH);
+    DeleteFile(STAGE_ABC_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapMode_001
+ * @tc.desc: IsVerifyValidInHapMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapMode_001, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INDEX_PATH, ""}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapMode());
+}
+
+/*
+ * @tc.name: isVerifyValidInHapMode_002
+ * @tc.desc: IsVerifyValidInHapMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapMode_002, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INDEX_PATH, STAGE_INDEX_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_MAPLE_SO_PATH, STAGE_MAPLE_SO_PATH}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    TouchFile(STAGE_INDEX_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapMode());
+
+    DeleteFile(STAGE_INDEX_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapMode_003
+ * @tc.desc: IsVerifyValidInHapMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapMode_003, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INDEX_PATH, STAGE_INDEX_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_MAPLE_SO_PATH, STAGE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_ABILITY_SO_PATH, STAGE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, STAGE_JAR_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_TXT_PATH, STAGE_TXT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_LIB_PATH, FAIL_PATH}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    TouchFile(STAGE_INDEX_PATH);
+    TouchFile(STAGE_MAPLE_SO_PATH);
+    TouchFile(STAGE_ABILITY_SO_PATH);
+    TouchFile(STAGE_JAR_PATH);
+    TouchFile(STAGE_TXT_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapMode());
+
+    DeleteFile(STAGE_INDEX_PATH);
+    DeleteFile(STAGE_MAPLE_SO_PATH);
+    DeleteFile(STAGE_ABILITY_SO_PATH);
+    DeleteFile(STAGE_JAR_PATH);
+    DeleteFile(STAGE_TXT_PATH);
+}
+
+/*
+ * @tc.name: isVerifyValidInHapMode_004
+ * @tc.desc: IsVerifyValidInHapMode.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, isVerifyValidInHapMode_004, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INDEX_PATH, STAGE_INDEX_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_MAPLE_SO_PATH, STAGE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_ABILITY_SO_PATH, STAGE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, STAGE_JAR_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_TXT_PATH, STAGE_TXT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_LIB_PATH, STAGE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_ETS_PATH, FAIL_PATH}
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+
+    TouchFile(STAGE_INDEX_PATH);
+    TouchFile(STAGE_MAPLE_SO_PATH);
+    TouchFile(STAGE_ABILITY_SO_PATH);
+    TouchFile(STAGE_JAR_PATH);
+    TouchFile(STAGE_TXT_PATH);
+
+    EXPECT_FALSE(hapPackager.IsVerifyValidInHapMode());
+
+    DeleteFile(STAGE_INDEX_PATH);
+    DeleteFile(STAGE_MAPLE_SO_PATH);
+    DeleteFile(STAGE_ABILITY_SO_PATH);
+    DeleteFile(STAGE_JAR_PATH);
+    DeleteFile(STAGE_TXT_PATH);
 }
 } // namespace OHOS
