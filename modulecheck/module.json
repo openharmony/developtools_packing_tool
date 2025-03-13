@@ -1021,7 +1021,9 @@
                   "callerInfoQuery",
                   "assetAcceleration",
                   "formEdit",
-                  "distributed"
+                  "distributed",
+                  "awc/webpage",
+                  "awc/newsfeed"
                 ]
               },
               "permissions": {
