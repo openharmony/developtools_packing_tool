@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: javac.py
-Class-Path: fastjson-1.2.83.jar
+Class-Path: fastjson-2.0.52.jar fastjson2-2.0.52.jar fastjson2-extension-2.0.52.jar
 Main-Class: ohos.ConvertHapToBin
