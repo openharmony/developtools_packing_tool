@@ -158,29 +158,35 @@ public class CompressVerify {
 
     private static boolean validatePackageNormalizeMode(Utility utility) {
         if (utility.getHspList().isEmpty()) {
-            LOG.error("CompressVerify::validatePackageNormalizeMode hsp-list is empty.");
+            String errMsg = "--hsp-list is empty.";
+            LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         } else {
             if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
-                LOG.error("CompressVerify::validatePackageNormalizeMode hsp-list is invalid.");
+                String errMsg = "--hsp-list is invalid.";
+                LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
         if (!isBundleNameValid(utility.getBundleName())) {
-            LOG.error("CompressVerify::validatePackageNormalizeMode bundle-name is invalid.");
+            String errMsg = "--bundle-name is invalid.";
+            LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (utility.getVersionCode() <= 0) {
-            LOG.error("CompressVerify::validatePackageNormalizeMode version-code is invalid.");
+            String errMsg = "--version-code is invalid.";
+            LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (utility.getOutPath().isEmpty()) {
-            LOG.error("CompressVerify::validatePackageNormalizeMode out-path is empty.");
+            String errMsg = "--out-path is empty.";
+            LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         File outDir = new File(utility.getOutPath());
         if (!outDir.isDirectory()) {
-            LOG.error("CompressVerify::validatePackageNormalizeMode out-path is not a directory.");
+            String errMsg = "--out-path is not a directory.";
+            LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
@@ -188,45 +194,53 @@ public class CompressVerify {
 
     private static boolean validateVersionNormalizeMode(Utility utility) {
         if (utility.getInputList().isEmpty()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
+            String errMsg = "--input-list is empty.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!handleHapAndHspInput(utility, utility.getInputList(), utility.getFormattedHapList())) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is invalid.");
+            String errMsg = "--input-list is invalid.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (utility.getFormattedHapList().isEmpty()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode input-list is empty.");
+            String errMsg = "--input-list is empty.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (utility.getVersionCode() <= 0) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode version-code is invalid.");
+            String errMsg = "--version-code is invalid.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (utility.getVersionName().isEmpty()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode version-name is empty.");
+            String errMsg = "--version-name is empty.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         Pattern versionNamePattern = Pattern.compile(VERSION_NAME_PATTERN);
         Matcher versionNameMatcher = versionNamePattern.matcher(utility.getVersionName());
         if (!versionNameMatcher.matches()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode version-name is not valid.");
+            String errMsg = "--version-name is invalid.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (utility.getOutPath().isEmpty()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode out-path is empty.");
+            String errMsg = "--out-path is empty.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         File outDir = new File(utility.getOutPath());
         if (!outDir.isDirectory()) {
-            LOG.error("CompressVerify::validateVersionNormalizeMode out-path is not a directory.");
+            String errMsg = "--out-path is not a directory.";
+            LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
@@ -447,45 +461,53 @@ public class CompressVerify {
      */
     private static boolean isVerifyValidInHarMode(Utility utility) {
         if (utility.getJsonPath().isEmpty()) {
-            LOG.error("CompressVerify::isArgsValidInHarMode json-path is empty.");
+            String errMsg = "--json-path is empty.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, JSON_PROFILE)
                 && !isPathValid(utility.getJsonPath(), TYPE_FILE, MODULE_PROFILE)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode json-path must be config.json file.");
+            String errMsg = "--json-path must be config.json or module.json file.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!utility.getJarPath().isEmpty()
                 && !compatibleProcess(utility, utility.getJarPath(), utility.getFormattedJarPathList(), JAR_SUFFIX)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode jar-path is invalid.");
+            String errMsg = "--jar-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!utility.getTxtPath().isEmpty()
                 && !compatibleProcess(utility, utility.getTxtPath(), utility.getFormattedTxtPathList(), TXT_SUFFIX)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode txt-path is invalid.");
+            String errMsg = "--txt-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!utility.getLibPath().isEmpty() && !isPathValid(utility.getLibPath(), TYPE_DIR, null)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode lib-path is invalid.");
+            String errMsg = "--lib-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!utility.getResPath().isEmpty() && !isPathValid(utility.getResPath(), TYPE_DIR, null)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode res-path is invalid.");
+            String errMsg = "--res-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (utility.getResourcesPath().isEmpty() || !isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode resources-path is invalid.");
+            String errMsg = "--resources-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!utility.getAssetsPath().isEmpty() && !isPathValid(utility.getAssetsPath(), TYPE_DIR, null)) {
-            LOG.error("CompressVerify::isArgsValidInHarMode assets-path is invalid.");
+            String errMsg = "--assets-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAR_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
@@ -629,41 +651,48 @@ public class CompressVerify {
      */
     private static boolean isVerifyValidInMultiAppMode(Utility utility) {
         if (utility.getAppList().isEmpty() && utility.getHapList().isEmpty() && utility.getHspList().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInMultiAppMode input app-list, hap-list and hsp-list are null.");
+            String errMsg = "Input --app-list, --hap-list and --hsp-list are all empty.";
+            LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!utility.getAppList().isEmpty()) {
             if (!compatibleProcess(utility, utility.getAppList(), utility.getFormattedAppList(), APP_SUFFIX)) {
-                LOG.error("CompressVerify::isVerifyValidInMultiAppMode app-list is invalid.");
+                String errMsg = "--app-list is invalid.";
+                LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
         if (!utility.getHapList().isEmpty()) {
             if (!compatibleProcess(utility, utility.getHapList(), utility.getFormattedHapList(), HAP_SUFFIX)) {
-                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hap-list is invalid.");
+                String errMsg = "--hap-list is invalid.";
+                LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
 
         if (!utility.getHspList().isEmpty()) {
             if (!compatibleProcess(utility, utility.getHspList(), utility.getFormattedHapList(), HSP_SUFFIX)) {
-                LOG.error("CompressVerify::isVerifyValidInMultiAppMode hsp-list is invalid.");
+                String errMsg = "--hsp-list is invalid.";
+                LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
 
         if (!isValidEncryptJsonFile(utility)) {
-            LOG.error("CompressVerify::isVerifyValidInMultiAppMode encrypt-path is invalid.");
+            String errMsg = "--encrypt-path is invalid.";
+            LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         File outFile = new File(utility.getOutPath());
         if (("false".equals(utility.getForceRewrite())) && outFile.exists()) {
-            LOG.error("CompressVerify::isVerifyValidInMultiAppMode out file already existed.");
+            String errMsg = "--out-path file already exist, but --force is not 'true'.";
+            LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
-            LOG.error("CompressVerify::isVerifyValidInMultiAppMode out-path must end with .app.");
+            String errMsg = "--out-path must end with .app.";
+            LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
@@ -678,18 +707,21 @@ public class CompressVerify {
      */
     private static boolean isVerifyValidInResMode(Utility utility) {
         if (!isPathValid(utility.getPackInfoPath(), TYPE_FILE, PACK_INFO)) {
-            LOG.error("CompressVerify::isArgsValidInResMode pack-info-path is invalid.");
+            String errMsg = "--pack-info-path is invalid.";
+            LOG.error(PackingToolErrMsg.RES_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (!isDirectoryValidStrictCase(utility.getEntryCardPath(), ENTRY_CARD_DIRECTORY_NAME)) {
-            LOG.error("CompressVerify::isArgsValidInResMode the level-1 directory name must is EntryCard" +
-                ", current is " + utility.getEntryCardPath());
+            String errMsg = "The level-1 directory name must be EntryCard, current is " +
+                    utility.getEntryCardPath() + ".";
+            LOG.error(PackingToolErrMsg.RES_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!compatibleProcess(utility, utility.getEntryCardPath(),
                 utility.getformattedEntryCardPathList(), PNG_SUFFIX)) {
-            LOG.error("CompressVerify::isArgsValidInResMode entrycard-path is invalid.");
+            String errMsg = "--entrycard-path is invalid.";
+            LOG.error(PackingToolErrMsg.RES_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return isOutPathValid(utility, RES_SUFFIX);
@@ -697,38 +729,45 @@ public class CompressVerify {
 
     private static boolean isVerifyValidInHQFMode(Utility utility) {
         if (utility.getJsonPath().isEmpty()) {
-            LOG.error("must input patch.json file when pack hqf file.");
+            String errMsg = "--json-path is empty, must input patch.json file when pack hqf file.";
+            LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!utility.getEtsPath().isEmpty()) {
             if (!isPathValid(utility.getEtsPath(), TYPE_DIR, null)) {
-                LOG.error("must input valid ets path when pack hqf file.");
+                String errMsg = "--ets-path is invalid.";
+                LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
         if (!isPathValid(utility.getJsonPath(), TYPE_FILE, PATCH_PROFILE)) {
-            LOG.error("input patch.json is invalid when pack hqf file.");
+            String errMsg = "--json-path is invalid.";
+            LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!utility.getLibPath().isEmpty()) {
             if (!isPathValid(utility.getLibPath(), TYPE_DIR, null)) {
-                LOG.error("input lib path is invalid when pack hqf file.");
+                String errMsg = "--lib-path is invalid.";
+                LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
         if (!utility.getResourcesPath().isEmpty()) {
             if (!isPathValid(utility.getResourcesPath(), TYPE_DIR, null)) {
-                LOG.error("input resources path is invalid when pack hqf file.");
+                String errMsg = "--resources-path is invalid.";
+                LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
         }
         File outFile = new File(utility.getOutPath());
         if ((FALSE.equals(utility.getForceRewrite())) && (outFile.exists())) {
-            LOG.error(outFile.getName() + " already exist.");
+            String errMsg = "--out-path file already exist, but --force is not 'true'.";
+            LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!utility.getOutPath().endsWith(HQF_SUFFIX)) {
-            LOG.error("input out file must end with .hqf.");
+            String errMsg = "--out-path file must end with .hqf.";
+            LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
@@ -736,20 +775,24 @@ public class CompressVerify {
 
     private static boolean isVerifyValidInAPPQFMode(Utility utility) {
         if (utility.getHqfList().isEmpty()) {
-            LOG.error("input hqf list is empty.");
+            String errMsg = "--hqf-list is empty.";
+            LOG.error(PackingToolErrMsg.APPQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!compatibleProcess(utility, utility.getHqfList(), utility.getFormatedHQFList(), HQF_SUFFIX)) {
-            LOG.error("input hqf list is invalid.");
+            String errMsg = "--hqf-list is invalid.";
+            LOG.error(PackingToolErrMsg.APPQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         File outFile = new File(utility.getOutPath());
         if ((FALSE.equals(utility.getForceRewrite())) && outFile.exists()) {
-            LOG.error("Error out file already existed.");
+            String errMsg = "--out-path file already exist, but --force is not 'true'.";
+            LOG.error(PackingToolErrMsg.APPQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(APPQF_SUFFIX)) {
-            LOG.error("Error out-path must end with .app.");
+            String errMsg = "--out-path must end with .appqf.";
+            LOG.error(PackingToolErrMsg.APPQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
@@ -813,7 +856,8 @@ public class CompressVerify {
                 formattedPathItem = utility.getFormattedPath(pathItem);
                 if (!isPathValid(formattedPathItem, TYPE_FILE, HSP_SUFFIX) &&
                     !isPathValid(formattedPathItem, TYPE_FILE, HAP_SUFFIX)) {
-                    LOG.error("input file " + formattedPathItem + " not valid");
+                    String errMsg = "Input file " + formattedPathItem + " is invalid.";
+                    LOG.error(PackingToolErrMsg.HANDLE_HAP_HSP_INPUT_FAILED.toString(errMsg));
                     return false;
                 }
                 fileList.add(formattedPathItem);
@@ -923,8 +967,8 @@ public class CompressVerify {
     private static boolean isDirectoryValidStrictCase(String path, String directoryName) {
         File file = new File(path);
         if (!file.exists()) {
-            LOG.error("CompressVerify::isDirectoryValidStrictCase directory is not exist, directoryPath: "
-                + path + ".");
+            String errMsg = "The directory does not exist, directory path is: " + path + ".";
+            LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             return false;
         }
         if (file.isDirectory()) {
@@ -1070,48 +1114,58 @@ public class CompressVerify {
 
     private static boolean isVerifyValidInHapAdditionMode(Utility utility) {
         if (utility.getHapPath().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath is empty.");
+            String errMsg = "--hap-path is empty.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         String hapPath = utility.getAbsoluteHapPath();
         File hapFile = new File(hapPath);
         if (hapFile.isDirectory()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath cannot be a folder.");
+            String errMsg = "--hap-path cannot be a folder.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!(hapPath.endsWith(HAP_SUFFIX) || hapPath.endsWith(HSP_SUFFIX))) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hapPath is invalid.");
+            String errMsg = "--hap-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!hapFile.exists()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode hap file does not exist.");
+            String errMsg = "--hap-path file does not exist.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (utility.getJsonPath().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode jsonPath is empty.");
+            String errMsg = "--json-path is empty.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!utility.getJsonPath().endsWith(JSON_SUFFIX)) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode jsonPath is invalid.");
+            String errMsg = "--json-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         File jsonFile = new File(utility.getJsonPath());
         if (!jsonFile.exists()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json file does not exist.");
+            String errMsg = "--json-path file does not exist.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         if (!checkJsonIsValid(jsonFile)) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode json format is incorrect.");
+            String errMsg = "The format of the --json-path file is invalid.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
         if (utility.getOutPath().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is empty.");
+            String errMsg = "--out-path is empty.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         File dir = new File(utility.getOutPath());
         if (dir.exists() && dir.isFile()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode outPath is file.");
+            String errMsg = "--out-path is file.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         File absoluteHapFile = new File(utility.getAbsoluteHapPath());
@@ -1119,7 +1173,8 @@ public class CompressVerify {
         String destPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName;
         File destFile = new File(destPath);
         if ("false".equals(utility.getForceRewrite()) && destFile.exists()) {
-            LOG.error("CompressVerify::isVerifyValidInHapAdditionMode target file already exists.");
+            String errMsg = "--out-path file already exist, but --force is not 'true'.";
+            LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
@@ -1134,7 +1189,8 @@ public class CompressVerify {
                 jsonData.append((char) ch);
             }
         } catch (IOException e) {
-            LOG.error("CompressVerify::CheckJsonIsValid failed: " + e.getMessage());
+            String errMsg = "Check json file is valid exist IOException: ";
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(errMsg + e.getMessage()));
             return false;
         }
         JSONValidator validator = JSONValidator.from(jsonData.toString());

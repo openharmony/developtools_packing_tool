@@ -33,15 +33,15 @@ class HQFVerify {
     public static boolean checkHQFIsValid(List<HQFInfo> hqfVerifyInfos) {
         // check app fields
         if (hqfVerifyInfos.isEmpty()) {
-            LOG.error("input hqf file is empty.");
+            LOG.error(PackingToolErrMsg.CHECK_HQF_INVALID.toString("Input hqf file is empty."));
             return false;
         }
         if (!checkAppFields(hqfVerifyInfos)) {
-            LOG.error("input hqf file has different fields in app.");
+            LOG.error(PackingToolErrMsg.CHECK_HQF_INVALID.toString("Input hqf file has different fields in app."));
             return false;
         }
         if (!checkModuleIsValid(hqfVerifyInfos)) {
-            LOG.error("input hqf file moduleName is invalid.");
+            LOG.error(PackingToolErrMsg.CHECK_HQF_INVALID.toString("Input hqf file moduleName is invalid."));
             return false;
         }
         return true;
@@ -61,23 +61,28 @@ class HQFVerify {
         String patchVersionName = hqfVerifyInfos.get(0).getPatchVersionName();
         for (HQFInfo hqfVerifyInfo : hqfVerifyInfos) {
             if (bundleName == null || !bundleName.equals(hqfVerifyInfo.getBundleName())) {
-                LOG.error("input hqf file has different bundleName.");
+                String errMsg = "Input hqf file has different bundleName.";
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_FAILED.toString(errMsg));
                 return false;
             }
             if (versionCode != hqfVerifyInfo.getVersionCode()) {
-                LOG.error("input hqf file has different versionCode.");
+                String errMsg = "Input hqf file has different versionCode.";
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_FAILED.toString(errMsg));
                 return false;
             }
             if (versionName == null || !versionName.equals(hqfVerifyInfo.getVersionName())) {
-                LOG.error("input hqf file has different versionName.");
+                String errMsg = "Input hqf file has different versionName.";
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_FAILED.toString(errMsg));
                 return false;
             }
             if (patchVersionCode != hqfVerifyInfo.getPatchVersionCode()) {
-                LOG.error("input hqf file has different patchVersionCode.");
+                String errMsg = "Input hqf file has different patchVersionCode.";
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_FAILED.toString(errMsg));
                 return false;
             }
             if (patchVersionName == null || !patchVersionName.equals(hqfVerifyInfo.getPatchVersionName())) {
-                LOG.error("input hqf file has different patchVersionName.");
+                String errMsg = "Input hqf file has different patchVersionName.";
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_FAILED.toString(errMsg));
                 return false;
             }
         }
@@ -94,7 +99,8 @@ class HQFVerify {
         for (int i = 0; i < hqfVerifyInfos.size(); ++i) {
             for (int j = i + 1; j < hqfVerifyInfos.size(); ++j) {
                 if (checkModuleIsDuplicated(hqfVerifyInfos.get(i), hqfVerifyInfos.get(j))) {
-                    LOG.error("input hqf file moduleName duplicated.");
+                    String errMsg = "Input hqf file moduleName is duplicated.";
+                    LOG.error(PackingToolErrMsg.CHECK_MODULE_INVALID.toString(errMsg));
                     return false;
                 }
             }

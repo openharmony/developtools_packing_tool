@@ -706,7 +706,8 @@ public class Utility {
             canonicalPath = file.getCanonicalPath();
         } catch (IOException exception) {
             canonicalPath = INVALID_PATH;
-            LOG.error("Utility::getFormattedPath exception," + exception.getMessage());
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
+                    "Get formatted path exist IOException: " + exception.getMessage()));
         }
         return canonicalPath;
     }

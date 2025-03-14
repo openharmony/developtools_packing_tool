@@ -70,10 +70,12 @@ public class PackageNormalize {
             try {
                 normalize(Paths.get(hspPath), outPath, utility.getBundleName(), utility.getVersionCode());
             } catch (BundleException ex) {
-                LOG.error("PackageNormalize::normalize BundleException: " + ex.getMessage());
+                LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_FAILED.toString(
+                        "Package normalize exist BundleException: " + ex.getMessage()));
                 return false;
             } catch (IOException ex) {
-                LOG.error("PackageNormalize::normalize IOException: " + ex.getMessage());
+                LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_FAILED.toString(
+                        "Package normalize exist IOException: " + ex.getMessage()));
                 return false;
             }
         }
@@ -135,11 +137,13 @@ public class PackageNormalize {
         try (FileInputStream input = new FileInputStream(moduleJson.toFile())) {
             JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
             if (jsonObject == null) {
-                LOG.error("updateModuleJson failed, parse json is null.");
+                LOG.error(PackingToolErrMsg.UPDATE_MODULE_JSON_FAILED.toString(
+                        "Failed to parse module.json: jsonObject is null."));
                 throw new BundleException("updateModuleJson failed, parse json is null.");
             }
             if (!jsonObject.containsKey(APP)) {
-                LOG.error("updateModuleJson failed, json format not invalid.");
+                LOG.error(PackingToolErrMsg.UPDATE_MODULE_JSON_FAILED.toString(
+                        "The module.json file does not contain 'app'."));
                 throw new BundleException("updateModuleJson failed, json format invalid.");
             }
             JSONObject appObject = jsonObject.getJSONObject(APP);
@@ -156,23 +160,27 @@ public class PackageNormalize {
         try (FileInputStream input = new FileInputStream(packInfo.toFile())) {
             JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
             if (jsonObject == null) {
-                LOG.error("updatePackInfo failed, json format invalid.");
+                LOG.error(PackingToolErrMsg.UPDATE_PACKINFO_FAILED.toString(
+                        "Failed to parse pack.info: invalid json format."));
                 throw new BundleException("updatePackInfo failed, json format invalid.");
             }
             JSONObject summaryObject = jsonObject.getJSONObject(SUMMARY);
             if (summaryObject == null) {
-                LOG.error("updatePackInfo failed, json format invalid.");
+                LOG.error(PackingToolErrMsg.UPDATE_PACKINFO_FAILED.toString(
+                        "The pack.info file does not contain 'summary'."));
                 throw new BundleException("updatePackInfo failed, json format invalid.");
             }
             JSONObject appObject = summaryObject.getJSONObject(APP);
             if (appObject == null) {
-                LOG.error("updatePackInfo failed, json format invalid.");
+                LOG.error(PackingToolErrMsg.UPDATE_PACKINFO_FAILED.toString(
+                        "The pack.info file does not contain 'app'."));
                 throw new BundleException("updatePackInfo failed, json format invalid.");
             }
             appObject.put(BUNDLE_NAME, bundleName);
             JSONObject versionObject = appObject.getJSONObject(VERSION);
             if (versionObject == null) {
-                LOG.error("updatePackInfo failed, json format invalid.");
+                LOG.error(PackingToolErrMsg.UPDATE_PACKINFO_FAILED.toString(
+                        "The pack.info file does not contain 'version'."));
                 throw new BundleException("updatePackInfo failed, json format invalid.");
             }
             versionObject.put(CODE, versionCode);
@@ -242,10 +250,12 @@ public class PackageNormalize {
                 count = fileInputStream.read(buffer);
             }
         } catch (FileNotFoundException ignored) {
-            LOG.error("PackageNormalize::getCrcFromFile file not found exception: " + ignored.getMessage());
+            LOG.error(PackingToolErrMsg.FILE_NOT_FOUND.toString(
+                    "Get Crc from file exist FileNotFoundException: " + ignored.getMessage()));
             throw new BundleException("Get Crc from file failed.");
         } catch (IOException exception) {
-            LOG.error("PackageNormalize::getCrcFromFile io exception: " + exception.getMessage());
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
+                    "Get Crc from file exist IOException: " + exception.getMessage()));
             throw new BundleException("Get Crc from file failed, io exception.");
         }
         return crc;
