@@ -68,6 +68,7 @@ const std::string ATOMIC_SERVICE = "atomicService";
 const std::string PRELOADS = "preloads";
 const std::string SHARED = "shared";
 const std::string APP_SERVICE = "appService";
+const std::string APP_PLUGIN = "appPlugin";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string TARGET_MODULE_NAME = "targetModuleName";
 const std::string TARGET_PRIORITY = "targetPriority";
@@ -881,6 +882,13 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
         return true;
     } else if (bundleType.compare(APP_SERVICE) == 0) {
         return true;
+    } else if (bundleType.compare(APP_PLUGIN) == 0) {
+        if (moduleType.compare(SHARED) != 0) {
+            LOGE("moduleType must be shared bundleType is appPlugin[bundleType=%s][moduleType=%s]",
+                bundleType.c_str(), moduleType.c_str());
+            return false;
+        }
+        return true;
     }
     return false;
 }
@@ -1170,9 +1178,10 @@ bool ModuleJson::CheckAtomicServiceInstallationFree()
     }
     if ((bundleType.compare(APP) == 0) ||
         (bundleType.compare(SHARED) == 0) ||
-        (bundleType.compare(APP_SERVICE) == 0)) {
+        (bundleType.compare(APP_SERVICE) == 0) ||
+        (bundleType.compare(APP_PLUGIN) == 0)) {
         if (installationFree) {
-            LOGE("installationFree must be false in module %s when bundleType is app/shared/appService",
+            LOGE("installationFree must be false in module %s when bundleType is app/shared/appService/appPlugin",
                 moduleName.c_str());
             return false;
         }
@@ -1182,7 +1191,7 @@ bool ModuleJson::CheckAtomicServiceInstallationFree()
             return false;
         }
     } else {
-        LOGE("bundleType is not app/shared/appService/atomicService");
+        LOGE("bundleType is not app/shared/appService/atomicService/appPlugin");
         return false;
     }
     return true;
