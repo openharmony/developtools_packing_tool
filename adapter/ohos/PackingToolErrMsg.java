@@ -86,6 +86,76 @@ public class PackingToolErrMsg {
             .build();
 
     /**
+     * MULTI_APP_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg MULTI_APP_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("004")
+            .setDescription("Parse and check args invalid in multiApp mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * RES_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg RES_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("005")
+            .setDescription("Parse and check args invalid in res mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * HQF_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg HQF_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("006")
+            .setDescription("Parse and check args invalid in hqf mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * APPQF_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg APPQF_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("007")
+            .setDescription("Parse and check args invalid in appqf mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PACKAGE_NORMALIZE_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg PACKAGE_NORMALIZE_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("008")
+            .setDescription("Parse and check args invalid in packageNormalize mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * VERSION_NORMALIZE_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg VERSION_NORMALIZE_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("009")
+            .setDescription("Parse and check args invalid in versionNormalize mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * HAR_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg HAR_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("010")
+            .setDescription("Parse and check args invalid in har mode.")
+            .setCause("%s")
+            .build();
+
+    /**
      * COMMAND_MODE_INVALID
      */
     public static final ErrorMsg COMMAND_MODE_INVALID = ErrorMsg.getPackingToolErrBuilder()
@@ -162,6 +232,26 @@ public class PackingToolErrMsg {
             .setTypeCode("11")
             .setErrCode("018")
             .setDescription("Invalid output path.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * HAP_ADDITION_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg HAP_ADDITION_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("019")
+            .setDescription("Parse and check args invalid in hapAddition mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * HANDLE_HAP_HSP_INPUT_FAILED
+     */
+    public static final ErrorMsg HANDLE_HAP_HSP_INPUT_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("020")
+            .setDescription("Handle hap and hsp input failed.")
             .setCause("%s")
             .build();
 
@@ -432,6 +522,258 @@ public class PackingToolErrMsg {
             .addSolution("Please check the related size check error message and reduce related module size.")
             .build();
 
+    /**
+     * COMPRESS_APP_MODE_FORMULTI_PROJECT_FAILED
+     */
+    public static final ErrorMsg COMPRESS_APP_MODE_FORMULTI_PROJECT_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("025")
+            .setDescription("Compress in app mode for multi project failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * HAP_ADDITION_FAILED
+     */
+    public static final ErrorMsg HAP_ADDITION_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("026")
+            .setDescription("Hap addition failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * COMPRESS_HAP_ADDITION_FAILED
+     */
+    public static final ErrorMsg COMPRESS_HAP_ADDITION_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("027")
+            .setDescription("Compress hap addition failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * DISPOSE_APP_FAILED
+     */
+    public static final ErrorMsg DISPOSE_APP_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("028")
+            .setDescription("Dispose app failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * NO_PACK_INFO
+     */
+    public static final ErrorMsg NO_PACK_INFO = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("029")
+            .setDescription("pack.info does not find in hap or app.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * COMPRESS_PACK_RES_MODE_FAILED
+     */
+    public static final ErrorMsg COMPRESS_PACK_RES_MODE_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("030")
+            .setDescription("Compress in res mode failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * INVALID_THIRD_LEVEL_DIRECTORY_NAME
+     */
+    public static final ErrorMsg INVALID_THIRD_LEVEL_DIRECTORY_NAME = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("031")
+            .setDescription("Invalid third level directory name.")
+            .setCause("%s")
+            .addSolution("Please check it with reference to this example: \n" +
+                    "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.")
+            .build();
+
+    /**
+     * IS_PICTURING_FAILED
+     */
+    public static final ErrorMsg IS_PICTURING_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("032")
+            .setDescription("Check whether picturingName meets specifications failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * GET_FILE_LIST_FAILED
+     */
+    public static final ErrorMsg GET_FILE_LIST_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("033")
+            .setDescription("Get file list failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * GET_MODULE_NAME_FROM_STRING_FAILED
+     */
+    public static final ErrorMsg GET_MODULE_NAME_FROM_STRING_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("034")
+            .setDescription("Get module name from line string failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * COMPRESS_APPQF_FAILED
+     */
+    public static final ErrorMsg COMPRESS_APPQF_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("035")
+            .setDescription("Compress in appqf mode failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * CHECK_HQF_INVALID
+     */
+    public static final ErrorMsg CHECK_HQF_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("036")
+            .setDescription("Input hqf is invalid.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * CHECK_APP_FIELDS_FAILED
+     */
+    public static final ErrorMsg CHECK_APP_FIELDS_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("037")
+            .setDescription("Check hqf has same app fields failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * CHECK_MODULE_INVALID
+     */
+    public static final ErrorMsg CHECK_MODULE_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("038")
+            .setDescription("Check hqf module is invalid.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * VERSION_NORMALIZE_FAILED
+     */
+    public static final ErrorMsg VERSION_NORMALIZE_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("039")
+            .setDescription("Version normalize failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * VERIFY_MODULE_VERSION_FAILED
+     */
+    public static final ErrorMsg VERIFY_MODULE_VERSION_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("040")
+            .setDescription("Verify module version failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * SHA256_CALCULATION_FAILED
+     */
+    public static final ErrorMsg SHA256_CALCULATION_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("041")
+            .setDescription("SHA-256 hash calculation failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * COMPRESS_FILE_DUPLICATE
+     */
+    public static final ErrorMsg COMPRESS_FILE_DUPLICATE = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("042")
+            .setDescription("Select haps find duplicated hap.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * COPY_FILE_FAILED
+     */
+    public static final ErrorMsg COPY_FILE_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("043")
+            .setDescription("Copy file failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * MAKE_DIR_FAILED
+     */
+    public static final ErrorMsg MAKE_DIR_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("044")
+            .setDescription("Make dir failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * COPY_FILE_SAFELY_FAILED
+     */
+    public static final ErrorMsg COPY_FILE_SAFELY_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("045")
+            .setDescription("Copy file safely failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PARSE_MODIFY_CONFIG_JSON_FAILED
+     */
+    public static final ErrorMsg PARSE_MODIFY_CONFIG_JSON_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("046")
+            .setDescription("Parse and modify config.json failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PARSE_AND_MODIFY_MODULEJSON_FAILED
+     */
+    public static final ErrorMsg PARSE_AND_MODIFY_MODULEJSON_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("047")
+            .setDescription("Parse and modify module.json failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * WRITE_JSON_FILE_EXPECTION
+     */
+    public static final ErrorMsg WRITE_JSON_FILE_EXPECTION = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("048")
+            .setDescription("Write json file exception.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PARSE_PACK_INFO_JSON_FAILED
+     */
+    public static final ErrorMsg PARSE_PACK_INFO_JSON_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("049")
+            .setDescription("Parse pack.info json file failed.")
+            .setCause("%s")
+            .build();
+
     // module json check error
     /**
      * PARSE_JSON_OBJECT_EXCEPTION
@@ -565,6 +907,97 @@ public class PackingToolErrMsg {
             .setTypeCode("13")
             .setErrCode("013")
             .setDescription("Failed to parse config.json for the FA module.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * MERGE_TWO_PACKINFO_FAILED
+     */
+    public static final ErrorMsg MERGE_TWO_PACKINFO_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("014")
+            .setDescription("Merge two pack.info into one pack.info file failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * VERIFY_PACKINFO_FAILED
+     */
+    public static final ErrorMsg VERIFY_PACKINFO_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("015")
+            .setDescription("Verify pack.info file failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * VERIFY_APP_PACKINFO_FAILED
+     */
+    public static final ErrorMsg VERIFY_APP_PACKINFO_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("016")
+            .setDescription("Verify app in pack.info failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * BUNDLE_TYPE_PACKINFO_INVALID
+     */
+    public static final ErrorMsg BUNDLE_TYPE_PACKINFO_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("017")
+            .setDescription("Verify bundleType in pack.info file failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PARSE_PACKINFO_FORMS_NAME_FAILED
+     */
+    public static final ErrorMsg PARSE_PACKINFO_FORMS_NAME_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("018")
+            .setDescription("Parse forms name in pack.info file failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * MERGE_PACKINFO_OBJ_FAILED
+     */
+    public static final ErrorMsg MERGE_PACKINFO_OBJ_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("019")
+            .setDescription("Failed to merge pack.info objects.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED
+     */
+    public static final ErrorMsg MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("020")
+            .setDescription("Failed to merge two pack.info files into one pack.info file by packagePair.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * MERGE_PACKINFO_OBJ_BY_PACKAGE_PAIR_FAILED
+     */
+    public static final ErrorMsg MERGE_PACKINFO_OBJ_BY_PACKAGE_PAIR_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("021")
+            .setDescription(
+                    "Failed to merge two pack.info json objects into one pack.info json object by packagePair.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PARSE_PACKINFO_FORMS_FAILED
+     */
+    public static final ErrorMsg PARSE_PACKINFO_FORMS_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("13")
+            .setErrCode("022")
+            .setDescription("Failed to parse pack.info forms.")
             .setCause("%s")
             .build();
 
@@ -905,5 +1338,97 @@ public class PackingToolErrMsg {
             .setCause("%s")
             .addSolution("Ensure the Entry type module distributionFilter file policy " +
                         "settings is 'exclude' or 'include'.")
+            .build();
+
+    // package normalize error
+    /**
+     * PACKAGE_NORMALIZE_FAILED
+     */
+    public static final ErrorMsg PACKAGE_NORMALIZE_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("17")
+            .setErrCode("001")
+            .setDescription("Normalize HSP bundleName and versionCode failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * UPDATE_MODULE_JSON_FAILED
+     */
+    public static final ErrorMsg UPDATE_MODULE_JSON_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("17")
+            .setErrCode("002")
+            .setDescription("Update module.json failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * UPDATE_PACKINFO_FAILED
+     */
+    public static final ErrorMsg UPDATE_PACKINFO_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("17")
+            .setErrCode("003")
+            .setDescription("Update pack.info failed.")
+            .setCause("%s")
+            .build();
+
+    // package util error
+    /**
+     * FAST_APP_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg FAST_APP_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("18")
+            .setErrCode("001")
+            .setDescription("Parse and check args invalid in fast app mode.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * CHECK_BUNDLE_TYPE_CONSISTENCY
+     */
+    public static final ErrorMsg CHECK_BUNDLE_TYPE_CONSISTENCY = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("18")
+            .setErrCode("002")
+            .setDescription("Check bundleType consistency failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PACK_INFO_INVALID
+     */
+    public static final ErrorMsg PACK_INFO_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("18")
+            .setErrCode("003")
+            .setDescription("Pack.info is invalid.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * ADD_ARCHIVE_ENTRY_FAILED
+     */
+    public static final ErrorMsg ADD_ARCHIVE_ENTRY_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("18")
+            .setErrCode("004")
+            .setDescription("Add archive entry failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * PACK_MULTI_THREAD_EXCEPTION
+     */
+    public static final ErrorMsg PACK_MULTI_THREAD_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("18")
+            .setErrCode("005")
+            .setDescription("Packing with multiple threads exception.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * REPACK_HSP_EXCEPTION
+     */
+    public static final ErrorMsg REPACK_HSP_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("18")
+            .setErrCode("006")
+            .setDescription("Repack hsp exception.")
+            .setCause("%s")
             .build();
 }
