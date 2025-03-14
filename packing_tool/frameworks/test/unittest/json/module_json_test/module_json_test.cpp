@@ -506,6 +506,17 @@ const std::string SHARED_TYPE_TEST_JSON_STRING = "{"
     "}"
 "}";
 
+const std::string APP_PLUGIN_TYPE_TEST_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"appPlugin\""
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"shared\","
+        "\"installationFree\": true"
+    "}"
+"}";
+
 const std::string NO_ASAN_ENABLED_TEST_JSON_STRING = "{"
     "\"app\": {"
         "\"tsanEnabled\": \"test\""
@@ -5414,6 +5425,38 @@ HWTEST_F(ModuleJsonTest, CheckStageBundleType_0700, Function | MediumTest | Leve
 }
 
 /*
+ * @tc.name: CheckStageBundleType_0800
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "";
+    std::string bundleType = "appPlugin";
+    bool installationFree = false;
+    EXPECT_FALSE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
+ * @tc.name: CheckStageBundleType_0900
+ * @tc.desc: test CheckStageBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckStageBundleType_0900, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::string moduleName = "";
+    std::string moduleType = "shared";
+    std::string bundleType = "appPlugin";
+    bool installationFree = false;
+    EXPECT_TRUE(moduleJson.CheckStageBundleType(moduleName, moduleType, bundleType, installationFree));
+}
+
+/*
  * @tc.name: GetAtomicServicePreloads_0200
  * @tc.desc: test GetAtomicServicePreloads
  * @tc.type: FUNC
@@ -5830,6 +5873,19 @@ HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0700, Function | Med
 {
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(SHARED_TYPE_TEST_JSON_STRING));
+    EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
+}
+
+/*
+ * @tc.name: CheckAtomicServiceInstallationFree_0800
+ * @tc.desc: test CheckAtomicServiceInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, CheckAtomicServiceInstallationFree_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_PLUGIN_TYPE_TEST_JSON_STRING));
     EXPECT_FALSE(moduleJson.CheckAtomicServiceInstallationFree());
 }
 
