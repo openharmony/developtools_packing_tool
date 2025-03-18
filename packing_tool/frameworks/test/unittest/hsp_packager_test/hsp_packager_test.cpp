@@ -21,6 +21,7 @@
 #define private public
 #define protected public
 #include "hsp_packager.h"
+#include "zip_wrapper.h"
 #undef private
 #undef protected
 
@@ -31,10 +32,13 @@ namespace OHOS {
 namespace {
 const std::string OUT_PATH = "/data/test/library-default-unsigned.hsp";
 const std::string INDEX_PATH = "/data/test/resource/packingtool/test_file/resources.index";
+const std::string PACK_JSON_PATH = "/data/test/resource/packingtool/test_file/pack.json";
 const std::string PACK_INFO_PATH = "/data/test/resource/packingtool/test_file/pack.info";
 const std::string ETS_PATH = "/data/test/resource/packingtool/test_file/ets";
+const std::string FAIL_PATH = "/data/test/resource/packingtool/test_file/fail";
 const std::string RESOURCES_PATH = "/data/test/resource/packingtool/test_file/resources";
 const std::string JSON_PATH = "/data/test/resource/packingtool/test_file/module.json";
+const std::string JAR_FILE_PATH = "/data/test/resource/packingtool/test_file/pack.jar";
 const std::string TEST_PATH = "/data/test/resources.index";
 const std::string MODULE_JSON_TEST_STRING = "{"
     "\"app\": {"
@@ -84,6 +88,42 @@ void HspPackagerTest::TearDown()
     system("rm -rf /data/test/resource");
 }
 
+void CopyFile(const std::string& srcFile, const std::string& dstFile)
+{
+    std::string cmd = "cp -f " + srcFile + " " + dstFile;
+    system(cmd.c_str());
+}
+
+void TouchFile(const std::string& file)
+{
+    std::string cmd = "touch " + file;
+    system(cmd.c_str());
+}
+
+void WriteFile(const std::string& file, const std::string& fileContent)
+{
+    std::string cmd = "echo \"" + fileContent + "\" >> " + file;
+    system(cmd.c_str());
+}
+
+void DeleteFile(const std::string& file)
+{
+    std::string cmd = "rm -f " + file;
+    system(cmd.c_str());
+}
+
+void CreateDir(const std::string& dir)
+{
+    std::string cmd = "mkdir " + dir;
+    system(cmd.c_str());
+}
+
+void DeleteDir(const std::string& dir)
+{
+    std::string cmd = "rm -rf " + dir;
+    system(cmd.c_str());
+}
+
 /*
  * @tc.name: hspPackager_0100
  * @tc.desc: hspPackager.
@@ -104,20 +144,20 @@ HWTEST_F(HspPackagerTest, hspPackager_0100, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
-    system("touch /data/test/resource/packingtool/test_file/resources.index");
-    system("mkdir /data/test/resource/packingtool/test_file/ets");
-    system("mv /data/test/resource/packingtool/test_file/pack.json "
-        "/data/test/resource/packingtool/test_file/pack.info");
+
+    TouchFile(INDEX_PATH);
+    CreateDir(ETS_PATH);
+    CopyFile(PACK_JSON_PATH, PACK_INFO_PATH);
+
     EXPECT_EQ(hspPackager.InitAllowedParam(), 0);
     EXPECT_EQ(hspPackager.PreProcess(), 0);
     EXPECT_EQ(hspPackager.Process(), 0);
     EXPECT_EQ(hspPackager.PostProcess(), 0);
-    system("rm -rf /data/test/resource/packingtool/test_file/ets");
-    system("rm -f /data/test/resource/packingtool/test_file/resources.index");
 
-    std::string cmd = {"rm -f "};
-    cmd += OUT_PATH;
-    system(cmd.c_str());
+    DeleteDir(ETS_PATH);
+    DeleteFile(INDEX_PATH);
+    DeleteFile(PACK_INFO_PATH);
+    DeleteFile(OUT_PATH);
 }
 
 /*
@@ -539,5 +579,341 @@ HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_1500, Function | MediumTe
     EXPECT_FALSE(hspPackager5.IsVerifyValidInHspCommonMode());
     system("rm -f /data/test/resource/packingtool/test_file/module.json");
     system("rm -f /data/test/CAPABILITY.profile");
+}
+
+/*
+ * @tc.name: PreProcess_0100
+ * @tc.desc: PreProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, PreProcess_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "fail"}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    EXPECT_EQ(hspPackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0200
+ * @tc.desc: PreProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, PreProcess_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(OUT_PATH);
+
+    EXPECT_EQ(hspPackager.PreProcess(), 1);
+
+    DeleteFile(OUT_PATH);
+}
+
+/*
+ * @tc.name: Process_0100
+ * @tc.desc: Process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, Process_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    hspPackager.jsonPath_ = "";
+
+    TouchFile(OUT_PATH);
+
+    EXPECT_EQ(hspPackager.Process(), 1);
+
+    DeleteFile(OUT_PATH);
+}
+
+/*
+ * @tc.name: PostProcess_0100
+ * @tc.desc: PostProcess.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, PostProcess_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    hspPackager.jsonPath_ = "";
+    hspPackager.generateBuildHash_ = true;
+
+    TouchFile(OUT_PATH);
+
+    EXPECT_EQ(hspPackager.PostProcess(), 1);
+
+    DeleteFile(OUT_PATH);
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspCommonMode_0100
+ * @tc.desc: IsVerifyValidInHspCommonMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, PACK_JSON_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspCommonMode());
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspCommonMode_0200
+ * @tc.desc: IsVerifyValidInHspCommonMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, JAR_FILE_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspCommonMode());
+
+    DeleteFile(JSON_PATH);
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspCommonMode_0300
+ * @tc.desc: IsVerifyValidInHspCommonMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, JAR_FILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_LIB_PATH, FAIL_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(JAR_FILE_PATH);
+    WriteFile(JAR_FILE_PATH, "a,b,c");
+
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspCommonMode());
+
+    DeleteFile(JAR_FILE_PATH);
+    DeleteFile(JSON_PATH);
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspCommonMode_0400
+ * @tc.desc: IsVerifyValidInHspCommonMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, JAR_FILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_DIR_LIST, FAIL_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(JAR_FILE_PATH);
+    WriteFile(JAR_FILE_PATH, "a,b,c");
+
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspCommonMode());
+
+    DeleteFile(JAR_FILE_PATH);
+    DeleteFile(JSON_PATH);
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspCommonMode_0500
+ * @tc.desc: IsVerifyValidInHspCommonMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, JAR_FILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PROFILE_PATH, FAIL_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(JAR_FILE_PATH);
+    WriteFile(JAR_FILE_PATH, "a,b,c");
+
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspCommonMode());
+
+    DeleteFile(JAR_FILE_PATH);
+    DeleteFile(JSON_PATH);
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspCommonMode_0600
+ * @tc.desc: IsVerifyValidInHspCommonMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JSON_PATH, JSON_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_JAR_PATH, JAR_FILE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PKG_CONTEXT_PATH, FAIL_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(JAR_FILE_PATH);
+    WriteFile(JAR_FILE_PATH, "a,b,c");
+
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspCommonMode());
+
+    DeleteFile(JAR_FILE_PATH);
+    DeleteFile(JSON_PATH);
+}
+
+/*
+ * @tc.name: IsVerifyValidInHspMode_0100
+ * @tc.desc: IsVerifyValidInHspMode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsVerifyValidInHspMode_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_ETS_PATH, ETS_PATH}
+    };
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hspPackager.IsVerifyValidInHspMode());
+}
+
+/*
+ * @tc.name: CompressHspModePartThird_0100
+ * @tc.desc: CompressHspModePartThird.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressHspModePartThird_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_RES_PATH, INDEX_PATH}
+    };
+
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(OUT_PATH);
+    TouchFile(INDEX_PATH);
+
+    hspPackager.moduleName_ = "library";
+    hspPackager.deviceTypes_.push_back("fitnessWatch");
+
+    EXPECT_FALSE(hspPackager.CompressHspModePartThird(JSON_PATH));
+
+    DeleteFile(OUT_PATH);
+    DeleteFile(INDEX_PATH);
+}
+
+/*
+ * @tc.name: CompressHspModePartThird_0200
+ * @tc.desc: CompressHspModePartThird.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressHspModePartThird_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_JS_PATH, INDEX_PATH}
+    };
+
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(OUT_PATH);
+    TouchFile(INDEX_PATH);
+
+    EXPECT_FALSE(hspPackager.CompressHspModePartThird(JSON_PATH));
+
+    DeleteFile(INDEX_PATH);
+    DeleteFile(JSON_PATH);
+    DeleteFile(OUT_PATH);
+}
+
+/*
+ * @tc.name: CompressHspModePartThird_0300
+ * @tc.desc: CompressHspModePartThird.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressHspModePartThird_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_ETS_PATH, INDEX_PATH}
+    };
+
+
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    TouchFile(JSON_PATH);
+    TouchFile(OUT_PATH);
+    TouchFile(INDEX_PATH);
+
+    EXPECT_FALSE(hspPackager.CompressHspModePartThird(JSON_PATH));
+
+    DeleteFile(INDEX_PATH);
+    DeleteFile(JSON_PATH);
+    DeleteFile(OUT_PATH);
 }
 } // namespace OHOS
