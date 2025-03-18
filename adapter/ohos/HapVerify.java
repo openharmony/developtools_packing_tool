@@ -237,8 +237,8 @@ class HapVerify {
             }
             if (!hapVerifyInfo.getDependencyItemList().isEmpty()) {
                 String cause = "The shared App cannot depend on other modules.";
-                String solution =
-                        "Remove dependencies settings in 'module.json5' and ensure module does not contain dependencies.";
+                String solution = "Remove dependencies settings in 'module.json5' and ensure module does " +
+                        "not contain dependencies.";
                 LOG.error(PackingToolErrMsg.CHECK_SHARED_APP_INVALID.toString(cause, solution));
                 return false;
             }
@@ -347,18 +347,18 @@ class HapVerify {
             if (hap.getVersion().minCompatibleVersionCode != hapInfo.getVersion().minCompatibleVersionCode ||
                 hap.getApiVersion().getTargetApiVersion() != hapInfo.getApiVersion().getTargetApiVersion()) {
                 String errMsg = "Hap minCompatibleVersionCode or targetApiVersion different.";
-                String solution =
-                        "Ensure that the values of 'minCompatibleVersionCode' and 'targetApiVersion' in the module.json file of each HAP module are the same.";
+                String solution = "Ensure that the values of 'minCompatibleVersionCode' and 'targetApiVersion' " +
+                        "in the module.json file of each HAP module are the same.";
                 LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(errMsg, solution));
                 return false;
             }
         }
         if (hap.getVersion().minCompatibleVersionCode < minCompatibleVersionCode ||
             hap.getApiVersion().getTargetApiVersion() < targetApiVersion) {
-            String cause = "The values of minCompatibleVersionCode or targetApiVersion in the module.json file of the HAP " +
-                    "module are smaller than those of the HSP module.";
-            String solution = "Ensure that the values of aminCompatibleVersionCode and targetApiVersion in the module.json file " +
-                    "of the HAP module are greater than or equal to those of the HSP module.";
+            String cause = "The values of minCompatibleVersionCode or targetApiVersion in the module.json file " +
+                    "of the HAP module are smaller than those of the HSP module.";
+            String solution = "Ensure that the values of aminCompatibleVersionCode and targetApiVersion in the " +
+                    "module.json file of the HAP module are greater than or equal to those of the HSP module.";
             LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(cause, solution));
             return false;
         }
@@ -465,16 +465,17 @@ class HapVerify {
                     String cause = "Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
                             hapVerifyInfos.get(j).getModuleName() + ") have the same moduleName, " +
                             "please check deviceType or distroFilter of the module.\n" + "Module: " +
-                            hapVerifyInfos.get(i).getModuleName() + " has deviceType " + hapVerifyInfos.get(i).getDeviceType() +
-                            ".\n" + "Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
+                            hapVerifyInfos.get(i).getModuleName() + " has deviceType " +
+                            hapVerifyInfos.get(i).getDeviceType() + ".\n" + "Another Module: " +
+                            hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
                             hapVerifyInfos.get(j).getDeviceType() + ".";
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
                         cause += "\n" + "Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is " +
                                 hapVerifyInfos.get(i).getDistroFilter().dump() + ".";
                     }
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        cause += "\n" +"Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
-                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".";
+                        cause += "\n" + "Another Module: " + hapVerifyInfos.get(j).getModuleName() +
+                                " DistroFilter is " + hapVerifyInfos.get(j).getDistroFilter().dump() + ".";
                     }
                     String solution = "Make sure the module name is valid and unique.\n" +
                             "Reference: " + REFERENCE_LINK + ".";
@@ -504,16 +505,17 @@ class HapVerify {
                     String cause = "Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
                         hapVerifyInfos.get(j).getModuleName() + ") have the same packageName, " +
                         "please check deviceType or distroFilter of the module.\n" + "Module: " +
-                        hapVerifyInfos.get(i).getModuleName() + " has deviceType " + hapVerifyInfos.get(i).getDeviceType() +
-                        ".\n" + "Another Module: " + hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
+                        hapVerifyInfos.get(i).getModuleName() + " has deviceType " +
+                        hapVerifyInfos.get(i).getDeviceType() + ".\n" + "Another Module: " +
+                        hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
                         hapVerifyInfos.get(j).getDeviceType() + ".";
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
                         cause += "\n" + "Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is " +
                                 hapVerifyInfos.get(i).getDistroFilter().dump() + ".";
                     }
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
-                        cause += "\n" + "Another Module: " + hapVerifyInfos.get(j).getModuleName() + " DistroFilter is " +
-                                hapVerifyInfos.get(j).getDistroFilter().dump() + ".";
+                        cause += "\n" + "Another Module: " + hapVerifyInfos.get(j).getModuleName() +
+                                " DistroFilter is " + hapVerifyInfos.get(j).getDistroFilter().dump() + ".";
                     }
                     String solution = "Make sure package name is valid and unique.\n" +
                             "Reference: " + REFERENCE_LINK + ".";
@@ -639,7 +641,8 @@ class HapVerify {
             for (String uri : info.getProxyDataUris()) {
                 if (uriSet.contains(uri)) {
                     String moduleName = info.getModuleName();
-                    String cause = "The uri(" + uri + ") in proxyData settings of Module(" + moduleName + ") is duplicated.";
+                    String cause = "The uri(" + uri + ") in proxyData settings of Module(" + moduleName +
+                            ") is duplicated.";
                     String solution = "Ensure that the uri in proxyData is unique across different modules.";
                     LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(cause, solution));
                     return false;
@@ -695,9 +698,8 @@ class HapVerify {
                                 " DistroFilter is " + entryHapVerifyInfos.get(j).getDistroFilter().dump() + ".";
                     }
 
-                    String solution = 
-                            "Make sure the entry module is valid and unique, and the HAP uniqueness check logic passes.\n" +
-                            "Reference: " + REFERENCE_LINK + ".";
+                    String solution = "Make sure the entry module is valid and unique, and the HAP uniqueness " +
+                            "check logic passes.\nReference: " + REFERENCE_LINK + ".";
                     LOG.error(PackingToolErrMsg.CHECK_ENTRY_INVALID.toString(cause, solution));
                     return false;
                 }
@@ -730,7 +732,7 @@ class HapVerify {
         }
         // check distroFilter
         if (checkDistroFilterDisjoint(hapVerifyInfoLeft.getDistroFilter(), hapVerifyInfoRight.getDistroFilter(),
-                                      hapVerifyInfoLeft.getModuleName(), hapVerifyInfoRight.getModuleName())) {
+                    hapVerifyInfoLeft.getModuleName(), hapVerifyInfoRight.getModuleName())) {
             return true;
         }
 
@@ -742,42 +744,48 @@ class HapVerify {
      *
      * @param distroFilterLeft is one distroFilter
      * @param distroFilterRight is another distroFilter will be checked
-     * @throws BundleException Throws this exception if the json is not standard.
+     * @param moduleNameLeft is the moduleName associated with distroFilterLeft
+     * @param moduleNameRight is the moduleName associated with distroFilterRight
      * @return true if two distroFilter is disjoint
+     * @throws BundleException Throws this exception if the json is not standard.
      */
     private static boolean checkDistroFilterDisjoint(DistroFilter distroFilterLeft, DistroFilter distroFilterRight,
-                                                    String moduleNameLeft, String moduleNameRight)
-            throws BundleException {
+                String moduleNameLeft, String moduleNameRight) throws BundleException {
         if (distroFilterLeft == null || distroFilterRight == null) {
             return false;
         }
         if (distroFilterLeft.apiVersion != null && distroFilterRight.apiVersion != null) {
             if (checkPolicyValueDisjoint(distroFilterLeft.apiVersion.policy, distroFilterLeft.apiVersion.value,
-                    distroFilterRight.apiVersion.policy, distroFilterRight.apiVersion.value, moduleNameLeft, moduleNameRight)) {
+                    distroFilterRight.apiVersion.policy, distroFilterRight.apiVersion.value,
+                    moduleNameLeft, moduleNameRight)) {
                 return true;
             }
         }
         if (distroFilterLeft.screenShape != null && distroFilterRight.screenShape != null) {
             if (checkPolicyValueDisjoint(distroFilterLeft.screenShape.policy, distroFilterLeft.screenShape.value,
-                    distroFilterRight.screenShape.policy, distroFilterRight.screenShape.value, moduleNameLeft, moduleNameRight)) {
+                    distroFilterRight.screenShape.policy, distroFilterRight.screenShape.value,
+                    moduleNameLeft, moduleNameRight)) {
                 return true;
             }
         }
         if (distroFilterLeft.screenDensity != null && distroFilterRight.screenDensity != null) {
             if (checkPolicyValueDisjoint(distroFilterLeft.screenDensity.policy, distroFilterLeft.screenDensity.value,
-                    distroFilterRight.screenDensity.policy, distroFilterRight.screenDensity.value, moduleNameLeft, moduleNameRight)) {
+                    distroFilterRight.screenDensity.policy, distroFilterRight.screenDensity.value,
+                    moduleNameLeft, moduleNameRight)) {
                 return true;
             }
         }
         if (distroFilterLeft.screenWindow != null && distroFilterRight.screenWindow != null) {
             if (checkPolicyValueDisjoint(distroFilterLeft.screenWindow.policy, distroFilterLeft.screenWindow.value,
-                    distroFilterRight.screenWindow.policy, distroFilterRight.screenWindow.value, moduleNameLeft, moduleNameRight)) {
+                    distroFilterRight.screenWindow.policy, distroFilterRight.screenWindow.value,
+                    moduleNameLeft, moduleNameRight)) {
                 return true;
             }
         }
         if (distroFilterLeft.countryCode != null && distroFilterRight.countryCode != null) {
             if (checkPolicyValueDisjoint(distroFilterLeft.countryCode.policy, distroFilterLeft.countryCode.value,
-                    distroFilterRight.countryCode.policy, distroFilterRight.countryCode.value, moduleNameLeft, moduleNameRight)) {
+                    distroFilterRight.countryCode.policy, distroFilterRight.countryCode.value,
+                    moduleNameLeft, moduleNameRight)) {
                 return true;
             }
         }
@@ -795,12 +803,11 @@ class HapVerify {
      * @throws BundleException Throws this exception if the json is not standard.
      */
     private static boolean checkPolicyValueDisjoint(String policyLeft, List<String> valueLeft, String policyRight,
-                                                    List<String> valueRight, String moduleNameLeft, String ModuleNameRight)
-                                                    throws BundleException {
+                List<String> valueRight, String moduleNameLeft, String moduleNameRight) throws BundleException {
         if (valueLeft == null || valueRight == null) {
             String errMsg = "The variable 'value' in the distributionFilter setting is empty.";
             String solution = "Ensure that all distributionFilter file and filter settings has 'value' setting.";
-            solution += "Module " + moduleNameLeft + " and " + ModuleNameRight +  " can be checked in priority.";
+            solution += "Module " + moduleNameLeft + " and " + moduleNameRight + " can be checked in priority.";
             LOG.error(PackingToolErrMsg.CHECK_POLICY_DISJOINT_ERROR.toString(errMsg, solution));
             throw new BundleException("Check policy value disjoint value should not empty.");
         }
@@ -820,8 +827,9 @@ class HapVerify {
             return false;
         } else {
             String errMsg = "Check distributionFilter 'policy' setting is invalid.";
-            String solution = "Ensure all distributionFilter file and filter settings 'policy' value must 'include' or 'exclude'.\n";
-            solution += "Module " + moduleNameLeft + " and " + ModuleNameRight +  " can be checked in priority.";
+            String solution = "Ensure all distributionFilter file and filter settings 'policy' value must " +
+                    "'include' or 'exclude'.\n";
+            solution += "Module " + moduleNameLeft + " and " + moduleNameRight + " can be checked in priority.";
             LOG.error(PackingToolErrMsg.CHECK_POLICY_DISJOINT_ERROR.toString(errMsg, solution));
             throw new BundleException("Check policy value disjoint input policy is invalid.");
         }
@@ -959,8 +967,8 @@ class HapVerify {
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
                 LOG.error(PackingToolErrMsg.CHECK_FEATURE_DISTRO_FILTER_INVALID.toString(
-                    "Entry module(" + hapVerifyInfo.getModuleName() + ") apiVersion policy '" + hapVerifyInfo.getDistroFilter().apiVersion.policy +
-                    "' is invalid."));
+                    "Entry module(" + hapVerifyInfo.getModuleName() + ") apiVersion policy '" +
+                    hapVerifyInfo.getDistroFilter().apiVersion.policy + "' is invalid."));
                 throw new BundleException("Check apiVersion covered input policy is invalid.");
             }
         }
@@ -1010,7 +1018,8 @@ class HapVerify {
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
                 LOG.error(PackingToolErrMsg.CHECK_FEATURE_DISTRO_FILTER_INVALID.toString(
-                    "Entry module(" + hapVerifyInfo.getModuleName() + ") screenShape policy '" + hapVerifyInfo.getDistroFilter().screenShape.policy + "' is invalid."));
+                    "Entry module(" + hapVerifyInfo.getModuleName() + ") screenShape policy '" +
+                    hapVerifyInfo.getDistroFilter().screenShape.policy + "' is invalid."));
                 throw new BundleException("Check screenShape covered input policy is invalid.");
             }
         }
@@ -1032,6 +1041,7 @@ class HapVerify {
      * @param screenWindow is the screenWindow of feature hap
      * @param entryHaps is the haps that feature matched
      * @return screenWindow is valid
+     * @throws BundleException when input policy is invalid
      */
     private static boolean checkScreenWindowCovered(ScreenWindow screenWindow, List<HapVerifyInfo> entryHaps)
             throws BundleException {
@@ -1059,7 +1069,8 @@ class HapVerify {
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
                 LOG.error(PackingToolErrMsg.CHECK_FEATURE_DISTRO_FILTER_INVALID.toString(
-                    "Entry module(" + hapVerifyInfo.getModuleName() + ") screenWindow policy '" + hapVerifyInfo.getDistroFilter().screenWindow.policy + "' is invalid."));
+                    "Entry module(" + hapVerifyInfo.getModuleName() + ") screenWindow policy '" +
+                    hapVerifyInfo.getDistroFilter().screenWindow.policy + "' is invalid."));
                 throw new BundleException("Check screenWindow covered input policy is invalid.");
             }
         }
@@ -1081,6 +1092,7 @@ class HapVerify {
      * @param screenDensity is the screenDensity of feature hap
      * @param entryHaps is the haps that feature matched
      * @return screenDensity is valid
+     * @throws BundleException when input policy is invalid
      */
     private static boolean checkScreenDensityCovered(ScreenDensity screenDensity, List<HapVerifyInfo> entryHaps)
             throws BundleException {
@@ -1108,7 +1120,8 @@ class HapVerify {
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
                 LOG.error(PackingToolErrMsg.CHECK_FEATURE_DISTRO_FILTER_INVALID.toString(
-                    "Entry module(" + hapVerifyInfo.getModuleName() + ") screenDensity policy '" + hapVerifyInfo.getDistroFilter().screenDensity.policy + "' is invalid."));
+                    "Entry module(" + hapVerifyInfo.getModuleName() + ") screenDensity policy '" +
+                    hapVerifyInfo.getDistroFilter().screenDensity.policy + "' is invalid."));
                 throw new BundleException("Check screenDensity covered input policy is invalid.");
             }
         }
@@ -1130,6 +1143,7 @@ class HapVerify {
      * @param countryCode is the countryCode of feature hap
      * @param entryHaps is the haps that feature matched
      * @return countryCode is valid
+     * @throws BundleException when input policy is invalid
      */
     private static boolean checkCountryCodeCovered(CountryCode countryCode, List<HapVerifyInfo> entryHaps)
             throws BundleException {
@@ -1157,7 +1171,8 @@ class HapVerify {
                         flatMap(Collection::stream).distinct().collect(Collectors.toList());
             } else {
                 LOG.error(PackingToolErrMsg.CHECK_FEATURE_DISTRO_FILTER_INVALID.toString(
-                    "Entry module(" + hapVerifyInfo.getModuleName() + ") countryCode policy '" + hapVerifyInfo.getDistroFilter().countryCode.policy + "' is invalid."));
+                    "Entry module(" + hapVerifyInfo.getModuleName() + ") countryCode policy '" +
+                    hapVerifyInfo.getDistroFilter().countryCode.policy + "' is invalid."));
                 throw new BundleException("Check countryCode covered input policy is invalid.");
             }
         }
@@ -1267,7 +1282,7 @@ class HapVerify {
             if (isInstallationFree != hapVerifyInfo.isInstallationFree()) {
                 String cause = "The installationFree value is different in input hap.";
                 String solution = "Ensure that the installationFree field is same for all hap.";
-                LOG.error(PackingToolErrMsg.CHECK_DEPENDENCY_INVALID.toString(cause ,solution));
+                LOG.error(PackingToolErrMsg.CHECK_DEPENDENCY_INVALID.toString(cause, solution));
                 return false;
             }
         }
@@ -1311,7 +1326,8 @@ class HapVerify {
             for (HapVerifyInfo item : layerDependencyList) {
                 if (FEATURE.equals(item.getModuleType()) || ENTRY.equals(item.getModuleType())) {
                     String cause =
-                            "HAP or HSP cannot depend on the feature or entry module. The dependeny module(" + item.getModuleName() + ") type is feature or entry.";
+                            "HAP or HSP cannot depend on the feature or entry module. The dependeny module(" +
+                            item.getModuleName() + ") type is feature or entry.";
                     String solution = "Remove module dependencies on module (" + item.getModuleName() +
                             ") to ensure the dependency list is valid.";
                     LOG.error(PackingToolErrMsg.DEPENDENCY_LIST_INVALID.toString(cause, solution));
@@ -1449,7 +1465,8 @@ class HapVerify {
             }
             if (!hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize >= notEntryLimit * FILE_LENGTH_1M)) {
                 String errMsg = "Module " + hapVerifyInfo.getModuleName() + " and it's dependencies size sum is " +
-                        getCeilFileSize(fileSize, notEntryLimit) + "MB, which is overlarge than " + notEntryLimit + "MB.";
+                        getCeilFileSize(fileSize, notEntryLimit) + "MB, which is overlarge than " + notEntryLimit +
+                        "MB.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_MODULE_SIZE.toString(errMsg));
                 return false;
             }
@@ -1510,7 +1527,7 @@ class HapVerify {
             List<HapVerifyInfo> hapVerifyInfos = deviceInfoMap.get(device);
             if (!checkAtomicServicePreloadsIsValid(hapVerifyInfos)) {
                 LOG.error(PackingToolErrMsg.CHECK_ATOMICSERVICE_INVALID.toString(
-                        "Check whether atomicService preloads are valid failed on device "+ device + "."));
+                        "Check whether atomicService preloads are valid failed on device " + device + "."));
                 return false;
             }
         }
@@ -1553,19 +1570,21 @@ class HapVerify {
             for (PreloadItem preloadItem : preloadItems) {
                 String moduleName = preloadItem.getModuleName();
                 if (preloadModuleName.contains(moduleName)) {
-                    LOG.error(PackingToolErrMsg.ATOMICSERVICE_PRELOADS_INVALID.toString("Preloads a duplicate module, module("
-                        + hapVerifyInfo.getModuleName() + ") cannot preloads module (" + moduleName + ")."));
+                    LOG.error(PackingToolErrMsg.ATOMICSERVICE_PRELOADS_INVALID.toString(
+                            "Preloads a duplicate module, module(" + hapVerifyInfo.getModuleName() +
+                            ") cannot preloads module (" + moduleName + ")."));
                     return false;
                 }
                 preloadModuleName.add(moduleName);
                 if (!moduleNames.contains(moduleName)) {
-                    LOG.error(PackingToolErrMsg.ATOMICSERVICE_PRELOADS_INVALID.toString("Preloads a not exist module, module("
-                        + hapVerifyInfo.getModuleName() + ") cannot preloads module(" + moduleName + ")."));
+                    LOG.error(PackingToolErrMsg.ATOMICSERVICE_PRELOADS_INVALID.toString(
+                            "Preloads a not exist module, module(" + hapVerifyInfo.getModuleName() +
+                            ") cannot preloads module(" + moduleName + ")."));
                     return false;
                 }
                 if (moduleName.equals(hapVerifyInfo.getModuleName())) {
-                    LOG.error(PackingToolErrMsg.ATOMICSERVICE_PRELOADS_INVALID.toString("Cannot preload self, module "
-                        + hapVerifyInfo.getModuleName() + " cannot preloads self."));
+                    LOG.error(PackingToolErrMsg.ATOMICSERVICE_PRELOADS_INVALID.toString("Cannot preload self, module " +
+                            hapVerifyInfo.getModuleName() + " cannot preloads self."));
                     return false;
                 }
             }

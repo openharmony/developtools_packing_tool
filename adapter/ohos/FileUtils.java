@@ -344,8 +344,8 @@ class FileUtils {
      */
     public static void copyFile(File sourceFile, File destFile) throws IOException, BundleException {
         if (sourceFile == null || destFile == null) {
-            String errMsg = "CompressorFileUtil::copyFile input file is null.";
-            LOG.error(errMsg);
+            String errMsg = "Source file or destination file is null.";
+            LOG.error(PackingToolErrMsg.COPY_FILE_FAILED.toString(errMsg));
             throw new BundleException(errMsg);
         }
         InputStream inputStream = null;
@@ -372,8 +372,8 @@ class FileUtils {
      */
     public static void makeDir(File dirFile) throws IOException, BundleException {
         if (dirFile == null) {
-            String errMsg = "CompressorFileUtil::makeDir input file is null.";
-            LOG.error(errMsg);
+            String errMsg = "Input file is null.";
+            LOG.error(PackingToolErrMsg.MAKE_DIR_FAILED.toString(errMsg));
             throw new BundleException(errMsg);
         }
         dirFile.mkdirs();
@@ -414,7 +414,8 @@ class FileUtils {
             }
             jsonStr = new StringBuilder(jsonStr.toString().replaceAll("\r|\n|\t", ""));
         } catch (IOException exception) {
-            LOG.error("Compressor::checkModuleTypeInHaps io exception: " + exception.getMessage());
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
+                "Get Json in zips exist IOException: " + exception.getMessage()));
             throw new BundleException("Compressor::checkModuleTypeInHaps failed.");
         } finally {
             Utility.closeStream(zipFile);
@@ -447,7 +448,8 @@ class FileUtils {
                 }
             }
         } catch (IOException e) {
-            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Get profile json exist IOExpection: " + e.getMessage()));
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
+                "Get profile json exist IOException: " + e.getMessage()));
             throw new BundleException("Get profile json failed.");
         }
         return resourceMap;

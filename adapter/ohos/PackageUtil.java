@@ -356,7 +356,8 @@ public class PackageUtil {
                     try {
                         return hspFile.getInputStream(zipEntry);
                     } catch (IOException e) {
-                        LOG.error("addArchiveEntry err: " + e.getMessage());
+                        LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Repack hsp exist IOException: " +
+                                e.getMessage()));
                         return null;
                     }
                 };
@@ -364,8 +365,9 @@ public class PackageUtil {
             }
             zipCreator.writeTo(zipOut);
         } catch (InterruptedException | ExecutionException e) {
-            String errMsg = "repackHsp err: " + e.getMessage();
-            LOG.error(errMsg);
+            String errMsg = "Repack hsp exist Exception (InterruptedException | ExecutionException): " +
+                    e.getMessage();
+            LOG.error(PackingToolErrMsg.REPACK_HSP_EXCEPTION.toString(errMsg));
             throw new BundleException(errMsg);
         }
         return outHsp;
@@ -435,8 +437,8 @@ public class PackageUtil {
             // write to zip
             zipCreator.writeTo(zipOut);
         } catch (InterruptedException | ExecutionException e) {
-            String errMsg = "packDir err: " + e.getMessage();
-            LOG.error(errMsg);
+            String errMsg = "Pack dir exist Exception (InterruptedException | ExecutionException): " + e.getMessage();
+            LOG.error(PackingToolErrMsg.PACK_MULTI_THREAD_EXCEPTION.toString(errMsg));
             throw new BundleException(errMsg);
         }
         return outHap;
@@ -509,8 +511,8 @@ public class PackageUtil {
                 addArchiveEntry(file, baseDir, zipCreator, compress);
             }
         } catch (IOException e) {
-            String errMsg = "pathToZip err: " + e.getMessage();
-            LOG.error(errMsg);
+            String errMsg = "Path to zip entry exist IOException: " + e.getMessage();
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(errMsg));
             throw new BundleException(errMsg);
         }
     }
@@ -521,7 +523,8 @@ public class PackageUtil {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files == null) {
-                LOG.error("listFiles null: " + file.getName());
+                LOG.error(PackingToolErrMsg.ADD_ARCHIVE_ENTRY_FAILED.toString("listFiles null, directory name is " +
+                        file.getName() + "."));
                 return;
             }
             if (files.length == 0) {
@@ -549,7 +552,8 @@ public class PackageUtil {
                 try {
                     return getInputStream(entryName, file);
                 } catch (IOException e) {
-                    LOG.error("addArchiveEntry err: " + e.getMessage());
+                    LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Add ArchiveEntry exist IOException: "
+                            + e.getMessage()));
                     return null;
                 }
             };
@@ -646,8 +650,8 @@ public class PackageUtil {
                 addArchiveEntry(file, baseDir, zipOut, compress);
             }
         } catch (IOException e) {
-            String errMsg = "pathToZip err: " + e.getMessage();
-            LOG.error(errMsg);
+            String errMsg = "Path to zip entry exist IOException: " + e.getMessage();
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(errMsg));
             throw new BundleException(errMsg);
         }
     }
@@ -657,7 +661,8 @@ public class PackageUtil {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files == null) {
-                LOG.error("listFiles null: " + file.getName());
+                LOG.error(PackingToolErrMsg.ADD_ARCHIVE_ENTRY_FAILED.toString("listFiles null, directory name is " +
+                        file.getName() + "."));
                 return;
             }
             if (files.length == 0) {
@@ -705,13 +710,13 @@ public class PackageUtil {
         }
         for (String hapPath : hapPathList) {
             if (!bundleType.equals(getBundleTypeFromPath(Paths.get(hapPath)))) {
-                LOG.error("bundleType is not same");
+                LOG.error(PackingToolErrMsg.CHECK_BUNDLE_TYPE_CONSISTENCY.toString("Hap bundleType is not same."));
                 return false;
             }
         }
         for (String hspPath : hspPathList) {
             if (!bundleType.equals(getBundleTypeFromPath(Paths.get(hspPath)))) {
-                LOG.error("bundleType is not same");
+                LOG.error(PackingToolErrMsg.CHECK_BUNDLE_TYPE_CONSISTENCY.toString("Hsp bundleType is not same."));
                 return false;
             }
         }
@@ -725,11 +730,13 @@ public class PackageUtil {
         for (String hapPath : hapPathList) {
             Path path = Paths.get(hapPath);
             if (!Files.exists(path.resolve(Constants.FILE_MODULE_JSON))) {
-                LOG.error("not found module.json in path: " + path);
+                LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found module.json in the hap path: " +
+                        path + "."));
                 return false;
             }
             if (!Files.exists(path.resolve(Constants.FILE_PACK_INFO))) {
-                LOG.error("not found pack.info in path: " + path);
+                LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found pack.info in the hap path: " +
+                        path + "."));
                 return false;
             }
         }
@@ -737,11 +744,13 @@ public class PackageUtil {
             Path path = Paths.get(hspPath);
             if (Files.isDirectory(path)) {
                 if (!Files.exists(path.resolve(Constants.FILE_MODULE_JSON))) {
-                    LOG.error("not found module.json in path: " + path);
+                    LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found module.json in the hsp path: " +
+                            path + "."));
                     return false;
                 }
                 if (!Files.exists(path.resolve(Constants.FILE_PACK_INFO))) {
-                    LOG.error("not found pack.info in path: " + path);
+                    LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found pack.info in the hsp path: " +
+                            path + "."));
                     return false;
                 }
             }
@@ -771,45 +780,46 @@ public class PackageUtil {
         if (!utility.getHapPath().isEmpty() &&
                 (!isFormatPathValid(utility.getHapPath(), utility.getFormattedHapPathList()) ||
                         !isHapPathValid(utility.getFormattedHapPathList()))) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode hap-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--hap-path is invalid."));
             return false;
         }
         if (!utility.getHspPath().isEmpty() &&
                 (!isFormatPathValid(utility.getHspPath(), utility.getFormattedHspPathList()) ||
                         !isHspPathValid(utility.getFormattedHspPathList()))) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode hsp-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--hsp-path is invalid."));
             return false;
         }
         if (utility.getHapPath().isEmpty() && utility.getHspPath().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode hap-path and hsp-path is empty.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--hap-path and --hsp-path is empty."));
             return false;
         }
         if (!moduleJsonAndPackInfoExists(utility.getFormattedHapPathList(), utility.getFormattedHspPathList())) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode hap-path or hsp-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--hap-path or --hsp-path is invalid."));
             return false;
         }
         if (!checkBundleTypeConsistency(
                 utility.getFormattedHapPathList(), utility.getFormattedHspPathList(), utility)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode bundleType is inconsistent.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("The bundleType is inconsistent."));
             return false;
         }
         if (!isPackInfoValid(Paths.get(utility.getPackInfoPath()),
                 utility.getFormattedHapPathList(), utility.getFormattedHspPathList())) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack.info is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("pack.info is invalid."));
             return false;
         }
         if (!utility.getEncryptPath().isEmpty()
                 && !isFileValid(utility.getEncryptPath(), Constants.FILE_ENCRYPT_JSON)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode encrypt-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--encrypt-path is invalid."));
             return false;
         }
         Path outPath = Paths.get(utility.getOutPath());
         if (utility.getForceRewrite().equals(Constants.FALSE) && Files.exists(outPath)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode out file already existed.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--out-path file already existed, but " +
+                    "--force is not 'true'."));
             return false;
         }
         if (!outPath.getFileName().toString().endsWith(Constants.APP_SUFFIX)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode out-path must end with .app.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--out-path must end with .app."));
             return false;
         }
         return true;
@@ -817,34 +827,34 @@ public class PackageUtil {
 
     private static boolean isVerifyValid(Utility utility) {
         if (utility.getPackInfoPath().isEmpty()) {
-            LOG.error("CompressVerify::isArgsValidInAppMode pack-info-path is empty.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--pack-info-path is empty."));
             return false;
         }
         if (!isFileValid(utility.getPackInfoPath(), Constants.FILE_PACK_INFO)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack-info-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--pack-info-path is invalid."));
             return false;
         }
         if (!utility.getSignaturePath().isEmpty() && !isFileValid(utility.getSignaturePath(), "")) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode signature-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--signature-path is invalid."));
             return false;
         }
         if (!utility.getCertificatePath().isEmpty() &&
                 !isFileValid(utility.getCertificatePath(), "")) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode certificate-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--certificate-path is invalid."));
             return false;
         }
         if (!utility.getPackResPath().isEmpty() && !isFileValid(utility.getPackResPath(), Constants.FILE_PACK_RES)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode pack-res-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--pack-res-path is invalid."));
             return false;
         }
         if (!utility.getEntryCardPath().isEmpty() &&
                 !CompressVerify.compatibleProcess(utility, utility.getEntryCardPath(),
                         utility.getformattedEntryCardPathList(), Constants.PNG_SUFFIX)) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode entrycard-path is invalid.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--entrycard-path is invalid."));
             return false;
         }
         if (utility.getOutPath().isEmpty()) {
-            LOG.error("CompressVerify::isVerifyValidInFastAppMode out-path is empty.");
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--out-path is empty."));
             return false;
         }
         return true;
@@ -876,11 +886,13 @@ public class PackageUtil {
                 if (Files.exists(realpath)) {
                     formatPathSet.add(realpath.toString());
                 } else {
-                    LOG.error("PackageUtil::formatPath not exists: " + realpath);
+                    LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Format path not exists. Path: " +
+                            realpath + "."));
                     return false;
                 }
             } catch (IOException ex) {
-                LOG.error("PackageUtil::formatPath err: " + ex.getMessage());
+                LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Verify format path exist IOException: "
+                        + ex.getMessage()));
                 return false;
             }
         }
@@ -892,27 +904,31 @@ public class PackageUtil {
         List<String> allPackages = getPackageNameFromPath(packInfo);
         Set<String> allPackageSet = new HashSet<>(allPackages);
         if (allPackages.size() > allPackageSet.size()) {
-            LOG.error("package name is redundant in app pack.info: " + packInfo);
+            LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Package name is redundant in app pack.info, " +
+                    "the path is " + packInfo + "."));
             return false;
         }
         if (allPackages.isEmpty()) {
-            LOG.error("app pack.info format err: " + packInfo);
+            LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("App pack.info format error, the path is " +
+                    packInfo + "."));
             return false;
         }
         Set<String> packages = new HashSet<>();
         for (String hapPath : hapPathList) {
             List<String> list = getPackageNameFromPath(Paths.get(hapPath));
             if (list.size() != 1) {
-                LOG.error("module pack.info format err: " + hapPath);
+                LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Module pack.info format error, the path is " +
+                        hapPath + "."));
                 return false;
             }
             String packageName = list.get(0);
             if (!allPackages.contains(packageName)) {
-                LOG.error("module pack.info name not exist in app pack.info name list: " + hapPath);
+                LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Module pack.info name does not exist in app "
+                        + "pack.info name list, the path is " + hapPath + "."));
                 return false;
             }
             if (packages.contains(packageName)) {
-                LOG.error("package name is redundant in " + hapPath);
+                LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Package name is redundant in " + hapPath + "."));
                 return false;
             }
             packages.add(packageName);
@@ -920,22 +936,26 @@ public class PackageUtil {
         for (String hspPath : hspPathList) {
             List<String> list = getPackageNameFromPath(Paths.get(hspPath));
             if (list.size() != 1) {
-                LOG.error("module pack.info format err: " + hspPath);
+                LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Module pack.info format err, the path is " +
+                        hspPath + "."));
                 return false;
             }
             String packageName = list.get(0);
             if (!allPackages.contains(packageName)) {
-                LOG.error("module pack.info name not exist in app pack.info name list: " + hspPath);
+                LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Module pack.info name does not exist in app "
+                        + "pack.info name list, the path is " + hspPath + "."));
                 return false;
             }
             if (packages.contains(packageName)) {
-                LOG.error("package name is redundant in " + hspPath);
+                LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Package name is redundant in " +
+                        hspPath + "."));
                 return false;
             }
             packages.add(packageName);
         }
         if (!allPackageSet.equals(packages)) {
-            LOG.error("package name not same between module and app pack.info.");
+            LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Package name is not same between module "
+                    + "and app pack.info."));
             return false;
         }
         return true;
