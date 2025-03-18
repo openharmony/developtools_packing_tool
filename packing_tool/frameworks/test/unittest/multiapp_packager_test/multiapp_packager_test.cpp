@@ -72,6 +72,24 @@ void MultiAppPackagerTest::SetUp()
 void MultiAppPackagerTest::TearDown()
 {}
 
+void CopyFile(const std::string& srcFile, const std::string& dstFile)
+{
+    std::string cmd = "cp -f " + srcFile + " " + dstFile;
+    system(cmd.c_str());
+}
+
+void TouchFile(const std::string& file)
+{
+    std::string cmd = "touch " + file;
+    system(cmd.c_str());
+}
+
+void DeleteFile(const std::string& file)
+{
+    std::string cmd = "rm -f " + file;
+    system(cmd.c_str());
+}
+
 /*
  * @tc.name: MultiAppPackager_0100
  * @tc.desc: InitAllowedParam.
@@ -485,6 +503,27 @@ HWTEST_F(MultiAppPackagerTest, ReadModuleNameFromHap_0200, Function | MediumTest
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
     EXPECT_EQ(multiAppPackager.ReadModuleNameFromHap(HAP_LIST_WITHOUT_SUFFIX), "");
+}
+
+/*
+ * @tc.name: ReadModuleNameFromHap_0300
+ * @tc.desc: test read module name from hap.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, ReadModuleNameFromHap_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST_WITHOUT_SUFFIX},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST_WITHOUT_SUFFIX},
+        {OHOS::AppPackingTool::Constants::PARAM_APP_LIST, APP_LIST},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.ReadModuleNameFromHap(HSP_LIST), "");
 }
 
 /*
@@ -1056,5 +1095,59 @@ HWTEST_F(MultiAppPackagerTest, SelectHapInApp_0100, Function | MediumTest | Leve
     std::string tempDir("/data/test/resource/packingtool/");
     std::string finalAppPackInfo;
     EXPECT_TRUE(multiAppPackager.SelectHapInApp(appPath, selectedHaps, tempDir, finalAppPackInfo).empty());
+}
+
+/*
+ * @tc.name: SelectHapInApp_0200
+ * @tc.desc: SelectHapInApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, SelectHapInApp_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::string appPath("/data/test/resource/packingtool/test_file/multiApp/hap/multiappPackagerHapTest.hap");
+    std::list<std::string> selectedHaps;
+    std::string tempDir("/data/test/resource/packingtool/");
+    std::string finalAppPackInfo("pack.info");
+    EXPECT_TRUE(multiAppPackager.SelectHapInApp(appPath, selectedHaps, tempDir, finalAppPackInfo).empty());
+}
+
+/*
+ * @tc.name: CopyHapAndHspFromApp_0100
+ * @tc.desc: CopyHapAndHspFromApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, CopyHapAndHspFromApp_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::string appPath("/data/test/resource/packingtool/test_file/multiApp/hap/multiappPackagerHapTest.hap");
+    std::list<std::string> selectedHaps;
+    std::list<std::string> selectedHapsInApp;
+    std::string tempDir("/data/test/resource/packingtool/");
+    EXPECT_TRUE(multiAppPackager.CopyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir));
+}
+
+/*
+ * @tc.name: CopyHapAndHspFromApp_0200
+ * @tc.desc: CopyHapAndHspFromApp.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, CopyHapAndHspFromApp_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    std::string appPath("/data/test/resource/packingtool/test_file/multiApp/hap/multiappPackagerHapTest.hap");
+    std::list<std::string> selectedHaps;
+    std::list<std::string> selectedHapsInApp;
+    std::string tempDir("/data/");
+    EXPECT_TRUE(multiAppPackager.CopyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir));
 }
 } // namespace OHOS
