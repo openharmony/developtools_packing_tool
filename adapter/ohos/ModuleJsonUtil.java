@@ -1210,7 +1210,7 @@ class ModuleJsonUtil {
             String abilityName = getJsonString(abilityObj, NAME);
             skillsMap.put(abilityName, false);
             if(!abilityObj.containsKey(SKILLS)) {
-                break;
+                continue;
             }
             JSONArray skillArray = abilityObj.getJSONArray(SKILLS);
             for (int j = 0; j < skillArray.size(); ++j) {
@@ -1249,7 +1249,7 @@ class ModuleJsonUtil {
             String abilityName = getJsonString(extensionAbilityObj, NAME);
             skillsMap.put(abilityName, false);
             if (!extensionAbilityObj.containsKey(SKILLS)) {
-                break;
+                continue;
             }
             JSONArray skillArray = extensionAbilityObj.getJSONArray(SKILLS);
             for (int j = 0; j < skillArray.size(); ++j) {
