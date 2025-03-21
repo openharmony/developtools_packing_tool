@@ -123,6 +123,7 @@
                 "virtualMachine",
                 "uiSyntax",
                 "pages",
+                "systemTheme",
                 "metadata",
                 "abilities",
                 "extensionAbilities",
@@ -292,6 +293,12 @@
           "description": "Used to list the information of each page in ETS Component.",
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
+        },
+        "systemTheme": {
+          "description": "Indicates the system theme of the module. The value is the index to the theme config file.",
+          "type": "string",
+          "pattern": "^[$]profile:theme_config[0-9a-zA-Z_.]+$",
           "maxLength": 255
         },
         "metadata": {
