@@ -197,7 +197,8 @@
             "app",
             "atomicService",
             "shared",
-            "appService"
+            "appService",
+            "appPlugin"
           ]
         },
         "debug": {
