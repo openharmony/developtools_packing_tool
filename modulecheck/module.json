@@ -316,7 +316,7 @@
         "systemTheme": {
           "description": "Indicates the system theme of the module. The value is the index to the theme config file.",
           "type": "string",
-          "pattern": "^[$]profile:theme_config[0-9a-zA-Z_.]+$",
+          "pattern": "^[$]profile:theme_config[0-9a-zA-Z_.]*$",
           "maxLength": 255
         },
         "metadata": {
