@@ -4,6 +4,7 @@
   "type": "object",
   "additionalProperties": true,
   "required": [
+    "systemTheme"
   ],
   "propertyNames": {
     "enum": [
@@ -15,8 +16,8 @@
       "description": "Indicates the system theme of the module.",
       "type": "string",
       "enum": [
-          "theme.ohos",
-          "theme.hmos"
+          "$ohos:theme:ohos_theme",
+          "$ohos:theme:hmos_theme"
         ]
     }
   }
