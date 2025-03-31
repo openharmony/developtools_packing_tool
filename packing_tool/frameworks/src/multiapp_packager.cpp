@@ -151,10 +151,10 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
         return false;
     }
 
-	std::string force;
+    std::string force;
     auto it = parameterMap_.find(Constants::PARAM_FORCE);
     if (it != parameterMap_.end() && !it->second.empty()) {
-		force = it->second;
+        force = it->second;
         if (Utils::IsFileExists(outPath) && force == "false") {
             LOGE("out-path file already existed.");
             return false;
