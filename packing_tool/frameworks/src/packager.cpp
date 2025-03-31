@@ -233,7 +233,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
 	
     if (!EnsureParentDirectoryExists(filePath) {
         return false;
-	}
+    }
 
     if (suffix == Constants::HAP_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::HAP_SUFFIX)) {
