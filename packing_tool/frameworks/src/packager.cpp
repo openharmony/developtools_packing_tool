@@ -212,6 +212,19 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
         LOGE("Packager::isOutPathValid out file already existed.");
         return false;
     }
+	
+	try {
+		if (!std::filesystem::exists(filePath.parent_path())) {
+			std::error_code ec;
+			if (!std::filesystem::create_directories(filePath.parent_path(), ec)) {
+				LOGE("Packager::Failed to create directory: [%s]", ec.message().c_str());
+				return false;
+			}
+		}
+	} catch (const std::filesystem::filesystem_err& e) {
+		LOGE("Packager::Failed to create directory,catch error: [%s]", e.what());
+		return false;
+	}
 
     if (suffix == Constants::HAP_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::HAP_SUFFIX)) {
@@ -248,6 +261,8 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
         } else {
             return true;
         }
+    } else if (suffix == Constants::MODE_MULTIAPP) {
+        return true;
     }
     return false;
 }
