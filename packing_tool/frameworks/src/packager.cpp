@@ -221,7 +221,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
 				return false;
 			}
 		}
-	} catch (const std::filesystem::filesystem_err& e) {
+	} catch (const std::filesystem::filesystem_error& e) {
 		LOGE("Packager::Failed to create directory,catch error: [%s]", e.what());
 		return false;
 	}
