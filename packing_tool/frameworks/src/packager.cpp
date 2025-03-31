@@ -218,9 +218,9 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
             std::error_code ec;
             if (!std::filesystem::create_directories(filePath.parent_path(), ec)) {
                 LOGE("Packager::Failed to create directory: [%s]", ec.message().c_str());
-				return false;
+                return false;
 			}
-		}
+        }
     } catch (const std::filesystem::filesystem_error& e) {
         LOGE("Packager::Failed to create directory,catch error: [%s]", e.what());
         return false;
