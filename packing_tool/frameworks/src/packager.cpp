@@ -204,27 +204,36 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
     }
 }
 
+bool Packager::EnsureParentDirectoryExists(const sdt::filesystem::path& filePath)
+{
+    try {
+        const auto parentPath = filePath.parent_path();
+        if (!std::filesystem::exists(parentPath)) {
+            std::error_code ec;
+            if (!std::filesystem::create_directories(parentPath, ec)) {
+                LOGE("Packager::Failed to create directory: [%s]", ec.message().c_str());
+                return false;
+            }
+        }
+        return true;
+    } catch (const std::filesystem::filesystem_error& e) {
+        LOGE("Packager::Directory creation error: [%s]", e.what());
+        return false;
+    }
+}
+
 bool Packager::IsOutPathValid(const std::string &outPath, const std::string &forceRewrite, const std::string &suffix)
 {
-    fs::path filePath(outPath);
+    const fs::path filePath(outPath);
 
     if ("false" == forceRewrite && fs::exists(filePath)) {
         LOGE("Packager::isOutPathValid out file already existed.");
         return false;
     }
 	
-    try {
-        if (!std::filesystem::exists(filePath.parent_path())) {
-            std::error_code ec;
-            if (!std::filesystem::create_directories(filePath.parent_path(), ec)) {
-                LOGE("Packager::Failed to create directory: [%s]", ec.message().c_str());
-                return false;
-			}
-        }
-    } catch (const std::filesystem::filesystem_error& e) {
-        LOGE("Packager::Failed to create directory,catch error: [%s]", e.what());
+    if (!EnsureParentDirectoryExists(filePath) {
         return false;
-    }
+	}
 
     if (suffix == Constants::HAP_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::HAP_SUFFIX)) {
