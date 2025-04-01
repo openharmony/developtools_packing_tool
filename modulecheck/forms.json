@@ -45,9 +45,7 @@
             "supportShapes",
             "previewImages",
             "renderingMode",
-            "enableBlurBackground",
-            "funInteractionParams",
-            "sceneAnimationParams"
+            "enableBlurBackground"
           ]
         },
         "required": [
@@ -310,60 +308,8 @@
             "description": "This label indicates whether the form uses blur background.",
             "type": "boolean",
             "default": false
-          },
-          "funInteractionParams": {
-            "description": "This label indicates fun interaction form params.",
-            "type": "object",
-            "propertyNames": {
-              "enum": [
-                "abilityName",
-                "targetBundleName",
-                "keepStateDuration"
-              ]
-            },
-            "properties": {
-              "abilityName": {
-                "description": "The ability name of the fun interaction form.",
-                "type": "string",
-                "maxLength": 255
-              },
-              "targetBundleName": {
-                "description": "The bundle name used by game engine.",
-                "type": "string",
-                "maxLength": 255
-              },
-              "keepStateDuration": {
-                "description": "The duration of the fun interaction form will be paused if not operate, default is 10s.",
-                "type": "integer"
-              }
-            }
-          },
-          "sceneAnimationParams": {
-            "description": "This label indicates scene animation form params.",
-            "type": "object",
-            "propertyNames": {
-              "enum": [
-                "abilityName",
-                "isAlwaysActive",
-                "disabledDesktopBehaviors"
-              ]
-            },
-            "properties": {
-              "abilityName": {
-                "description": "The ability name of the scene animation form.",
-                "type": "string",
-                "maxLength": 255
-              },
-              "isAlwaysActive": {
-                "description": "Indicates can be always active, default is false and only takes effect for system app.",
-                "type": "boolean"
-              },
-              "disabledDesktopBehaviors": {
-                "description": "Indicates disabled desktop behaviors, only takes effect for system app.",
-                "type": "string"
-              }
-            }
           }
+          
         }
       }
     }
