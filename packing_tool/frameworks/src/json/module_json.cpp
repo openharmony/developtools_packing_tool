@@ -1099,7 +1099,7 @@ bool ModuleJson::IsModuleAtomicServiceValid()
         return false;
     }
     if (!moduleObj->Contains(ATOMIC_SERVICE.c_str())) {
-        LOGE("Module node has no %s node!", ATOMIC_SERVICE.c_str());
+        LOGW("Module node has no %s node!", ATOMIC_SERVICE.c_str());
         return true;
     }
     std::unique_ptr<PtJson> appObj;

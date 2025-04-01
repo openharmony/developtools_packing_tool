@@ -204,12 +204,34 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
     }
 }
 
+bool Packager::EnsureParentDirectoryExists(const std::filesystem::path& filePath)
+{
+    try {
+        const auto parentPath = filePath.parent_path();
+        if (!std::filesystem::exists(parentPath)) {
+            std::error_code ec;
+            if (!std::filesystem::create_directories(parentPath, ec)) {
+                LOGE("Packager::Failed to create directory: [%s]", ec.message().c_str());
+                return false;
+            }
+        }
+        return true;
+    } catch (const std::filesystem::filesystem_error& e) {
+        LOGE("Packager::Directory creation error: [%s]", e.what());
+        return false;
+    }
+}
+
 bool Packager::IsOutPathValid(const std::string &outPath, const std::string &forceRewrite, const std::string &suffix)
 {
-    fs::path filePath(outPath);
+    const fs::path filePath(outPath);
 
     if ("false" == forceRewrite && fs::exists(filePath)) {
         LOGE("Packager::isOutPathValid out file already existed.");
+        return false;
+    }
+	
+    if (!EnsureParentDirectoryExists(filePath)) {
         return false;
     }
 
@@ -248,6 +270,8 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
         } else {
             return true;
         }
+    } else if (suffix == Constants::MODE_MULTIAPP) {
+        return true;
     }
     return false;
 }
