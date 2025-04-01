@@ -72,6 +72,7 @@ protected:
     bool CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList, const std::string &suffix);
     bool CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList,
         const std::string &suffix, const std::string &extraSuffix);
+    bool Packager::EnsureParentDirectoryExists(const std::filesystem::path& filePath);
     bool IsOutPathValid(const std::string &outPath, const std::string &forceRewrite, const std::string &suffix);
     bool SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHash, bool &buildHashFinish);
     bool CopyFileToTempDir(std::string &jsonPath);
