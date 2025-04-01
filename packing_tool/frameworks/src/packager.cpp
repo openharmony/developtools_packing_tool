@@ -231,7 +231,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
         return false;
     }
 	
-    if (!EnsureParentDirectoryExists(filePath) {
+    if (!EnsureParentDirectoryExists(filePath)) {
         return false;
     }
 
