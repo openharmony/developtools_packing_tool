@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_set>
+#include <sdt/filesystem>
 
 #include "json/json_utils.h"
 #include "log.h"
