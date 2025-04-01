@@ -151,15 +151,17 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
         return false;
     }
 
+    std::string force;
     auto it = parameterMap_.find(Constants::PARAM_FORCE);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        if (Utils::IsFileExists(outPath) && it->second == "false") {
+        force = it->second;
+        if (Utils::IsFileExists(outPath) && force == "false") {
             LOGE("out-path file already existed.");
             return false;
         }
     }
 
-    return true;
+    return IsOutPathValid(outPath, force, Constants::MODE_MULTIAPP);
 }
 
 bool MultiAppPackager::CopyHapAndHspFromApp(const std::string &appPath, std::list<std::string> &selectedHapsInApp,
