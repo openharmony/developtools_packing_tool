@@ -21,7 +21,6 @@
 #include <sstream>
 #include <string>
 #include <unordered_set>
-#include <sdt/filesystem>
 
 #include "json/json_utils.h"
 #include "log.h"
@@ -205,7 +204,7 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
     }
 }
 
-bool Packager::EnsureParentDirectoryExists(const sdt::filesystem::path& filePath)
+bool Packager::EnsureParentDirectoryExists(const std::filesystem::path& filePath)
 {
     try {
         const auto parentPath = filePath.parent_path();
