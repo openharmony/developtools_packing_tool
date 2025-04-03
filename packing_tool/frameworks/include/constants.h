@@ -121,6 +121,7 @@ const std::string FILE_PACK_RES = "pack.res";
 const std::string INVALID_PATH = "invalid";
 const std::string TYPE_SHARED = "shared";
 const std::string BUNDLE_TYPE_APP_SERVICE = "appService";
+const std::string TYPE_APP_PLUGIN = "appPlugin";
 const std::string TEMP_HAP_DIR = "tempHapDir";
 const std::string TEMP_HSP_DIR = "tempHspDir";
 const std::string TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
