@@ -43,6 +43,10 @@ public:
     bool CompressHspModePartFourth();
     bool CompressHspModeMultiple();
     bool AddCommonFileOrDirectoryToZip(const std::string &paramPath, const std::string &targetPath);
+    bool CheckAppPlugin();
+    bool IsPluginHost();
+    bool IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj);
+    bool CheckPkgContext();
 
 protected:
     int32_t InitAllowedParam() override;

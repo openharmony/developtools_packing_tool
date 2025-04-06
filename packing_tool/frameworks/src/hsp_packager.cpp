@@ -23,6 +23,12 @@
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+const std::string NAME = "name";
+const std::string EXTENSION_ABILITIES = "extensionAbilities";
+const std::string REQUEST_PERMISSIONS = "requestPermissions";
+const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernal.SUPPORT_PLUGIN";
+}
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
@@ -281,7 +287,117 @@ bool HspPackager::CompressHspMode(const std::string &jsonPath)
             return false;
         }
     }
+    if (!CheckAppPlugin()) {
+        LOGE("CheckAppPlugin failed.");
+        return false;
+    }
     return CompressHspModePartSecond(jsonPath);
+}
+
+bool HspPackager::CheckAppPlugin()
+{
+    std::string bundleType;
+    if (!moduleJson_.GetStageBundleType(bundleType)) {
+        LOGW("GetStageBundleType failed");
+        return true;
+    }
+    if (Constants::TYPE_APP_PLUGIN != bundleType) {
+        LOGW("bundleType not appPlugin");
+        if (IsPluginHost()) {
+            return true;
+        }
+        if (!CheckPkgContext()) {
+            LOGE("CheckPkgContext failed.");
+            return false;
+        }
+    }
+    std::unique_ptr<PtJson> moduleObj;
+    if (!moduleJson_.GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    if (moduleObj->Contains(EXTENSION_ABILITIES.c_str())) {
+        std::unique_ptr<PtJson> extensionAbilitiesObj;
+        if (moduleObj->GetArray(EXTENSION_ABILITIES.c_str(), &extensionAbilitiesObj) != Result::SUCCESS) {
+            LOGW("Module node get %s array node failed!", EXTENSION_ABILITIES.c_str());
+        }
+        if (extensionAbilitiesObj) {
+            LOGE("extendAbilities of plugin package must empty");
+            return false;
+        }
+    }
+    if (!CheckPkgContext()) {
+        LOGE("CheckPkgContext failed.");
+        return false;
+    }
+    if (moduleObj->Contains(REQUEST_PERMISSIONS.c_str())) {
+        std::unique_ptr<PtJson> requestPermissionsObj;
+        if (moduleObj->GetArray(REQUEST_PERMISSIONS.c_str(), &requestPermissionsObj) != Result::SUCCESS) {
+            LOGW("Module node get %s array node failed!", REQUEST_PERMISSIONS.c_str());
+            return true;
+        }
+        if (IsPermissionSupportPlugin(requestPermissionsObj)) {
+            LOGE("plugin package cannot be PERMISSION_SUPPORT_PLUGIN");
+            return false;
+        }
+    }
+    LOGE("plugin package packaging failed.");
+    return false;
+}
+
+bool HspPackager::IsPluginHost()
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!moduleJson_.GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    if (moduleObj->Contains(REQUEST_PERMISSIONS.c_str())) {
+        std::unique_ptr<PtJson> requestPermissionsObj;
+        if (moduleObj->GetArray(REQUEST_PERMISSIONS.c_str(), &requestPermissionsObj) != Result::SUCCESS) {
+            LOGW("Module node get %s array node failed!", REQUEST_PERMISSIONS.c_str());
+            return true;
+        }
+        if (IsPermissionSupportPlugin(requestPermissionsObj)) {
+            LOGW("requestPermission is PERMISSION_SUPPORT_PLUGIN");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HspPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
+{
+    for (int32_t i = 0; i < requestPermissionsObj->GetSize(); i++) {
+        std::unique_ptr<PtJson> requestPermissionObj = requestPermissionsObj->Get(i);
+        if (requestPermissionObj->Contains(NAME.c_str())) {
+            std::string requestPermissionName;
+            if (requestPermissionObj->GetString(NAME.c_str(), &requestPermissionName) != Result::SUCCESS) {
+                LOGW("get %s failed!", NAME.c_str());
+                continue;
+            }
+            if (requestPermissionName == PERMISSION_SUPPORT_PLUGIN) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool HspPackager::CheckPkgContext()
+{
+    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PKG_CONTEXT_PATH);
+    if (it != parameterMap_.end()) {
+        const std::string filePath = it->second;
+        if (!fs::is_regular_file(filePath) ||
+            fs::path(filePath).filename().string() != Constants::PKG_CONTEXT_JSON) {
+            LOGE("host must include pkgContextInfo.json");
+            return false;
+        }
+        return true;
+    }
+    LOGE("host must include pkgContextInfo.json");
+    return false;
 }
 
 bool HspPackager::CompressHspModePartSecond(const std::string &jsonPath)
