@@ -23,6 +23,11 @@
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+const std::string NAME = "name";
+const std::string REQUEST_PERMISSIONS = "requestPermissions";
+const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernal.SUPPORT_PLUGIN";
+}
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
@@ -331,12 +336,80 @@ bool HapPackager::CompressHap()
             parameterMap_, jsonPath_)) {
             return false;
         }
+        if (Constants::TYPE_APP_PLUGIN == bundleType) {
+            LOGE("hap can not plugin.");
+            return false;
+        } else {
+            if (!IsPluginHost()) {
+                LOGE("plugin package cannot be the host.");
+                return false;
+            }
+        }
     } else {
         if (!CompressHapMode() || !BuildHash(buildHashFinish_, generateBuildHash_, parameterMap_, jsonPath_)) {
             return false;
         }
     }
     return true;
+}
+
+bool HapPackager::IsPluginHost()
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!moduleJson_.GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    if (moduleObj->Contains(REQUEST_PERMISSIONS.c_str())) {
+        std::unique_ptr<PtJson> requestPermissionsObj;
+        if (moduleObj->GetArray(REQUEST_PERMISSIONS.c_str(), &requestPermissionsObj) != Result::SUCCESS) {
+            LOGW("Module node get %s array node failed!", REQUEST_PERMISSIONS.c_str());
+            return true;
+        }
+        if (IsPermissionSupportPlugin(requestPermissionsObj)) {
+            return CheckPkgContext();
+        }
+    }
+    return true;
+}
+
+bool HapPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
+{
+    if (requestPermissionsObj == nullptr) {
+        LOGE("requestPermissionsObj nullptr!");
+        return false;
+    }
+    for (int32_t i = 0; i < requestPermissionsObj->GetSize(); i++) {
+        std::unique_ptr<PtJson> requestPermissionObj = requestPermissionsObj->Get(i);
+        if (requestPermissionObj->Contains(NAME.c_str())) {
+            std::string requestPermissionName;
+            if (requestPermissionObj->GetString(NAME.c_str(), &requestPermissionName) != Result::SUCCESS) {
+                LOGW("get %s failed!", NAME.c_str());
+                continue;
+            }
+            if (requestPermissionName == PERMISSION_SUPPORT_PLUGIN) {
+                return true;
+            }
+        }
+    }
+    LOGE("no have permission support plugin.");
+    return false;
+}
+
+bool HapPackager::CheckPkgContext()
+{
+    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PKG_CONTEXT_PATH);
+    if (it != parameterMap_.end()) {
+        const std::string filePath = it->second;
+        if (!fs::is_regular_file(filePath) ||
+            fs::path(filePath).filename().string() != Constants::PKG_CONTEXT_JSON) {
+            LOGE("host must include pkgContextInfo.json");
+            return false;
+        }
+        return true;
+    }
+    LOGE("no have pkgContextInfo.json.");
+    return false;
 }
 
 bool HapPackager::CheckStageHap(const std::string &jsonPath)

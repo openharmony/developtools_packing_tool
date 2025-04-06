@@ -50,6 +50,9 @@ public:
     bool CompressHapModeForModule(const std::string &jsonPath);
     bool CompressHapMode();
     bool CompressHapModeMultiple();
+    bool IsPluginHost();
+    bool IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj);
+    bool CheckPkgContext();
 
 protected:
     int32_t InitAllowedParam() override;
