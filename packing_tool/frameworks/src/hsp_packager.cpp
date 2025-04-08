@@ -27,7 +27,7 @@ namespace {
 const std::string NAME = "name";
 const std::string EXTENSION_ABILITIES = "extensionAbilities";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
-const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernal.SUPPORT_PLUGIN";
+const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
 }
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -302,7 +302,6 @@ bool HspPackager::CheckAppPlugin()
         return true;
     }
     if (Constants::TYPE_APP_PLUGIN != bundleType) {
-        LOGW("bundleType not appPlugin");
         if (IsPluginHost()) {
             return true;
         }
@@ -310,6 +309,7 @@ bool HspPackager::CheckAppPlugin()
             LOGE("CheckPkgContext failed.");
             return false;
         }
+        return true;
     }
     std::unique_ptr<PtJson> moduleObj;
     if (!moduleJson_.GetModuleObject(moduleObj)) {
@@ -322,8 +322,10 @@ bool HspPackager::CheckAppPlugin()
             LOGW("Module node get %s array node failed!", EXTENSION_ABILITIES.c_str());
         }
         if (extensionAbilitiesObj) {
-            LOGE("extendAbilities of plugin package must empty");
-            return false;
+            if (!IsExtensionAbility(extensionAbilitiesObj)) {
+                LOGE("IsExtensionAbility failed.");
+                return false;
+            }
         }
     }
     if (!CheckPkgContext()) {
@@ -341,8 +343,7 @@ bool HspPackager::CheckAppPlugin()
             return false;
         }
     }
-    LOGE("plugin package packaging failed.");
-    return false;
+    return true;
 }
 
 bool HspPackager::IsPluginHost()
@@ -366,8 +367,27 @@ bool HspPackager::IsPluginHost()
     return true;
 }
 
+bool HspPackager::IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilitiesObj)
+{
+    for (int32_t i = 0; i < extensionAbilitiesObj->GetSize(); i++) {
+        std::unique_ptr<PtJson> extensionAbilityObj = extensionAbilitiesObj->Get(i);
+        if (extensionAbilityObj->Contains(NAME.c_str())) {
+            std::string extensionAbilityName;
+            if (extensionAbilityObj->GetString(NAME.c_str(), &extensionAbilityName) == Result::SUCCESS) {
+                LOGE("extendAbilities of plugin package must empty");
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 bool HspPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
 {
+    if (requestPermissionsObj == nullptr) {
+        LOGE("requestPermissionsObj nullptr!");
+        return false;
+    }
     for (int32_t i = 0; i < requestPermissionsObj->GetSize(); i++) {
         std::unique_ptr<PtJson> requestPermissionObj = requestPermissionsObj->Get(i);
         if (requestPermissionObj->Contains(NAME.c_str())) {

@@ -133,7 +133,7 @@ public class Compressor {
     private static final String APP = "app";
     private static final String TYPE_APP_PLUGIN = "appPlugin";
     private static final String REQUEST_PERMISSIONS = "requestPermissions";
-    private static final String PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernal.SUPPORT_PLUGIN";
+    private static final String PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
     private static final String EXTENSION_ABILITIES = "extensionAbilities";
     private static final String MODULE = "module";
     private static final String GENERATE_BUILD_HASH = "generateBuildHash";
@@ -511,13 +511,14 @@ public class Compressor {
             if (!TYPE_APP_PLUGIN.equals(bundleType)) {
                 if (!isPluginHost(utility)) {
                     if (!checkPkgContext(utility)) {
-                        LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("plugin package packaging failed."));
-                        throw new BundleException("Compress hsp failed.");
+                        LOG.error(PackingToolErrMsg.COMPRESS_HAP_FAILED.toString(
+                                "plugin package packing failed, the pkgContextInfo.json not exist."));
+                        throw new BundleException("Compress hap failed.");
                     }
                 }
             } else {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("hap can not plugin."));
-                throw new BundleException("Compress hsp failed.");
+                LOG.error(PackingToolErrMsg.COMPRESS_HAP_FAILED.toString("hap can not plugin."));
+                throw new BundleException("Compress hap failed.");
             }
             compressHapModeForModule(utility);
             buildHash(utility);
@@ -531,13 +532,13 @@ public class Compressor {
         File file = new File(utility.getJsonPath());
         if (!file.exists()) {
             String errMsg = "The --json-path file does not exist.";
-            LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString(errMsg));
+            LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             throw new BundleException("Verify has generate build hash failed for --json-path file does not exist.");
         }
         try (InputStream json = new FileInputStream(file)) {
             JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
             if (jsonObject == null || !jsonObject.containsKey(MODULE)) {
-                LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString("The --json-path file is invalid."));
+                LOG.error(PackingToolErrMsg.IS_PLUGIN_HOST_FAILED.toString("The --json-path file is invalid."));
                 throw new BundleException("Parse --json-path file is invalid.");
             }
             JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
@@ -546,26 +547,23 @@ public class Compressor {
                 for (int i = 0; i < requestPermissions.size(); ++i) {
                     JSONObject requestPermission = requestPermissions.getJSONObject(i);
                     if (isPermissionSupportPlugin(requestPermission)) {
-                        LOG.error("have permission support plugin.");
                         return false;
                     }
                 }
             }
             return true;
         } catch (IOException e) {
-            LOG.error(e.getMessage());
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
+                            "check is plugin host exist IOException: " + e.getMessage()));
         }
         return true;
     }
 
     private static boolean isPermissionSupportPlugin(JSONObject requestPermission) throws BundleException {
-        if (requestPermission.containsKey(NAME)) {
-            String reqPermissionName = getJsonString(requestPermission, NAME);
-            if (reqPermissionName == PERMISSION_SUPPORT_PLUGIN) {
-                return true;
-            }
+        String reqPermissionName = getJsonString(requestPermission, NAME);
+        if (reqPermissionName.equals(PERMISSION_SUPPORT_PLUGIN)) {
+            return true;
         }
-        LOG.error("no have permission support plugin.");
         return false;
     }
 
@@ -574,12 +572,12 @@ public class Compressor {
             File file = new File(utility.getPkgContextPath());
             if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
                 String errMsg = "--pkg-context-path file must be the pkgContextInfo.json file.";
-                LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
+                LOG.error(PackingToolErrMsg.CHECK_PKG_CONTEXT_FAILED.toString(errMsg));
                 return false;
             }
             return true;
         }
-        LOG.error("no have pkgContextInfo.json file.");
+        LOG.error(PackingToolErrMsg.CHECK_PKG_CONTEXT_FAILED.toString("no have pkgContextInfo.json file."));
         return false;
     }
 
@@ -587,49 +585,51 @@ public class Compressor {
         File file = new File(utility.getJsonPath());
         if (!file.exists()) {
             String errMsg = "The --json-path file does not exist.";
-            LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString(errMsg));
+            LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString(errMsg));
             throw new BundleException("Verify has generate build hash failed for --json-path file does not exist.");
         }
         try (InputStream json = new FileInputStream(file)) {
             JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
             if (jsonObject == null || !jsonObject.containsKey(MODULE)) {
-                LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString("The --json-path file is invalid."));
+                LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString("The --json-path file is invalid."));
                 throw new BundleException("Parse --json-path file is invalid.");
             }
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
             String jsonString = optional.get();
             String bundleType = ModuleJsonUtil.parseStageBundleType(jsonString);
             if (!TYPE_APP_PLUGIN.equals(bundleType)) {
-                LOG.warning("bundleType not appPlugin");
                 if (isPluginHost(utility)) {
                     return true;
                 }
                 if (!checkPkgContext(utility)) {
-                    LOG.error("checkPkgContext failed.");
+                    LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString("checkPkgContext failed."));
                     return false;
                 }
                 return true;
             }
             JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
             JSONArray extensionAbilityJsonList = moduleJson.getJSONArray(EXTENSION_ABILITIES);
-            for (int j = 0; j < extensionAbilityJsonList.size(); j++) {
-                JSONObject extensionAbilityJson = extensionAbilityJsonList.getJSONObject(j);
-                if (extensionAbilityJson != null) {
-                    LOG.error("extensionAbilities is not null.");
-                    return false;
+            if (extensionAbilityJsonList != null) {
+                for (int j = 0; j < extensionAbilityJsonList.size(); j++) {
+                    JSONObject extensionAbilityJson = extensionAbilityJsonList.getJSONObject(j);
+                    if (extensionAbilityJson != null) {
+                        LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString("extensionAbilities is not null."));
+                        return false;
+                    }
                 }
             }
             if (!checkPkgContext(utility)) {
-                LOG.error("checkPkgContext failed.");
+                LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString("checkPkgContext failed."));
                 return false;
             }
             if (!isPluginHost(utility)) {
-                LOG.error("plugin package cannot be the host.");
+                LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString("plugin package cannot be the host."));
                 return false;
             }
             return true;
         } catch (IOException e) {
-            LOG.error(e.getMessage());
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
+                            "check app plugin exist IOException: " + e.getMessage()));
         }
         return true;
     }
