@@ -774,6 +774,46 @@ public class PackingToolErrMsg {
             .setCause("%s")
             .build();
 
+    /**
+     * IS_PLUGIN_HOST_FAILED
+     */
+    public static final ErrorMsg IS_PLUGIN_HOST_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("050")
+            .setDescription("Check is plugin host failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * IS_PERMISSION_SUPPORT_PLUGIN_FAILED
+     */
+    public static final ErrorMsg IS_PERMISSION_SUPPORT_PLUGIN_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("051")
+            .setDescription("Check is permission support plugin failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * CHECK_PKG_CONTEXT_FAILED
+     */
+    public static final ErrorMsg CHECK_PKG_CONTEXT_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("052")
+            .setDescription("Check pkg context failed.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * CHECK_APP_PLUGIN_FAILED
+     */
+    public static final ErrorMsg CHECK_APP_PLUGIN_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("053")
+            .setDescription("Check app plugin failed.")
+            .setCause("%s")
+            .build();
+
     // module json check error
     /**
      * PARSE_JSON_OBJECT_EXCEPTION

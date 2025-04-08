@@ -26,7 +26,7 @@ namespace AppPackingTool {
 namespace {
 const std::string NAME = "name";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
-const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernal.SUPPORT_PLUGIN";
+const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
 }
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -392,7 +392,6 @@ bool HapPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPerm
             }
         }
     }
-    LOGE("no have permission support plugin.");
     return false;
 }
 
