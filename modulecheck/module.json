@@ -30,6 +30,8 @@
                 "name",
                 "type",
                 "srcEntry",
+                "abilitySrcEntryDelegator",
+                "abilityStageSrcEntryDelegator",
                 "description",
                 "deliveryWithInstall",
                 "deviceTypes",
@@ -114,6 +116,8 @@
                 "type",
                 "srcEntrance",
                 "srcEntry",
+                "abilitySrcEntryDelegator",
+                "abilityStageSrcEntryDelegator",
                 "description",
                 "process",
                 "mainElement",
@@ -167,6 +171,8 @@
                 "type",
                 "srcEntrance",
                 "srcEntry",
+                "abilitySrcEntryDelegator",
+                "abilityStageSrcEntryDelegator",
                 "description",
                 "process",
                 "mainElement",
@@ -229,6 +235,18 @@
           "description": "This tag indicates the entry js code path corresponding to hap",
           "type": "string",
           "maxLength": 127
+        },
+        "abilitySrcEntryDelegator": {
+          "description": "This tag indicates the delegator for Ability",
+          "type": "string",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+          "maxLength": 127
+        },
+        "abilityStageSrcEntryDelegator": {
+          "description": "This tag indicates the delegator for AbilityStage",
+          "type": "string",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+          "maxLength": 128
         },
         "description": {
           "description": "Indicates the description of the current .hap file.",
