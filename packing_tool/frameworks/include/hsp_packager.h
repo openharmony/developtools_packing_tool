@@ -47,6 +47,7 @@ public:
     bool IsPluginHost();
     bool IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj);
     bool CheckPkgContext();
+    bool IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilitiesObj);
 
 protected:
     int32_t InitAllowedParam() override;
