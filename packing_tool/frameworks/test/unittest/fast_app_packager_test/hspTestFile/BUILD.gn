@@ -16,7 +16,7 @@ import("//build/ohos.gni")
 ohos_hap("fastAppPackagerHspTest") {
   hap_profile = "library/src/main/module.json"
   hap_name = "fastAppPackagerHspTest"
-  final_hap_path = "$root_out_dir/tests/unittest/developtools/packing_tool/test_file/fast_app_packager_file/${hap_name}.hsp"
+  final_hap_path = "$root_out_dir/tests/unittest/packing_tool/packing_tool/test_file/fast_app_packager_file/${hap_name}.hsp"
   testonly = true
   deps = [
     ":hjs_demo_js_assets",

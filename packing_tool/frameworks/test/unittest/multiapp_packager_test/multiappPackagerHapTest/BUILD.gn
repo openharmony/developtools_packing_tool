@@ -16,7 +16,7 @@ import("//build/ohos.gni")
 ohos_hap("multiappPackagerHapTest") {
   hap_profile = "entry/src/main/module.json"
   hap_name = "multiappPackagerHapTest"
-  final_hap_path = "$root_out_dir/tests/unittest/developtools/packing_tool/test_file/test_bundle_multiapp/${hap_name}.hap"
+  final_hap_path = "$root_out_dir/tests/unittest/packing_tool/packing_tool/test_file/test_bundle_multiapp/${hap_name}.hap"
   testonly = true
   deps = [
     ":hjs_demo_js_assets",
