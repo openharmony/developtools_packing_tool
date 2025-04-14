@@ -267,10 +267,19 @@ int32_t VersionNormalize::Process()
     std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR
         + Utils::GenerateUUID();
     int32_t versionCode = 0;
-    try {
-        versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
-    } catch (...) {
-        LOGE("stoi failed.");
+    auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
+    if (it != parameterMap_end()) {
+        try {
+            versionCode = std::stoi(it->second);
+        } catch (const std::invalid_argument& e) {
+            LOGE("invalid argument: %s", e.what());
+        } catch (const std::out_of_range& e) {
+            LOGE("Out of range: %s", e.what());
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+        }
+    } else {
+        LOGE("Parameter not found: %s", Constants::PARAM_VERSION_CODE);
     }
     std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
     std::list<NormalizeVersion> normalizeVersionList;
