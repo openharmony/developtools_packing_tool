@@ -266,7 +266,12 @@ int32_t VersionNormalize::Process()
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR
         + Utils::GenerateUUID();
-    int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+    int32_t versionCode = 0;
+    try {
+        versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+    } catch (...) {
+        LOGE("stoi failed.");
+    }
     std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
     std::list<NormalizeVersion> normalizeVersionList;
 
