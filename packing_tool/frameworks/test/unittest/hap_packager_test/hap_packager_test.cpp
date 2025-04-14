@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
 #include <string>
+#include <fstream>
 
 #define private public
 #define protected public
@@ -53,6 +54,369 @@ const std::string FA_RESOURCES_PATH = "/data/test/resource/packingtool/test_file
 const std::string FA_JSON_PATH = "/data/test/resource/packingtool/test_file/fa/config.json";
 const std::string FA_ASSETS_PATH = "/data/test/resource/packingtool/test_file/fa/assets_jsbundle/default";
 const std::string TEST_PATH = "/data/test/resources.index";
+const std::string REQUEST_PERMISSIONS = "requestPermissions";
+const std::string MODULE_JSON_TEST_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"app\","
+        "\"apiVersion\": {"
+        "}"
+    "},"
+    "\"module\": {"
+        "\"requestPermissions\": true,"
+        "\"proxyData\": ["
+            "{"
+                "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"generateBuildHash\": true"
+    "}"
+"}";
+const std::string MODULE_NO_REQUESTPERMISSIONS_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"app\""
+    "},"
+    "\"module\": {"
+    "}"
+"}";
+const std::string MODULE_ERROR_REQUESTPERMISSIONS_JSON_STRING = "{"
+    "\"module\": {"
+        "\"requestPermissions\": true"
+    "}"
+"}";
+const std::string MODULE_SUPPORT_PLUGIN_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"app\""
+    "},"
+    "\"module\": {"
+        "\"requestPermissions\": ["
+            "{"
+                "\"name\": true"
+            "},"
+            "{"
+                "\"name\": \"ohos.permission.kernel.SUPPORT_PLUGIN\""
+            "}"
+        "]"
+    "}"
+"}";
+const std::string MODULE_NO_SUPPORT_PLUGIN_JSON_STRING = "{"
+    "\"module\": {"
+        "\"requestPermissions\": ["
+            "{"
+                "\"name\": \"test_name1\""
+            "},"
+            "{"
+                "\"name\": \"test_name2\""
+            "}"
+        "]"
+    "}"
+"}";
+const std::string NO_MODULEOBJ_APP_PLUGIN_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"appPlugin\""
+    "}"
+"}";
+const std::string MODULE_ERROR_EXTENSION_ABILITIES_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"appPlugin\""
+    "},"
+    "\"module\": {"
+        "\"extensionAbilities\": true"
+    "}"
+"}";
+const std::string MODULE_APP_PLUGIN_NO_REQUESTPERMISSIONS_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"appPlugin\""
+    "},"
+    "\"module\": {"
+    "}"
+"}";
+const std::string MODULE_APP_PLUGIN_ERROR_REQUESTPERMISSIONS_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleType\": \"appPlugin\""
+    "},"
+    "\"module\": {"
+        "\"requestPermissions\": true"
+    "}"
+"}";
+const std::string MODULE_PLUGIN_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"appPlugin\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"shared\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": false,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
+const std::string MODULE_APP_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"app\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"shared\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": false,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"requestPermissions\": ["
+            "{"
+                "\"name\": \"ohos.permission.kernel.SUPPORT_PLUGIN\""
+            "},"
+            "{"
+                "\"name\": \"test_name2\""
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
 }
 
 class HapPackagerTest : public testing::Test {
@@ -968,5 +1332,219 @@ HWTEST_F(HapPackagerTest, isVerifyValidInHapMode_004, Function | MediumTest | Le
     DeleteFile(STAGE_ABILITY_SO_PATH);
     DeleteFile(STAGE_JAR_PATH);
     DeleteFile(STAGE_TXT_PATH);
+}
+
+/*
+ * @tc.name: CompressHap_0100
+ * @tc.desc: CompressHap.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, CompressHap_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_BIN_PATH, TEST_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    hapPackager.jsonPath_ = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open())
+    {
+        file << MODULE_PLUGIN_JSON_STRING;
+        file.close();
+    }
+    EXPECT_FALSE(hapPackager.CompressHap());
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: CompressHap_0200
+ * @tc.desc: CompressHap.
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, CompressHap_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_BIN_PATH, TEST_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    hapPackager.jsonPath_ = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open())
+    {
+        file << MODULE_APP_JSON_STRING;
+        file.close();
+    }
+    EXPECT_FALSE(hapPackager.CompressHap());
+    system("rm -f /data/test/module.json");
+}
+/*
+ * @tc.name: IsPluginHost_0100
+ * @tc.desc: IsPluginHost
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPluginHost_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hapPackager.IsPluginHost());
+}
+
+/*
+ * @tc.name: IsPluginHost_0200
+ * @tc.desc: IsPluginHost
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPluginHost_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    hapPackager.moduleJson_.ParseFromString(MODULE_NO_REQUESTPERMISSIONS_JSON_STRING);
+    EXPECT_TRUE(hapPackager.IsPluginHost());
+}
+
+/*
+ * @tc.name: IsPluginHost_0300
+ * @tc.desc: IsPluginHost
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPluginHost_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    hapPackager.moduleJson_.ParseFromString(MODULE_ERROR_REQUESTPERMISSIONS_JSON_STRING);
+    EXPECT_TRUE(hapPackager.IsPluginHost());
+}
+
+/*
+ * @tc.name: IsPluginHost_0400
+ * @tc.desc: IsPluginHost
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPluginHost_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    hapPackager.moduleJson_.ParseFromString(MODULE_SUPPORT_PLUGIN_JSON_STRING);
+    EXPECT_FALSE(hapPackager.IsPluginHost());
+}
+
+/*
+ * @tc.name: IsPermissionSupportPlugin_0100
+ * @tc.desc: IsPermissionSupportPlugin
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPermissionSupportPlugin_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> requestPermissionsObj = nullptr;
+    EXPECT_FALSE(hapPackager.IsPermissionSupportPlugin(requestPermissionsObj));
+}
+
+/*
+ * @tc.name: IsPermissionSupportPlugin_0200
+ * @tc.desc: IsPermissionSupportPlugin
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPermissionSupportPlugin_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(hapPackager.moduleJson_.ParseFromString(MODULE_SUPPORT_PLUGIN_JSON_STRING));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(hapPackager.moduleJson_.GetModuleObject(moduleObj));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> requestPermissionsObj;
+    moduleObj->GetArray(REQUEST_PERMISSIONS.c_str(), &requestPermissionsObj);
+    EXPECT_TRUE(hapPackager.IsPermissionSupportPlugin(requestPermissionsObj));
+}
+
+/*
+ * @tc.name: IsPermissionSupportPlugin_0300
+ * @tc.desc: IsPermissionSupportPlugin
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, IsPermissionSupportPlugin_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(hapPackager.moduleJson_.ParseFromString(MODULE_NO_SUPPORT_PLUGIN_JSON_STRING));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(hapPackager.moduleJson_.GetModuleObject(moduleObj));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> requestPermissionsObj;
+    moduleObj->GetArray(REQUEST_PERMISSIONS.c_str(), &requestPermissionsObj);
+    EXPECT_FALSE(hapPackager.IsPermissionSupportPlugin(requestPermissionsObj));
+}
+/*
+ * @tc.name: CheckPkgContext_0100
+ * @tc.desc: CheckPkgContext
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, CheckPkgContext_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hapPackager.CheckPkgContext());
+}
+
+/*
+ * @tc.name: CheckPkgContext_0200
+ * @tc.desc: CheckPkgContext
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, CheckPkgContext_0200, Function | MediumTest | Level1)
+{
+    std::string pkgContextPath = "/data/test/pkgContextInfo.json";
+    system("touch /data/test/pkgContextInfo.json");
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PKG_CONTEXT_PATH, pkgContextPath}};
+
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(hapPackager.CheckPkgContext());
+    system("rm -f /data/test/pkgContextInfo.json");
+}
+
+/*
+ * @tc.name: CheckPkgContext_0300
+ * @tc.desc: CheckPkgContext
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, CheckPkgContext_0300, Function | MediumTest | Level1)
+{
+    std::string profilePath = "/data/test/CAPABILITY.profile";
+    system("touch /data/test/CAPABILITY.profile");
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_PKG_CONTEXT_PATH, profilePath}};
+
+    OHOS::AppPackingTool::HapPackager hapPackager(parameterMap, resultReceiver);
+    EXPECT_FALSE(hapPackager.CheckPkgContext());
+    system("rm -f /data/test/CAPABILITY.profile");
 }
 } // namespace OHOS
