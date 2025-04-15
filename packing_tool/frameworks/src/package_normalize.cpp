@@ -122,7 +122,19 @@ int32_t PackageNormalize::Process()
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_PACKAGENORMALIZE_TEMP_DIR
         + Utils::GenerateUUID();
-    int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+    int32_t versionCode = 0;
+    auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
+    if (it != parameterMap_.end()) {
+        try {
+            versionCode = std::stoi(it->second);
+        } catch (const std::out_of_range& e) {
+            LOGE("Out of range: %s", e.what());
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+        }
+    } else {
+        LOGE("Parameter not found: %s", Constants::PARAM_VERSION_CODE.c_str());
+    }
     std::string bundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
     for (const std::string &path : hspList_) {
         if (ZipUtils::Unzip(path, tempPath) != ZIP_ERR_SUCCESS) {
