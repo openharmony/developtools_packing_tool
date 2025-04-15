@@ -24,7 +24,7 @@ config("pt_json_test_config") {
   cflags_objcc = cflags_cc
 }
 
-module_output_path = "developtools/packing_tool"
+module_output_path = "packing_tool/packing_tool"
 
 ohos_unittest("pt_json_test") {
   module_out_path = module_output_path

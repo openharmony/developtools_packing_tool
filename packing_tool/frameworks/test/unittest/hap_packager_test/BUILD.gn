@@ -24,7 +24,7 @@ config("hap_packager_test_config") {
   cflags_objcc = cflags_cc
 }
 
-module_output_path = "developtools/packing_tool"
+module_output_path = "packing_tool/packing_tool"
 
 ohos_unittest("hap_packager_test") {
   module_out_path = module_output_path
@@ -64,5 +64,5 @@ ohos_copy("copy_test_file") {
   subsystem_name = "developtools"
   part_name = "packing_tool"
   sources = [ "./hap_packager_file" ]
-  outputs = [ "$root_out_dir/tests/unittest/developtools/packing_tool/test_file/hap_packager_file/" ]
+  outputs = [ "$root_out_dir/tests/unittest/packing_tool/packing_tool/test_file/hap_packager_file/" ]
 }
