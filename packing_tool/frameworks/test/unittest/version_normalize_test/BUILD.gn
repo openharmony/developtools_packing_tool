@@ -24,7 +24,7 @@ config("version_normalize_test_config") {
   cflags_objcc = cflags_cc
 }
 
-module_output_path = "developtools/packing_tool"
+module_output_path = "packing_tool/packing_tool"
 
 ohos_unittest("version_normalize_test") {
   module_out_path = module_output_path
@@ -71,5 +71,5 @@ ohos_copy("copy_test_file") {
   subsystem_name = "developtools"
   part_name = "packing_tool"
   sources = [ "./version_normalize_file" ]
-  outputs = [ "$root_out_dir/tests/unittest/developtools/packing_tool/test_file/version_normalize_file/" ]
+  outputs = [ "$root_out_dir/tests/unittest/packing_tool/packing_tool/test_file/version_normalize_file/" ]
 }
