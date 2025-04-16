@@ -127,13 +127,13 @@ int32_t PackageNormalize::Process()
     if (it != parameterMap_.end()) {
         try {
             versionCode = std::stoi(it->second);
-        } catch (const std::out_of_range& e) {
-            LOGE("Out of range: %s", e.what());
         } catch (const std::exception& e) {
             LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
         }
     } else {
         LOGE("Parameter not found: %s", Constants::PARAM_VERSION_CODE.c_str());
+        return ERR_INVALID_VALUE;
     }
     std::string bundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
     for (const std::string &path : hspList_) {
