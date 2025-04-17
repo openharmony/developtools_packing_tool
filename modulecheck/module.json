@@ -43,6 +43,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
+                "extractNativeLibs",
                 "installationFree",
                 "atomicService",
                 "targetModuleName",
@@ -137,6 +138,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
+                "extractNativeLibs",
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
@@ -192,6 +194,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
+                "extractNativeLibs",
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
@@ -1493,6 +1496,11 @@
           "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
           "type": "boolean",
           "default": false
+        },
+        "extractNativeLibs": {
+          "description": "Specifies whether to extract native libraries (so) of the .hap file during installation.",
+          "type": "boolean",
+          "default": true
         },
         "atomicService": {
           "description": "Indicates the module config in atomic service.",
