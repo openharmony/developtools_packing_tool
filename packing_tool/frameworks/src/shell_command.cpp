@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,6 +33,7 @@
 #include "package_normalize.h"
 #include "res_packager.h"
 #include "version_normalize.h"
+#include "general_normalize.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -189,6 +190,10 @@ std::unique_ptr<Packager> ShellCommand::getPackager()
     } else if (mode == Constants::MODE_RES) {
         std::unique_ptr<Packager> packager =
             std::make_unique<ResPackager>(parameterMap_, resultReceiver_);
+        return packager;
+    } else if (mode == Constants::MODE_GENERAL_NORMALIZE) {
+        std::unique_ptr<Packager> packager =
+            std::make_unique<GeneralNormalize>(parameterMap_, resultReceiver_);
         return packager;
     }
     resultReceiver_.append("not support --mode: ").append(mode).append("\n");

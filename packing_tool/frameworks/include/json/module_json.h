@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -52,6 +52,27 @@ public:
     bool GetApiVersionObject(std::unique_ptr<PtJson>& apiVersionObj);
 
     // stage funcs, module.json
+    bool SetStageBundleName(const std::string& bundleName);
+    bool SetStageMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode);
+    bool SetStageMinAPIVersion(const int32_t& minAPIVersion);
+    bool SetStageTargetAPIVersion(const int32_t& targetAPIVersion);
+    bool SetStageApiReleaseType(const std::string& apiReleaseType);
+    bool SetStageBundleType(const std::string& bundleType);
+    bool SetStageInstallationFree(const bool& installationFree);
+    bool SetStageDeliveryWithInstall(const bool& deliveryWithInstall);
+    bool SetStageCompileSdkType(const std::string& compileSdkType);
+
+     // fa funcs, module.json
+     bool SetFaBundleName(const std::string& bundleName);
+     bool SetFaMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode);
+     bool SetFaMinAPIVersion(const int32_t& minAPIVersion);
+     bool SetFaTargetAPIVersion(const int32_t& targetAPIVersion);
+     bool SetFaApiReleaseType(const std::string& apiReleaseType);
+     bool SetFaBundleType(const std::string& bundleType);
+     bool SetFaInstallationFree(const bool& installationFree);
+     bool SetFaDeliveryWithInstall(const bool& deliveryWithInstall);
+     bool SetFaCompileSdkType(const std::string& compileSdkType);
+
     bool GetStageVersion(Version& version);
     bool GetStageVersionByAppObj(std::unique_ptr<PtJson>& appObj, Version& version);
     bool SetStageVersionCode(const int32_t& versionCode);
@@ -197,6 +218,19 @@ public:
 
     // json function for hqf
     bool GetPatchModuleName(std::string& patchModuleName);
+
+    bool SetBundleName(const std::string& bundleName, const bool& isStage);
+    bool SetMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode, const bool& isStage);
+    bool SetMinAPIVersion(const int32_t& minAPIVersion, const bool& isStage);
+    bool SetTargetAPIVersion(const int32_t& targetAPIVersion, const bool& isStage);
+    bool SetApiReleaseType(const std::string& apiReleaseType, const bool& isStage);
+    bool SetBundleType(const std::string& bundleType, const bool& isStage);
+    bool SetInstallationFree(const bool& installationFree, const bool& isStage);
+    bool SetDeliveryWithInstall(const bool& deliveryWithInstall, const bool& isStage);
+    bool SetCompileSdkType(const std::string& compileSdkType, const bool& isStage);
+    bool SetCompileSdkVersion(const std::string& compileSdkVersion, const bool& isStage);
+    bool SetVersionCode(const int32_t& versionCode, const bool& isStage);
+    bool SetVersionName(const std::string& versionName, const bool& isStage);
 
 protected:
     bool CheckStageBundleType(const std::string& moduleName, const std::string& moduleType,
