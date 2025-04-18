@@ -16,6 +16,7 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_JSON_PT_JSON_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_JSON_PT_JSON_H
 
+#include <list>
 #include <memory>
 #include <string>
 
@@ -56,6 +57,7 @@ public:
     bool Add(const char *key, double value) const;
     bool Add(const char *key, const char *value) const;
     bool Add(const char *key, const std::unique_ptr<PtJson> &value) const;
+    bool Add(const char *key, std::list<std::string>& values) const;
 
     // Push back to array
     bool Push(bool value) const;
@@ -116,6 +118,7 @@ public:
     Result SetUInt64(const char *key, const uint64_t& value);
     Result SetDouble(const char *key, const double& value);
     Result SetString(const char *key, const std::string& value);
+    Result SetArray(const char *key, const std::list<std::string>& value);
 
 private:
     cJSON *object_ = nullptr;

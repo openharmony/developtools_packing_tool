@@ -156,6 +156,30 @@ bool PtJson::Add(const char *key, const std::unique_ptr<PtJson> &value) const
     return true;
 }
 
+bool PtJson::Add(const char *key, std::list<std::string> &values) const
+{
+    if (key == nullptr || Contains(key)) {
+        return false;
+    }
+
+    cJSON *node = cJSON_CreateArray();
+    if (node == nullptr) {
+        return false;
+    }
+
+    for (const auto &value : values) {
+        cJSON_AddItemToArray(node, cJSON_CreateString(value.c_str()));
+    }
+
+    cJSON_bool ret = cJSON_AddItemToObject(object_, key, node);
+    if (ret == 0) {
+        cJSON_Delete(node);
+        return false;
+    }
+
+    return true;
+}
+
 bool PtJson::Push(bool value) const
 {
     return Push(cJSON_CreateBool(value));
@@ -523,6 +547,31 @@ Result PtJson::GetArray(const char *key, std::unique_ptr<PtJson> *value) const
     }
 
     *value = std::make_unique<PtJson>(item);
+    return Result::SUCCESS;
+}
+
+Result PtJson::SetArray(const char *key, const std::list<std::string>& value)
+{
+    cJSON *item = cJSON_GetObjectItem(object_, key);
+    if (item == nullptr) {
+        return Result::NOT_EXIST;
+    }
+    if (cJSON_IsArray(item) == 0) {
+        return Result::TYPE_ERROR;
+    }
+    cJSON *newArray = cJSON_CreateArray();
+    if (newArray == nullptr) {
+        return Result::TYPE_ERROR;
+    }
+    for (const auto& str : value) {
+        cJSON *strItem = cJSON_CreateString(str.c_str());
+        if (strItem == nullptr) {
+            cJSON_Delete(newArray);
+            return Result::TYPE_ERROR;
+        }
+        cJSON_AddItemToArray(newArray, strItem);
+    }
+    cJSON_ReplaceItemInObject(object_, key, newArray);
     return Result::SUCCESS;
 }
 

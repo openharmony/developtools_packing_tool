@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,7 @@ const std::string API_RELEASE_TYPE = "apiReleaseType";
 const std::string DEBUG = "debug";
 const std::string COMPATIBLE = "compatible";
 const std::string RELEASE_TYPE = "releaseType";
+const std::string DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string TARGET = "target";
 const std::string VERSION = "version";
 const std::string CODE = "code";
@@ -1400,6 +1401,242 @@ bool ModuleJson::SetBuildHash(const std::string& buildHash)
     } else {
         if (!moduleObj->Add(BUILD_HASH.c_str(), buildHash.c_str())) {
             LOGE("Module node add %s failed!", BUILD_HASH.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetVersionCode(const int32_t& versionCode, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageVersionCode(versionCode)) {
+            LOGE("SetStageVersionCode failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaVersionCode(versionCode)) {
+            LOGE("SetFaVersionCode failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetVersionName(const std::string& versionName, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageVersionName(versionName)) {
+            LOGE("SetStageVersionName failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaVersionName(versionName)) {
+            LOGE("SetFaVersionName failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetBundleName(const std::string& bundleName, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageBundleName(bundleName)) {
+            LOGE("SetStageBundleName failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaBundleName(bundleName)) {
+            LOGE("SetFaBundleName failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageMinCompatibleVersionCode(minCompatibleVersionCode)) {
+            LOGE("SetStageMinCompatibleVersionCode failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaMinCompatibleVersionCode(minCompatibleVersionCode)) {
+            LOGE("SetFaMinCompatibleVersionCode failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetMinAPIVersion(const int32_t& minAPIVersion, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageMinAPIVersion(minAPIVersion)) {
+            LOGE("SetStageMinAPIVersion failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaMinAPIVersion(minAPIVersion)) {
+            LOGE("SetFaMinAPIVersion failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetTargetAPIVersion(const int32_t& targetAPIVersion, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageTargetAPIVersion(targetAPIVersion)) {
+            LOGE("SetStageTargetAPIVersion failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaTargetAPIVersion(targetAPIVersion)) {
+            LOGE("SetFaTargetAPIVersion failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetApiReleaseType(const std::string& apiReleaseType, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageApiReleaseType(apiReleaseType)) {
+            LOGE("SetStageApiReleaseType failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaApiReleaseType(apiReleaseType)) {
+            LOGE("SetFaApiReleaseType failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetBundleType(const std::string& bundleType, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageBundleType(bundleType)) {
+            LOGE("SetStageBundleType failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaBundleType(bundleType)) {
+            LOGE("SetFaBundleType failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetInstallationFree(const bool& installationFree, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageInstallationFree(installationFree)) {
+            LOGE("SetStageInstallationFree failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaInstallationFree(installationFree)) {
+            LOGE("SetFaInstallationFree failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetDeliveryWithInstall(const bool& deliveryWithInstall, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageDeliveryWithInstall(deliveryWithInstall)) {
+            LOGE("SetStageDeliveryWithInstall failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaDeliveryWithInstall(deliveryWithInstall)) {
+            LOGE("SetFaDeliveryWithInstall failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::SetDeviceTypes(const std::list<std::string>& deviceTypes, const bool& isStage)
+{
+    if (isStage) {
+        if (!SetStageDeviceTypes(deviceTypes)) {
+            LOGE("SetStageDeviceTypen failed!");
+            return false;
+        }
+    } else {
+        if (!SetFaDeviceTypes(deviceTypes)) {
+            LOGE("SetFaDeviceTypen failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::GetMinApiVersion(int32_t& minAPIVersion)
+{
+    std::unique_ptr<PtJson> appObj;
+    if (!GetAppObject(appObj)) {
+        LOGE("GetAppObject failed!");
+        return false;
+    }
+    if (!appObj) {
+        LOGE("App node is null!");
+        return false;
+    }
+    if (appObj->Contains(MIN_API_VERSION.c_str())) {
+        if (appObj->GetInt(MIN_API_VERSION.c_str(), &minAPIVersion) != Result::SUCCESS) {
+            LOGE("App node get %s failed!", MIN_API_VERSION.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::GetTargetApiVersion(int32_t& targetAPIVersion)
+{
+    std::unique_ptr<PtJson> appObj;
+    if (!GetAppObject(appObj)) {
+        LOGE("GetAppObject failed!");
+        return false;
+    }
+    if (!appObj) {
+        LOGE("App node is null!");
+        return false;
+    }
+    if (appObj->Contains(TARGET_API_VERSION.c_str())) {
+        if (appObj->GetInt(TARGET_API_VERSION.c_str(), &targetAPIVersion) != Result::SUCCESS) {
+            LOGE("App node get %s failed!", TARGET_API_VERSION.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::GetDeliveryWithInstall(bool& deliveryWithInstall)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    if (!moduleObj) {
+        LOGE("Module node is null!");
+        return false;
+    }
+    if (moduleObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
+        if (moduleObj->GetBool(DELIVERY_WITH_INSTALL.c_str(), &deliveryWithInstall) != Result::SUCCESS) {
+            LOGE("Module node get %s failed!", DELIVERY_WITH_INSTALL.c_str());
             return false;
         }
     }
