@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,6 +46,8 @@ public:
     static bool IsPositiveInteger(const std::string& str, int min = 0, int max = INT32_MAX);
     static std::string ReplaceAll(std::string str, const std::string& from, const std::string& to);
     static bool EndsWith(const std::string& str, const std::string& suffix);
+    static bool StringToBool(const std::string& str);
+    static bool StringToArray(const std::string& str, std::list<std::string>& array);
 
     // Algorithm
     static std::string GetSha256Str(const std::string &str);
@@ -71,6 +73,9 @@ public:
     static bool GetFormattedPath(const std::string& path, std::string& formattedPath);
     static bool GetRealPath(const std::string& path, std::string& realPath);
     static bool GetRealPathOfNoneExistFile(const std::string& path, std::string& realPath);
+    static bool RemoveAllFilesInDirectory(const std::string& directoryPath);
+    static std::string ArrayToString(const std::list<std::string> &array);
+    static std::string BoolToString(bool value);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
