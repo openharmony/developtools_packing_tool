@@ -314,8 +314,13 @@ bool PackInfo::GetApiVersionObjectByModuleObj(const std::unique_ptr<PtJson>& mod
         return false;
     }
     if (!moduleObj->Contains(API_VERSION.c_str())) {
-        LOGE("Module node has no %s node!", API_VERSION.c_str());
-        return false;
+        cJSON *apiVersion = cJSON_CreateObject();
+        apiVersionObj = std::make_unique<PtJson>(apiVersion);
+        if (!moduleObj->Add(API_VERSION.c_str(), apiVersionObj)) {
+            LOGE("Module node add %s node failed!", API_VERSION.c_str());
+            return false;
+        }
+        return true;
     }
     if (moduleObj->GetObject(API_VERSION.c_str(), &apiVersionObj) != Result::SUCCESS) {
         LOGE("Module node get %s node failed!", API_VERSION.c_str());
@@ -696,7 +701,7 @@ bool PackInfo::SetMinCompatibleVersionCode(const int32_t& minCompatibleVersionCo
         return false;
     }
     if (!versionObj->Contains(MIN_COMPATIBLE_VERSION_CODE.c_str())) {
-        if(!versionObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
+        if (!versionObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
             LOGE("App node add %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
             return false;
         }
@@ -717,7 +722,7 @@ bool PackInfo::SetMinAPIVersion(const int32_t& minAPIVersion)
         return false;
     }
     int32_t modulesSize = modulesObj->GetSize();
-    for(int i = 0; i < modulesSize; i++) {
+    for (int i = 0; i < modulesSize; i++) {
         std::unique_ptr<PtJson> moduleObj = modulesObj->Get(i);
         if (moduleObj == nullptr) {
             LOGE("GetModuleObject failed!");
@@ -729,7 +734,7 @@ bool PackInfo::SetMinAPIVersion(const int32_t& minAPIVersion)
             return false;
         }
         if (!apiVersionObj->Contains(COMPATIBLE.c_str())) {
-            if(!apiVersionObj->Add(COMPATIBLE.c_str(), minAPIVersion)) {
+            if (!apiVersionObj->Add(COMPATIBLE.c_str(), minAPIVersion)) {
                 LOGE("App node add %s failed!", COMPATIBLE.c_str());
                 return false;
             }
@@ -751,7 +756,7 @@ bool PackInfo::SetTargetAPIVersion(const int32_t& targetAPIVersion)
         return false;
     }
     int32_t modulesSize = modulesObj->GetSize();
-    for(int i = 0; i < modulesSize; i++) {
+    for (int i = 0; i < modulesSize; i++) {
         std::unique_ptr<PtJson> moduleObj = modulesObj->Get(i);
         if (moduleObj == nullptr) {
             LOGE("GetModuleObject failed!");
@@ -763,7 +768,7 @@ bool PackInfo::SetTargetAPIVersion(const int32_t& targetAPIVersion)
             return false;
         }
         if (!apiVersionObj->Contains(TARGET.c_str())) {
-            if(!apiVersionObj->Add(TARGET.c_str(), targetAPIVersion)) {
+            if (!apiVersionObj->Add(TARGET.c_str(), targetAPIVersion)) {
                 LOGE("App node add %s failed!", TARGET.c_str());
                 return false;
             }
@@ -785,7 +790,7 @@ bool PackInfo::SetApiReleaseType(const std::string& apiReleaseType)
         return false;
     }
     int32_t modulesSize = modulesObj->GetSize();
-    for(int i = 0; i < modulesSize; i++) {
+    for (int i = 0; i < modulesSize; i++) {
         std::unique_ptr<PtJson> moduleObj = modulesObj->Get(i);
         if (moduleObj == nullptr) {
             LOGE("GetModuleObject failed!");
@@ -797,7 +802,7 @@ bool PackInfo::SetApiReleaseType(const std::string& apiReleaseType)
             return false;
         }
         if (!apiVersionObj->Contains(RELEASE_TYPE.c_str())) {
-            if(!apiVersionObj->Add(RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
+            if (!apiVersionObj->Add(RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
                 LOGE("App node add %s failed!", RELEASE_TYPE.c_str());
                 return false;
             }
@@ -819,7 +824,7 @@ bool PackInfo::SetBundleType(const std::string& bundleType)
         return false;
     }
     if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
-        if(!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
+        if (!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
             LOGE("App node add %s failed!", BUNDLE_TYPE.c_str());
             return false;
         }
@@ -840,7 +845,7 @@ bool PackInfo::SetInstallationFree(const bool& installationFree)
         return false;
     }
     int32_t modulesSize = modulesObj->GetSize();
-    for(int i = 0; i < modulesSize; i++) {
+    for (int i = 0; i < modulesSize; i++) {
         std::unique_ptr<PtJson> moduleObj = modulesObj->Get(i);
         if (moduleObj == nullptr) {
             LOGE("GetModuleObject failed!");
@@ -852,7 +857,7 @@ bool PackInfo::SetInstallationFree(const bool& installationFree)
             return false;
         }
         if (!distroObj->Contains(INSTALLATION_FREE.c_str())) {
-            if(!distroObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
+            if (!distroObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
                 LOGE("App node add %s failed!", INSTALLATION_FREE.c_str());
                 return false;
             }
@@ -874,7 +879,7 @@ bool PackInfo::SetDeliveryWithInstall(const bool& deliveryWithInstall)
         return false;
     }
     int32_t modulesSize = modulesObj->GetSize();
-    for(int i = 0; i < modulesSize; i++) {
+    for (int i = 0; i < modulesSize; i++) {
         std::unique_ptr<PtJson> moduleObj = modulesObj->Get(i);
         if (moduleObj == nullptr) {
             LOGE("GetModuleObject failed!");
@@ -886,7 +891,7 @@ bool PackInfo::SetDeliveryWithInstall(const bool& deliveryWithInstall)
             return false;
         }
         if (!distroObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
-            if(!distroObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
+            if (!distroObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
                 LOGE("App node add %s failed!", DELIVERY_WITH_INSTALL.c_str());
                 return false;
             }
@@ -903,14 +908,14 @@ bool PackInfo::SetDeliveryWithInstall(const bool& deliveryWithInstall)
         return false;
     }
     int32_t packagesSize = packagesObj->GetSize();
-    for(int i = 0; i < packagesSize; i++) {
+    for (int i = 0; i < packagesSize; i++) {
         std::unique_ptr<PtJson> packageObj = packagesObj->Get(i);
         if (packageObj == nullptr) {
             LOGE("GetModuleObject failed!");
             return false;
         }
         if (!packageObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
-            if(!packageObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
+            if (!packageObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
                 LOGE("App node add %s failed!", DELIVERY_WITH_INSTALL.c_str());
                 return false;
             }
@@ -932,14 +937,14 @@ bool PackInfo::SetDeviceTypes(const std::list<std::string>& deviceTypes)
         return false;
     }
     int32_t modulesSize = modulesObj->GetSize();
-    for(int i = 0; i < modulesSize; i++) {
+    for (int i = 0; i < modulesSize; i++) {
         std::unique_ptr<PtJson> moduleObj = modulesObj->Get(i);
         if (moduleObj == nullptr) {
             LOGE("GetModuleObject failed!");
             return false;
         }
         if (!moduleObj->Contains(DEVICE_TYPE.c_str())) {
-            if(!moduleObj->Add(DEVICE_TYPE.c_str(), deviceTypes)) {
+            if (!moduleObj->Add(DEVICE_TYPE.c_str(), deviceTypes)) {
                 LOGE("App node add %s failed!", DEVICE_TYPE.c_str());
                 return false;
             }
@@ -956,14 +961,14 @@ bool PackInfo::SetDeviceTypes(const std::list<std::string>& deviceTypes)
         return false;
     }
     int32_t packagesSize = packagesObj->GetSize();
-    for(int i = 0; i < packagesSize; i++) {
+    for (int i = 0; i < packagesSize; i++) {
         std::unique_ptr<PtJson> packageObj = packagesObj->Get(i);
         if (packageObj == nullptr) {
             LOGE("GetModuleObject failed!");
             return false;
         }
         if (!packageObj->Contains(DEVICE_TYPE.c_str())) {
-            if(!packageObj->Add(DEVICE_TYPE.c_str(), deviceTypes)) {
+            if (!packageObj->Add(DEVICE_TYPE.c_str(), deviceTypes)) {
                 LOGE("App node add %s failed!", DEVICE_TYPE.c_str());
                 return false;
             }

@@ -36,11 +36,15 @@ protected:
     int32_t PostProcess() override;
 
 private:
-    bool ModifyModuleJson(const std::string &moduleJsonPath, NormalizeVersion &normalizeVersion);
-    bool ModifyConfigJson(const std::string &moduleJsonPath, NormalizeVersion &normalizeVersion);
+    bool ModifyModuleJson(const std::string &moduleJsonPath, std::map<std::string, std::string> &modifyMap,
+        std::string &bundleName, std::string &moduleName);
+    bool ModifyConfigJson(const std::string &moduleJsonPath, std::map<std::string, std::string> &modifyMap,
+        std::string &bundleName, std::string &moduleName);
     bool ModifyPackInfo(const std::string &packInfoPath);
-    bool ProcessJsonFiles(const std::string &tempPath, std::list<NormalizeVersion> &normalizeVersionList);
+    bool ProcessJsonFiles(const std::string &tempPath, std::list<std::map<std::string, std::string>> &modifyMapList,
+        std::string &bundleName, std::string &moduleName);
     bool CompressDirToHap(const std::string &tempDir, const std::string &modifiedHapPath);
+    std::string ConvertMapListToString(const std::list<std::map<std::string, std::string>>& modifyMapList);
     ZipWrapper zipWrapper_;
     UnzipWrapper unzipWrapper_;
     std::list<std::string> hspOrhapList_;

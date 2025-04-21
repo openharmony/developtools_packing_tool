@@ -132,7 +132,7 @@ bool ModuleJson::SetStageBundleName(const std::string& bundleName)
         return false;
     }
     if (!appObj->Contains(BUNDLE_NAME.c_str())) {
-        if(!appObj->Add(BUNDLE_NAME.c_str(), bundleName.c_str())) {
+        if (!appObj->Add(BUNDLE_NAME.c_str(), bundleName.c_str())) {
             LOGE("App node add %s failed!", BUNDLE_NAME.c_str());
             return false;
         }
@@ -153,7 +153,7 @@ bool ModuleJson::SetStageMinCompatibleVersionCode(const int32_t& minCompatibleVe
         return false;
     }
     if (!appObj->Contains(MIN_COMPATIBLE_VERSION_CODE.c_str())) {
-        if(!appObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
+        if (!appObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
             LOGE("App node add %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
             return false;
         }
@@ -174,7 +174,7 @@ bool ModuleJson::SetStageMinAPIVersion(const int32_t& minAPIVersion)
         return false;
     }
     if (!appObj->Contains(MIN_API_VERSION.c_str())) {
-        if(!appObj->Add(MIN_API_VERSION.c_str(), minAPIVersion)) {
+        if (!appObj->Add(MIN_API_VERSION.c_str(), minAPIVersion)) {
             LOGE("App node add %s failed!", MIN_API_VERSION.c_str());
             return false;
         }
@@ -195,7 +195,7 @@ bool ModuleJson::SetStageTargetAPIVersion(const int32_t& targetAPIVersion)
         return false;
     }
     if (!appObj->Contains(TARGET_API_VERSION.c_str())) {
-        if(!appObj->Add(TARGET_API_VERSION.c_str(), targetAPIVersion)) {
+        if (!appObj->Add(TARGET_API_VERSION.c_str(), targetAPIVersion)) {
             LOGE("App node add %s failed!", TARGET_API_VERSION.c_str());
             return false;
         }
@@ -216,7 +216,7 @@ bool ModuleJson::SetStageApiReleaseType(const std::string& apiReleaseType)
         return false;
     }
     if (!appObj->Contains(API_RELEASE_TYPE.c_str())) {
-        if(!appObj->Add(API_RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
+        if (!appObj->Add(API_RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
             LOGE("App node add %s failed!", API_RELEASE_TYPE.c_str());
             return false;
         }
@@ -237,7 +237,7 @@ bool ModuleJson::SetStageBundleType(const std::string& bundleType)
         return false;
     }
     if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
-        if(!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
+        if (!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
             LOGE("App node add %s failed!", BUNDLE_TYPE.c_str());
             return false;
         }
@@ -258,7 +258,7 @@ bool ModuleJson::SetStageInstallationFree(const bool& installationFree)
         return false;
     }
     if (!moduleObj->Contains(INSTALLATION_FREE.c_str())) {
-        if(!moduleObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
+        if (!moduleObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
             LOGE("App node add %s failed!", INSTALLATION_FREE.c_str());
             return false;
         }
@@ -279,7 +279,7 @@ bool ModuleJson::SetStageDeliveryWithInstall(const bool& deliveryWithInstall)
         return false;
     }
     if (!moduleObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
-        if(!moduleObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
+        if (!moduleObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
             LOGE("App node add %s failed!", DELIVERY_WITH_INSTALL.c_str());
             return false;
         }
@@ -300,7 +300,7 @@ bool ModuleJson::SetStageDeviceTypes(const std::list<std::string>& deviceTypes)
         return false;
     }
     if (!moduleObj->Contains(DEVICE_TYPES.c_str())) {
-        if(!moduleObj->Add(DEVICE_TYPES.c_str(), deviceTypes)) {
+        if (!moduleObj->Add(DEVICE_TYPES.c_str(), deviceTypes)) {
             LOGE("App node add %s failed!", DEVICE_TYPES.c_str());
             return false;
         }
