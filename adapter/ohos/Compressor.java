@@ -3404,8 +3404,8 @@ public class Compressor {
     private void writeJson(String jsonFilePath, JSONObject jsonObject) throws IOException, BundleException {
         BufferedWriter bw = null;
         try {
-            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
-                SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.WriteMapNullValue,
+                SerializerFeature.WriteDateUseDateFormat);
             bw = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(jsonFilePath), StandardCharsets.UTF_8));
             bw.write(pretty);
