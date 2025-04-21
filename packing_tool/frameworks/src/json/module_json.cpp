@@ -243,8 +243,13 @@ bool ModuleJson::GetApiVersionObject(std::unique_ptr<PtJson>& apiVersionObj)
         return false;
     }
     if (!appObj->Contains(API_VERSION.c_str())) {
-        LOGE("App node has no %s node!", API_VERSION.c_str());
-        return false;
+        cJSON *apiVersion = cJSON_CreateObject();
+        apiVersionObj = std::make_unique<PtJson>(apiVersion);
+        if (appObj->Add(API_VERSION.c_str(), apiVersionObj)) {
+            LOGE("App node add %s node failed!", API_VERSION.c_str());
+            return false;
+        }
+        return true;
     }
     if (appObj->GetObject(API_VERSION.c_str(), &apiVersionObj) != Result::SUCCESS) {
         LOGE("App node get %s node failed!", API_VERSION.c_str());

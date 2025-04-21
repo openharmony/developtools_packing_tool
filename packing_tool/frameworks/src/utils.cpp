@@ -482,7 +482,8 @@ bool Utils::GetRealPathOfNoneExistFile(const std::string& path, std::string& rea
     return true;
 }
 
-bool Utils::RemoveAllFilesInDirectory(const std::string& directoryPath) {
+bool Utils::RemoveAllFilesInDirectory(const std::string& directoryPath)
+{
     fs::path fsPath(directoryPath);
     if (!fs::exists(fsPath) || !fs::is_directory(fsPath)) {
         return false;

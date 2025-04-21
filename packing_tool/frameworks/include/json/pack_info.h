@@ -51,6 +51,8 @@ public:
         int32_t moduleIndex, std::unique_ptr<PtJson>& distroObj);
     bool GetDistroObjectByModuleObj(const std::unique_ptr<PtJson>& moduleObj,
         std::unique_ptr<PtJson>& distroObj);
+    bool GetApiVersionObjectByModuleObj(const std::unique_ptr<PtJson>& moduleObj,
+        std::unique_ptr<PtJson>& distroObj);
     bool GetPackageObject(int32_t packageIndex, std::unique_ptr<PtJson>& packageObj);
     bool GetExtensionAbilitiesObj(int32_t moduleIndex, std::unique_ptr<PtJson>& extensionAbilitiesObj);
     bool GetExtensionAbilitiesObjByModulesObj(const std::unique_ptr<PtJson>& modulesObj,
@@ -92,8 +94,7 @@ public:
     bool SetBundleType(const std::string& bundleType);
     bool SetInstallationFree(const bool& installationFree);
     bool SetDeliveryWithInstall(const bool& deliveryWithInstall);
-    bool SetCompileSdkType(const std::string& compileSdkType);
-    bool SetCompileSdkVersion(const std::string& compileSdkVersion);
+    bool SetDeviceTypes(const std::list<std::string>& deviceTypes);
 
 private:
     std::unique_ptr<PtJson> root_ = nullptr;

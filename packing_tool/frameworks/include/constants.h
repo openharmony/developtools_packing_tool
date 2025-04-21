@@ -87,7 +87,7 @@ const std::string PARAM_HQF_LIST = "hqf-list";
 const std::string PARAM_INPUT_LIST = "input-list";
 const std::string PARAM_VERSION_CODE = "version-code";
 const std::string PARAM_VERSION_NAME = "version-name";
-const std::string PARAM_DEVICE_TYPE = "device-type";
+const std::string PARAM_DEVICE_TYPES = "device-types";
 const std::string PARAM_MIN_COMPATIBLE_VERSION_CODE = "min-compatible-version-code";
 const std::string PARAM_MIN_API_VERSION = "min-api-version";
 const std::string PARAM_COMPILE_SDK_TYPE = "compile-sdk-type";
@@ -141,11 +141,12 @@ const std::string NULL_DIR_NAME = "";
 const std::string DEVICE_TYPE_FITNESSWATCH = "fitnessWatch";
 const std::string DEVICE_TYPE_FITNESSWATCH_NEW = "liteWearable";
 const std::string VERSION_RECORD = "version_record.json";
+const std::string GENERAL_RECORD = "general_record.json";
 const std::string VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
 const std::string BUNDLE_NAME_PATTERN =
     "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
-const std::string API_RELEASE_TYPE_PATTERN = "^(Canary[1-9]*)|(Beta[1-9]*)|(Release[1-9]*)$";
-const std::string BUNDLE_TYPE_PATTERN = "^(Canary[1-9]*)|(Beta[1-9]*)|(Release[1-9]*)$";
+const std::string API_RELEASE_TYPE_PATTERN = "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$";
+const std::vector<std::string> BUNDLE_TYPE_LIST = {"app", "appService", "atomicService", "shared", "appPlugin"};
 
 const std::string JSON_SUFFIX = ".json";
 const std::string HAP_SUFFIX = ".hap";
@@ -166,6 +167,8 @@ const int32_t BUNDLE_NAME_LEN_MIN = 7;
 const int32_t BUNDLE_NAME_LEN_MAX = 128;
 const int32_t APP_SUFFIX_LENGTH = 4;
 const char COMMA_SPLIT = ',';
+const int32_t MAX_VERSION_NAME_LENGTH = 127;
+const int32_t MAX_VERSION_CODE = 2147483647;
 
 constexpr const char* SHORT_OPTIONS = "";
 const struct option LONG_OPTIONS[] = {
@@ -213,7 +216,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_ENTRYCARD_PATH.c_str(), required_argument, nullptr, 43},
     {PARAM_BUNDLE_NAME.c_str(), required_argument, nullptr, 44},
     {PARAM_TOTAL_LIMIT.c_str(), required_argument, nullptr, 45},
-    {PARAM_DEVICE_TYPE.c_str(), required_argument, nullptr, 46},
+    {PARAM_DEVICE_TYPES.c_str(), required_argument, nullptr, 46},
     {PARAM_MIN_COMPATIBLE_VERSION_CODE.c_str(), required_argument, nullptr, 47},
     {PARAM_MIN_API_VERSION.c_str(), required_argument, nullptr, 48},
     {PARAM_COMPILE_SDK_TYPE.c_str(), required_argument, nullptr, 49},

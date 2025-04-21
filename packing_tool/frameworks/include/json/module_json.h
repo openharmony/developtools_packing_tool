@@ -60,18 +60,18 @@ public:
     bool SetStageBundleType(const std::string& bundleType);
     bool SetStageInstallationFree(const bool& installationFree);
     bool SetStageDeliveryWithInstall(const bool& deliveryWithInstall);
-    bool SetStageCompileSdkType(const std::string& compileSdkType);
+    bool SetStageDeviceTypes(const std::list<std::string>& deviceType);
 
-     // fa funcs, module.json
-     bool SetFaBundleName(const std::string& bundleName);
-     bool SetFaMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode);
-     bool SetFaMinAPIVersion(const int32_t& minAPIVersion);
-     bool SetFaTargetAPIVersion(const int32_t& targetAPIVersion);
-     bool SetFaApiReleaseType(const std::string& apiReleaseType);
-     bool SetFaBundleType(const std::string& bundleType);
-     bool SetFaInstallationFree(const bool& installationFree);
-     bool SetFaDeliveryWithInstall(const bool& deliveryWithInstall);
-     bool SetFaCompileSdkType(const std::string& compileSdkType);
+    // fa funcs, module.json
+    bool SetFaBundleName(const std::string& bundleName);
+    bool SetFaMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode);
+    bool SetFaMinAPIVersion(const int32_t& minAPIVersion);
+    bool SetFaTargetAPIVersion(const int32_t& targetAPIVersion);
+    bool SetFaApiReleaseType(const std::string& apiReleaseType);
+    bool SetFaBundleType(const std::string& bundleType);
+    bool SetFaInstallationFree(const bool& installationFree);
+    bool SetFaDeliveryWithInstall(const bool& deliveryWithInstall);
+    bool SetFaDeviceTypes(const std::list<std::string>& deviceType);
 
     bool GetStageVersion(Version& version);
     bool GetStageVersionByAppObj(std::unique_ptr<PtJson>& appObj, Version& version);
@@ -162,6 +162,7 @@ public:
     bool GetFaAsanEnabledByAppObj(std::unique_ptr<PtJson>& appObj, bool& asanEnabled);
     bool GetFaReleaseType(std::string& releaseType);
     bool GetFaReleaseTypeByAppObj(std::unique_ptr<PtJson>& appObj, std::string& releaseType);
+    bool GetFaDeliveryWithInstall(bool& deliveryWithInstall);
 
     // common funcs
     bool GetBundleName(std::string& bundleName);
@@ -179,6 +180,7 @@ public:
     bool GetTargetPriorityByAppObj(std::unique_ptr<PtJson>& appObj, int32_t& targetPriority);
     bool GetTargetModulePriority(int32_t& targetModulePriority);
     bool GetTargetModulePriorityByModuleObj(std::unique_ptr<PtJson>& moduleObj, int32_t& targetModulePriority);
+
     // config.json or module.json
     bool GetAbilityNames(std::list<std::string>& abilityNames);
     bool GetAbilityNamesByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& abilityNames);
@@ -198,6 +200,9 @@ public:
 
     bool GetMultiAppMode(MultiAppMode& multiAppMode);
     bool GetMultiAppModeByAppObj(std::unique_ptr<PtJson>& appObj, MultiAppMode& multiAppMode);
+    bool GetMinApiVersion(int32_t& minAPIVersion);
+    bool GetTargetApiVersion(int32_t& targetAPIVersion);
+    bool GetDeliveryWithInstall(bool& deliveryWithInstall);
 
     bool IsModuleAtomicServiceValid();
     bool CheckEntryInAtomicService();
@@ -227,10 +232,9 @@ public:
     bool SetBundleType(const std::string& bundleType, const bool& isStage);
     bool SetInstallationFree(const bool& installationFree, const bool& isStage);
     bool SetDeliveryWithInstall(const bool& deliveryWithInstall, const bool& isStage);
-    bool SetCompileSdkType(const std::string& compileSdkType, const bool& isStage);
-    bool SetCompileSdkVersion(const std::string& compileSdkVersion, const bool& isStage);
     bool SetVersionCode(const int32_t& versionCode, const bool& isStage);
     bool SetVersionName(const std::string& versionName, const bool& isStage);
+    bool SetDeviceTypes(const std::list<std::string>& deviceTypes, const bool& isStage);
 
 protected:
     bool CheckStageBundleType(const std::string& moduleName, const std::string& moduleType,

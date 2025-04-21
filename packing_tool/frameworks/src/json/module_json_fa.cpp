@@ -222,6 +222,29 @@ bool ModuleJson::GetFaInstallationFreeByDistroObj(std::unique_ptr<PtJson>& distr
     return true;
 }
 
+bool ModuleJson::GetFaDeliveryWithInstall(bool& deliveryWithInstall)
+{
+    std::unique_ptr<PtJson> distroObj;
+    if (!GetDistroObject(distroObj)) {
+        LOGE("GetDistroObject failed!");
+        return false;
+    }
+    if (!distroObj) {
+        LOGE("Distro node is null!");
+        return false;
+    }
+    if (distroObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
+        if (distroObj->GetBool(DELIVERY_WITH_INSTALL.c_str(), &deliveryWithInstall) != Result::SUCCESS) {
+            LOGE("Distro node get %s failed!", DELIVERY_WITH_INSTALL.c_str());
+            return false;
+        }
+    } else {
+        LOGE("Distro node has no %s node!", DELIVERY_WITH_INSTALL.c_str());
+        return false;
+    }
+    return true;
+}
+
 bool ModuleJson::GetFaBundleType(std::string& bundleType)
 {
     bool installationFree = false;
@@ -580,26 +603,6 @@ bool ModuleJson::GetFaModuleTypeByModuleObj(std::unique_ptr<PtJson>& moduleObj, 
     return true;
 }
 
-bool ModuleJson::GetFaApiReleaseType(std::string& apiReleaseType)
-{
-    std::unique_ptr<PtJson> appObj;
-    if (!GetAppObject(appObj)) {
-        LOGE("GetAppObject failed!");
-        return false;
-    }
-    if (!appObj) {
-        LOGE("App node is null!");
-        return false;
-    }
-    if (appObj->Contains(API_RELEASE_TYPE.c_str())) {
-        if (appObj->GetString(API_RELEASE_TYPE.c_str(), &apiReleaseType) != Result::SUCCESS) {
-            LOGE("App node get %s failed!", API_RELEASE_TYPE.c_str());
-            return false;
-        }
-    }
-    return true;
-}
-
 bool ModuleJson::GetFaReleaseType(std::string& releaseType)
 {
     std::unique_ptr<PtJson> appObj;
@@ -844,7 +847,7 @@ bool ModuleJson::SetFaBundleName(const std::string& bundleName)
         return false;
     }
     if (!appObj->Contains(BUNDLE_NAME.c_str())) {
-        if(!appObj->Add(BUNDLE_NAME.c_str(), bundleName.c_str())) {
+        if (!appObj->Add(BUNDLE_NAME.c_str(), bundleName.c_str())) {
             LOGE("App node add %s failed!", BUNDLE_NAME.c_str());
             return false;
         }
@@ -859,20 +862,20 @@ bool ModuleJson::SetFaBundleName(const std::string& bundleName)
 
 bool ModuleJson::SetFaMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode)
 {
-    std::unique_ptr<PtJson> appObj;
-    if (!GetAppObject(appObj)) {
-        LOGE("GetAppObject failed!");
+    std::unique_ptr<PtJson> versionObj;
+    if (!GetVersionObject(versionObj)) {
+        LOGE("GetVersionObject failed!");
         return false;
     }
-    if (!appObj->Contains(MIN_COMPATIBLE_VERSION_CODE.c_str())) {
-        if(!appObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
-            LOGE("App node add %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
+    if (!versionObj->Contains(MIN_COMPATIBLE_VERSION_CODE.c_str())) {
+        if (!versionObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
+            LOGE("Version node add %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
             return false;
         }
         return true;
     }
-    if (appObj->SetInt(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode) != Result::SUCCESS) {
-        LOGE("App node set %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
+    if (versionObj->SetInt(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode) != Result::SUCCESS) {
+        LOGE("Version node set %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
         return false;
     }
     return true;
@@ -880,20 +883,20 @@ bool ModuleJson::SetFaMinCompatibleVersionCode(const int32_t& minCompatibleVersi
 
 bool ModuleJson::SetFaMinAPIVersion(const int32_t& minAPIVersion)
 {
-    std::unique_ptr<PtJson> appObj;
-    if (!GetAppObject(appObj)) {
+    std::unique_ptr<PtJson> apiVersionObj;
+    if (!GetApiVersionObject(apiVersionObj)) {
         LOGE("GetAppObject failed!");
         return false;
     }
-    if (!appObj->Contains(MIN_API_VERSION.c_str())) {
-        if(!appObj->Add(MIN_API_VERSION.c_str(), minAPIVersion)) {
-            LOGE("App node add %s failed!", MIN_API_VERSION.c_str());
+    if (!apiVersionObj->Contains(COMPATIBLE.c_str())) {
+        if (!apiVersionObj->Add(COMPATIBLE.c_str(), minAPIVersion)) {
+            LOGE("ApiVersion node add %s failed!", COMPATIBLE.c_str());
             return false;
         }
         return true;
     }
-    if (appObj->SetInt(MIN_API_VERSION.c_str(), minAPIVersion) != Result::SUCCESS) {
-        LOGE("App node set %s failed!", MIN_API_VERSION.c_str());
+    if (apiVersionObj->SetInt(COMPATIBLE.c_str(), minAPIVersion) != Result::SUCCESS) {
+        LOGE("ApiVersion node set %s failed!", COMPATIBLE.c_str());
         return false;
     }
     return true;
@@ -901,20 +904,20 @@ bool ModuleJson::SetFaMinAPIVersion(const int32_t& minAPIVersion)
 
 bool ModuleJson::SetFaTargetAPIVersion(const int32_t& targetAPIVersion)
 {
-    std::unique_ptr<PtJson> appObj;
-    if (!GetAppObject(appObj)) {
-        LOGE("GetAppObject failed!");
+    std::unique_ptr<PtJson> apiVersionObj;
+    if (!GetApiVersionObject(apiVersionObj)) {
+        LOGE("GetApiVersionObject failed!");
         return false;
     }
-    if (!appObj->Contains(TARGET_API_VERSION.c_str())) {
-        if(!appObj->Add(TARGET_API_VERSION.c_str(), targetAPIVersion)) {
-            LOGE("App node add %s failed!", TARGET_API_VERSION.c_str());
+    if (!apiVersionObj->Contains(TARGET.c_str())) {
+        if (!apiVersionObj->Add(TARGET.c_str(), targetAPIVersion)) {
+            LOGE("ApiVersion node add %s failed!", TARGET.c_str());
             return false;
         }
         return true;
     }
-    if (appObj->SetInt(TARGET_API_VERSION.c_str(), targetAPIVersion) != Result::SUCCESS) {
-        LOGE("App node set %s failed!", TARGET_API_VERSION.c_str());
+    if (apiVersionObj->SetInt(TARGET.c_str(), targetAPIVersion) != Result::SUCCESS) {
+        LOGE("ApiVersion node set %s failed!", TARGET.c_str());
         return false;
     }
     return true;
@@ -922,20 +925,20 @@ bool ModuleJson::SetFaTargetAPIVersion(const int32_t& targetAPIVersion)
 
 bool ModuleJson::SetFaApiReleaseType(const std::string& apiReleaseType)
 {
-    std::unique_ptr<PtJson> appObj;
-    if (!GetAppObject(appObj)) {
-        LOGE("GetAppObject failed!");
+    std::unique_ptr<PtJson> apiVersionObj;
+    if (!GetApiVersionObject(apiVersionObj)) {
+        LOGE("GetApiVersionObject failed!");
         return false;
     }
-    if (!appObj->Contains(API_RELEASE_TYPE.c_str())) {
-        if(!appObj->Add(API_RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
-            LOGE("App node add %s failed!", API_RELEASE_TYPE.c_str());
+    if (!apiVersionObj->Contains(RELEASE_TYPE.c_str())) {
+        if (!apiVersionObj->Add(RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
+            LOGE("ApiVersion node add %s failed!", RELEASE_TYPE.c_str());
             return false;
         }
         return true;
     }
-    if (appObj->SetString(API_RELEASE_TYPE.c_str(), apiReleaseType) != Result::SUCCESS) {
-        LOGE("App node set %s failed!", API_RELEASE_TYPE.c_str());
+    if (apiVersionObj->SetString(RELEASE_TYPE.c_str(), apiReleaseType) != Result::SUCCESS) {
+        LOGE("ApiVersion node set %s failed!", RELEASE_TYPE.c_str());
         return false;
     }
     return true;
@@ -949,7 +952,7 @@ bool ModuleJson::SetFaBundleType(const std::string& bundleType)
         return false;
     }
     if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
-        if(!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
+        if (!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
             LOGE("App node add %s failed!", BUNDLE_TYPE.c_str());
             return false;
         }
@@ -964,20 +967,20 @@ bool ModuleJson::SetFaBundleType(const std::string& bundleType)
 
 bool ModuleJson::SetFaInstallationFree(const bool& installationFree)
 {
-    std::unique_ptr<PtJson> moduleObj;
-    if (!GetModuleObject(moduleObj)) {
-        LOGE("GetModuleObject failed!");
+    std::unique_ptr<PtJson> distroObj;
+    if (!GetDistroObject(distroObj)) {
+        LOGE("GetDistroObject failed!");
         return false;
     }
-    if (!moduleObj->Contains(INSTALLATION_FREE.c_str())) {
-        if(!moduleObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
-            LOGE("App node add %s failed!", INSTALLATION_FREE.c_str());
+    if (!distroObj->Contains(INSTALLATION_FREE.c_str())) {
+        if (!distroObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
+            LOGE("Distro node add %s failed!", INSTALLATION_FREE.c_str());
             return false;
         }
         return true;
     }
-    if (moduleObj->SetBool(INSTALLATION_FREE.c_str(), installationFree) != Result::SUCCESS) {
-        LOGE("Module node set %s failed!", INSTALLATION_FREE.c_str());
+    if (distroObj->SetBool(INSTALLATION_FREE.c_str(), installationFree) != Result::SUCCESS) {
+        LOGE("Distro node set %s failed!", INSTALLATION_FREE.c_str());
         return false;
     }
     return true;
@@ -985,20 +988,20 @@ bool ModuleJson::SetFaInstallationFree(const bool& installationFree)
 
 bool ModuleJson::SetFaDeliveryWithInstall(const bool& deliveryWithInstall)
 {
-    std::unique_ptr<PtJson> moduleObj;
-    if (!GetModuleObject(moduleObj)) {
-        LOGE("GetModuleObject failed!");
+    std::unique_ptr<PtJson> distroObj;
+    if (!GetDistroObject(distroObj)) {
+        LOGE("GetDistroObject failed!");
         return false;
     }
-    if (!moduleObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
-        if(!moduleObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
-            LOGE("App node add %s failed!", DELIVERY_WITH_INSTALL.c_str());
+    if (!distroObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
+        if (!distroObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
+            LOGE("Distro node add %s failed!", DELIVERY_WITH_INSTALL.c_str());
             return false;
         }
         return true;
     }
-    if (moduleObj->SetBool(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall) != Result::SUCCESS) {
-        LOGE("Module node set %s failed!", DELIVERY_WITH_INSTALL.c_str());
+    if (distroObj->SetBool(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall) != Result::SUCCESS) {
+        LOGE("Distro node set %s failed!", DELIVERY_WITH_INSTALL.c_str());
         return false;
     }
     return true;
@@ -1011,15 +1014,15 @@ bool ModuleJson::SetFaDeviceTypes(const std::list<std::string>& deviceTypes)
         LOGE("GetModuleObject failed!");
         return false;
     }
-    if (!moduleObj->Contains(DEVICE_TYPES.c_str())) {
-        if(!moduleObj->Add(DEVICE_TYPES.c_str(), deviceTypes)) {
-            LOGE("App node add %s failed!", DEVICE_TYPES.c_str());
+    if (!moduleObj->Contains(DEVICE_TYPE.c_str())) {
+        if (!moduleObj->Add(DEVICE_TYPE.c_str(), deviceTypes)) {
+            LOGE("Module node add %s failed!", DEVICE_TYPE.c_str());
             return false;
         }
         return true;
     }
-    if (moduleObj->SetArray(DEVICE_TYPES.c_str(), deviceTypes) != Result::SUCCESS) {
-        LOGE("Module node set %s failed!", DEVICE_TYPES.c_str());
+    if (moduleObj->SetArray(DEVICE_TYPE.c_str(), deviceTypes) != Result::SUCCESS) {
+        LOGE("Module node set %s failed!", DEVICE_TYPE.c_str());
         return false;
     }
     return true;

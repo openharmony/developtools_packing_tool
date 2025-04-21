@@ -57,18 +57,15 @@ int32_t GeneralNormalize::InitAllowedParam()
 
 int32_t GeneralNormalize::PreProcess()
 {
-    if (!IsOutDirectoryValid()) {
-        return ERR_INVALID_VALUE;
-    }
     auto it = parameterMap_.find(Constants::PARAM_INPUT_LIST);
     if (it == parameterMap_.end()) {
         LOGE("Input input-list is empty.");
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspOrhapList_, Constants::HAP_SUFFIX, Constants::HSP_SUFFIX)) {
-            LOGE("Input input-list is invalid.");
-            return ERR_INVALID_VALUE;
-        }
+        LOGE("Input input-list is invalid.");
+        return ERR_INVALID_VALUE;
+    }
     if (hspOrhapList_.size() == 0) {
         LOGE("Input input-list is empty.");
         return ERR_INVALID_VALUE;
@@ -98,8 +95,8 @@ int32_t GeneralNormalize::PreProcess()
             LOGE("Input device-type is invalid.");
             return ERR_INVALID_VALUE;
         }
-        for(auto& item : deviceTypeList) {
-            if((std::find(DEVICE_TYPE_LIST.begin(), DEVICE_TYPE_LIST.end(), item) == DEVICE_TYPE_LIST.end())) {
+        for (auto& item : deviceTypeList) {
+            if ((std::find(DEVICE_TYPE_LIST.begin(), DEVICE_TYPE_LIST.end(), item) == DEVICE_TYPE_LIST.end())) {
                 LOGE("Input device-type is invalid.");
                 return ERR_INVALID_VALUE;
             }
@@ -174,10 +171,13 @@ int32_t GeneralNormalize::PreProcess()
         }
     }
 
+    if (!IsOutDirectoryValid()) {
+        return ERR_INVALID_VALUE;
+    }
     return ERR_OK;
 }
 
-bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath, 
+bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
     std::map<std::string, std::string> &modifyMap, std::string &bundleName, std::string &moduleName)
 {
     ModuleJson moduleJson;
@@ -386,9 +386,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
 
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
-        int32_t originMinAPIVersion = -1;
-        configJson.GetMinApiVersion(originMinAPIVersion);
-        modifyMap[MIN_API_VERSION] = std::to_string(originMinAPIVersion);
+        ModuleApiVersion moduleApiVersion;
+        configJson.GetFaModuleApiVersion(moduleApiVersion);
+        modifyMap[MIN_API_VERSION] = std::to_string(moduleApiVersion.compatibleApiVersion);
         int32_t minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
         if (!configJson.SetMinAPIVersion(minAPIVersion, false)) {
             LOGE("SetMinAPIVersion failed");
@@ -398,9 +398,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
 
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
-        int32_t originTargetAPIVersion = -1;
-        configJson.GetTargetApiVersion(originTargetAPIVersion);
-        modifyMap[TARGET_API_VERSION] = std::to_string(originTargetAPIVersion);
+        ModuleApiVersion moduleApiVersion;
+        configJson.GetFaModuleApiVersion(moduleApiVersion);
+        modifyMap[TARGET_API_VERSION] = std::to_string(moduleApiVersion.targetApiVersion);
         int32_t targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
         if (!configJson.SetTargetAPIVersion(targetAPIVersion, false)) {
             LOGE("SetTargetAPIVersion failed");
@@ -410,9 +410,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
 
     it = parameterMap_.find(Constants::PARAM_API_RELEASE_TYPE);
     if (it != parameterMap_.end()) {
-        std::string originApiReleaseType;
-        configJson.GetFaApiReleaseType(originApiReleaseType);
-        modifyMap[API_RELEASE_TYPE] = originApiReleaseType;
+        ModuleApiVersion moduleApiVersion;
+        configJson.GetFaModuleApiVersion(moduleApiVersion);
+        modifyMap[API_RELEASE_TYPE] = moduleApiVersion.releaseType;
         std::string apiReleaseType = parameterMap_.at(Constants::PARAM_API_RELEASE_TYPE);
         if (!configJson.SetApiReleaseType(apiReleaseType, false)) {
             LOGE("SetApiReleaseType failed");
@@ -447,7 +447,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     it = parameterMap_.find(Constants::PARAM_DELIVERY_WITH_INSTALL);
     if (it != parameterMap_.end()) {
         bool originDeliveryWithInstall;
-        configJson.GetDeliveryWithInstall(originDeliveryWithInstall);
+        configJson.GetFaDeliveryWithInstall(originDeliveryWithInstall);
         modifyMap[DELIVERY_WITH_INSTALL] = Utils::BoolToString(originDeliveryWithInstall);
         bool deliveryWithInstall = Utils::StringToBool(parameterMap_.at(Constants::PARAM_DELIVERY_WITH_INSTALL));
         if (!configJson.SetDeliveryWithInstall(deliveryWithInstall, false)) {
@@ -470,7 +470,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     }
 
     configJson.GetBundleName(bundleName);
-    configJson.GetModuleName(moduleName);
+    configJson.GetFaModuleName(moduleName);
     modifyMap[MODULE_NAME] = moduleName;
     if (!JsonUtils::StrToFile(configJson.ToString(), configJsonPath)) {
         LOGE("Parse and modify config.json failed, writeJson failed.");
@@ -648,7 +648,7 @@ bool GeneralNormalize::CompressDirToHap(const std::string &sourceDir, const std:
 }
 
 
-bool GeneralNormalize::ProcessJsonFiles(const std::string &tempPath, 
+bool GeneralNormalize::ProcessJsonFiles(const std::string &tempPath,
     std::list<std::map<std::string, std::string>> &modifyMapList, std::string &bundleName, std::string &moduleName)
 {
     std::map<std::string, std::string> modifyMap;
@@ -710,7 +710,7 @@ int32_t GeneralNormalize::Process()
         }
         Utils::ForceRemoveDirectory(tempPath);
     }
-    if(!isSuccess) {
+    if (!isSuccess) {
         LOGE("GeneralNormalize failed, bundleName: %s, moduleName: %s", bundleName.c_str(), moduleName.c_str());
         Utils::RemoveAllFilesInDirectory(outPath);
         return ERR_INVALID_VALUE;
@@ -723,7 +723,7 @@ int32_t GeneralNormalize::Process()
     return ERR_OK;
 }
 
-std::string GeneralNormalize::ConvertMapListToString(const std::list<std::map<std::string, std::string>>& 
+std::string GeneralNormalize::ConvertMapListToString(const std::list<std::map<std::string, std::string>>&
     modifyMapList)
 {
     std::unique_ptr<PtJson> jArray = PtJson::CreateArray();
