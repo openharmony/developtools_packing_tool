@@ -141,7 +141,7 @@ void JsonUtilsTest::DeleteFilePath(const std::string& filePath)
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(JsonUtilsTest, IsModuleJson_0100, Function | MediumTest | Level1)
+HWTEST_F(JsonUtilsTest, IsModuleJson_0100, Function | MediumTest | TestSize.Level0)
 {
     OHOS::AppPackingTool::JsonUtils jsonUtils;
     std::string moduleJsonPath = std::string(FILE_PATH) + MODULE_JSON_NAME;
