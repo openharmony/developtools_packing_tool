@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -161,11 +161,14 @@ HWTEST_F(PtJsonTest, Add_0600, Function | MediumTest | Level1)
     std::unique_ptr<OHOS::AppPackingTool::PtJson> ptjsonObject = ptJson.CreateObject();
     EXPECT_TRUE(ptjsonObject != NULL);
 
+    std::list<std::string> values = {"a", "b", "c"};
+
     EXPECT_TRUE(ptJson.Add("AAA", true));
     EXPECT_TRUE(ptJson.Add("BBB", 123));
     EXPECT_TRUE(ptJson.Add("CCC", 123.5));
     EXPECT_TRUE(ptJson.Add("DDD", "ABC"));
     EXPECT_TRUE(ptJson.Add("EEE", ptjsonObject));
+    EXPECT_TRUE(ptJson.Add("FFF", values));
 }
 
 /*
@@ -1029,5 +1032,27 @@ HWTEST_F(PtJsonTest, GetAny_0100, Function | MediumTest | Level1)
     std::unique_ptr<AppPackingTool::PtJson> *value = new std::unique_ptr<AppPackingTool::PtJson>();
     AppPackingTool::Result ret = ptJson.GetAny("key", value);
     EXPECT_EQ(ret, AppPackingTool::Result::NOT_EXIST);
+}
+
+/*
+ * @tc.name: SetArray_0100
+ * @tc.desc: SetArray.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PtJsonTest, SetArray_0100, Function | MediumTest | Level1)
+{
+    cJSON *cjson = new cJSON();
+    OHOS::AppPackingTool::PtJson ptJson(cjson);
+    std::list<std::string> value;
+    EXPECT_EQ(ptJson.SetArray("AAA", value), OHOS::AppPackingTool::Result::NOT_EXIST);
+    
+    ptJson.Add("AAA", true);
+    EXPECT_EQ(ptJson.SetArray("AAA", value), OHOS::AppPackingTool::Result::TYPE_ERROR);
+
+    value.push_back("123");
+    value.push_back("456");
+    ptJson.Add("BBB", value);
+    EXPECT_EQ(ptJson.SetArray("BBB", value), OHOS::AppPackingTool::Result::SUCCESS);
 }
 } // namespace OHOS
