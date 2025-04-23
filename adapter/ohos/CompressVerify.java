@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -76,7 +77,25 @@ public class CompressVerify {
             "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
     private static final int BUNDLE_NAME_LEN_MIN = 7;
     private static final int BUNDLE_NAME_LEN_MAX = 128;
-
+    private static final int MAX_LENGTH = 127;
+    private static final int MINI_NUM = 0;
+    private static final int MAXI_NUM = 2147483647;
+    private static final String API_RELEASE_TYPE_PATTERN = "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$";
+    private static final String VERSION_CODE = "versionCode";
+    private static final String VERSION_NAME = "versionName";
+    private static final String DEVICE_TYPES = "deviceTypes";
+    private static final String BUNDLE_NAME = "bundleName";
+    private static final String MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
+    private static final String MIN_API_VERSION = "minAPIVersion";
+    private static final String TARGET_API_VERSION = "targetAPIVersion";
+    private static final String API_RELEASE_TYPE = "apiReleaseType";
+    private static final String BUNDLE_TYPE = "bundleType";
+    private static final String INSTALLATION_FREE = "installationFree";
+    private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
+    private static final List<String> bundleTypeList =
+        Arrays.asList("app", "atomicService", "shared", "appService", "appPlugin");
+    private static final List<String> deviceTypeList =
+        Arrays.asList("default", "tablet", "tv", "wearable", "car", "2in1");
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
     private static final boolean TYPE_FILE = true;
@@ -140,6 +159,8 @@ public class CompressVerify {
                 return validateVersionNormalizeMode(utility);
             case Utility.PACKAGE_NORMALIZE:
                 return validatePackageNormalizeMode(utility);
+            case Utility.GENERAL_NORMALIZE:
+                return validateGeneralNormalizeMode(utility);
             default:
                 LOG.error(PackingToolErrMsg.COMMAND_MODE_INVALID.toString());
                 return false;
@@ -241,6 +262,136 @@ public class CompressVerify {
         if (!outDir.isDirectory()) {
             String errMsg = "--out-path is not a directory.";
             LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean validateGeneralNormalizeMode(Utility utility) {
+        if (utility.getInputList().isEmpty()) {
+            String errMsg = "--input-list is empty.";
+            LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (!handleHapAndHspInput(utility, utility.getInputList(), utility.getFormattedHapList())) {
+            String errMsg = "--input-list is invalid.";
+            LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (utility.getFormattedHapList().isEmpty()) {
+            String errMsg = "--input-list is empty.";
+            LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
+            String[] types = utility.getDeviceTypes().split(",");
+            for (String type : types) {
+                if (!deviceTypeList.contains(type)) {
+                    String errMsg = "--device-types is invalid.";
+                    LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                    return false;
+                }
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
+            if (utility.getVersionCode() < MINI_NUM || utility.getVersionCode() > MAXI_NUM) {
+                String errMsg = "--version-code is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
+            Pattern versionNamePattern = Pattern.compile(VERSION_NAME_PATTERN);
+            Matcher versionNameMatcher = versionNamePattern.matcher(utility.getVersionName());
+            if (!versionNameMatcher.matches() || utility.getVersionName().length() > MAX_LENGTH) {
+                String errMsg = "--version-name is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(BUNDLE_NAME)) {
+            if (!isBundleNameValid(utility.getBundleName())) {
+                String errMsg = "--bundle-name is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
+            if (utility.getMinCompatibleVersionCode() < MINI_NUM || utility.getMinCompatibleVersionCode() > MAXI_NUM) {
+                String errMsg = "--min-compatible-version-code is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
+            if (utility.getMinAPIVersion() < MINI_NUM || utility.getMinAPIVersion() > MAXI_NUM) {
+                String errMsg = "--min-api-version is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
+            if (utility.getTargetAPIVersion() < MINI_NUM || utility.getTargetAPIVersion() > MAXI_NUM) {
+                String errMsg = "--target-api-version is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(API_RELEASE_TYPE)) {
+            Pattern pattern = Pattern.compile(API_RELEASE_TYPE_PATTERN);
+            if (!pattern.matcher(utility.getApiReleaseType()).matches()) {
+                String errMsg = "--api-release-type is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
+            if (!bundleTypeList.contains(utility.getBundleType())) {
+                String errMsg = "--bundle-type is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
+            if (!Boolean.TRUE.toString().equals(utility.getInstallationFree())  &&
+                !Boolean.FALSE.toString().equals(utility.getInstallationFree())) {
+                String errMsg = "--installation-free is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
+            if (!Boolean.TRUE.toString().equals(utility.getDeliveryWithInstall())  &&
+                !Boolean.FALSE.toString().equals(utility.getDeliveryWithInstall())) {
+                String errMsg = "--delivery-with-install is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+
+        if (utility.getOutPath().isEmpty()) {
+            String errMsg = "--out-path is empty.";
+            LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        File outDir = new File(utility.getOutPath());
+        if (!outDir.isDirectory()) {
+            String errMsg = "--out-path is not a directory.";
+            LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
         return true;
