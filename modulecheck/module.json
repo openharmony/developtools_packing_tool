@@ -1049,7 +1049,8 @@
                   "distributed",
                   "awc/webpage",
                   "awc/newsfeed",
-                  "vpn"
+                  "vpn",
+                  "screenTimeGuard"
                 ]
               },
               "permissions": {
