@@ -16,8 +16,7 @@
       "description": "Indicates the system theme of the module.",
       "type": "string",
       "enum": [
-          "$ohos:theme:ohos_theme",
-          "$ohos:theme:hmos_theme"
+          "$ohos:theme:ohos_theme"
         ]
     }
   }
