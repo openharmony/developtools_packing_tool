@@ -35,6 +35,7 @@
                 "description",
                 "deliveryWithInstall",
                 "deviceTypes",
+                "deviceFeatures",
                 "pages",
                 "metadata",
                 "abilities",
@@ -80,6 +81,7 @@
                 "process",
                 "mainElement",
                 "deviceTypes",
+                "deviceFeatures",
                 "installationFree",
                 "virtualMachine",
                 "uiSyntax",
@@ -123,6 +125,7 @@
                 "process",
                 "mainElement",
                 "deviceTypes",
+                "deviceFeatures",
                 "deliveryWithInstall",
                 "installationFree",
                 "virtualMachine",
@@ -180,6 +183,7 @@
                 "process",
                 "mainElement",
                 "deviceTypes",
+                "deviceFeatures",
                 "deliveryWithInstall",
                 "installationFree",
                 "virtualMachine",
@@ -280,6 +284,19 @@
               "wearable",
               "car",
               "2in1"
+            ]
+          }
+        },
+        "deviceFeatures": {
+          "description": "Declarable device capabilities required by the application.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "multi_process",
+              "free_multi_window",
+              "directory_permission"
             ]
           }
         },
