@@ -132,7 +132,8 @@
             "hwasanEnabled",
             "cloudFileSyncEnabled",
             "configuration",
-            "assetAccessGroups"
+            "assetAccessGroups",
+            "startMode"
           ]
         }
       },
@@ -178,7 +179,8 @@
             "hwasanEnabled",
             "cloudFileSyncEnabled",
             "configuration",
-            "assetAccessGroups"
+            "assetAccessGroups",
+            "startMode"
           ]
         }
       },
@@ -487,6 +489,15 @@
             "minLength": 7,
             "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
           }
+        },
+        "startMode": {
+          "description": "Describes the application start mode.",
+          "type": "string",
+          "enum": [
+            "mainTask",
+            "recentTask"
+          ],
+          "default": "mainTask"
         }
       }
     }
