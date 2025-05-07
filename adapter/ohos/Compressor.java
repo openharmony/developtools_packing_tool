@@ -717,53 +717,50 @@ public class Compressor {
             LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(errMsg));
             throw new BundleException("Set generate build hash failed for --json-path file does not exist.");
         }
-        InputStream json = null;
-        BufferedWriter bw = null;
-        try {
-            json = new FileInputStream(file);
-            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
-            if (!jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
-                LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString("Parse --json-path file is invalid."));
-                throw new BundleException("The --json-path file is invalid.");
-            }
-            JSONObject appJson = jsonObject.getJSONObject(APP);
-            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
-            if (appJson.containsKey(GENERATE_BUILD_HASH) && appJson.getBoolean(GENERATE_BUILD_HASH)) {
-                utility.setGenerateBuildHash(true);
-            } else {
-                if (moduleJson.containsKey(GENERATE_BUILD_HASH) && moduleJson.getBoolean(GENERATE_BUILD_HASH)) {
-                    utility.setGenerateBuildHash(true);
-                }
-            }
-            appJson.remove(GENERATE_BUILD_HASH);
-            moduleJson.remove(GENERATE_BUILD_HASH);
+        // 1. 解析 JSON
+        JSONObject jsonObject;
+        try (InputStream json = Files.newInputStream(file.toPath())) {
+            jsonObject = JSON.parseObject(json, JSONObject.class);
+        } catch (IOException | JSONException e) {
+            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
+                    "Failed to read JSON file: " + e.getMessage()));
+            throw new BundleException("Failed to read JSON file");
+        }
+        //2. 检查必要字段
+        if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
+            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString("Parse --json-path file is invalid."));
+            throw new BundleException("The --json-path file is invalid.");
+        }
+        //3. 处理 JSON 数据
+        processBuildHashFlags(utility, jsonObject);
+        //4. 写入修改后的 JSON
+        writeJsonFile(utility.getJsonPath(), jsonObject);
+    }
+
+    private static void processBuildHashFlags(Utility utility, JSONObject jsonObject) {
+        JSONObject appJson = jsonObject.getJSONObject(APP);
+        JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+        if (appJson.containsKey(GENERATE_BUILD_HASH) && appJson.getBoolean(GENERATE_BUILD_HASH)) {
+            utility.setGenerateBuildHash(true);
+        } else if (moduleJson.containsKey(GENERATE_BUILD_HASH) && moduleJson.getBoolean(GENERATE_BUILD_HASH)) {
+            utility.setGenerateBuildHash(true);
+        }
+        appJson.remove(GENERATE_BUILD_HASH);
+        moduleJson.remove(GENERATE_BUILD_HASH);
+    }
+
+    private static void writeJsonFile(String filePath, JSONObject jsonObject) throws BundleException {
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                Files.newOutputStream(Paths.get(filePath)), StandardCharsets.UTF_8))) {
             String pretty = JSON.toJSONString(jsonObject, new SerializerFeature[]{
-                    SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
+                    SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue,
                     SerializerFeature.WriteDateUseDateFormat});
-            bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(utility.getJsonPath()), StandardCharsets.UTF_8));
             bw.write(pretty);
-        } catch (BundleException exception) {
+        } catch (IOException e) {
             LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
-                    "Set generate build hash exist BundleException: " + exception.getMessage()));
-            throw new BundleException("Compressor::setGenerateBuildHash failed.");
-        } catch (NullPointerException | IOException | JSONException e) {
-            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
-                    "The json data err, exist Exception (NullPointerException | IOException | JSONException): " +
-                    e.getMessage()));
-            throw new BundleException("Set generate build hash failed, json data err.");
-        } finally {
-            FileUtils.closeStream(json);
-            if (bw != null) {
-                try {
-                    bw.flush();
-                    bw.close();
-                } catch (IOException e) {
-                    LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
-                            "Set generate build hash exist IOException: " + e.getMessage()));
-                    throw new BundleException("Set generate build hash failed.");
-                }
-            }
+                    "Failed to write JSON file: " + e.getMessage()));
+            throw new BundleException("Failed to write JSON file");
         }
     }
 
