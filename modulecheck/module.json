@@ -197,7 +197,8 @@
                 "isolationMode",
                 "proxyData",
                 "routerMap",
-                "appEnvironments"
+                "appEnvironments",
+                "appStartup"
               ]
             },
             "required": [
