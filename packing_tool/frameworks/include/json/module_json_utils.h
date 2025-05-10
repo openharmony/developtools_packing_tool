@@ -34,6 +34,7 @@ public:
     static bool GetFaHapVerifyInfo(const std::string& hapFilePath, HapVerifyInfo& hapVerifyInfo);
     static bool CheckHapsIsValid(const std::list<std::string>& fileList, const bool& isSharedApp);
     static bool IsModuleHap(const std::string hapFilePath);
+    static bool GetHapVerifyInfosMapfromFileList(const std::list<std::string>& fileList, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap);
     static bool CheckAppAtomicServiceCompressedSizeValid(std::map<std::string, std::string> parameterMap, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap);
 
 private:
