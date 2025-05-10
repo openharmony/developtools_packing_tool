@@ -92,10 +92,12 @@ const std::string PARAM_MAIN_MODULE_LIMIT = "main-module-limit";
 const std::string PARAM_NORMAL_MODULE_LIMIT = "normal-module-limit";
 const std::string PARAM_TOTAL_LIMIT = "total-limit";
 const std::string PARAM_BUNDLE_NAME = "bundle-name";
+const std::string PARAM_PAC_JSON_PATH = "pac-json-path";
 
 const std::string MODULE_JSON = "module.json";
 const std::string CONFIG_JSON = "config.json";
 const std::string PATCH_JSON = "patch.json";
+const std::string PAC_JSON = "pac.json";
 const std::string LIB_PATH = "libs";
 const std::string AN_PATH = "an";
 const std::string AP_PATH = "ap";
@@ -200,6 +202,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_ENTRYCARD_PATH.c_str(), required_argument, nullptr, 43},
     {PARAM_BUNDLE_NAME.c_str(), required_argument, nullptr, 44},
     {PARAM_TOTAL_LIMIT.c_str(), required_argument, nullptr, 45},
+    {PARAM_PAC_JSON_PATH.c_str(), required_argument, nullptr, 46},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

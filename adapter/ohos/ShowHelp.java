@@ -87,7 +87,8 @@ public interface ShowHelp {
                 "                                 out file if exists.\n" +
                 "  --signature-path               signature file path.\n" +
                 "  --certificate-path             certificate file path.\n" +
-                "  --encrypt-path                 encrypt.json file path.");
+                "  --encrypt-path                 encrypt.json file path." +
+                "  --pac-json-path                 pac.json file path.");
     }
 
     /**
