@@ -715,6 +715,12 @@ public class CompressVerify {
             return false;
         }
 
+        if (!isValidPacJsonFile(utility)) {
+            String errMsg = "--pac-json-path is invalid.";
+            LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
         if (!utility.getSignaturePath().isEmpty() && !(new File(utility.getSignaturePath())).isFile()) {
             String errMsg = "--signature-path is invalid.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
@@ -831,6 +837,12 @@ public class CompressVerify {
 
         if (!isValidEncryptJsonFile(utility)) {
             String errMsg = "--encrypt-path is invalid.";
+            LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (!isValidPacJsonFile(utility)) {
+            String errMsg = "--pac-json-path is invalid.";
             LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
@@ -1507,6 +1519,22 @@ public class CompressVerify {
         if (!utility.getEncryptPath().isEmpty()) {
             File fileEncryptJson = new File(utility.getEncryptPath());
             return fileEncryptJson.isFile() && Constants.FILE_ENCRYPT_JSON.equals(fileEncryptJson.getName());
+        }
+        return true;
+    }
+
+    /**
+     * Indicates whether the "--pac-json-path" parameter is valid.
+     *
+     * @param utility - compress parameters
+     * @return true if "--pac-json-path" param exists and the file name is pac.json, or the "--pac-json-path"
+     *         param is empty, or has no "--pac-json-path" param
+     *         false other situations
+     */
+    private static boolean isValidPacJsonFile(Utility utility) {
+        if (!utility.getPacJsonPath().isEmpty()) {
+            File filePacJson = new File(utility.getPacJsonPath());
+            return filePacJson.isFile() && Constants.FILE_PAC_JSON.equals(filePacJson.getName());
         }
         return true;
     }
