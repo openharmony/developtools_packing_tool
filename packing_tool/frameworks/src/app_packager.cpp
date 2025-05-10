@@ -322,6 +322,18 @@ bool AppPackager::CheckPackResPath()
     return true;
 }
 
+bool AppPackager::CheckPacJsonPath()
+{
+    auto it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (!IsPathValid(it->second, true, Constants::PAC_JSON)) {
+            LOGE("pac-json-path is invalid.");
+            return false;
+        }
+    }
+    return true;
+}
+
 bool AppPackager::IsVerifyValidInAppMode()
 {
     std::string hapPath;
@@ -339,6 +351,11 @@ bool AppPackager::IsVerifyValidInAppMode()
 
     if (!CheckSignaturePath() || !CheckCertificatePath() || !CheckEntrycardPath() || !CheckPackResPath()) {
         LOGE("CheckSignaturePath or CheckCertificatePath or CheckEntrycardPath or CheckPackResPath failed!");
+        return false;
+    }
+
+    if (!CheckPacJsonPath()) {
+        LOGE("CheckPacJsonPath failed!");
         return false;
     }
 
@@ -508,6 +525,13 @@ bool AppPackager::CompressOtherFiles()
         std::string zipPath = Constants::NULL_DIR_NAME;
         zipPath = fs::path(it->second).filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
+            return false;
+        }
+    }
+    it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end()) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::PAC_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
+            LOGE("AppPackager::CompressOtherFiles: zipWrapper pac.json failed!");
             return false;
         }
     }
