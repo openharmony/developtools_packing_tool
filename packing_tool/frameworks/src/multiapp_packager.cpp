@@ -400,6 +400,10 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         }
         return false;
     }
+    if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
+        LOGE("MultiAppPackager::CompressAppModeForMultiProject GetHapVerifyInfosMapfromFileList failed.");
+        return false;
+    }
     for (const auto &hapPath : fileList) {
         std::string zipPath = fs::path(hapPath).filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(hapPath, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
@@ -415,6 +419,10 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     }
     if (fs::exists(tempSelectedHapDirPath)) {
         fs::remove_all(tempSelectedHapDirPath);
+    }
+    if (!ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(parameterMap_, hapVerifyInfoMap_)) {
+        LOGE("MultiAppPackager::CompressAppModeForMultiProject: CheckAppAtomicServiceCompressedSizeValid() failed!");
+        return false;
     }
     return true;
 }

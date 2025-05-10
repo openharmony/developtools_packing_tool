@@ -63,6 +63,7 @@ private:
     std::list<std::string> formattedEntryCardPathList_;
     bool isSharedApp_ = false;
     bool isAppService_ = false;
+    std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

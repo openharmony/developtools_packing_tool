@@ -18,6 +18,7 @@
 #include "constants.h"
 #include "json/hap_verify_info.h"
 #include "json/module_json_utils.h"
+#include "json/hap_verify_utils.h"
 #include "log.h"
 #include "utils.h"
 
@@ -423,6 +424,10 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
         LOGE("AppPackager::CheckHapsIsValid verify failed.");
         return false;
     }
+    if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
+        LOGE("AppPackager::GetHapVerifyInfosMapfromFileList failed.");
+        return false;
+    }
     if (!AddHapListToApp(fileList)) {
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
         LOGE("AppPackager::AddHapListToApp failed.");
@@ -453,12 +458,16 @@ bool AppPackager::AddHapListToApp(const std::list<std::string> &fileList)
         if (hapVerifyInfo.IsDebug()) {
             zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_0);
         }
+        zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_DEFLATED);
         if (zipWrapper_.AddFileOrDirectoryToZip(hapPath, fs::path(hapPath).filename().string()) !=
             ZipErrCode::ZIP_ERR_SUCCESS) {
+            zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
+            zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_STORED);
             LOGE("AppPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
+        zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_STORED);
     }
     return true;
 }
@@ -531,6 +540,10 @@ bool AppPackager::CompressAppMode()
         }
     }
     zipWrapper_.Close();
+    if (!ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(parameterMap_, hapVerifyInfoMap_)) {
+        LOGE("AppPackager::CompressAppMode: CheckAppAtomicServiceCompressedSizeValid() failed!");
+        return false;
+    }
     return true;
 }
 } // namespace AppPackingTool

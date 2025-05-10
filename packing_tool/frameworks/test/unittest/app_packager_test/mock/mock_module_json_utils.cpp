@@ -25,6 +25,7 @@
 #include "module_json.h"
 #include "utils.h"
 #include "zip_utils.h"
+#include "constants.h"
 
 namespace fs = std::filesystem;
 
@@ -198,6 +199,104 @@ bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>
         hapVerifyInfos.push_back(hapVerifyInfo);
     }
     return true;
+}
+
+bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::string>& fileList, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
+{
+    for (auto& hapPath : fileList) {
+        if (hapPath.empty()) {
+            LOGE("Hap file path is empty!");
+            return false;
+        }
+        fs::path fsHapPath(hapPath);
+        std::string fileName = fsHapPath.filename().string();
+        if (fileName.empty()) {
+            LOGE("Hap file name is empty!");
+            return false;
+        }
+        std::transform(fileName.begin(), fileName.end(), fileName.begin(), ::tolower);
+        if (!Utils::EndsWith(fileName, HAP_SUFFIX) && !Utils::EndsWith(fileName, HSP_SUFFIX)) {
+            LOGE("Hap file is not a hap or hsp file!");
+            return false;
+        }
+        auto hapVerifyInfo = std::make_shared<HapVerifyInfo>();
+        if (IsModuleHap(hapPath)) {
+            if (!GetStageHapVerifyInfo(hapPath, *hapVerifyInfo)) {
+                LOGE("GetStageHapVerifyInfo failed");
+                return false;
+            }
+        } else {
+            if (!GetFaHapVerifyInfo(hapPath, *hapVerifyInfo)) {
+                LOGE("GetFaHapVerifyInfo failed");
+                return false;
+            }
+        }
+        hapVerifyInfoMap.emplace(fileName, hapVerifyInfo);
+    }
+    return true;
+}
+
+bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::string, std::string> parameterMap, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
+{
+    std::string packMode;
+    std::string outPath;
+    if (parameterMap.find(Constants::PARAM_MODE) == parameterMap.end() ||
+        parameterMap.find(Constants::PARAM_OUT_PATH) == parameterMap.end()) {
+        LOGE("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: No mode parameters or no output path!");
+        return false;
+    }
+    packMode = parameterMap.at(Constants::PARAM_MODE);
+    if (packMode != Constants::MODE_APP && packMode != Constants::MODE_FAST_APP && packMode != Constants::MODE_MULTIAPP) {
+        return true;
+    }
+    outPath = parameterMap.at(Constants::PARAM_OUT_PATH);
+    unzFile zipApp = unzOpen(outPath.c_str());
+    if (!zipApp) {
+        LOGE("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: unzOpen outPath failed!");
+        return false;
+    }
+    std::list<HapVerifyInfo> hapVerifyInfos;
+    if (unzGoToFirstFile(zipApp) != UNZ_OK) {
+        unzClose(zipApp);
+        LOGE("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: unzGoToFirstFile outPath failed!");
+        return false;
+    }
+    do {
+        unz_file_info fileInfo;
+        if (unzGetCurrentFileInfo(zipApp, &fileInfo, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
+            unzClose(zipApp);
+            LOGE("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: failed to get file info (phase 1)");
+            return false;
+        }
+        std::vector<char> fileNameBuffer(fileInfo.size_filename + 1);
+        if (unzGetCurrentFileInfo(zipApp, &fileInfo, fileNameBuffer.data(), fileNameBuffer.size(),
+                                nullptr, 0, nullptr, 0) != UNZ_OK) {
+            unzClose(zipApp);
+            LOGE("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: failed to get file info (phase 2)");
+            return false;
+        }
+        std::string fileName(fileNameBuffer.data());
+        auto it = hapVerifyInfoMap.find(fileName);
+        if (it == hapVerifyInfoMap.end()) {
+            continue;
+        }
+        it->second->SetFileLength(fileInfo.compressed_size);
+        hapVerifyInfos.push_back(*(it->second));
+    } while (unzGoToNextFile(zipApp) == UNZ_OK);
+    unzClose(zipApp);
+    if (hapVerifyInfos.empty()) {
+        LOGI("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: hapVerifyInfos is empty");
+        return true;
+    }
+    std::string bundleType = hapVerifyInfos.front().GetBundleType();
+    if (bundleType != Constants::ATOMIC_SERVICE) {
+        return true;
+    }
+    bool isStage = hapVerifyInfos.front().IsStageModule();
+    if (!isStage) {
+        return true;
+    }
+    return HapVerifyUtils::CheckFileSizeIsValid(hapVerifyInfos);
 }
 
 // java : checkHapIsValid
