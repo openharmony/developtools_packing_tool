@@ -41,19 +41,9 @@ public:
         zipFilePath_ = path;
     }
 
-    void GetZipLevel()
-    {
-        return zipLevel_;
-    }
-
     void SetZipLevel(ZipLevel zipLevel)
     {
         zipLevel_ = zipLevel;
-    }
-
-    void GetZipMethod()
-    {
-        return zipMethod_;
     }
 
     void SetZipMethod(ZipMethod zipMethod)
