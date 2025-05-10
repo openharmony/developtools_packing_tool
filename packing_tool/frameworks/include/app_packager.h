@@ -49,6 +49,7 @@ public:
     bool CheckCertificatePath();
     bool CheckEntrycardPath();
     bool CheckPackResPath();
+    bool CheckPacJsonPath();
 
 protected:
     int32_t InitAllowedParam() override;
