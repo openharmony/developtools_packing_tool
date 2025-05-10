@@ -510,6 +510,10 @@ bool FastAppPackager::CompressFastAppMode()
     if (fs::exists(tmpDir)) {
         fs::remove_all(tmpDir);
     }
+    if (!ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(parameterMap_, hapVerifyInfoMap_)) {
+        LOGE("FastAppPackager::CompressFastAppMode: CheckAppAtomicServiceCompressedSizeValid() failed!");
+        return false;
+    }
     return true;
 }
 
@@ -519,8 +523,11 @@ bool FastAppPackager::CheckHapAndPackFastApp(std::list<std::string> &fileList, c
             LOGE("FastAppPackager::CheckHapsIsValid verify failed, "
                 "check version, apiVersion, moduleName, packageName.");
             return false;
-        }
-
+    }
+    if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
+        LOGE("FastAppPackager::CheckHapAndPackFastApp GetHapVerifyInfosMapfromFileList failed.");
+        return false;
+    }
     if (!PackFastApp(fileList)) {
         LOGE("FastAppPackager::CompressFastAppMode PackFastApp failed.");
         return false;
@@ -717,12 +724,16 @@ bool FastAppPackager::AddHapListToApp(const std::list<std::string> &fileList)
         if (hapVerifyInfo.IsDebug()) {
             zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_0);
         }
+        zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_DEFLATED);
         if (zipWrapper_.AddFileOrDirectoryToZip(hapPath, fs::path(hapPath).filename().string()) !=
             ZipErrCode::ZIP_ERR_SUCCESS) {
+            zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
+            zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_STORED);
             LOGE("FastAppPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
+        zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_STORED);
     }
     return true;
 }

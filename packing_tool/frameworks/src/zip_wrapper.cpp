@@ -163,7 +163,7 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZ
     }
     zipFileInfo_.external_fa = ZIP_FILE_ATTR_DEFAULT;
     int ret = zipOpenNewFileInZip64(zipFile_, fsZipPath.string().c_str(), &zipFileInfo_, nullptr, 0,
-        nullptr, 0, nullptr, 0, static_cast<int>(zipLevel_), 1);
+        nullptr, 0, nullptr, static_cast<int>(zipMethod_), static_cast<int>(zipLevel_), 1);
     if (ret != ZIP_OK) {
         LOGE("open file in zip failed![ret=%d][fsZipPath=%s]", ret, fsZipPath.string().c_str());
         file.close();
