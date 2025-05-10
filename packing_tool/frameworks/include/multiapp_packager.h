@@ -56,6 +56,7 @@ private:
     ZipWrapper zipWrapper_;
     std::list<std::string> formattedAppList_;
     std::list<std::string> formattedHapAndHspList_;
+    std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

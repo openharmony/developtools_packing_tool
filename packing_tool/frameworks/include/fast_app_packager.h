@@ -83,6 +83,7 @@ private:
     std::list<std::string> formattedHapPathList_;
     std::list<std::string> formattedHspPathList_;
     ZipWrapper zipWrapper_;
+    std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

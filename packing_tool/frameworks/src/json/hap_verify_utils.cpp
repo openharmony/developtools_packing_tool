@@ -858,10 +858,6 @@ bool HapVerifyUtils::CheckAtomicServiceIsValid(const std::list<HapVerifyInfo>& h
             return false;
         }
     }
-    if (!CheckFileSizeIsValid(hapVerifyInfos)) {
-        LOGE("CheckFileSizeIsValid failed.");
-        return false;
-    }
     return true;
 }
 
@@ -966,6 +962,7 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
 
     std::map<std::string, std::list<HapVerifyInfo>> deviceInfosMap;
     if (!GetDeviceHapVerifyInfoMap(hapVerifyInfos, deviceInfosMap)) {
+        LOGE("HapVerifyUtils::CheckFileSizeIsValid GetDeviceHapVerifyInfoMap failed!");
         return false;
     }
     std::map<std::string, std::list<HapVerifyInfo>>::iterator iter;
