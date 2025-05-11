@@ -1303,6 +1303,8 @@ public class Compressor {
             compressFile(utility, file, NULL_DIR_NAME, false);
             // pack encrypt.json file
             packEncryptJsonFile(utility);
+            // pack pac.json file
+            packPacJsonFile(utility);
         } catch (BundleException e) {
             LOG.error(PackingToolErrMsg.COMPRESS_APP_FAILED.toString(
                 "Compress app file exist BundleException: " + e.getMessage()));
@@ -1360,6 +1362,8 @@ public class Compressor {
         pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
         // pack encrypt.json file
         packEncryptJsonFile(utility);
+        // pack pac.json file
+        packPacJsonFile(utility);
         // hap/hsp
         for (String hapPath : fileList) {
             HapVerifyInfo hapVerifyInfo = hapVerifyInfoMap.get(getFileNameByPath(hapPath));
@@ -1436,6 +1440,8 @@ public class Compressor {
             compressFile(utility, file, NULL_DIR_NAME, false);
             //pack encrypt.json file
             packEncryptJsonFile(utility);
+            // pack pac.json file
+            packPacJsonFile(utility);
         } catch (BundleException | IOException exception) {
             String errMsg = "Compress app mode for multi project file exist Exception (BundleException | IOException): "
                     + exception.getMessage();
@@ -2514,7 +2520,8 @@ public class Compressor {
             if (!entryName.contains(RAW_FILE_PATH)
                     && !entryName.contains(RES_FILE_PATH)
                     && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)
-                    && !entryName.equals(Constants.FILE_ENCRYPT_JSON)) {
+                    && !entryName.equals(Constants.FILE_ENCRYPT_JSON)
+                    && !entryName.equals(Constants.FILE_PAC_JSON)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
                     return;
@@ -3631,6 +3638,14 @@ public class Compressor {
             pathToFile(utility, utility.getEncryptPath(), NULL_DIR_NAME, false);
         } else {
             LOG.info("Compressor::packEncryptJsonFile has no encrypt.json");
+        }
+    }
+
+    private void packPacJsonFile(Utility utility) throws BundleException {
+        if (!utility.getPacJsonPath().isEmpty()) {
+            pathToFile(utility, utility.getPacJsonPath(), NULL_DIR_NAME, false);
+        } else {
+            LOG.info("Compressor::packPacJsonFile has no pac.json");
         }
     }
 }
