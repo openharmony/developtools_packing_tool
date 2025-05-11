@@ -812,6 +812,11 @@ public class PackageUtil {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--encrypt-path is invalid."));
             return false;
         }
+        if (!utility.getPacJsonPath().isEmpty()
+                && !isFileValid(utility.getPacJsonPath(), Constants.FILE_PAC_JSON)) {
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--pac-json-path is invalid."));
+            return false;
+        }
         Path outPath = Paths.get(utility.getOutPath());
         if (utility.getForceRewrite().equals(Constants.FALSE) && Files.exists(outPath)) {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--out-path file already existed, but " +

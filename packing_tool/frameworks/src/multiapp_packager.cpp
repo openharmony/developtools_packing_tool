@@ -159,6 +159,13 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
         }
     }
 
+    it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end() && !it->second.empty() &&
+        !IsPathValid(it->second, true, Constants::PAC_JSON)) {
+        LOGE("MultiAppPackager::IsVerifyValidInMultiAppMode pac-json-path is invalid.");
+        return false;
+    }
+
     return true;
 }
 
@@ -406,6 +413,13 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     }
     if (zipWrapper_.AddFileOrDirectoryToZip(finalPackInfoPath, Constants::PACK_INFO) != ZipErrCode::ZIP_ERR_SUCCESS) {
         return false;
+    }
+    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::PAC_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
+            LOGE("MultiAppPackager::CompressAppModeForMultiProject: zipWrapper pac.json failed!");
+            return false;
+        }
     }
     zipWrapper_.Close();
     if (fs::exists(tempHapDirPath)) {
