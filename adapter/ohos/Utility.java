@@ -68,6 +68,7 @@ public class Utility {
     private String outPath = "";
     private String packInfoPath = "";
     private String encryptPath = "";
+    private String pacJsonPath = "";
     private String binPath = "";
     private boolean isCompressNativeLibs = false;
     private String moduleName = "";
@@ -422,6 +423,14 @@ public class Utility {
         if (!encryptPath.startsWith(CMD_PREFIX)) {
             this.encryptPath = getFormattedPath(encryptPath);
         }
+    }
+
+    public String getPacJsonPath() {
+        return pacJsonPath;
+    }
+
+    public void setPacJsonPath(String pacJsonPath) {
+        this.pacJsonPath = pacJsonPath;
     }
 
     public String getJarPath() {

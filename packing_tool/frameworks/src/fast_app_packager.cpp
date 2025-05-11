@@ -185,6 +185,13 @@ bool FastAppPackager::IsVerifyValid()
         return false;
     }
 
+    it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end() && !it->second.empty() &&
+        !IsPathValid(it->second, true, Constants::PAC_JSON)) {
+        LOGE("FastAppPackager::isVerifyValidInFastAppMode pac-json-path is invalid.");
+        return false;
+    }
+
     it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
         LOGE("FastAppPackager::isVerifyValidInFastAppMode out-path is empty.");
@@ -695,6 +702,13 @@ bool FastAppPackager::PackFastApp(const std::list<std::string> &fileList)
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::FILE_PACK_RES) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("FastAppPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
+            return false;
+        }
+    }
+    it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::PAC_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
+            LOGE("FastAppPackager::PackFastApp: zipWrapper pac.json failed!");
             return false;
         }
     }
