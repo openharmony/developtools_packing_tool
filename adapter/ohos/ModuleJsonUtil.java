@@ -1995,7 +1995,8 @@ class ModuleJsonUtil {
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
             if (installationFree) {
-                String errMsg = "The app.json5 file configuration does not match the 'installationFree' setting of true.";
+                String errMsg = "The app.json5 file configuration"
+                        + " does not match the 'installationFree' setting of true.";
                 String solution = "Add the 'bundleType' field to the app.json5 file and set it atomicService.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
