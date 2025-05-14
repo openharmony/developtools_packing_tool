@@ -69,6 +69,7 @@ public:
 
     static bool CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
+    static bool CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
 
 private:
     static bool CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVerifyInfos);
@@ -123,7 +124,6 @@ private:
     static bool GetDeviceHapVerifyInfoMap(const std::list<HapVerifyInfo>& hapVerifyInfos,
         std::map<std::string, std::list<HapVerifyInfo>>& deviceInfoMap);
     static bool CheckAtomicServicePreloadsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
-    static bool CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static void GetModuleDependency(const HapVerifyInfo& hapVerifyInfo,
         const std::list<HapVerifyInfo>& hapVerifyInfoList, std::list<std::string>& moduleDependency);

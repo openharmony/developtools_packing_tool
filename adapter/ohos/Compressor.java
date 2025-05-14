@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -136,6 +136,7 @@ public class Compressor {
     private static final String PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
     private static final String EXTENSION_ABILITIES = "extensionAbilities";
     private static final String MODULE = "module";
+    private static final String MODULES = "modules";
     private static final String GENERATE_BUILD_HASH = "generateBuildHash";
     private static final String BUILD_HASH = "buildHash";
     private static final String TEMP_DIR = "temp";
@@ -147,9 +148,24 @@ public class Compressor {
     private static final String SUMMARY = "summary";
     private static final String VERSION_CODE = "versionCode";
     private static final String VERSION_NAME = "versionName";
+    private static final String DEVICE_TYPES = "deviceTypes";
+    private static final String BUNDLE_NAME = "bundleName";
+    private static final String MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
+    private static final String MIN_API_VERSION = "minAPIVersion";
+    private static final String TARGET_API_VERSION = "targetAPIVersion";
+    private static final String API_RELEASE_TYPE = "apiReleaseType";
+    private static final String BUNDLE_TYPE = "bundleType";
+    private static final String INSTALLATION_FREE = "installationFree";
+    private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
+    private static final String API_VERSION = "apiVersion";
+    private static final String RELEASE_TYPE = "releaseType";
+    private static final String TARGET = "target";
+    private static final String COMPATIBLE = "compatible";
+    private static final String PACKAGES = "packages";
     private static final String VERSION = "version";
     private static final String CODE = "code";
     private static final String VERSION_RECORD = "version_record.json";
+    private static final String GENERAL_RECORD = "general_record.json";
     private static final String RES_INDEX = "resources.index";
     private static final String ETS_FILE_NAME = "ets";
     private static final String HNP_FILE_NAME = "hnp";
@@ -199,6 +215,7 @@ public class Compressor {
     private List<String> fileNameList = new ArrayList<String>();
     private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4, PIC_1X1, PIC_6X4);
     private HashMap<String, HapVerifyInfo> hapVerifyInfoMap = new HashMap<>();
+    private HashMap<String, String> outPutMap = new HashMap<>();
 
     public static int getEntryModuleSizeLimit() {
         return entryModuleSizeLimit;
@@ -341,6 +358,9 @@ public class Compressor {
                 return true;
             case Utility.PACKAGE_NORMALIZE:
                 return PackageNormalize.normalize(utility);
+            case Utility.GENERAL_NORMALIZE:
+                generalNormalize(utility);
+                return true;
             default:
                 return defaultProcess(utility);
         }
@@ -697,53 +717,50 @@ public class Compressor {
             LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(errMsg));
             throw new BundleException("Set generate build hash failed for --json-path file does not exist.");
         }
-        InputStream json = null;
-        BufferedWriter bw = null;
-        try {
-            json = new FileInputStream(file);
-            JSONObject jsonObject = JSON.parseObject(json, JSONObject.class);
-            if (!jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
-                LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString("Parse --json-path file is invalid."));
-                throw new BundleException("The --json-path file is invalid.");
-            }
-            JSONObject appJson = jsonObject.getJSONObject(APP);
-            JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
-            if (appJson.containsKey(GENERATE_BUILD_HASH) && appJson.getBoolean(GENERATE_BUILD_HASH)) {
-                utility.setGenerateBuildHash(true);
-            } else {
-                if (moduleJson.containsKey(GENERATE_BUILD_HASH) && moduleJson.getBoolean(GENERATE_BUILD_HASH)) {
-                    utility.setGenerateBuildHash(true);
-                }
-            }
-            appJson.remove(GENERATE_BUILD_HASH);
-            moduleJson.remove(GENERATE_BUILD_HASH);
+        // 1. 解析 JSON
+        JSONObject jsonObject;
+        try (InputStream json = Files.newInputStream(file.toPath())) {
+            jsonObject = JSON.parseObject(json, JSONObject.class);
+        } catch (IOException | JSONException e) {
+            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
+                    "Failed to read JSON file: " + e.getMessage()));
+            throw new BundleException("Failed to read JSON file");
+        }
+        //2. 检查必要字段
+        if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
+            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString("Parse --json-path file is invalid."));
+            throw new BundleException("The --json-path file is invalid.");
+        }
+        //3. 处理 JSON 数据
+        processBuildHashFlags(utility, jsonObject);
+        //4. 写入修改后的 JSON
+        writeJsonFile(utility.getJsonPath(), jsonObject);
+    }
+
+    private static void processBuildHashFlags(Utility utility, JSONObject jsonObject) {
+        JSONObject appJson = jsonObject.getJSONObject(APP);
+        JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
+        if (appJson.containsKey(GENERATE_BUILD_HASH) && appJson.getBoolean(GENERATE_BUILD_HASH)) {
+            utility.setGenerateBuildHash(true);
+        } else if (moduleJson.containsKey(GENERATE_BUILD_HASH) && moduleJson.getBoolean(GENERATE_BUILD_HASH)) {
+            utility.setGenerateBuildHash(true);
+        }
+        appJson.remove(GENERATE_BUILD_HASH);
+        moduleJson.remove(GENERATE_BUILD_HASH);
+    }
+
+    private static void writeJsonFile(String filePath, JSONObject jsonObject) throws BundleException {
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                Files.newOutputStream(Paths.get(filePath)), StandardCharsets.UTF_8))) {
             String pretty = JSON.toJSONString(jsonObject, new SerializerFeature[]{
-                    SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
+                    SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue,
                     SerializerFeature.WriteDateUseDateFormat});
-            bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(utility.getJsonPath()), StandardCharsets.UTF_8));
             bw.write(pretty);
-        } catch (BundleException exception) {
+        } catch (IOException e) {
             LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
-                    "Set generate build hash exist BundleException: " + exception.getMessage()));
-            throw new BundleException("Compressor::setGenerateBuildHash failed.");
-        } catch (NullPointerException | IOException | JSONException e) {
-            LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(
-                    "The json data err, exist Exception (NullPointerException | IOException | JSONException): " +
-                    e.getMessage()));
-            throw new BundleException("Set generate build hash failed, json data err.");
-        } finally {
-            FileUtils.closeStream(json);
-            if (bw != null) {
-                try {
-                    bw.flush();
-                    bw.close();
-                } catch (IOException e) {
-                    LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
-                            "Set generate build hash exist IOException: " + e.getMessage()));
-                    throw new BundleException("Set generate build hash failed.");
-                }
-            }
+                    "Failed to write JSON file: " + e.getMessage()));
+            throw new BundleException("Failed to write JSON file");
         }
     }
 
@@ -1444,6 +1461,8 @@ public class Compressor {
             compressFile(utility, file, NULL_DIR_NAME, false);
             // pack encrypt.json file
             packEncryptJsonFile(utility);
+            // pack pac.json file
+            packPacJsonFile(utility);
         } catch (BundleException e) {
             LOG.error(PackingToolErrMsg.COMPRESS_APP_FAILED.toString(
                 "Compress app file exist BundleException: " + e.getMessage()));
@@ -1501,6 +1520,8 @@ public class Compressor {
         pathToFile(utility, utility.getPackInfoPath(), NULL_DIR_NAME, false);
         // pack encrypt.json file
         packEncryptJsonFile(utility);
+        // pack pac.json file
+        packPacJsonFile(utility);
         // hap/hsp
         for (String hapPath : fileList) {
             HapVerifyInfo hapVerifyInfo = hapVerifyInfoMap.get(getFileNameByPath(hapPath));
@@ -1577,6 +1598,8 @@ public class Compressor {
             compressFile(utility, file, NULL_DIR_NAME, false);
             //pack encrypt.json file
             packEncryptJsonFile(utility);
+            // pack pac.json file
+            packPacJsonFile(utility);
         } catch (BundleException | IOException exception) {
             String errMsg = "Compress app mode for multi project file exist Exception (BundleException | IOException): "
                     + exception.getMessage();
@@ -2655,7 +2678,8 @@ public class Compressor {
             if (!entryName.contains(RAW_FILE_PATH)
                     && !entryName.contains(RES_FILE_PATH)
                     && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)
-                    && !entryName.equals(Constants.FILE_ENCRYPT_JSON)) {
+                    && !entryName.equals(Constants.FILE_ENCRYPT_JSON)
+                    && !entryName.equals(Constants.FILE_PAC_JSON)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
                     return;
@@ -3545,8 +3569,8 @@ public class Compressor {
     private void writeJson(String jsonFilePath, JSONObject jsonObject) throws IOException, BundleException {
         BufferedWriter bw = null;
         try {
-            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.WriteMapNullValue,
-                SerializerFeature.WriteDateUseDateFormat);
+            String pretty = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat,
+                SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
             bw = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(jsonFilePath), StandardCharsets.UTF_8));
             bw.write(pretty);
@@ -3611,7 +3635,7 @@ public class Compressor {
         return util;
     }
 
-    private void compressDirToHap(Path sourceDir, String zipFilePath)
+    private boolean compressDirToHap(Path sourceDir, String zipFilePath)
             throws IOException, BundleException {
         Utility utility = new Utility();
         utility.setOutPath(zipFilePath);
@@ -3677,7 +3701,7 @@ public class Compressor {
                 }
             });
         }
-        compressProcess(utility);
+        return compressProcess(utility);
     }
 
     private static void deleteDirectory(File dir) {
@@ -3772,6 +3796,448 @@ public class Compressor {
             pathToFile(utility, utility.getEncryptPath(), NULL_DIR_NAME, false);
         } else {
             LOG.info("Compressor::packEncryptJsonFile has no encrypt.json");
+        }
+    }
+
+    private void packPacJsonFile(Utility utility) throws BundleException {
+        if (!utility.getPacJsonPath().isEmpty()) {
+            pathToFile(utility, utility.getPacJsonPath(), NULL_DIR_NAME, false);
+        } else {
+            LOG.info("Compressor::packPacJsonFile has no pac.json");
+        }
+    }
+
+    private void generalNormalize(Utility utility) {
+        List<HashMap<String, String>> recordList = new ArrayList<>();
+        Path tempDir = null;
+        boolean isSuccess = true;
+        String[] name = new String[2];
+        for (String hapPath : utility.getFormattedHapList()) {
+            try {
+                tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
+                unpackHap(hapPath, tempDir.toAbsolutePath().toString());
+                HashMap<String, String> outPutMap = new HashMap<>();
+                File moduleFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
+                File configFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + CONFIG_JSON);
+                File packInfoFile = new File(
+                        tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + PACKINFO_NAME);
+
+                if (moduleFile.exists() && configFile.exists()) {
+                    LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString("Invalid hap structure"));
+                    throw new BundleException("generalNormalize failed, invalid hap structure.");
+                }
+                if (moduleFile.exists()) {
+                    String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
+                    outPutMap = parseAndModifyGeneralModuleJson(moduleJsonPath, utility, name);
+                } else if (configFile.exists()) {
+                    String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
+                    outPutMap = parseAndModifyGeneralConfigJson(configJsonPath, utility, name);
+                } else {
+                    LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString("Invalid hap structure"));
+                    throw new BundleException("generalNormalize failed, invalid hap structure.");
+                }
+                if (packInfoFile.exists()) {
+                    String packInfoPath = tempDir.resolve(PACKINFO_NAME).toString();
+                    parseAndModifyGeneralPackInfo(packInfoPath, utility);
+                }
+                recordList.add(outPutMap);
+                String modifiedHapPath = Paths.get(utility.getOutPath()) +
+                        LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
+                boolean ret = compressDirToHap(tempDir, modifiedHapPath);
+                if (!ret) {
+                    isSuccess = false;
+                    String errMsg = "compressDirToHap failed bundleName:" + name[0] + " moduleName:" + name[1];
+                    LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString(errMsg));
+                    break;
+                }
+            } catch (Exception e) {
+                String errMsg = "general normalize exist Exception bundleName:" + name[0] + " moduleName:" + name[1];
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString(errMsg + e.getMessage()));
+                isSuccess = false;
+                break;
+            } finally {
+                if (tempDir != null) {
+                    deleteDirectory(tempDir.toFile());
+                }
+            }
+        }
+        if (!isSuccess) {
+            if (Paths.get(utility.getOutPath()) != null) {
+                deleteFile(Paths.get(utility.getOutPath()).toFile());
+            }
+            return;
+        }
+        writeGeneralRecord(recordList, utility.getOutPath());
+    }
+
+    private HashMap<String, String> parseAndModifyGeneralModuleJson(String jsonFilePath, Utility utility, String[] name)
+            throws BundleException {
+        try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (!jsonObject.containsKey(APP)) {
+                LOG.error(PackingToolErrMsg.PARSE_AND_MODIFY_MODULEJSON_FAILED.toString("The module.json file " +
+                        "does not contain 'app'."));
+                throw new BundleException("The module.json file does not contain 'app'. ");
+            }
+            JSONObject appObject = jsonObject.getJSONObject(APP);
+            JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
+            if (!moduleObject.containsKey(NAME)) {
+                LOG.error(PackingToolErrMsg.PARSE_AND_MODIFY_MODULEJSON_FAILED.toString("The module object of " +
+                        "module.json file does not contain 'name'."));
+                throw new BundleException("The module object of module.json file does not contain 'name'. ");
+            }
+            if (!appObject.containsKey(BUNDLE_NAME)) {
+                LOG.error(PackingToolErrMsg.PARSE_AND_MODIFY_MODULEJSON_FAILED.toString("The app object of " +
+                        "app.json file does not contain 'bundleName'."));
+                throw new BundleException("The app object of app.json file does not contain 'bundleName'. ");
+            }
+            name[0] = appObject.getString(BUNDLE_NAME);
+            name[1] = moduleObject.getString(NAME);
+            outPutMap.put(MODULE_NAME_NEW, moduleObject.getString(NAME));
+
+            if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
+                outPutMap.put(DEVICE_TYPES, getJsonString(moduleObject, DEVICE_TYPES));
+                moduleObject.put(DEVICE_TYPES, utility.getDeviceTypes().split(","));
+            }
+
+            if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
+                outPutMap.put(VERSION_CODE, String.valueOf(appObject.getIntValue(VERSION_CODE)));
+                appObject.put(VERSION_CODE, utility.getVersionCode());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
+                outPutMap.put(VERSION_NAME, appObject.getString(VERSION_NAME));
+                appObject.put(VERSION_NAME, utility.getVersionName());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(BUNDLE_NAME)) {
+                outPutMap.put(BUNDLE_NAME, appObject.getString(BUNDLE_NAME));
+                appObject.put(BUNDLE_NAME, utility.getBundleName());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
+                outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
+                        appObject.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                appObject.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
+                outPutMap.put(MIN_API_VERSION, String.valueOf(appObject.getIntValue(MIN_API_VERSION)));
+                appObject.put(MIN_API_VERSION, utility.getMinAPIVersion());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
+                outPutMap.put(TARGET_API_VERSION, String.valueOf(appObject.getIntValue(TARGET_API_VERSION)));
+                appObject.put(TARGET_API_VERSION, utility.getTargetAPIVersion());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(API_RELEASE_TYPE)) {
+                outPutMap.put(API_RELEASE_TYPE, appObject.getString(API_RELEASE_TYPE));
+                appObject.put(API_RELEASE_TYPE, utility.getApiReleaseType());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
+                outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                appObject.put(BUNDLE_TYPE, utility.getBundleType());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
+                outPutMap.put(INSTALLATION_FREE, moduleObject.getBoolean(INSTALLATION_FREE).toString());
+                moduleObject.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
+                outPutMap.put(DELIVERY_WITH_INSTALL, moduleObject.getBoolean(DELIVERY_WITH_INSTALL).toString());
+                moduleObject.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
+            }
+            writeJson(jsonFilePath, jsonObject);
+        } catch (IOException e) {
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Parse and modify module.json exist IOException: " +
+                    e.getMessage()));
+            throw new BundleException("Parse and modify module.json exist IOException: " + e.getMessage());
+        }
+        return outPutMap;
+    }
+
+    private HashMap<String, String> parseAndModifyGeneralConfigJson(String jsonFilePath, Utility utility, String[] name)
+            throws BundleException {
+        try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (!jsonObject.containsKey(APP)) {
+                LOG.error(PackingToolErrMsg.PARSE_MODIFY_CONFIG_JSON_FAILED.toString("The config.json file " +
+                        "does not contain 'app'."));
+                throw new BundleException("The config.json file does not contain 'app'. ");
+            }
+            JSONObject appObject = jsonObject.getJSONObject(APP);
+
+            if (!appObject.containsKey(VERSION)) {
+                LOG.error(PackingToolErrMsg.PARSE_MODIFY_CONFIG_JSON_FAILED.toString("The app object of config.json " +
+                        "file does not contain 'version'."));
+                throw new BundleException("The app object of config.json file does not contain 'version'. ");
+            }
+            JSONObject versionObj = appObject.getJSONObject(VERSION);
+
+            if (!appObject.containsKey(API_VERSION)) {
+                JSONObject apiVersion = new JSONObject();
+                appObject.put(API_VERSION, apiVersion);
+            }
+            JSONObject apiVersionObj = appObject.getJSONObject(API_VERSION);
+
+            if (!jsonObject.containsKey(MODULE)) {
+                LOG.error(PackingToolErrMsg.PARSE_MODIFY_CONFIG_JSON_FAILED.toString("The app object of config.json " +
+                        "file does not contain 'module'."));
+                throw new BundleException("The app object of config.json file does not contain 'module'. ");
+            }
+            JSONObject moduleObject = jsonObject.getJSONObject(MODULE);
+
+            if (!moduleObject.containsKey(DISTRO)) {
+                LOG.error(PackingToolErrMsg.PARSE_MODIFY_CONFIG_JSON_FAILED.toString("The app object of config.json " +
+                        "file does not contain 'distro'."));
+                throw new BundleException("The app object of config.json file does not contain 'distro'. ");
+            }
+            JSONObject distroObj = moduleObject.getJSONObject(DISTRO);
+
+            if (!distroObj.containsKey(MODULE_NAME_NEW)) {
+                LOG.error(PackingToolErrMsg.PARSE_MODIFY_CONFIG_JSON_FAILED.toString("The module object of " +
+                        "config.json file does not contain 'moduleName'."));
+                throw new BundleException("The module object of module.json file does not contain 'moduleName'. ");
+            }
+            if (!appObject.containsKey(BUNDLE_NAME)) {
+                LOG.error(PackingToolErrMsg.PARSE_MODIFY_CONFIG_JSON_FAILED.toString("The app object of " +
+                        "config.json file does not contain 'bundleName'."));
+                throw new BundleException("The app object of config.json file does not contain 'bundleName'. ");
+            }
+            name[0] = appObject.getString(BUNDLE_NAME);
+            name[1] = distroObj.getString(MODULE_NAME_NEW);
+            outPutMap.put(MODULE_NAME_NEW, distroObj.getString(MODULE_NAME_NEW));
+
+            if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
+                outPutMap.put(DEVICE_TYPE, getJsonString(moduleObject, DEVICE_TYPE));
+                moduleObject.put(DEVICE_TYPE, utility.getDeviceTypes().split(","));
+            }
+            if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
+                outPutMap.put(CODE, String.valueOf(versionObj.getIntValue(CODE)));
+                versionObj.put(CODE, utility.getVersionCode());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
+                outPutMap.put(NAME, versionObj.getString(NAME));
+                versionObj.put(NAME, utility.getVersionName());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
+                outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
+                    versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                versionObj.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(BUNDLE_NAME)) {
+                outPutMap.put(BUNDLE_NAME, appObject.getString(BUNDLE_NAME));
+                appObject.put(BUNDLE_NAME, utility.getBundleName());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
+                outPutMap.put(COMPATIBLE, String.valueOf(apiVersionObj.getIntValue(COMPATIBLE)));
+                apiVersionObj.put(COMPATIBLE, utility.getMinAPIVersion());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
+                outPutMap.put(TARGET, String.valueOf(apiVersionObj.getIntValue(TARGET)));
+                apiVersionObj.put(TARGET, utility.getTargetAPIVersion());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(API_RELEASE_TYPE)) {
+                outPutMap.put(RELEASE_TYPE, apiVersionObj.getString(RELEASE_TYPE));
+                apiVersionObj.put(RELEASE_TYPE, utility.getApiReleaseType());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
+                outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                appObject.put(BUNDLE_TYPE, utility.getBundleType());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
+                outPutMap.put(INSTALLATION_FREE, distroObj.getBoolean(INSTALLATION_FREE).toString());
+                distroObj.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
+                outPutMap.put(DELIVERY_WITH_INSTALL, distroObj.getBoolean(DELIVERY_WITH_INSTALL).toString());
+                distroObj.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
+            }
+            writeJson(jsonFilePath, jsonObject);
+        } catch (IOException e) {
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Parse and modify module.json exist IOException: " +
+                    e.getMessage()));
+            throw new BundleException("Parse and modify config.json exist IOException: " + e.getMessage());
+        }
+        return outPutMap;
+    }
+
+    private void parseAndModifyGeneralPackInfo(String packInfoPath, Utility utility)
+            throws BundleException {
+        try (FileInputStream jsonStream = new FileInputStream(packInfoPath)) {
+            JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
+            if (jsonObject == null) {
+                LOG.warning("parseAndModifyGeneralPackInfo failed, json format invalid.");
+                return;
+            }
+            JSONObject summaryObject = jsonObject.getJSONObject(SUMMARY);
+            if (summaryObject == null) {
+                LOG.warning("parseAndModifyGeneralPackInfo failed, summary invalid.");
+                return;
+            }
+            JSONObject appObject = summaryObject.getJSONObject(APP);
+            if (appObject == null) {
+                LOG.warning("parseAndModifyGeneralPackInfo failed, app invalid.");
+                return;
+            }
+            JSONArray moduleJsonList = summaryObject.getJSONArray(MODULES);
+            if (moduleJsonList.isEmpty()) {
+                LOG.warning("parseAndModifyGeneralPackInfo failed, modules invalid.");
+                return;
+            }
+
+            if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
+                for (int i = 0; i < moduleJsonList.size(); i++) {
+                    JSONObject moduleJson = moduleJsonList.getJSONObject(i);
+                    if (moduleJson == null) {
+                        LOG.warning("parseAndModifyGeneralPackInfo failed, moduleJson invalid.");
+                        continue;
+                    }
+                    moduleJson.put(DEVICE_TYPE, utility.getDeviceTypes().split(","));
+                }
+            }
+
+            JSONObject versionObject = appObject.getJSONObject(VERSION);
+            if (versionObject == null) {
+                LOG.warning("parseAndModifyGeneralPackInfo failed, version invalid.");
+                return;
+            }
+
+            if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
+                versionObject.put(CODE, utility.getVersionCode());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
+                versionObject.put(NAME, utility.getVersionName());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(BUNDLE_NAME)) {
+                appObject.put(BUNDLE_NAME, utility.getBundleName());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
+                versionObject.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
+                setApiVersion(moduleJsonList, MIN_API_VERSION, utility);
+            }
+
+            if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
+                setApiVersion(moduleJsonList, TARGET_API_VERSION, utility);
+            }
+
+            if (utility.getGeneralNormalizeList().contains(API_RELEASE_TYPE)) {
+                setApiVersion(moduleJsonList, API_RELEASE_TYPE, utility);
+            }
+
+            if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
+                appObject.put(BUNDLE_TYPE, utility.getBundleType());
+            }
+
+            if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
+                setDistroObj(moduleJsonList, INSTALLATION_FREE, utility);
+            }
+
+            if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
+                setDistroObj(moduleJsonList, DELIVERY_WITH_INSTALL, utility);
+            }
+
+            JSONArray jsonArray = jsonObject.getJSONArray(PACKAGES);
+            if (jsonArray != null) {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject object = jsonArray.getJSONObject(i);
+                    if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
+                        object.put(DEVICE_TYPE, utility.getDeviceTypes().split(","));
+                    }
+                    if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
+                        object.put(DELIVERY_WITH_INSTALL, utility.getDeliveryWithInstall());
+                    }
+                }
+            }
+
+            writeJson(packInfoPath, jsonObject);
+        } catch (IOException e) {
+            LOG.warning("parseAndModifyGeneralPackInfo failed, IOException." + e.getMessage());
+        }
+    }
+
+    private static void setApiVersion(JSONArray moduleJsonList, String key, Utility utility) {
+        for (int i = 0; i < moduleJsonList.size(); i++) {
+            JSONObject moduleJson = moduleJsonList.getJSONObject(i);
+            if (moduleJson == null) {
+                LOG.warning("setApiVersion failed, moduleJson invalid.");
+                break;
+            }
+            JSONObject apiVersionObj = moduleJson.getJSONObject(API_VERSION);
+            if (apiVersionObj == null) {
+                JSONObject apiVersion = new JSONObject();
+                moduleJson.put(API_VERSION, apiVersion);
+                apiVersionObj = moduleJson.getJSONObject(API_VERSION);
+            }
+            if(key == MIN_API_VERSION) {
+                apiVersionObj.put(COMPATIBLE, utility.getMinAPIVersion());
+            } else if (key == TARGET_API_VERSION) {
+                apiVersionObj.put(TARGET, utility.getTargetAPIVersion());
+            } else if (key == API_RELEASE_TYPE) {
+                apiVersionObj.put(RELEASE_TYPE, utility.getApiReleaseType());
+            }
+        }
+    }
+
+    private static void setDistroObj(JSONArray moduleJsonList, String key, Utility utility) {
+        for (int i = 0; i < moduleJsonList.size(); i++) {
+            JSONObject moduleJson = moduleJsonList.getJSONObject(i);
+            if (moduleJson == null) {
+                LOG.warning("setDistroObj failed, moduleJson invalid.");
+                break;
+            }
+            JSONObject distroObj = moduleJson.getJSONObject(DISTRO);
+            if (distroObj == null) {
+                LOG.warning("setDistroObj failed, distro invalid.");
+                break;
+            }
+            if(key == INSTALLATION_FREE) {
+                distroObj.put(INSTALLATION_FREE, utility.getInstallationFree());
+            } else if (key == DELIVERY_WITH_INSTALL) {
+                distroObj.put(DELIVERY_WITH_INSTALL, utility.getDeliveryWithInstall());
+            }
+        }
+    }
+
+    private static void writeGeneralRecord(List<HashMap<String, String>> recordList, String outPath) {
+        try (FileWriter fileWriter = new FileWriter(outPath + LINUX_FILE_SEPARATOR + GENERAL_RECORD)) {
+            for (HashMap<String, String> record : recordList) {
+                String jsonString = JSON.toJSONString(record);
+                fileWriter.write(jsonString);
+                fileWriter.write(",");
+            }
+        } catch (IOException e) {
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Write general record exist IOException: "
+                    + e.getMessage()));
+        }
+    }
+
+    private static void deleteFile(File dir) {
+        File[] children = dir.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                child.delete();
+            }
         }
     }
 }

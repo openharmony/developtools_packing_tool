@@ -46,6 +46,11 @@ public:
         zipLevel_ = zipLevel;
     }
 
+    void SetZipMethod(ZipMethod zipMethod)
+    {
+        zipMethod_ = zipMethod;
+    }
+
     const zip_fileinfo& ZipFileInfo() const
     {
         return zipFileInfo_;
@@ -72,6 +77,7 @@ private:
     zip_fileinfo zipFileInfo_ = {};
     std::string zipFilePath_;
     ZipLevel zipLevel_ = ZipLevel::ZIP_LEVEL_DEFAULT;
+    ZipMethod zipMethod_ = ZipMethod::ZIP_METHOD_STORED;
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

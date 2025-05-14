@@ -35,6 +35,7 @@
                 "description",
                 "deliveryWithInstall",
                 "deviceTypes",
+                "deviceFeatures",
                 "pages",
                 "metadata",
                 "abilities",
@@ -43,6 +44,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
+                "extractNativeLibs",
                 "installationFree",
                 "atomicService",
                 "targetModuleName",
@@ -122,6 +124,7 @@
                 "process",
                 "mainElement",
                 "deviceTypes",
+                "deviceFeatures",
                 "deliveryWithInstall",
                 "installationFree",
                 "virtualMachine",
@@ -137,6 +140,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
+                "extractNativeLibs",
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
@@ -178,6 +182,7 @@
                 "process",
                 "mainElement",
                 "deviceTypes",
+                "deviceFeatures",
                 "deliveryWithInstall",
                 "installationFree",
                 "virtualMachine",
@@ -192,6 +197,7 @@
                 "dependencies",
                 "libIsolation",
                 "compressNativeLibs",
+                "extractNativeLibs",
                 "atomicService",
                 "generateBuildHash",
                 "isolationMode",
@@ -277,6 +283,19 @@
               "wearable",
               "car",
               "2in1"
+            ]
+          }
+        },
+        "deviceFeatures": {
+          "description": "Declarable device capabilities required by the application.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "multi_process",
+              "free_multi_window",
+              "directory_permission"
             ]
           }
         },
@@ -1493,6 +1512,11 @@
           "description": "Specifies whether the libs libraries of the .hap file are compressed for storage. If this attribute is set to false, the libs libraries are stored without being compressed and will be directly loaded during the installation of the .hap file.",
           "type": "boolean",
           "default": false
+        },
+        "extractNativeLibs": {
+          "description": "Specifies whether to extract native libraries (so) of the .hap file during installation.",
+          "type": "boolean",
+          "default": true
         },
         "atomicService": {
           "description": "Indicates the module config in atomic service.",

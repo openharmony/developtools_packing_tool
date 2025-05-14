@@ -255,6 +255,16 @@ public class PackingToolErrMsg {
             .setCause("%s")
             .build();
 
+    /**
+     * GENERAL_NORMALIZE_MODE_ARGS_INVALID
+     */
+    public static final ErrorMsg GENERAL_NORMALIZE_MODE_ARGS_INVALID = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("021")
+            .setDescription("Parse and check args invalid in generalNormalize mode.")
+            .setCause("%s")
+            .build();
+
     // compress process error
     /**
      * COMPRESS_PROCESS_FAILED
