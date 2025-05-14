@@ -49,6 +49,7 @@ public:
     bool CheckCertificatePath();
     bool CheckEntrycardPath();
     bool CheckPackResPath();
+    bool CheckPacJsonPath();
 
 protected:
     int32_t InitAllowedParam() override;
@@ -63,6 +64,7 @@ private:
     std::list<std::string> formattedEntryCardPathList_;
     bool isSharedApp_ = false;
     bool isAppService_ = false;
+    std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

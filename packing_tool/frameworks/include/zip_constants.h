@@ -32,6 +32,11 @@ enum ZipErrCode {
     ZIP_ERR_SUCCESS = 0
 };
 
+enum class ZipMethod : int32_t {
+    ZIP_METHOD_STORED = 0,
+    ZIP_METHOD_DEFLATED = Z_DEFLATED
+};
+
 enum class ZipLevel : int32_t {
     ZIP_LEVEL_DEFAULT = Z_DEFAULT_COMPRESSION,
     ZIP_LEVEL_0 = Z_NO_COMPRESSION,

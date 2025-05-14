@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,6 +39,7 @@ public class Utility {
     static final String MODE_HAPADDITION = "hapAddition";
     static final String VERSION_NORMALIZE = "versionNormalize";
     static final String PACKAGE_NORMALIZE = "packageNormalize";
+    static final String GENERAL_NORMALIZE = "generalNormalize";
     static final String FALSE_STRING = "false";
     static final String TRUE_STRING = "true";
 
@@ -68,6 +69,7 @@ public class Utility {
     private String outPath = "";
     private String packInfoPath = "";
     private String encryptPath = "";
+    private String pacJsonPath = "";
     private String binPath = "";
     private boolean isCompressNativeLibs = false;
     private String moduleName = "";
@@ -110,6 +112,17 @@ public class Utility {
     private String absoluteHapPath = "";
     private boolean generateBuildHash = false;
     private boolean buildHashFinish = false;
+    private int minCompatibleVersionCode = -1;
+    private int minAPIVersion = -1;
+    private String compileSdkType = "";
+    private String compileSdkVersion = "";
+    private int targetAPIVersion = -1;
+    private String apiReleaseType = "";
+    private String bundleType = "";
+    private String installationFree = "";
+    private String deliveryWithInstall = "";
+    private String deviceTypes = "";
+    private List<String> generalNormalizeList = new ArrayList<>();
 
     private List<String> formattedCpuAbiList = new ArrayList<>();
     private List<String> formattedSoPathList = new ArrayList<>();
@@ -422,6 +435,14 @@ public class Utility {
         if (!encryptPath.startsWith(CMD_PREFIX)) {
             this.encryptPath = getFormattedPath(encryptPath);
         }
+    }
+
+    public String getPacJsonPath() {
+        return pacJsonPath;
+    }
+
+    public void setPacJsonPath(String pacJsonPath) {
+        this.pacJsonPath = pacJsonPath;
     }
 
     public String getJarPath() {
@@ -921,5 +942,77 @@ public class Utility {
 
     public void setStatFileSize(String statFileSize) {
         this.statFileSize = statFileSize;
+    }
+
+    public int getMinCompatibleVersionCode() {
+        return minCompatibleVersionCode;
+    }
+
+    public void setMinCompatibleVersionCode(int minCompatibleVersionCode) {
+        this.minCompatibleVersionCode = minCompatibleVersionCode;
+    }
+
+    public int getMinAPIVersion() {
+        return minAPIVersion;
+    }
+
+    public void setMinAPIVersion(int minAPIVersion) {
+        this.minAPIVersion = minAPIVersion;
+    }
+
+    public int getTargetAPIVersion() {
+        return targetAPIVersion;
+    }
+
+    public void setTargetAPIVersion(int targetAPIVersion) {
+        this.targetAPIVersion = targetAPIVersion;
+    }
+
+    public String getApiReleaseType() {
+        return apiReleaseType;
+    }
+
+    public void setApiReleaseType(String apiReleaseType) {
+        this.apiReleaseType = apiReleaseType;
+    }
+
+    public String getBundleType() {
+        return bundleType;
+    }
+
+    public void setBundleType(String bundleType) {
+        this.bundleType = bundleType;
+    }
+
+    public String getDeliveryWithInstall() {
+        return deliveryWithInstall;
+    }
+
+    public void setDeliveryWithInstall(String deliveryWithInstall) {
+        this.deliveryWithInstall = deliveryWithInstall;
+    }
+
+    public String getInstallationFree() {
+        return installationFree;
+    }
+
+    public void setInstallationFree(String installationFree) {
+        this.installationFree = installationFree;
+    }
+
+    public String getDeviceTypes() {
+        return deviceTypes;
+    }
+
+    public void setDeviceTypes(String deviceTypes) {
+        this.deviceTypes = deviceTypes;
+    }
+
+    public void addGeneralNormalizeList(String generalNormalize) {
+        this.generalNormalizeList.add(generalNormalize);
+    }
+
+    public List<String> getGeneralNormalizeList() {
+        return generalNormalizeList;
     }
 }

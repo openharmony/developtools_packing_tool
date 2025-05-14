@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -65,6 +65,7 @@ public class CommandParser {
     private static final String CMD_OUT_PATH = "--out-path";
     private static final String CMD_PACK_INFO_PATH = "--pack-info-path";
     private static final String CMD_ENCRYPT_PATH = "--encrypt-path";
+    private static final String CMD_PAC_JSON_PATH = "--pac-json-path";
     private static final String CMD_BIN_PATH = "--bin-path";
     private static final String CMD_JAR_PATH = "--jar-path";
     private static final String CMD_TXT_PATH = "--txt-path";
@@ -90,6 +91,25 @@ public class CommandParser {
     private static final String VERSION_CODE = "--version-code";
     private static final String VERSION_NAME = "--version-name";
     private static final String INPUT_LIST = "--input-list";
+    private static final String PARAM_DEVICE_TYPES = "--device-types";
+    private static final String PARAM_MIN_COMPATIBLE_VERSION_CODE = "--min-compatible-version-code";
+    private static final String PARAM_MIN_API_VERSION = "--min-api-version";
+    private static final String PARAM_TARGET_API_VERSION = "--target-api-version";
+    private static final String PARAM_API_RELEASE_TYPE = "--api-release-type";
+    private static final String PARAM_BUNDLE_TYPE = "--bundle-type";
+    private static final String PARAM_INSTALLATION_FREE = "--installation-free";
+    private static final String PARAM_DELIVERY_WITH_INSTALL = "--delivery-with-install";
+    private static final String VERSION_CODE_PARAM = "versionCode";
+    private static final String VERSION_NAME_PARAM = "versionName";
+    private static final String DEVICE_TYPES_PARAM = "deviceTypes";
+    private static final String BUNDLE_NAME_PARAM = "bundleName";
+    private static final String MIN_COMPATIBLE_VERSION_CODE_PARAM = "minCompatibleVersionCode";
+    private static final String MIN_API_VERSION_PARAM = "minAPIVersion";
+    private static final String TARGET_API_VERSION_PARAM = "targetAPIVersion";
+    private static final String API_RELEASE_TYPE_PARAM = "apiReleaseType";
+    private static final String BUNDLE_TYPE_PARAM = "bundleType";
+    private static final String INSTALLATION_FREE_PARAM = "installationFree";
+    private static final String DELIVERY_WITH_INSTALL_PARAM = "deliveryWithInstall";
     private static final String INPUT = "--input";
     private static final String STAT_DUPLICATE = "--stat-duplicate";
     private static final String STAT_SUFFIX = "--stat-suffix";
@@ -230,6 +250,10 @@ public class CommandParser {
             entry.getKey().setEncryptPath(entry.getValue());
             return true;
         });
+        commandFuncs.put(CMD_PAC_JSON_PATH, entry -> {
+            entry.getKey().setPacJsonPath(entry.getValue());
+            return true;
+        });
         commandFuncs.put(CMD_BIN_PATH, entry -> {
             entry.getKey().setBinPath(entry.getValue());
             return true;
@@ -317,15 +341,17 @@ public class CommandParser {
         commandFuncs.put(VERSION_CODE, entry -> {
             try {
                 entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
+                entry.getKey().addGeneralNormalizeList(VERSION_CODE_PARAM);
             } catch (NumberFormatException ignored) {
                 LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
-                    "--version-code value must be number."));
+                    "--version-code value is not number or invalid."));
                 return false;
             }
             return true;
         });
         commandFuncs.put(VERSION_NAME, entry -> {
             entry.getKey().setVersionName(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(VERSION_NAME_PARAM);
             return true;
         });
         commandFuncs.put(INPUT_LIST, entry -> {
@@ -382,10 +408,68 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_BUNDLE_NAME, entry -> {
             entry.getKey().setBundleName(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(BUNDLE_NAME_PARAM);
+            return true;
+        });
+        commandFuncs.put(PARAM_DEVICE_TYPES, entry -> {
+            entry.getKey().setDeviceTypes(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(DEVICE_TYPES_PARAM);
+            return true;
+        });
+        commandFuncs.put(PARAM_MIN_COMPATIBLE_VERSION_CODE, entry -> {
+            try {
+                entry.getKey().setMinCompatibleVersionCode(Integer.parseInt(entry.getValue()));
+                entry.getKey().addGeneralNormalizeList(MIN_COMPATIBLE_VERSION_CODE_PARAM);
+            } catch (NumberFormatException ignored) {
+                LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
+                    "--min-compatible-version-code value is not number or invalid."));
+                return false;
+            }
+            return true;
+        });
+        commandFuncs.put(PARAM_MIN_API_VERSION, entry -> {
+            try {
+                entry.getKey().setMinAPIVersion(Integer.parseInt(entry.getValue()));
+                entry.getKey().addGeneralNormalizeList(MIN_API_VERSION_PARAM);
+            } catch (NumberFormatException ignored) {
+                LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
+                    "--min-api-version value is not number or invalid."));
+                return false;
+            }
+            return true;
+        });
+        commandFuncs.put(PARAM_TARGET_API_VERSION, entry -> {
+            try {
+                entry.getKey().setTargetAPIVersion(Integer.parseInt(entry.getValue()));
+                entry.getKey().addGeneralNormalizeList(TARGET_API_VERSION_PARAM);
+            } catch (NumberFormatException ignored) {
+                LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
+                    "--target-api-version value is not number or invalid."));
+                return false;
+            }
+            return true;
+        });
+        commandFuncs.put(PARAM_API_RELEASE_TYPE, entry -> {
+            entry.getKey().setApiReleaseType(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(API_RELEASE_TYPE_PARAM);
+            return true;
+        });
+        commandFuncs.put(PARAM_BUNDLE_TYPE, entry -> {
+            entry.getKey().setBundleType(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(BUNDLE_TYPE_PARAM);
+            return true;
+        });
+        commandFuncs.put(PARAM_INSTALLATION_FREE, entry -> {
+            entry.getKey().setInstallationFree(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(INSTALLATION_FREE_PARAM);
+            return true;
+        });
+        commandFuncs.put(PARAM_DELIVERY_WITH_INSTALL, entry -> {
+            entry.getKey().setDeliveryWithInstall(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(DELIVERY_WITH_INSTALL_PARAM);
             return true;
         });
     }
-
 
     /**
      * judge args is null and enter parser.
