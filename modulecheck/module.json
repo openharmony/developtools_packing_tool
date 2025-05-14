@@ -1523,7 +1523,8 @@
           "type": "object",
           "propertyNames": {
             "enum": [
-              "preloads"
+              "preloads",
+              "resizeable"
             ]
           },
           "properties": {
@@ -1546,6 +1547,11 @@
                   }
                 }
               }
+            },
+            "resizeable": {
+                "description": "Indicates whether atomicService can be resize.The \"true\" indicates the atomicService can be resize.The \"false\" indicates the atomicService cannot be resize.This tag is optional. The default value is false.",
+                "type": "boolean",
+                "default": false
             }
           }
         },
