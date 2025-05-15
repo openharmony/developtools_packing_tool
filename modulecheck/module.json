@@ -1065,6 +1065,7 @@
                   "callerInfoQuery",
                   "assetAcceleration",
                   "formEdit",
+                  "liveForm",
                   "distributed",
                   "awc/webpage",
                   "awc/newsfeed",
