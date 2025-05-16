@@ -956,7 +956,8 @@
                       "metadata",
                       "extensionProcessMode",
                       "dataGroupIds",
-                      "process"
+                      "process",
+                      "isolationProcess"
                     ]
                   }
                 }
@@ -1015,6 +1016,67 @@
                         "metadata",
                         "extensionProcessMode",
                         "dataGroupIds",
+                        "appIdentifierAllowList",
+                        "isolationProcess"
+                      ]
+                    }
+                  }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "const": "sys/commonUI"
+                    }
+                  }
+                },
+                "then": {
+                    "propertyNames": {
+                      "enum": [
+                        "priority",
+                        "name",
+                        "srcEntrance",
+                        "srcEntry",
+                        "icon",
+                        "label",
+                        "description",
+                        "type",
+                        "permissions",
+                        "uri",
+                        "readPermission",
+                        "writePermission",
+                        "visible",
+                        "exported",
+                        "skills",
+                        "metadata",
+                        "extensionProcessMode",
+                        "dataGroupIds",
+                        "isolationProcess"
+                      ]
+                    }
+                  },
+                  "else": {
+                    "propertyNames": {
+                      "enum": [
+                        "priority",
+                        "name",
+                        "srcEntrance",
+                        "srcEntry",
+                        "icon",
+                        "label",
+                        "description",
+                        "type",
+                        "permissions",
+                        "uri",
+                        "readPermission",
+                        "writePermission",
+                        "visible",
+                        "exported",
+                        "skills",
+                        "metadata",
+                        "extensionProcessMode",
+                        "dataGroupIds",
+                        "process",
                         "appIdentifierAllowList"
                       ]
                     }
@@ -1352,6 +1414,11 @@
                 "type": "string",
                 "maxLength": 31,
                 "pattern": "^[:][0-9a-zA-Z_]+$"
+              },
+              "isolationProcess": {
+                "description": "Specifies whether the ability can run in an independent process",
+                "type": "boolean",
+                "default": false
               }
             },
             "if": {
