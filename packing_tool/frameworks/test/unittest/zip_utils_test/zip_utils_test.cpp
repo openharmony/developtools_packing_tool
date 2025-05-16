@@ -501,31 +501,10 @@ HWTEST_F(ZipUtilsTest, GetUnzipCurrentFileContent_0800, Function | MediumTest | 
     std::string fileContent;
     zipUtils.Zip(filePath, zipPath, FILE_NAME);
     unzFile unzipFile = unzOpen64(zipPath.c_str());
-    unzClose(unzipFile);
     bool result = zipUtils.GetUnzipCurrentFileContent(unzipFile, fileContent);
-    EXPECT_FALSE(result);
-    EXPECT_TRUE(fileContent.empty());
-    DeleteFilePath(OUT_PATH);
-}
-
-/*
- * @tc.name: GetUnzipCurrentFileContent_0900
- * @tc.desc: GetUnzipCurrentFileContent.
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(ZipUtilsTest, GetUnzipCurrentFileContent_0900, Function | MediumTest | Level1)
-{
-    OHOS::AppPackingTool::ZipUtils zipUtils;
-    std::string filePath = std::string(FILE_PATH) + std::string(FILE_NAME);
-    std::string zipPath(OUT_PATH);
-    std::string fileContent;
-    zipUtils.Zip(filePath, zipPath, FILE_NAME);
-    unzFile unzipFile = unzOpen64(zipPath.c_str());
     unzClose(unzipFile);
-    bool result = zipUtils.GetUnzipCurrentFileContent(unzipFile, fileContent);
-    EXPECT_FALSE(result);
-    EXPECT_TRUE(fileContent.empty());
+    EXPECT_TRUE(result);
+    EXPECT_FALSE(fileContent.empty());
     DeleteFilePath(OUT_PATH);
 }
 

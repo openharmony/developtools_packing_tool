@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,7 @@
 
 #include "constants.h"
 #include "utils.h"
+#include "pt_json.h"
 
 using namespace testing;
 using namespace testing::ext;
@@ -594,5 +595,92 @@ HWTEST_F(UtilsTest, GetFormattedPath_3600, Function | MediumTest | Level1)
     std::string path;
     std::string formattedPath;
     EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetFormattedPath(path, formattedPath));
+}
+
+/*
+ * @tc.name: StringToBool_0100
+ * @tc.desc: StringToBool.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, StringToBool_0100, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::StringToBool("true"));
+}
+
+/*
+ * @tc.name: StringToBool_0200
+ * @tc.desc: StringToBool.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, StringToBool_0200, Function | MediumTest | Level1)
+{
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::StringToBool("false"));
+}
+
+/*
+ * @tc.name: StringToBool_0300
+ * @tc.desc: StringToBool.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, StringToBool_0300, Function | MediumTest | Level1)
+{
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::StringToBool("error"));
+}
+
+/*
+ * @tc.name: StringToArray_0100
+ * @tc.desc: StringToArray.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, StringToArray_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> array;
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::StringToArray("1\n2,3\n4, 5", array));
+}
+
+/*
+ * @tc.name: ArrayToString_0100
+ * @tc.desc: ArrayToString
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, ArrayToString_0100, Function | MediumTest | Level1)
+{
+    const std::list<std::string> array = {"a", "b", "c"};
+    EXPECT_EQ(OHOS::AppPackingTool::Utils::ArrayToString(array), "[\"a\",\"b\",\"c\"]");
+}
+
+/*
+ * @tc.name: BoolToString_0100
+ * @tc.desc: BoolToString
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, BoolToString_0100, Function | MediumTest | Level1)
+{
+    EXPECT_EQ(OHOS::AppPackingTool::Utils::BoolToString(true), "true");
+    EXPECT_EQ(OHOS::AppPackingTool::Utils::BoolToString(false), "false");
+}
+
+/*
+ * @tc.name: RemoveAllFilesInDirectory_0100
+ * @tc.desc: RemoveAllFilesInDirectory
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, RemoveAllFilesInDirectory_0100, Function | MediumTest | Level1)
+{
+    const std::string directoryPath = "/data/test/dirpath";
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::RemoveAllFilesInDirectory(directoryPath));
+    system("touch /data/test/dirpath");
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::RemoveAllFilesInDirectory(directoryPath));
+    system("rm -rf /data/test/dirpath");
+    system("mkdir /data/test/dirpath");
+    system("touch /data/test/dirpath/file1");
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::RemoveAllFilesInDirectory(directoryPath));
 }
 } // namespace OHOS
