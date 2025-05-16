@@ -154,6 +154,7 @@ public class Utility {
     private boolean statDuplicate = false;
     private boolean statSuffix = false;
     private String statFileSize = "";
+    private boolean isSuccess = true;
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -1014,5 +1015,13 @@ public class Utility {
 
     public List<String> getGeneralNormalizeList() {
         return generalNormalizeList;
+    }
+
+    public Boolean getParameterIsInvalid() {
+        return isSuccess;
+    }
+
+    public void setParameterIsInvalid(Boolean isSuccess) {
+        this.isSuccess = isSuccess;
     }
 }

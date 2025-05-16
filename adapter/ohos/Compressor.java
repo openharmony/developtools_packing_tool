@@ -215,7 +215,6 @@ public class Compressor {
     private List<String> fileNameList = new ArrayList<String>();
     private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4, PIC_1X1, PIC_6X4);
     private HashMap<String, HapVerifyInfo> hapVerifyInfoMap = new HashMap<>();
-    private HashMap<String, String> outPutMap = new HashMap<>();
 
     public static int getEntryModuleSizeLimit() {
         return entryModuleSizeLimit;
@@ -3816,7 +3815,7 @@ public class Compressor {
             try {
                 tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
                 unpackHap(hapPath, tempDir.toAbsolutePath().toString());
-                HashMap<String, String> outPutMap = new HashMap<>();
+                HashMap<String, String> outPutMap;
                 File moduleFile = new File(
                         tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
                 File configFile = new File(
@@ -3874,6 +3873,7 @@ public class Compressor {
 
     private HashMap<String, String> parseAndModifyGeneralModuleJson(String jsonFilePath, Utility utility, String[] name)
             throws BundleException {
+        HashMap<String, String> outPutMap = new HashMap<>();
         try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
             JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
             if (!jsonObject.containsKey(APP)) {
@@ -3918,8 +3918,12 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-                outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
+                if (appObject.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
+                    outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
                         appObject.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                } else {
+                    outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(appObject.getIntValue(VERSION_CODE)));
+                }
                 appObject.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
             }
 
@@ -3939,18 +3943,29 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
-                outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                if (!appObject.containsKey(BUNDLE_TYPE)) {
+                    if (moduleObject.getBoolean(INSTALLATION_FREE)) {
+                        String errMsg =
+                                "app.json5 file configuration does not match the 'installationFree' setting of true.";
+                        String solution = "Add the bundleType field to the app.json5 file or set it atomicService.";
+                        LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
+                        throw new BundleException(errMsg);
+                    }
+                    outPutMap.put(BUNDLE_TYPE, APP);
+                } else {
+                    outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                }
                 appObject.put(BUNDLE_TYPE, utility.getBundleType());
             }
 
             if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
                 outPutMap.put(INSTALLATION_FREE, moduleObject.getBoolean(INSTALLATION_FREE).toString());
-                moduleObject.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
+                moduleObject.put(INSTALLATION_FREE, Boolean.parseBoolean(utility.getInstallationFree()));
             }
 
             if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
                 outPutMap.put(DELIVERY_WITH_INSTALL, moduleObject.getBoolean(DELIVERY_WITH_INSTALL).toString());
-                moduleObject.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
+                moduleObject.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
             }
             writeJson(jsonFilePath, jsonObject);
         } catch (IOException e) {
@@ -3963,6 +3978,7 @@ public class Compressor {
 
     private HashMap<String, String> parseAndModifyGeneralConfigJson(String jsonFilePath, Utility utility, String[] name)
             throws BundleException {
+        HashMap<String, String> outPutMap = new HashMap<>();
         try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
             JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
             if (!jsonObject.containsKey(APP)) {
@@ -4028,8 +4044,12 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-                outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
-                    versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                if (versionObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
+                    outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
+                        versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                } else {
+                    outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(versionObj.getIntValue(CODE)));
+                }
                 versionObj.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
             }
 
@@ -4054,18 +4074,26 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
-                outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                if (!appObject.containsKey(BUNDLE_TYPE)) {
+                    if (distroObj.getBoolean(INSTALLATION_FREE)) {
+                        outPutMap.put(BUNDLE_TYPE, ATOMIC_SERVICE);
+                    } else {
+                        outPutMap.put(BUNDLE_TYPE, APP);
+                    }
+                } else {
+                    outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                }
                 appObject.put(BUNDLE_TYPE, utility.getBundleType());
             }
 
             if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
                 outPutMap.put(INSTALLATION_FREE, distroObj.getBoolean(INSTALLATION_FREE).toString());
-                distroObj.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
+                distroObj.put(INSTALLATION_FREE, Boolean.parseBoolean(utility.getInstallationFree()));
             }
 
             if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
                 outPutMap.put(DELIVERY_WITH_INSTALL, distroObj.getBoolean(DELIVERY_WITH_INSTALL).toString());
-                distroObj.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
+                distroObj.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
             }
             writeJson(jsonFilePath, jsonObject);
         } catch (IOException e) {
@@ -4165,7 +4193,7 @@ public class Compressor {
                         object.put(DEVICE_TYPE, utility.getDeviceTypes().split(","));
                     }
                     if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
-                        object.put(DELIVERY_WITH_INSTALL, utility.getDeliveryWithInstall());
+                        object.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
                     }
                 }
             }
@@ -4212,9 +4240,9 @@ public class Compressor {
                 break;
             }
             if(key == INSTALLATION_FREE) {
-                distroObj.put(INSTALLATION_FREE, utility.getInstallationFree());
+                distroObj.put(INSTALLATION_FREE, Boolean.parseBoolean(utility.getInstallationFree()));
             } else if (key == DELIVERY_WITH_INSTALL) {
-                distroObj.put(DELIVERY_WITH_INSTALL, utility.getDeliveryWithInstall());
+                distroObj.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
             }
         }
     }
