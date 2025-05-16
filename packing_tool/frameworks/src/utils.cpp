@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "log.h"
+#include "pt_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -344,6 +345,28 @@ bool Utils::IsPositiveInteger(const std::string& str, int min, int max)
     return true;
 }
 
+bool Utils::StringToBool(const std::string& str)
+{
+    std::string lowerStr = str;
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+    if (lowerStr == "true") {
+        return true;
+    }
+    return false;
+}
+
+bool Utils::StringToArray(const std::string& str, std::list<std::string>& array)
+{
+    array.clear();
+    std::istringstream iss(str);
+    std::string item;
+
+    while (std::getline(iss, item, ',')) {
+        array.push_back(item);
+    }
+    return true;
+}
+
 bool Utils::CheckFileName(const std::string& filePath, const std::string& fileName)
 {
     fs::path fsFilePath(filePath);
@@ -457,6 +480,34 @@ bool Utils::GetRealPathOfNoneExistFile(const std::string& path, std::string& rea
     }
     realPath = std::string(buffer) + fs::path::preferred_separator + fileName;
     return true;
+}
+
+bool Utils::RemoveAllFilesInDirectory(const std::string& directoryPath)
+{
+    fs::path fsPath(directoryPath);
+    if (!fs::exists(fsPath) || !fs::is_directory(fsPath)) {
+        return false;
+    }
+    for (auto& entry : fs::directory_iterator(fsPath)) {
+        if (fs::is_regular_file(entry)) {
+            fs::remove(entry);
+        }
+    }
+    return true;
+}
+
+std::string Utils::ArrayToString(const std::list<std::string> &array)
+{
+    std::unique_ptr<PtJson> jArray = PtJson::CreateArray();
+    for (const auto& item : array) {
+        jArray->Push(item.c_str());
+    }
+    return jArray->Stringify();
+}
+
+std::string Utils::BoolToString(bool value)
+{
+    return value ? "true" : "false";
 }
 } // namespace AppPackingTool
 } // namespace OHOS

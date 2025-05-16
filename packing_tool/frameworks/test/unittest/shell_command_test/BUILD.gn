@@ -34,6 +34,7 @@ ohos_unittest("shell_command_test") {
     "../../../src/app_packager.cpp",
     "../../../src/appqf_packager.cpp",
     "../../../src/fast_app_packager.cpp",
+    "../../../src/general_normalize.cpp",
     "../../../src/hap_packager.cpp",
     "../../../src/hqf_packager.cpp",
     "../../../src/hqf_verify.cpp",
