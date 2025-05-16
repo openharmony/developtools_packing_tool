@@ -905,6 +905,66 @@
                 "if": {
                   "properties": {
                     "type": {
+                      "const": "appService"
+                    }
+                  }
+                },
+                "then": {
+                  "propertyNames": {
+                    "enum": [
+                      "priority",
+                      "name",
+                      "srcEntrance",
+                      "srcEntry",
+                      "icon",
+                      "label",
+                      "description",
+                      "type",
+                      "permissions",
+                      "uri",
+                      "readPermission",
+                      "writePermission",
+                      "visible",
+                      "exported",
+                      "skills",
+                      "metadata",
+                      "extensionProcessMode",
+                      "dataGroupIds",
+                      "process",
+                      "appIdentifierAllowList"
+                    ]
+                  }
+                },
+                "else": {
+                  "propertyNames": {
+                    "enum": [
+                      "priority",
+                      "name",
+                      "srcEntrance",
+                      "srcEntry",
+                      "icon",
+                      "label",
+                      "description",
+                      "type",
+                      "permissions",
+                      "uri",
+                      "readPermission",
+                      "writePermission",
+                      "visible",
+                      "exported",
+                      "skills",
+                      "metadata",
+                      "extensionProcessMode",
+                      "dataGroupIds",
+                      "process"
+                    ]
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "type": {
                       "const": "embeddedUI"
                     }
                   }
@@ -954,7 +1014,8 @@
                         "skills",
                         "metadata",
                         "extensionProcessMode",
-                        "dataGroupIds"
+                        "dataGroupIds",
+                        "appIdentifierAllowList"
                       ]
                     }
                   }
@@ -1070,7 +1131,8 @@
                   "distributed",
                   "awc/webpage",
                   "awc/newsfeed",
-                  "vpn"
+                  "vpn",
+                  "appService"
                 ]
               },
               "permissions": {
@@ -1080,6 +1142,16 @@
                 "items": {
                   "type": "string",
                   "maxLength": 255
+                }
+              },
+              "appIdentifierAllowList": {
+                "description": "List of applications that are allowed to launch this ExtensionAbility.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 128,
+                  "pattern": "[0-9a-zA-Z]+$"
                 }
               },
               "uri": {
