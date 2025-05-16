@@ -44,6 +44,7 @@ ohos_executable("ohos_packing_tool") {
     "src/app_packager.cpp",
     "src/appqf_packager.cpp",
     "src/fast_app_packager.cpp",
+    "src/general_normalize.cpp",
     "src/hap_packager.cpp",
     "src/hqf_packager.cpp",
     "src/hqf_verify.cpp",

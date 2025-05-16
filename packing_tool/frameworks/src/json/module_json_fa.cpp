@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,7 @@ const std::string API_RELEASE_TYPE = "apiReleaseType";
 const std::string DEBUG = "debug";
 const std::string COMPATIBLE = "compatible";
 const std::string RELEASE_TYPE = "releaseType";
+const std::string DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string TARGET = "target";
 const std::string VERSION = "version";
 const std::string CODE = "code";
@@ -217,6 +218,29 @@ bool ModuleJson::GetFaInstallationFreeByDistroObj(std::unique_ptr<PtJson>& distr
             LOGE("Distro node get %s failed!", INSTALLATION_FREE.c_str());
             return false;
         }
+    }
+    return true;
+}
+
+bool ModuleJson::GetFaDeliveryWithInstall(bool& deliveryWithInstall)
+{
+    std::unique_ptr<PtJson> distroObj;
+    if (!GetDistroObject(distroObj)) {
+        LOGE("GetDistroObject failed!");
+        return false;
+    }
+    if (!distroObj) {
+        LOGE("Distro node is null!");
+        return false;
+    }
+    if (distroObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
+        if (distroObj->GetBool(DELIVERY_WITH_INSTALL.c_str(), &deliveryWithInstall) != Result::SUCCESS) {
+            LOGE("Distro node get %s failed!", DELIVERY_WITH_INSTALL.c_str());
+            return false;
+        }
+    } else {
+        LOGE("Distro node has no %s node!", DELIVERY_WITH_INSTALL.c_str());
+        return false;
     }
     return true;
 }
@@ -812,6 +836,195 @@ bool ModuleJson::SetFaHapVerifyInfoByModuleObj(std::unique_ptr<PtJson>& moduleOb
     hapVerifyInfo.SetModuleType(moduleType);
     hapVerifyInfo.SetPackageName(packageStr);
     hapVerifyInfo.SetInstallationFree(installationFree);
+    return true;
+}
+
+bool ModuleJson::SetFaBundleName(const std::string& bundleName)
+{
+    std::unique_ptr<PtJson> appObj;
+    if (!GetAppObject(appObj)) {
+        LOGE("GetAppObject failed!");
+        return false;
+    }
+    if (!appObj->Contains(BUNDLE_NAME.c_str())) {
+        if (!appObj->Add(BUNDLE_NAME.c_str(), bundleName.c_str())) {
+            LOGE("App node add %s failed!", BUNDLE_NAME.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (appObj->SetString(BUNDLE_NAME.c_str(), bundleName) != Result::SUCCESS) {
+        LOGE("App node set %s failed!", BUNDLE_NAME.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaMinCompatibleVersionCode(const int32_t& minCompatibleVersionCode)
+{
+    std::unique_ptr<PtJson> versionObj;
+    if (!GetVersionObject(versionObj)) {
+        LOGE("GetVersionObject failed!");
+        return false;
+    }
+    if (!versionObj->Contains(MIN_COMPATIBLE_VERSION_CODE.c_str())) {
+        if (!versionObj->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode)) {
+            LOGE("Version node add %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (versionObj->SetInt(MIN_COMPATIBLE_VERSION_CODE.c_str(), minCompatibleVersionCode) != Result::SUCCESS) {
+        LOGE("Version node set %s failed!", MIN_COMPATIBLE_VERSION_CODE.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaMinAPIVersion(const int32_t& minAPIVersion)
+{
+    std::unique_ptr<PtJson> apiVersionObj;
+    if (!GetApiVersionObject(apiVersionObj)) {
+        LOGE("GetAppObject failed!");
+        return false;
+    }
+    if (!apiVersionObj->Contains(COMPATIBLE.c_str())) {
+        if (!apiVersionObj->Add(COMPATIBLE.c_str(), minAPIVersion)) {
+            LOGE("ApiVersion node add %s failed!", COMPATIBLE.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (apiVersionObj->SetInt(COMPATIBLE.c_str(), minAPIVersion) != Result::SUCCESS) {
+        LOGE("ApiVersion node set %s failed!", COMPATIBLE.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaTargetAPIVersion(const int32_t& targetAPIVersion)
+{
+    std::unique_ptr<PtJson> apiVersionObj;
+    if (!GetApiVersionObject(apiVersionObj)) {
+        LOGE("GetApiVersionObject failed!");
+        return false;
+    }
+    if (!apiVersionObj->Contains(TARGET.c_str())) {
+        if (!apiVersionObj->Add(TARGET.c_str(), targetAPIVersion)) {
+            LOGE("ApiVersion node add %s failed!", TARGET.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (apiVersionObj->SetInt(TARGET.c_str(), targetAPIVersion) != Result::SUCCESS) {
+        LOGE("ApiVersion node set %s failed!", TARGET.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaApiReleaseType(const std::string& apiReleaseType)
+{
+    std::unique_ptr<PtJson> apiVersionObj;
+    if (!GetApiVersionObject(apiVersionObj)) {
+        LOGE("GetApiVersionObject failed!");
+        return false;
+    }
+    if (!apiVersionObj->Contains(RELEASE_TYPE.c_str())) {
+        if (!apiVersionObj->Add(RELEASE_TYPE.c_str(), apiReleaseType.c_str())) {
+            LOGE("ApiVersion node add %s failed!", RELEASE_TYPE.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (apiVersionObj->SetString(RELEASE_TYPE.c_str(), apiReleaseType) != Result::SUCCESS) {
+        LOGE("ApiVersion node set %s failed!", RELEASE_TYPE.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaBundleType(const std::string& bundleType)
+{
+    std::unique_ptr<PtJson> appObj;
+    if (!GetAppObject(appObj)) {
+        LOGE("GetAppObject failed!");
+        return false;
+    }
+    if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
+        if (!appObj->Add(BUNDLE_TYPE.c_str(), bundleType.c_str())) {
+            LOGE("App node add %s failed!", BUNDLE_TYPE.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (appObj->SetString(BUNDLE_TYPE.c_str(), bundleType) != Result::SUCCESS) {
+        LOGE("App node set %s failed!", BUNDLE_TYPE.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaInstallationFree(const bool& installationFree)
+{
+    std::unique_ptr<PtJson> distroObj;
+    if (!GetDistroObject(distroObj)) {
+        LOGE("GetDistroObject failed!");
+        return false;
+    }
+    if (!distroObj->Contains(INSTALLATION_FREE.c_str())) {
+        if (!distroObj->Add(INSTALLATION_FREE.c_str(), installationFree)) {
+            LOGE("Distro node add %s failed!", INSTALLATION_FREE.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (distroObj->SetBool(INSTALLATION_FREE.c_str(), installationFree) != Result::SUCCESS) {
+        LOGE("Distro node set %s failed!", INSTALLATION_FREE.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaDeliveryWithInstall(const bool& deliveryWithInstall)
+{
+    std::unique_ptr<PtJson> distroObj;
+    if (!GetDistroObject(distroObj)) {
+        LOGE("GetDistroObject failed!");
+        return false;
+    }
+    if (!distroObj->Contains(DELIVERY_WITH_INSTALL.c_str())) {
+        if (!distroObj->Add(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall)) {
+            LOGE("Distro node add %s failed!", DELIVERY_WITH_INSTALL.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (distroObj->SetBool(DELIVERY_WITH_INSTALL.c_str(), deliveryWithInstall) != Result::SUCCESS) {
+        LOGE("Distro node set %s failed!", DELIVERY_WITH_INSTALL.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::SetFaDeviceTypes(const std::list<std::string>& deviceTypes)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    if (!moduleObj->Contains(DEVICE_TYPE.c_str())) {
+        if (!moduleObj->Add(DEVICE_TYPE.c_str(), deviceTypes)) {
+            LOGE("Module node add %s failed!", DEVICE_TYPE.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (moduleObj->SetArray(DEVICE_TYPE.c_str(), deviceTypes) != Result::SUCCESS) {
+        LOGE("Module node set %s failed!", DEVICE_TYPE.c_str());
+        return false;
+    }
     return true;
 }
 } // namespace AppPackingTool
