@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -357,6 +357,11 @@ HWTEST_F(ShellCommandTest, getPackager_1000, Function | MediumTest | Level1)
         OHOS::AppPackingTool::Constants::MODE_RES;
     std::unique_ptr<OHOS::AppPackingTool::Packager> packager5 = shellcmd.getPackager();
     EXPECT_TRUE(packager5 != nullptr);
+
+    shellcmd.parameterMap_[OHOS::AppPackingTool::Constants::PARAM_MODE] =
+        OHOS::AppPackingTool::Constants::MODE_GENERAL_NORMALIZE;
+    std::unique_ptr<OHOS::AppPackingTool::Packager> packager6 = shellcmd.getPackager();
+    EXPECT_TRUE(packager6 != nullptr);
 }
 
 /*

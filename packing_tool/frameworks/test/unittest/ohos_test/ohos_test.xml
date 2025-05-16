@@ -120,4 +120,19 @@
       <option name="push" value="../test_file/res_packager_file/pack.json -> /data/test/resource/packingtool/test_file/" src="res" />
     </preparer>
   </target>
+  <target name="general_normalize_test">
+    <preparer>
+      <option name="push" value="../test_file/general_normalize_file/stage/module.json -> /data/test/resource/packingtool/test_file/stage/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/stage/pack.json -> /data/test/resource/packingtool/test_file/stage/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/stage/ets/sourceMaps.map -> /data/test/resource/packingtool/test_file/stage/ets/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/stage/resources/base/profile/main_pages.json -> /data/test/resource/packingtool/test_file/stage/resources/base/profile/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/config.json -> /data/test/resource/packingtool/test_file/fa/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/pack.json -> /data/test/resource/packingtool/test_file/fa/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/assets_jsbundle/default/js/MainAbility/pages/index.js -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/pages/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/assets_jsbundle/default/js/MainAbility/pages/index.js.map -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/pages/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/assets_jsbundle/default/js/MainAbility/app.js -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/assets_jsbundle/default/js/MainAbility/app.js.map -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+      <option name="push" value="../test_file/general_normalize_file/fa/assets_jsbundle/default/js/MainAbility/manifest.json -> /data/test/resource/packingtool/test_file/fa/assets_jsbundle/default/js/MainAbility/" src="res" />
+    </preparer>
+  </target>
 </configuration>

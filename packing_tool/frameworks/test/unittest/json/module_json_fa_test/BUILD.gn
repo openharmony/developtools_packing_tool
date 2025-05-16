@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,26 +14,31 @@
 import("//build/ohos.gni")
 import("//build/test.gni")
 
-config("utils_Test_config") {
+config("module_json_test_config") {
   include_dirs = [
-    "../../../include",
-    "../../../include/json",
+    "../../../../include",
+    "../../../../include/json",
   ]
 
   cflags_cc = [ "-fexceptions" ]
   cflags_objcc = cflags_cc
 }
 
-module_output_path = "packing_tool/packing_tool"
+module_output_path = "developtools/packing_tool"
 
-ohos_unittest("utils_Test") {
+ohos_unittest("module_json_fa_test") {
   module_out_path = module_output_path
-  public_configs = [ ":utils_Test_config" ]
+  public_configs = [ ":module_json_test_config" ]
   sources = [
-    "../../../src/json/pt_json.cpp",
-    "../../../src/log.cpp",
-    "../../../src/utils.cpp",
-    "utils_test.cpp",
+    "../../../../src/json/distro_filter.cpp",
+    "../../../../src/json/hap_verify_info.cpp",
+    "../../../../src/json/module_json.cpp",
+    "../../../../src/json/module_json_fa.cpp",
+    "../../../../src/json/module_json_stage.cpp",
+    "../../../../src/json/pt_json.cpp",
+    "../../../../src/log.cpp",
+    "../../../../src/utils.cpp",
+    "module_json_fa_test.cpp",
   ]
   external_deps = [
     "bounds_checking_function:libsec_static",
@@ -46,5 +51,5 @@ ohos_unittest("utils_Test") {
 
 group("unittest") {
   testonly = true
-  deps = [ ":utils_Test" ]
+  deps = [ ":module_json_fa_test" ]
 }
