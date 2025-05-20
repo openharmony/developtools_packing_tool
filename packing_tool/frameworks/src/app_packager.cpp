@@ -326,7 +326,7 @@ bool AppPackager::CheckPacJsonPath()
 {
     auto it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        if (!IsPathValid(it->second, true, Constants::PAC_JSON)) {
+        if (!IsFileMatch(it->second, Constants::PAC_JSON)) {
             LOGE("pac-json-path is invalid.");
             return false;
         }

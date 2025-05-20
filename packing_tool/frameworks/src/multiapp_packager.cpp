@@ -145,6 +145,13 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
         return false;
     }
 
+    auto it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
+    if (it != parameterMap_.end() && !it->second.empty() &&
+        !IsFileMatch(it->second, Constants::PAC_JSON)) {
+        LOGE("MultiAppPackager::IsVerifyValidInMultiAppMode pac-json-path is invalid.");
+        return false;
+    }
+
     std::string outPath;
     if (!GetAndCheckOutPath(outPath)) {
         LOGE("GetAndCheckOutPath failed!");
@@ -152,20 +159,13 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     }
 
     std::string force;
-    auto it = parameterMap_.find(Constants::PARAM_FORCE);
+    it = parameterMap_.find(Constants::PARAM_FORCE);
     if (it != parameterMap_.end() && !it->second.empty()) {
         force = it->second;
         if (Utils::IsFileExists(outPath) && force == "false") {
             LOGE("out-path file already existed.");
             return false;
         }
-    }
-
-    it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
-    if (it != parameterMap_.end() && !it->second.empty() &&
-        !IsPathValid(it->second, true, Constants::PAC_JSON)) {
-        LOGE("MultiAppPackager::IsVerifyValidInMultiAppMode pac-json-path is invalid.");
-        return false;
     }
 
     return IsOutPathValid(outPath, force, Constants::MODE_MULTIAPP);

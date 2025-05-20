@@ -763,6 +763,11 @@ public class PackageUtil {
         return Files.isRegularFile(path) && path.getFileName().toString().endsWith(suffix);
     }
 
+    private static boolean isFileMatch(String filePath, String matchFileName) {
+        Path path = Paths.get(filePath);
+        return Files.isRegularFile(path) && path.getFileName().toString().equals(matchFileName);
+    }
+
     private static boolean isDirValid(String filePath) {
         return Files.isDirectory(Paths.get(filePath));
     }
@@ -812,11 +817,6 @@ public class PackageUtil {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--encrypt-path is invalid."));
             return false;
         }
-        if (!utility.getPacJsonPath().isEmpty()
-                && !isFileValid(utility.getPacJsonPath(), Constants.FILE_PAC_JSON)) {
-            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--pac-json-path is invalid."));
-            return false;
-        }
         Path outPath = Paths.get(utility.getOutPath());
         if (utility.getForceRewrite().equals(Constants.FALSE) && Files.exists(outPath)) {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--out-path file already existed, but " +
@@ -856,6 +856,11 @@ public class PackageUtil {
                 !CompressVerify.compatibleProcess(utility, utility.getEntryCardPath(),
                         utility.getformattedEntryCardPathList(), Constants.PNG_SUFFIX)) {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--entrycard-path is invalid."));
+            return false;
+        }
+        if (!utility.getPacJsonPath().isEmpty()
+                && !isFileMatch(utility.getPacJsonPath(), Constants.FILE_PAC_JSON)) {
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--pac-json-path is invalid."));
             return false;
         }
         if (utility.getOutPath().isEmpty()) {
