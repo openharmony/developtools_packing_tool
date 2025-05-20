@@ -187,7 +187,7 @@ bool FastAppPackager::IsVerifyValid()
 
     it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
-        !IsPathValid(it->second, true, Constants::PAC_JSON)) {
+        !IsFileMatch(it->second, Constants::PAC_JSON)) {
         LOGE("FastAppPackager::isVerifyValidInFastAppMode pac-json-path is invalid.");
         return false;
     }
