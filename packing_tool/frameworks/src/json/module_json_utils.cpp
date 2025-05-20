@@ -172,7 +172,8 @@ bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>
     return true;
 }
 
-bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::string>& fileList, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
+bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::string>& fileList, std::map<std::string,
+    std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
 {
     for (auto& hapPath : fileList) {
         if (hapPath.empty()) {
@@ -207,7 +208,8 @@ bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::stri
     return true;
 }
 
-bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::string, std::string> parameterMap, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
+bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::string, std::string> parameterMap,
+    std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
 {
     std::string packMode;
     std::string outPath;
@@ -217,7 +219,9 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::str
         return false;
     }
     packMode = parameterMap.at(Constants::PARAM_MODE);
-    if (packMode != Constants::MODE_APP && packMode != Constants::MODE_FAST_APP && packMode != Constants::MODE_MULTIAPP) {
+    if (packMode != Constants::MODE_APP
+        && packMode != Constants::MODE_FAST_APP
+        && packMode != Constants::MODE_MULTIAPP) {
         return true;
     }
     outPath = parameterMap.at(Constants::PARAM_OUT_PATH);
@@ -241,14 +245,14 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::str
         }
         std::vector<char> fileNameBuffer(fileInfo.size_filename + 1);
         if (unzGetCurrentFileInfo(zipApp, &fileInfo, fileNameBuffer.data(), fileNameBuffer.size(),
-                                nullptr, 0, nullptr, 0) != UNZ_OK) {
+            nullptr, 0, nullptr, 0) != UNZ_OK) {
             unzClose(zipApp);
             LOGE("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: failed to get file info (phase 2)");
             return false;
         }
         std::string fileName(fileNameBuffer.data());
         auto it = hapVerifyInfoMap.find(fileName);
-        if (it == hapVerifyInfoMap.end()) {
+        if (it == hapVerifyInfoMap.end() || it->second == nullptr) {
             continue;
         }
         it->second->SetFileLength(fileInfo.compressed_size);
