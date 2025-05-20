@@ -110,6 +110,19 @@ bool Packager::IsPathValid(const std::string &path, const bool &isFile, const st
     return (!isFile) && fs::is_directory(path);
 }
 
+bool Packager::IsFileMatch(const std::string &path, const std::string &matchFileName)
+{
+    try {
+        if (fs::is_regular_file(path)) {
+            std::string name = fs::path(path).filename().string();
+            return name == matchFileName;
+        }
+    } catch (const fs::filesystem_error& e) {
+        LOGE("Packager::commandVerify fileMatch has error : %s", e.code().message().c_str());
+    }
+    return false;
+}
+
 bool Packager::SplitDirList(const std::string &dirList, std::list<std::string> &fileList)
 {
     std::list<std::string> pathList;
