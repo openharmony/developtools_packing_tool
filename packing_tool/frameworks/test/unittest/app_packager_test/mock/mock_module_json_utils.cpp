@@ -277,7 +277,7 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::str
         }
         std::string fileName(fileNameBuffer.data());
         auto it = hapVerifyInfoMap.find(fileName);
-        if (it == hapVerifyInfoMap.end()) {
+        if (it == hapVerifyInfoMap.end() || it->second == nullptr) {
             continue;
         }
         it->second->SetFileLength(fileInfo.compressed_size);
