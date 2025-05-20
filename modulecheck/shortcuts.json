@@ -22,6 +22,7 @@
             "shortcutId",
             "label",
             "icon",
+            "visible",
             "wants"
           ]
         },
@@ -44,6 +45,11 @@
             "description": "Indicates the icon of the shortcut. The value is the index to the resource file.",
             "type": "string",
             "pattern": "^[$]media:"
+          },
+          "visible": {
+            "description": "Whether the shortcut is displayed, true indicates display, false indicates unreality, default indicates display.",
+            "type": "boolean",
+            "default": true
           },
           "wants": {
             "description": "Indicates the wants to which the shortcut points. The attribute consists of the targetClass and targetBundle sub-attributes.",
