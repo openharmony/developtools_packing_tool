@@ -501,7 +501,7 @@
           "default": "mainTask"
         },
         "appPreloadPhase": {
-          "description": "Indicates the app preload phase of application. When not configured, do not preload.",
+          "description": "Indicates the app preload phase for the application. if not configured, the app will not be preload.",
           "type": "string",
           "enum": [
             "processCreated",
