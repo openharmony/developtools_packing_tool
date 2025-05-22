@@ -22,8 +22,7 @@
             "dependencies",
             "excludeFromAutoStart",
             "runOnThread",
-            "waitOnMainThread",
-            "matchRules"
+            "waitOnMainThread"
           ]
         },
         "required": [
@@ -72,52 +71,6 @@
             "description": "Indicates whether the har/hsp startup task block the main thread.",
             "type": "boolean",
             "default": true
-          },
-          "matchRules": {
-            "description": "Incidcates match rules of the startup task.",
-            "type": "object",
-            "propertyNames": {
-              "enum": [
-                "uris",
-                "insightIntents",
-                "actions",
-                "customization"
-              ]
-            },
-            "properties": {
-              "uris": {
-                "description": "Indicates uri match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "insightIntents": {
-                "description": "Indicates insightIntent match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "actions": {
-                "description": "Indicates action match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "customization": {
-                "description": "Indicates custom match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
           }
         }
       }
@@ -133,8 +86,7 @@
             "srcEntry",
             "dependencies",
             "excludeFromAutoStart",
-            "runOnThread",
-            "matchRules"
+            "runOnThread"
           ]
         },
         "required": [
@@ -177,43 +129,6 @@
             "enum": [
               "taskPool"
             ]
-          },
-          "matchRules": {
-            "description": "Incidcates match rules of the startup task.",
-            "type": "object",
-            "propertyNames": {
-              "enum": [
-                "uris",
-                "insightIntents",
-                "actions"
-              ]
-            },
-            "properties": {
-              "uris": {
-                "description": "Indicates uri match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "insightIntents": {
-                "description": "Indicates insightIntent match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              },
-              "actions": {
-                "description": "Indicates action match rule of the startup task.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
           }
         }
       }
