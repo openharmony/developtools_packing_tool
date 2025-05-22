@@ -133,7 +133,8 @@
             "cloudFileSyncEnabled",
             "configuration",
             "assetAccessGroups",
-            "startMode"
+            "startMode",
+            "appPreloadPhase"
           ]
         }
       },
@@ -498,6 +499,15 @@
             "recentTask"
           ],
           "default": "mainTask"
+        },
+        "appPreloadPhase": {
+          "description": "Indicates the app preload phase of application. When not configured, do not preload.",
+          "type": "string",
+          "enum": [
+            "processCreated",
+            "abilityStageCreated",
+            "windowStageCreated"
+          ]
         }
       }
     }
