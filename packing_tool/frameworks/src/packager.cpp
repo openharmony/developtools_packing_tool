@@ -464,10 +464,10 @@ bool Packager::IsOutDirectoryValid()
 {
     auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end()) {
-        LOGE("Validate out-path is empty");
+        LOGE("--out-path is empty.");
         return false;
     } else if (!Utils::IsDirectory(it->second)) {
-        LOGE("Validate out-path is not a directory.");
+        LOGE("--out-path is not a directory.");
         return false;
     }
     return true;

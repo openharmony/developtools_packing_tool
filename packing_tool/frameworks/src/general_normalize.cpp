@@ -59,15 +59,15 @@ int32_t GeneralNormalize::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_INPUT_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("Input input-list is empty.");
+        LOGE("--input-list is empty.");
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspOrhapList_, Constants::HAP_SUFFIX, Constants::HSP_SUFFIX)) {
-        LOGE("Input input-list is invalid.");
+        LOGE("--input-list is invalid.");
         return ERR_INVALID_VALUE;
     }
     if (hspOrhapList_.size() == 0) {
-        LOGE("Input input-list is empty.");
+        LOGE("--input-list is empty.");
         return ERR_INVALID_VALUE;
     }
 
@@ -75,7 +75,7 @@ int32_t GeneralNormalize::PreProcess()
     std::regex pattern(Constants::VERSION_NAME_PATTERN);
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, pattern) || it->second.size() > Constants::MAX_VERSION_NAME_LENGTH) {
-            LOGE("Input version-name is not valid.");
+            LOGE("--device-types is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -83,7 +83,7 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second) || stoi(it->second)> Constants::MAX_VERSION_CODE) {
-            LOGE("Input version-code is invalid.");
+            LOGE("--version-code is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -92,12 +92,12 @@ int32_t GeneralNormalize::PreProcess()
     if (it != parameterMap_.end()) {
         std::list<std::string> deviceTypeList;
         if (!Utils::StringToArray(it->second, deviceTypeList)) {
-            LOGE("Input device-type is invalid.");
+            LOGE("--device-types is invalid.");
             return ERR_INVALID_VALUE;
         }
         for (auto& item : deviceTypeList) {
             if ((std::find(DEVICE_TYPE_LIST.begin(), DEVICE_TYPE_LIST.end(), item) == DEVICE_TYPE_LIST.end())) {
-                LOGE("Input device-type is invalid.");
+                LOGE("--device-types is invalid.");
                 return ERR_INVALID_VALUE;
             }
         }
@@ -108,7 +108,7 @@ int32_t GeneralNormalize::PreProcess()
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, bundleNamePattern) || it->second.length() < Constants::BUNDLE_NAME_LEN_MIN ||
             it->second.length() > Constants::BUNDLE_NAME_LEN_MAX) {
-            LOGE("Input bundle-name is invalid.");
+            LOGE("--bundle-name is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -116,7 +116,7 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second) || stoi(it->second) > Constants::MAX_VERSION_CODE) {
-            LOGE("Input min-compatible-version-code is invalid.");
+            LOGE("--min-compatible-version-code is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -124,7 +124,7 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second) || stoi(it->second) > Constants::MAX_VERSION_CODE) {
-            LOGE("Input min-api-version is invalid.");
+            LOGE("--min-api-version is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -132,7 +132,7 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second) || stoi(it->second) > Constants::MAX_VERSION_CODE) {
-            LOGE("Input target-api-version is invalid.");
+            LOGE("--target-api-version is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -141,7 +141,7 @@ int32_t GeneralNormalize::PreProcess()
     std::regex releaseTypePattern(Constants::API_RELEASE_TYPE_PATTERN);
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, releaseTypePattern)) {
-            LOGE("Input api-release-type is invalid.");
+            LOGE("--api-release-type is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -150,7 +150,7 @@ int32_t GeneralNormalize::PreProcess()
     if (it != parameterMap_.end()) {
         if ((std::find(Constants::BUNDLE_TYPE_LIST.begin(), Constants::BUNDLE_TYPE_LIST.end(), it->second) ==
             Constants::BUNDLE_TYPE_LIST.end())) {
-            LOGE("Input bundle-type is invalid.");
+            LOGE("--bundle-type is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -158,7 +158,7 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_INSTALLATION_FREE);
     if (it != parameterMap_.end()) {
         if (it->second != "true" && it->second != "false") {
-            LOGE("Input installation-free is invalid.");
+            LOGE("--installation-free is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
@@ -166,7 +166,7 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_DELIVERY_WITH_INSTALL);
     if (it != parameterMap_.end()) {
         if (it->second != "true" && it->second != "false") {
-            LOGE("Input delivery-with-install is invalid.");
+            LOGE("--delivery-with-install is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
