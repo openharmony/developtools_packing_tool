@@ -327,19 +327,19 @@
                 "description": "The ability name of the fun interaction form.",
                 "type": "string",
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
-                "maxLength": 255
+                "maxLength": 127
               },
               "targetBundleName": {
                 "description": "The bundle name used by game engine.",
                 "type": "string",
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
-                "maxLength": 255
+                "maxLength": 127
               },
               "subBundleName": {
                 "description": "The sub bundle name used by game engine.",
                 "type": "string",
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
-                "maxLength": 255
+                "maxLength": 127
               },
               "keepStateDuration": {
                 "description": "The duration of the fun interaction form will be paused if not operate, default is 10s.",
@@ -361,7 +361,7 @@
                 "description": "The ability name of the scene animation form.",
                 "type": "string",
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
-                "maxLength": 255
+                "maxLength": 127
               },
               "disabledDesktopBehaviors": {
                 "description": "Indicates disabled desktop behaviors, only takes effect for system app.",
