@@ -259,7 +259,7 @@ public class Compressor {
         }
 
         public void setModuleName(String name) {
-            moduleName = name;
+            this.moduleName = name;
         }
 
         public String getOriginVersionName() {
@@ -268,6 +268,79 @@ public class Compressor {
 
         public void setOriginVersionName(String originVersionName) {
             this.originVersionName = originVersionName;
+        }
+    }
+
+    private static class GeneralNormalizeUtil {
+        private int originVersionCode = INVALID_VERSION;
+        private String originVersionName = "";
+        private String moduleName = "";
+        private String originBundleName = "";
+        private int originMinCompatibleVersionCode = INVALID_VERSION;
+        private int originMinAPIVersion = INVALID_VERSION;
+        private int originTargetAPIVersion = INVALID_VERSION;
+        private String originApiReleaseType = "";
+        private String originBundleType = "";
+        private boolean originInstallationFree = false;
+        private boolean originDeliveryWithInstall = false;
+        private String originDeviceTypes = "";
+        private boolean isInstallationFree = false;
+        private boolean isDeliveryWithInstall = false;
+
+        public void setOriginVersionCode(int originVersionCode) {
+            this.originVersionCode = originVersionCode;
+        }
+
+        public void setModuleName(String name) {
+            this.moduleName = name;
+        }
+
+        public void setOriginVersionName(String originVersionName) {
+            this.originVersionName = originVersionName;
+        }
+
+        public void setOriginBundleName(String originBundleName ) {
+            this.originBundleName = originBundleName;
+        }
+
+        public void setOriginMinCompatibleVersionCode(int originMinCompatibleVersionCode) {
+            this.originMinCompatibleVersionCode = originMinCompatibleVersionCode;
+        }
+
+        public void setOriginMinAPIVersion(int originMinAPIVersion) {
+            this.originMinAPIVersion = originMinAPIVersion;
+        }
+
+        public void setOriginTargetAPIVersion(int originTargetAPIVersion) {
+            this.originTargetAPIVersion = originTargetAPIVersion;
+        }
+
+        public void setOriginApiReleaseType(String originApiReleaseType) {
+            this.originApiReleaseType = originApiReleaseType;
+        }
+
+        public void setOriginBundleType(String originBundleType) {
+            this.originBundleType = originBundleType;
+        }
+
+        public void setIsInstallationFree(boolean isInstallationFree) {
+            this.isInstallationFree = isInstallationFree;
+        }
+
+        public void setOriginInstallationFree(boolean originInstallationFree) {
+            this.originInstallationFree = originInstallationFree;
+        }
+
+        public void setOriginDeliveryWithInstall(boolean originDeliveryWithInstall) {
+            this.originDeliveryWithInstall = originDeliveryWithInstall;
+        }
+
+        public void setIsDeliveryWithInstall(boolean isDeliveryWithInstall) {
+            this.isDeliveryWithInstall = isDeliveryWithInstall;
+        }
+
+        public void setOriginDeviceTypes(String originDeviceTypes) {
+            this.originDeviceTypes = originDeviceTypes;
         }
     }
 
@@ -3808,15 +3881,15 @@ public class Compressor {
     }
 
     private void generalNormalize(Utility utility) {
-        List<HashMap<String, String>> recordList = new ArrayList<>();
+        List<GeneralNormalizeUtil> utils = new ArrayList<>();
         Path tempDir = null;
         boolean isSuccess = true;
         String[] name = new String[2];
         for (String hapPath : utility.getFormattedHapList()) {
             try {
+                GeneralNormalizeUtil util = new GeneralNormalizeUtil();
                 tempDir = Files.createTempDirectory(Paths.get(utility.getOutPath()), "temp");
                 unpackHap(hapPath, tempDir.toAbsolutePath().toString());
-                HashMap<String, String> outPutMap = new HashMap<>();
                 File moduleFile = new File(
                         tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + MODULE_JSON);
                 File configFile = new File(
@@ -3830,10 +3903,10 @@ public class Compressor {
                 }
                 if (moduleFile.exists()) {
                     String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
-                    outPutMap = parseAndModifyGeneralModuleJson(moduleJsonPath, utility, name);
+                    util = parseAndModifyGeneralModuleJson(moduleJsonPath, utility, name);
                 } else if (configFile.exists()) {
                     String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
-                    outPutMap = parseAndModifyGeneralConfigJson(configJsonPath, utility, name);
+                    util = parseAndModifyGeneralConfigJson(configJsonPath, utility, name);
                 } else {
                     LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString("Invalid hap structure"));
                     throw new BundleException("generalNormalize failed, invalid hap structure.");
@@ -3842,7 +3915,7 @@ public class Compressor {
                     String packInfoPath = tempDir.resolve(PACKINFO_NAME).toString();
                     parseAndModifyGeneralPackInfo(packInfoPath, utility);
                 }
-                recordList.add(outPutMap);
+                utils.add(util);
                 String modifiedHapPath = Paths.get(utility.getOutPath()) +
                         LINUX_FILE_SEPARATOR + Paths.get(hapPath).getFileName().toString();
                 boolean ret = compressDirToHap(tempDir, modifiedHapPath);
@@ -3869,11 +3942,12 @@ public class Compressor {
             }
             return;
         }
-        writeGeneralRecord(recordList, utility.getOutPath());
+        writeGeneralRecord(utils, utility.getOutPath());
     }
 
-    private HashMap<String, String> parseAndModifyGeneralModuleJson(String jsonFilePath, Utility utility, String[] name)
+    private GeneralNormalizeUtil parseAndModifyGeneralModuleJson(String jsonFilePath, Utility utility, String[] name)
             throws BundleException {
+        GeneralNormalizeUtil util = new GeneralNormalizeUtil();
         try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
             JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
             if (!jsonObject.containsKey(APP)) {
@@ -3895,61 +3969,62 @@ public class Compressor {
             }
             name[0] = appObject.getString(BUNDLE_NAME);
             name[1] = moduleObject.getString(NAME);
-            outPutMap.put(MODULE_NAME_NEW, moduleObject.getString(NAME));
+            util.setModuleName(moduleObject.getString(NAME));
 
             if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
-                outPutMap.put(DEVICE_TYPES, getJsonString(moduleObject, DEVICE_TYPES));
+                util.setOriginDeviceTypes(getJsonString(moduleObject, DEVICE_TYPES));
                 moduleObject.put(DEVICE_TYPES, utility.getDeviceTypes().split(","));
             }
 
             if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
-                outPutMap.put(VERSION_CODE, String.valueOf(appObject.getIntValue(VERSION_CODE)));
+                util.setOriginVersionCode(appObject.getIntValue(VERSION_CODE));
                 appObject.put(VERSION_CODE, utility.getVersionCode());
             }
 
             if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
-                outPutMap.put(VERSION_NAME, appObject.getString(VERSION_NAME));
+                util.setOriginVersionName(appObject.getString(VERSION_NAME));
                 appObject.put(VERSION_NAME, utility.getVersionName());
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_NAME)) {
-                outPutMap.put(BUNDLE_NAME, appObject.getString(BUNDLE_NAME));
+                util.setOriginBundleName(appObject.getString(BUNDLE_NAME));
                 appObject.put(BUNDLE_NAME, utility.getBundleName());
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-                outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
-                        appObject.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                util.setOriginMinCompatibleVersionCode(appObject.getIntValue(MIN_COMPATIBLE_VERSION_CODE));
                 appObject.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
-                outPutMap.put(MIN_API_VERSION, String.valueOf(appObject.getIntValue(MIN_API_VERSION)));
+                util.setOriginMinAPIVersion(appObject.getIntValue(MIN_API_VERSION));
                 appObject.put(MIN_API_VERSION, utility.getMinAPIVersion());
             }
 
             if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
-                outPutMap.put(TARGET_API_VERSION, String.valueOf(appObject.getIntValue(TARGET_API_VERSION)));
+                util.setOriginTargetAPIVersion(appObject.getIntValue(TARGET_API_VERSION));
                 appObject.put(TARGET_API_VERSION, utility.getTargetAPIVersion());
             }
 
             if (utility.getGeneralNormalizeList().contains(API_RELEASE_TYPE)) {
-                outPutMap.put(API_RELEASE_TYPE, appObject.getString(API_RELEASE_TYPE));
+                util.setOriginApiReleaseType(appObject.getString(API_RELEASE_TYPE));
                 appObject.put(API_RELEASE_TYPE, utility.getApiReleaseType());
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
-                outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                util.setOriginBundleType(appObject.getString(BUNDLE_TYPE));
                 appObject.put(BUNDLE_TYPE, utility.getBundleType());
             }
 
             if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
-                outPutMap.put(INSTALLATION_FREE, moduleObject.getBoolean(INSTALLATION_FREE).toString());
+                util.setOriginInstallationFree(moduleObject.getBoolean(INSTALLATION_FREE));
+                util.setIsInstallationFree(true);
                 moduleObject.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
             }
 
             if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
-                outPutMap.put(DELIVERY_WITH_INSTALL, moduleObject.getBoolean(DELIVERY_WITH_INSTALL).toString());
+                util.setOriginDeliveryWithInstall(moduleObject.getBoolean(DELIVERY_WITH_INSTALL));
+                util.setIsDeliveryWithInstall(true);
                 moduleObject.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
             }
             writeJson(jsonFilePath, jsonObject);
@@ -3958,11 +4033,12 @@ public class Compressor {
                     e.getMessage()));
             throw new BundleException("Parse and modify module.json exist IOException: " + e.getMessage());
         }
-        return outPutMap;
+        return util;
     }
 
-    private HashMap<String, String> parseAndModifyGeneralConfigJson(String jsonFilePath, Utility utility, String[] name)
+    private GeneralNormalizeUtil parseAndModifyGeneralConfigJson(String jsonFilePath, Utility utility, String[] name)
             throws BundleException {
+        GeneralNormalizeUtil util = new GeneralNormalizeUtil();
         try (FileInputStream jsonStream = new FileInputStream(jsonFilePath)) {
             JSONObject jsonObject = JSON.parseObject(jsonStream, JSONObject.class);
             if (!jsonObject.containsKey(APP)) {
@@ -4011,60 +4087,61 @@ public class Compressor {
             }
             name[0] = appObject.getString(BUNDLE_NAME);
             name[1] = distroObj.getString(MODULE_NAME_NEW);
-            outPutMap.put(MODULE_NAME_NEW, distroObj.getString(MODULE_NAME_NEW));
+            util.setModuleName(distroObj.getString(MODULE_NAME_NEW));
 
             if (utility.getGeneralNormalizeList().contains(DEVICE_TYPES)) {
-                outPutMap.put(DEVICE_TYPE, getJsonString(moduleObject, DEVICE_TYPE));
+                util.setOriginDeviceTypes(getJsonString(moduleObject, DEVICE_TYPES));
                 moduleObject.put(DEVICE_TYPE, utility.getDeviceTypes().split(","));
             }
             if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
-                outPutMap.put(CODE, String.valueOf(versionObj.getIntValue(CODE)));
+                util.setOriginVersionCode(versionObj.getIntValue(CODE));
                 versionObj.put(CODE, utility.getVersionCode());
             }
 
             if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
-                outPutMap.put(NAME, versionObj.getString(NAME));
+                util.setOriginVersionName(versionObj.getString(NAME));
                 versionObj.put(NAME, utility.getVersionName());
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-                outPutMap.put(MIN_COMPATIBLE_VERSION_CODE, String.valueOf(
-                    versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE)));
+                util.setOriginMinCompatibleVersionCode(versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE));
                 versionObj.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_NAME)) {
-                outPutMap.put(BUNDLE_NAME, appObject.getString(BUNDLE_NAME));
+                util.setOriginBundleName(appObject.getString(BUNDLE_NAME));
                 appObject.put(BUNDLE_NAME, utility.getBundleName());
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
-                outPutMap.put(COMPATIBLE, String.valueOf(apiVersionObj.getIntValue(COMPATIBLE)));
+                util.setOriginMinAPIVersion(apiVersionObj.getIntValue(COMPATIBLE));
                 apiVersionObj.put(COMPATIBLE, utility.getMinAPIVersion());
             }
 
             if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
-                outPutMap.put(TARGET, String.valueOf(apiVersionObj.getIntValue(TARGET)));
+                util.setOriginTargetAPIVersion(apiVersionObj.getIntValue(TARGET));
                 apiVersionObj.put(TARGET, utility.getTargetAPIVersion());
             }
 
             if (utility.getGeneralNormalizeList().contains(API_RELEASE_TYPE)) {
-                outPutMap.put(RELEASE_TYPE, apiVersionObj.getString(RELEASE_TYPE));
+                util.setOriginApiReleaseType(apiVersionObj.getString(RELEASE_TYPE));
                 apiVersionObj.put(RELEASE_TYPE, utility.getApiReleaseType());
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
-                outPutMap.put(BUNDLE_TYPE, appObject.getString(BUNDLE_TYPE));
+                util.setOriginBundleType(appObject.getString(BUNDLE_TYPE));
                 appObject.put(BUNDLE_TYPE, utility.getBundleType());
             }
 
             if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
-                outPutMap.put(INSTALLATION_FREE, distroObj.getBoolean(INSTALLATION_FREE).toString());
+                util.setOriginInstallationFree(distroObj.getBoolean(INSTALLATION_FREE));
+                util.setIsInstallationFree(true);
                 distroObj.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
             }
 
             if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
-                outPutMap.put(DELIVERY_WITH_INSTALL, distroObj.getBoolean(DELIVERY_WITH_INSTALL).toString());
+                util.setOriginDeliveryWithInstall(distroObj.getBoolean(DELIVERY_WITH_INSTALL));
+                util.setIsDeliveryWithInstall(true);
                 distroObj.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
             }
             writeJson(jsonFilePath, jsonObject);
@@ -4073,7 +4150,7 @@ public class Compressor {
                     e.getMessage()));
             throw new BundleException("Parse and modify config.json exist IOException: " + e.getMessage());
         }
-        return outPutMap;
+        return util;
     }
 
     private void parseAndModifyGeneralPackInfo(String packInfoPath, Utility utility)
@@ -4219,13 +4296,55 @@ public class Compressor {
         }
     }
 
-    private static void writeGeneralRecord(List<HashMap<String, String>> recordList, String outPath) {
+    private static void writeGeneralRecord(List<GeneralNormalizeUtil> utils, String outPath) {
+        JSONArray jsonArray = new JSONArray();
         try (FileWriter fileWriter = new FileWriter(outPath + LINUX_FILE_SEPARATOR + GENERAL_RECORD)) {
-            for (HashMap<String, String> record : recordList) {
-                String jsonString = JSON.toJSONString(record);
-                fileWriter.write(jsonString);
-                fileWriter.write(",");
+            for (GeneralNormalizeUtil util : utils) {
+                JSONObject jsonObject = new JSONObject();
+                if (util.originDeviceTypes != null && !util.originDeviceTypes.isEmpty()) {
+                    jsonObject.put("deviceTypes", util.originDeviceTypes);
+                    if (util.originDeviceTypes instanceof String) {
+                        String arrayStr = (String) util.originDeviceTypes;
+                        JSONArray deviceTypes = JSON.parseArray(arrayStr);
+                        jsonObject.put("deviceTypes", deviceTypes);
+                    }
+                }
+                if (util.originVersionCode != INVALID_VERSION) {
+                    jsonObject.put("versionCode", util.originVersionCode);
+                }
+                if (util.moduleName != null && !util.moduleName.isEmpty()) {
+                    jsonObject.put("moduleName", util.moduleName);
+                }
+                if (util.originVersionName != null && !util.originVersionName.isEmpty()) {
+                    jsonObject.put("versionName", util.originVersionName);
+                }
+                if (util.originMinCompatibleVersionCode != INVALID_VERSION) {
+                    jsonObject.put("minCompatibleVersionCode", util.originMinCompatibleVersionCode);
+                }
+                if (util.originMinAPIVersion != INVALID_VERSION) {
+                    jsonObject.put("minAPIVersion", util.originMinAPIVersion);
+                }
+                if (util.originTargetAPIVersion != INVALID_VERSION) {
+                    jsonObject.put("targetAPIVersion", util.originTargetAPIVersion);
+                }
+                if (util.originApiReleaseType!= null && !util.originApiReleaseType.isEmpty()) {
+                    jsonObject.put("apiReleaseType", util.originApiReleaseType);
+                }
+                if (util.originBundleType != null && !util.originBundleType.isEmpty()) {
+                    jsonObject.put("bundleType", util.originBundleType);
+                }
+                if (util.originBundleName != null && !util.originBundleName.isEmpty()) {
+                    jsonObject.put("bundleName", util.originBundleName);
+                }
+                if (util.isInstallationFree == true) {
+                    jsonObject.put("installationFree", util.originInstallationFree);
+                }
+                if (util.isDeliveryWithInstall == true) {
+                    jsonObject.put("deliveryWithInstall", util.originDeliveryWithInstall);
+                }
+                jsonArray.add(jsonObject);
             }
+            fileWriter.write(jsonArray.toString());
         } catch (IOException e) {
             LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString("Write general record exist IOException: "
                     + e.getMessage()));

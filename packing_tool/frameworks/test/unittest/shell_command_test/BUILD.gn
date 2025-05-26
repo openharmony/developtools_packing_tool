@@ -40,6 +40,7 @@ ohos_unittest("shell_command_test") {
     "../../../src/hqf_verify.cpp",
     "../../../src/hsp_packager.cpp",
     "../../../src/json/distro_filter.cpp",
+    "../../../src/json/general_normalize_version_utils.cpp",
     "../../../src/json/hap_verify_info.cpp",
     "../../../src/json/hap_verify_utils.cpp",
     "../../../src/json/json_utils.cpp",
