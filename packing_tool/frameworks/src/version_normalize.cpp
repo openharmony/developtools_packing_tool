@@ -204,6 +204,8 @@ bool VersionNormalize::CompressDirToHap(const std::string &sourceDir, const std:
             parameterMap[Constants::PARAM_PACK_INFO_PATH] = filePath;
         } else if (fileName == Constants::RPCID_SC) {
             parameterMap[Constants::PARAM_RPCID_PATH] = filePath;
+        } else if (fileName == Constants::PKG_CONTEXT_JSON) {
+            parameterMap[Constants::PARAM_PKG_CONTEXT_PATH] = filePath;
         }
     }
     if (Utils::EndsWith(zipFilePath, Constants::HAP_SUFFIX)) {

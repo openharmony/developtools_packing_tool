@@ -19,8 +19,8 @@
 #include "hqf_packager.h"
 #include "hsp_packager.h"
 #include "json/json_utils.h"
+#include "json/general_normalize_version_utils.h"
 #include "json/module_json.h"
-#include "json/normalize_version_utils.h"
 #include "json/pack_info.h"
 #include "log.h"
 #include "utils.h"
@@ -178,7 +178,7 @@ int32_t GeneralNormalize::PreProcess()
 }
 
 bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
-    std::map<std::string, std::string> &modifyMap, std::string &bundleName, std::string &moduleName)
+    GeneralNormalizeVersion &generalNormalizeVersion, std::string &bundleName, std::string &moduleName)
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
@@ -190,7 +190,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
         Version version;
         moduleJson.GetStageVersion(version);
-        modifyMap[VERSION_CODE] = std::to_string(version.versionCode);
+        generalNormalizeVersion.originVersionCode = version.versionCode;
         if (!moduleJson.SetVersionCode(versionCode, true)) {
             LOGE("SetVersionCode failed");
             return false;
@@ -202,7 +202,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
         Version version;
         moduleJson.GetStageVersion(version);
-        modifyMap[VERSION_NAME] = version.versionName;
+        generalNormalizeVersion.originVersionName = version.versionName;
         if (!moduleJson.SetVersionName(versionName, true)) {
             LOGE("SetVersionName failed");
             return false;
@@ -214,7 +214,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         std::string targetBundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
         std::string originBundleName;
         moduleJson.GetBundleName(originBundleName);
-        modifyMap[BUNDLE_NAME] = originBundleName;
+        generalNormalizeVersion.originBundleName = originBundleName;
         if (!moduleJson.SetBundleName(targetBundleName, true)) {
             LOGE("SetBundleName failed");
             return false;
@@ -225,7 +225,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
     if (it != parameterMap_.end()) {
         Version version;
         moduleJson.GetStageVersion(version);
-        modifyMap[MIN_COMPATIBLE_VERSION_CODE] = std::to_string(version.minCompatibleVersionCode);
+        generalNormalizeVersion.originMinCompatibleVersionCode = version.minCompatibleVersionCode;
         int32_t minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
         if (!moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, true)) {
             LOGE("SetMinCompatibleVersionCode failed");
@@ -238,7 +238,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         int32_t minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
         int32_t originMinAPIVersion = -1;
         moduleJson.GetMinApiVersion(originMinAPIVersion);
-        modifyMap[MIN_API_VERSION] = std::to_string(originMinAPIVersion);
+        generalNormalizeVersion.originMinAPIVersion = originMinAPIVersion;
         if (!moduleJson.SetMinAPIVersion(minAPIVersion, true)) {
             LOGE("SetMinAPIVersion failed");
             return false;
@@ -250,7 +250,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         int32_t targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
         int32_t originTargetAPIVersion = -1;
         moduleJson.GetTargetApiVersion(originTargetAPIVersion);
-        modifyMap[TARGET_API_VERSION] = std::to_string(originTargetAPIVersion);
+        generalNormalizeVersion.originTargetAPIVersion = originTargetAPIVersion;
         if (!moduleJson.SetTargetAPIVersion(targetAPIVersion, true)) {
             LOGE("SetTargetAPIVersion failed");
             return false;
@@ -262,7 +262,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         std::string apiReleaseType = parameterMap_.at(Constants::PARAM_API_RELEASE_TYPE);
         std::string originApiReleaseType;
         moduleJson.GetStageApiReleaseType(originApiReleaseType);
-        modifyMap[API_RELEASE_TYPE] = originApiReleaseType;
+        generalNormalizeVersion.originApiReleaseType = originApiReleaseType;
         if (!moduleJson.SetApiReleaseType(apiReleaseType, true)) {
             LOGE("SetApiReleaseType failed");
             return false;
@@ -274,7 +274,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         std::string bundleType = parameterMap_.at(Constants::PARAM_BUNDLE_TYPE);
         std::string originBundleType;
         moduleJson.GetStageBundleType(originBundleType);
-        modifyMap[BUNDLE_TYPE] = originBundleType;
+        generalNormalizeVersion.originBundleType = originBundleType;
         if (!moduleJson.SetBundleType(bundleType, true)) {
             LOGE("SetBundleType failed");
             return false;
@@ -286,7 +286,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         bool installationFree = Utils::StringToBool(parameterMap_.at(Constants::PARAM_INSTALLATION_FREE));
         bool originInstallationFree;
         moduleJson.GetStageInstallationFree(originInstallationFree);
-        modifyMap[INSTALLATION_FREE] = Utils::BoolToString(originInstallationFree);
+        generalNormalizeVersion.originInstallationFree = originInstallationFree;
+        generalNormalizeVersion.modifyInstallationFree = true;
         if (!moduleJson.SetInstallationFree(installationFree, true)) {
             LOGE("SetInstallationFree failed");
             return false;
@@ -298,7 +299,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         bool deliveryWithInstall = Utils::StringToBool(parameterMap_.at(Constants::PARAM_DELIVERY_WITH_INSTALL));
         bool originDeliveryWithInstall;
         moduleJson.GetDeliveryWithInstall(originDeliveryWithInstall);
-        modifyMap[DELIVERY_WITH_INSTALL] = Utils::BoolToString(originDeliveryWithInstall);
+        generalNormalizeVersion.originDeliveryWithInstall = originDeliveryWithInstall;
+        generalNormalizeVersion.modifyDeliveryWithInstall = true;
         if (!moduleJson.SetDeliveryWithInstall(deliveryWithInstall, true)) {
             LOGE("SetDeliveryWithInstall failed");
             return false;
@@ -311,7 +313,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         Utils::StringToArray(parameterMap_.at(Constants::PARAM_DEVICE_TYPES), deviceTypes);
         std::list<std::string> originDeviceTypes;
         moduleJson.GetStageDeviceTypes(originDeviceTypes);
-        modifyMap[DEVICE_TYPES] = Utils::ArrayToString(originDeviceTypes);
+        generalNormalizeVersion.originDeviceTypes = originDeviceTypes;
         if (!moduleJson.SetDeviceTypes(deviceTypes, true)) {
             LOGE("SetDeviceTypes failed");
             return false;
@@ -320,7 +322,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 
     moduleJson.GetBundleName(bundleName);
     moduleJson.GetModuleName(moduleName);
-    modifyMap[MODULE_NAME] = moduleName;
+    generalNormalizeVersion.moduleName = moduleName;
     if (!JsonUtils::StrToFile(moduleJson.ToString(), moduleJsonPath)) {
         LOGE("Parse and modify module.json failed, write Json failed.");
         return false;
@@ -329,7 +331,7 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 }
 
 bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
-    std::map<std::string, std::string> &modifyMap, std::string &bundleName, std::string &moduleName)
+    GeneralNormalizeVersion &generalNormalizeVersion, std::string &bundleName, std::string &moduleName)
 {
     ModuleJson configJson;
     if (!configJson.ParseFromFile(configJsonPath)) {
@@ -340,7 +342,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         Version version;
         configJson.GetFaVersion(version);
-        modifyMap[VERSION_CODE] = std::to_string(version.versionCode);
+        generalNormalizeVersion.originVersionCode = version.versionCode;
         int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
         if (!configJson.SetVersionCode(versionCode, false)) {
             LOGE("SetVersionCode failed");
@@ -352,7 +354,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         Version version;
         configJson.GetFaVersion(version);
-        modifyMap[VERSION_NAME] = version.versionName;
+        generalNormalizeVersion.originVersionName = version.versionName;
         std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
         if (!configJson.SetVersionName(versionName, false)) {
             LOGE("SetVersionName failed");
@@ -364,7 +366,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         std::string originBundleName;
         configJson.GetBundleName(originBundleName);
-        modifyMap[BUNDLE_NAME] = originBundleName;
+        generalNormalizeVersion.originBundleName = originBundleName;
         std::string targetBundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
         if (!configJson.SetBundleName(targetBundleName, false)) {
             LOGE("SetBundleName failed");
@@ -376,7 +378,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         Version version;
         configJson.GetFaVersion(version);
-        modifyMap[MIN_COMPATIBLE_VERSION_CODE] = std::to_string(version.minCompatibleVersionCode);
+        generalNormalizeVersion.originMinCompatibleVersionCode = version.minCompatibleVersionCode;
         int32_t minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
         if (!configJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, false)) {
             LOGE("SetMinCompatibleVersionCode failed");
@@ -388,7 +390,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         ModuleApiVersion moduleApiVersion;
         configJson.GetFaModuleApiVersion(moduleApiVersion);
-        modifyMap[MIN_API_VERSION] = std::to_string(moduleApiVersion.compatibleApiVersion);
+        generalNormalizeVersion.originMinAPIVersion = moduleApiVersion.compatibleApiVersion;
         int32_t minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
         if (!configJson.SetMinAPIVersion(minAPIVersion, false)) {
             LOGE("SetMinAPIVersion failed");
@@ -400,7 +402,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         ModuleApiVersion moduleApiVersion;
         configJson.GetFaModuleApiVersion(moduleApiVersion);
-        modifyMap[TARGET_API_VERSION] = std::to_string(moduleApiVersion.targetApiVersion);
+        generalNormalizeVersion.originTargetAPIVersion = moduleApiVersion.targetApiVersion;
         int32_t targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
         if (!configJson.SetTargetAPIVersion(targetAPIVersion, false)) {
             LOGE("SetTargetAPIVersion failed");
@@ -412,7 +414,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         ModuleApiVersion moduleApiVersion;
         configJson.GetFaModuleApiVersion(moduleApiVersion);
-        modifyMap[API_RELEASE_TYPE] = moduleApiVersion.releaseType;
+        generalNormalizeVersion.originApiReleaseType = moduleApiVersion.releaseType;
         std::string apiReleaseType = parameterMap_.at(Constants::PARAM_API_RELEASE_TYPE);
         if (!configJson.SetApiReleaseType(apiReleaseType, false)) {
             LOGE("SetApiReleaseType failed");
@@ -424,7 +426,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         std::string originBundleType;
         configJson.GetFaBundleType(originBundleType);
-        modifyMap[BUNDLE_TYPE] = originBundleType;
+        generalNormalizeVersion.originBundleType = originBundleType;
         std::string bundleType = parameterMap_.at(Constants::PARAM_BUNDLE_TYPE);
         if (!configJson.SetBundleType(bundleType, false)) {
             LOGE("SetBundleType failed");
@@ -436,7 +438,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         bool originInstallationFree;
         configJson.GetFaInstallationFree(originInstallationFree);
-        modifyMap[INSTALLATION_FREE] = Utils::BoolToString(originInstallationFree);
+        generalNormalizeVersion.originInstallationFree = originInstallationFree;
+        generalNormalizeVersion.modifyInstallationFree = true;
         bool installationFree = Utils::StringToBool(parameterMap_.at(Constants::PARAM_INSTALLATION_FREE));
         if (!configJson.SetInstallationFree(installationFree, false)) {
             LOGE("SetInstallationFree failed");
@@ -448,7 +451,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         bool originDeliveryWithInstall;
         configJson.GetFaDeliveryWithInstall(originDeliveryWithInstall);
-        modifyMap[DELIVERY_WITH_INSTALL] = Utils::BoolToString(originDeliveryWithInstall);
+        generalNormalizeVersion.originDeliveryWithInstall = originDeliveryWithInstall;
+        generalNormalizeVersion.modifyDeliveryWithInstall = true;
         bool deliveryWithInstall = Utils::StringToBool(parameterMap_.at(Constants::PARAM_DELIVERY_WITH_INSTALL));
         if (!configJson.SetDeliveryWithInstall(deliveryWithInstall, false)) {
             LOGE("SetDeliveryWithInstall failed");
@@ -460,7 +464,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
     if (it != parameterMap_.end()) {
         std::list<std::string> originDeviceTypes;
         configJson.GetFaDeviceTypes(originDeviceTypes);
-        modifyMap[DEVICE_TYPES] = Utils::ArrayToString(originDeviceTypes);
+        generalNormalizeVersion.originDeviceTypes = originDeviceTypes;
         std::list<std::string> deviceTypes;
         Utils::StringToArray(parameterMap_.at(Constants::PARAM_DEVICE_TYPES), deviceTypes);
         if (!configJson.SetDeviceTypes(deviceTypes, false)) {
@@ -471,7 +475,7 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
 
     configJson.GetBundleName(bundleName);
     configJson.GetFaModuleName(moduleName);
-    modifyMap[MODULE_NAME] = moduleName;
+    generalNormalizeVersion.moduleName = moduleName;
     if (!JsonUtils::StrToFile(configJson.ToString(), configJsonPath)) {
         LOGE("Parse and modify config.json failed, writeJson failed.");
         return false;
@@ -633,6 +637,8 @@ bool GeneralNormalize::CompressDirToHap(const std::string &sourceDir, const std:
             parameterMap[Constants::PARAM_PACK_INFO_PATH] = filePath;
         } else if (fileName == Constants::RPCID_SC) {
             parameterMap[Constants::PARAM_RPCID_PATH] = filePath;
+        } else if (fileName == Constants::PKG_CONTEXT_JSON) {
+            parameterMap[Constants::PARAM_PKG_CONTEXT_PATH] = filePath;
         }
     }
     if (Utils::EndsWith(zipFilePath, Constants::HAP_SUFFIX)) {
@@ -649,9 +655,9 @@ bool GeneralNormalize::CompressDirToHap(const std::string &sourceDir, const std:
 
 
 bool GeneralNormalize::ProcessJsonFiles(const std::string &tempPath,
-    std::list<std::map<std::string, std::string>> &modifyMapList, std::string &bundleName, std::string &moduleName)
+    std::list<GeneralNormalizeVersion> &generalNormalizeVersions, std::string &bundleName, std::string &moduleName)
 {
-    std::map<std::string, std::string> modifyMap;
+    GeneralNormalizeVersion generalNormalizeVersion;
     std::string moduleJsonPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::MODULE_JSON;
     std::string configJsonPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::CONFIG_JSON;
     std::string packInfoPath = tempPath + Constants::LINUX_FILE_SEPARATOR + Constants::PACK_INFO;
@@ -666,23 +672,21 @@ bool GeneralNormalize::ProcessJsonFiles(const std::string &tempPath,
 
     bool modifyJsonSuccess = false;
     if (isModuleFileExists) {
-        modifyJsonSuccess = ModifyModuleJson(moduleJsonPath, modifyMap, bundleName, moduleName);
+        modifyJsonSuccess = ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName);
     } else {
-        modifyJsonSuccess = ModifyConfigJson(configJsonPath, modifyMap, bundleName, moduleName);
+        modifyJsonSuccess = ModifyConfigJson(configJsonPath, generalNormalizeVersion, bundleName, moduleName);
     }
 
     if (!modifyJsonSuccess) {
-        modifyMapList.push_back(modifyMap);
         return false;
     }
 
     if (isPackInfoFileExists) {
         if (!ModifyPackInfo(packInfoPath)) {
-            modifyMapList.push_back(modifyMap);
             return false;
         }
     }
-    modifyMapList.push_back(modifyMap);
+    generalNormalizeVersions.push_back(generalNormalizeVersion);
     return true;
 }
 
@@ -691,13 +695,13 @@ int32_t GeneralNormalize::Process()
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_GENERALNORMALIZE_TEMP_DIR
         + Utils::GenerateUUID();
-    std::list<std::map<std::string, std::string>> modifyMapList;
+    std::list<GeneralNormalizeVersion> generalNormalizeVersionList;
     bool isSuccess = true;
     std::string bundleName;
     std::string moduleName;
     for (const std::string& path : hspOrhapList_) {
         ZipUtils::Unzip(path, tempPath);
-        if (!ProcessJsonFiles(tempPath, modifyMapList, bundleName, moduleName)) {
+        if (!ProcessJsonFiles(tempPath, generalNormalizeVersionList, bundleName, moduleName)) {
             Utils::ForceRemoveDirectory(tempPath);
             isSuccess = false;
             break;
@@ -715,28 +719,12 @@ int32_t GeneralNormalize::Process()
         Utils::RemoveAllFilesInDirectory(outPath);
         return ERR_INVALID_VALUE;
     }
-    if (!JsonUtils::StrToFile(ConvertMapListToString(modifyMapList), outPath +
+    if (!JsonUtils::StrToFile(GeneralNormalizeVersionUtils::ArrayToString(generalNormalizeVersionList), outPath +
         Constants::LINUX_FILE_SEPARATOR + Constants::GENERAL_RECORD)) {
         LOGE("WriteVersionRecord failed.");
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
-}
-
-std::string GeneralNormalize::ConvertMapListToString(const std::list<std::map<std::string, std::string>>&
-    modifyMapList)
-{
-    std::unique_ptr<PtJson> jArray = PtJson::CreateArray();
-    for (const auto& map : modifyMapList) {
-        std::unique_ptr<PtJson> jMap = PtJson::CreateObject();
-        for (const auto& pair : map) {
-            if (!jMap->Add(pair.first.c_str(), pair.second.c_str())) {
-                return "";
-            }
-        }
-        jArray->Push(jMap);
-    }
-    return jArray->Stringify();
 }
 
 int32_t GeneralNormalize::PostProcess()

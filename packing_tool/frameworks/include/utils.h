@@ -74,8 +74,6 @@ public:
     static bool GetRealPath(const std::string& path, std::string& realPath);
     static bool GetRealPathOfNoneExistFile(const std::string& path, std::string& realPath);
     static bool RemoveAllFilesInDirectory(const std::string& directoryPath);
-    static std::string ArrayToString(const std::list<std::string> &array);
-    static std::string BoolToString(bool value);
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS
