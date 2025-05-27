@@ -215,7 +215,6 @@ public class Compressor {
     private List<String> fileNameList = new ArrayList<String>();
     private List<String> supportDimensionsList = Arrays.asList(PIC_1X2, PIC_2X2, PIC_2X4, PIC_4X4, PIC_1X1, PIC_6X4);
     private HashMap<String, HapVerifyInfo> hapVerifyInfoMap = new HashMap<>();
-    private HashMap<String, String> outPutMap = new HashMap<>();
 
     public static int getEntryModuleSizeLimit() {
         return entryModuleSizeLimit;
@@ -3992,7 +3991,11 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-                util.setOriginMinCompatibleVersionCode(appObject.getIntValue(MIN_COMPATIBLE_VERSION_CODE));
+                if (appObject.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
+                    util.setOriginMinCompatibleVersionCode(appObject.getIntValue(MIN_COMPATIBLE_VERSION_CODE));
+                } else {
+                    util.setOriginMinCompatibleVersionCode(appObject.getIntValue(VERSION_CODE));
+                }
                 appObject.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
             }
 
@@ -4012,7 +4015,18 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
-                util.setOriginBundleType(appObject.getString(BUNDLE_TYPE));
+                if (!appObject.containsKey(BUNDLE_TYPE)) {
+                    if (moduleObject.getBoolean(INSTALLATION_FREE)) {
+                        String errMsg =
+                                "app.json5 file configuration does not match the 'installationFree' setting of true.";
+                        String solution = "Add the bundleType field to the app.json5 file or set it atomicService.";
+                        LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
+                        throw new BundleException(errMsg);
+                    }
+                    util.setOriginBundleType(APP);
+                } else {
+                    util.setOriginBundleType(appObject.getString(BUNDLE_TYPE));
+                }
                 appObject.put(BUNDLE_TYPE, utility.getBundleType());
             }
 
@@ -4104,7 +4118,11 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-                util.setOriginMinCompatibleVersionCode(versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE));
+                if (versionObj.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {
+                    util.setOriginMinCompatibleVersionCode(versionObj.getIntValue(MIN_COMPATIBLE_VERSION_CODE));
+                } else {
+                    util.setOriginMinCompatibleVersionCode(versionObj.getIntValue(CODE));
+                }
                 versionObj.put(MIN_COMPATIBLE_VERSION_CODE, utility.getMinCompatibleVersionCode());
             }
 
@@ -4129,7 +4147,15 @@ public class Compressor {
             }
 
             if (utility.getGeneralNormalizeList().contains(BUNDLE_TYPE)) {
-                util.setOriginBundleType(appObject.getString(BUNDLE_TYPE));
+                if (!appObject.containsKey(BUNDLE_TYPE)) {
+                    if (distroObj.getBoolean(INSTALLATION_FREE)) {
+                        util.setOriginBundleType(ATOMIC_SERVICE);
+                    } else {
+                        util.setOriginBundleType(APP);
+                    }
+                } else {
+                    util.setOriginBundleType(appObject.getString(BUNDLE_TYPE));
+                }
                 appObject.put(BUNDLE_TYPE, utility.getBundleType());
             }
 
@@ -4242,7 +4268,7 @@ public class Compressor {
                         object.put(DEVICE_TYPE, utility.getDeviceTypes().split(","));
                     }
                     if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
-                        object.put(DELIVERY_WITH_INSTALL, utility.getDeliveryWithInstall());
+                        object.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
                     }
                 }
             }
@@ -4289,9 +4315,9 @@ public class Compressor {
                 break;
             }
             if(key == INSTALLATION_FREE) {
-                distroObj.put(INSTALLATION_FREE, utility.getInstallationFree());
+                distroObj.put(INSTALLATION_FREE, Boolean.parseBoolean(utility.getInstallationFree()));
             } else if (key == DELIVERY_WITH_INSTALL) {
-                distroObj.put(DELIVERY_WITH_INSTALL, utility.getDeliveryWithInstall());
+                distroObj.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
             }
         }
     }

@@ -298,7 +298,8 @@ public class CompressVerify {
         }
 
         if (utility.getGeneralNormalizeList().contains(VERSION_CODE)) {
-            if (utility.getVersionCode() < MINI_NUM || utility.getVersionCode() > MAXI_NUM) {
+            if (utility.getVersionCode() < MINI_NUM || utility.getVersionCode() > MAXI_NUM ||
+                (!utility.getParameterIsInvalid())) {
                 String errMsg = "--version-code is invalid.";
                 LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -324,7 +325,8 @@ public class CompressVerify {
         }
 
         if (utility.getGeneralNormalizeList().contains(MIN_COMPATIBLE_VERSION_CODE)) {
-            if (utility.getMinCompatibleVersionCode() < MINI_NUM || utility.getMinCompatibleVersionCode() > MAXI_NUM) {
+            if (utility.getMinCompatibleVersionCode() < MINI_NUM || utility.getMinCompatibleVersionCode() > MAXI_NUM ||
+                (!utility.getParameterIsInvalid())) {
                 String errMsg = "--min-compatible-version-code is invalid.";
                 LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -332,7 +334,8 @@ public class CompressVerify {
         }
 
         if (utility.getGeneralNormalizeList().contains(MIN_API_VERSION)) {
-            if (utility.getMinAPIVersion() < MINI_NUM || utility.getMinAPIVersion() > MAXI_NUM) {
+            if (utility.getMinAPIVersion() < MINI_NUM || utility.getMinAPIVersion() > MAXI_NUM ||
+                (!utility.getParameterIsInvalid())) {
                 String errMsg = "--min-api-version is invalid.";
                 LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -340,7 +343,8 @@ public class CompressVerify {
         }
 
         if (utility.getGeneralNormalizeList().contains(TARGET_API_VERSION)) {
-            if (utility.getTargetAPIVersion() < MINI_NUM || utility.getTargetAPIVersion() > MAXI_NUM) {
+            if (utility.getTargetAPIVersion() < MINI_NUM || utility.getTargetAPIVersion() > MAXI_NUM ||
+                (!utility.getParameterIsInvalid())) {
                 String errMsg = "--target-api-version is invalid.";
                 LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
                 return false;

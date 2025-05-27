@@ -337,7 +337,7 @@ bool Utils::IsPositiveInteger(const std::string& str, int min, int max)
     }
     try {
         int number = std::stoi(str);
-        return number > 0 && number >= min && number <= max;
+        return number >= min && number <= max;
     } catch (const std::out_of_range& e) {
         LOGE("Number %s is Out of Range!", str.c_str());
         return false;

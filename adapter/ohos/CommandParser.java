@@ -339,12 +339,13 @@ public class CommandParser {
             return true;
         });
         commandFuncs.put(VERSION_CODE, entry -> {
+            entry.getKey().addGeneralNormalizeList(VERSION_CODE_PARAM);
             try {
                 entry.getKey().setVersionCode(Integer.parseInt(entry.getValue()));
-                entry.getKey().addGeneralNormalizeList(VERSION_CODE_PARAM);
             } catch (NumberFormatException ignored) {
                 LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
                     "--version-code value is not number or invalid."));
+                entry.getKey().setParameterIsInvalid(false);
                 return false;
             }
             return true;
@@ -417,34 +418,37 @@ public class CommandParser {
             return true;
         });
         commandFuncs.put(PARAM_MIN_COMPATIBLE_VERSION_CODE, entry -> {
+            entry.getKey().addGeneralNormalizeList(MIN_COMPATIBLE_VERSION_CODE_PARAM);
             try {
                 entry.getKey().setMinCompatibleVersionCode(Integer.parseInt(entry.getValue()));
-                entry.getKey().addGeneralNormalizeList(MIN_COMPATIBLE_VERSION_CODE_PARAM);
             } catch (NumberFormatException ignored) {
                 LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
                     "--min-compatible-version-code value is not number or invalid."));
+                entry.getKey().setParameterIsInvalid(false);
                 return false;
             }
             return true;
         });
         commandFuncs.put(PARAM_MIN_API_VERSION, entry -> {
+            entry.getKey().addGeneralNormalizeList(MIN_API_VERSION_PARAM);
             try {
                 entry.getKey().setMinAPIVersion(Integer.parseInt(entry.getValue()));
-                entry.getKey().addGeneralNormalizeList(MIN_API_VERSION_PARAM);
             } catch (NumberFormatException ignored) {
                 LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
                     "--min-api-version value is not number or invalid."));
+                entry.getKey().setParameterIsInvalid(false);
                 return false;
             }
             return true;
         });
         commandFuncs.put(PARAM_TARGET_API_VERSION, entry -> {
+            entry.getKey().addGeneralNormalizeList(TARGET_API_VERSION_PARAM);
             try {
                 entry.getKey().setTargetAPIVersion(Integer.parseInt(entry.getValue()));
-                entry.getKey().addGeneralNormalizeList(TARGET_API_VERSION_PARAM);
             } catch (NumberFormatException ignored) {
                 LOG.error(PackingToolErrMsg.COMMAND_PARSER_FAILED.toString(
                     "--target-api-version value is not number or invalid."));
+                entry.getKey().setParameterIsInvalid(false);
                 return false;
             }
             return true;
