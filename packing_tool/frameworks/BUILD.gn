@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -50,6 +50,7 @@ ohos_executable("ohos_packing_tool") {
     "src/hqf_verify.cpp",
     "src/hsp_packager.cpp",
     "src/json/distro_filter.cpp",
+    "src/json/general_normalize_version_utils.cpp",
     "src/json/hap_verify_info.cpp",
     "src/json/hap_verify_utils.cpp",
     "src/json/json_utils.cpp",

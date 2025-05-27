@@ -16,6 +16,7 @@
 #ifndef DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_GENERAL_NORMALIZE_H
 #define DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_GENERAL_NORMALIZE_H
 
+#include "general_normalize_version.h"
 #include "json/module_json.h"
 #include "packager.h"
 #include "unzip_wrapper.h"
@@ -36,15 +37,14 @@ protected:
     int32_t PostProcess() override;
 
 private:
-    bool ModifyModuleJson(const std::string &moduleJsonPath, std::map<std::string, std::string> &modifyMap,
+    bool ModifyModuleJson(const std::string &moduleJsonPath, GeneralNormalizeVersion &generalNormalizeVersion,
         std::string &bundleName, std::string &moduleName);
-    bool ModifyConfigJson(const std::string &moduleJsonPath, std::map<std::string, std::string> &modifyMap,
+    bool ModifyConfigJson(const std::string &moduleJsonPath, GeneralNormalizeVersion &generalNormalizeVersion,
         std::string &bundleName, std::string &moduleName);
     bool ModifyPackInfo(const std::string &packInfoPath);
-    bool ProcessJsonFiles(const std::string &tempPath, std::list<std::map<std::string, std::string>> &modifyMapList,
+    bool ProcessJsonFiles(const std::string &tempPath, std::list<GeneralNormalizeVersion> &generalNormalizeVersions,
         std::string &bundleName, std::string &moduleName);
     bool CompressDirToHap(const std::string &tempDir, const std::string &modifiedHapPath);
-    std::string ConvertMapListToString(const std::list<std::map<std::string, std::string>>& modifyMapList);
     ZipWrapper zipWrapper_;
     UnzipWrapper unzipWrapper_;
     std::list<std::string> hspOrhapList_;
