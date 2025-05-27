@@ -643,30 +643,6 @@ HWTEST_F(UtilsTest, StringToArray_0100, Function | MediumTest | Level1)
 }
 
 /*
- * @tc.name: ArrayToString_0100
- * @tc.desc: ArrayToString
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(UtilsTest, ArrayToString_0100, Function | MediumTest | Level1)
-{
-    const std::list<std::string> array = {"a", "b", "c"};
-    EXPECT_EQ(OHOS::AppPackingTool::Utils::ArrayToString(array), "[\"a\",\"b\",\"c\"]");
-}
-
-/*
- * @tc.name: BoolToString_0100
- * @tc.desc: BoolToString
- * @tc.type: FUNC
- * @tc.require:
- */
-HWTEST_F(UtilsTest, BoolToString_0100, Function | MediumTest | Level1)
-{
-    EXPECT_EQ(OHOS::AppPackingTool::Utils::BoolToString(true), "true");
-    EXPECT_EQ(OHOS::AppPackingTool::Utils::BoolToString(false), "false");
-}
-
-/*
  * @tc.name: RemoveAllFilesInDirectory_0100
  * @tc.desc: RemoveAllFilesInDirectory
  * @tc.type: FUNC

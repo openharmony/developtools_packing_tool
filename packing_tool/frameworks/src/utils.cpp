@@ -496,18 +496,5 @@ bool Utils::RemoveAllFilesInDirectory(const std::string& directoryPath)
     return true;
 }
 
-std::string Utils::ArrayToString(const std::list<std::string> &array)
-{
-    std::unique_ptr<PtJson> jArray = PtJson::CreateArray();
-    for (const auto& item : array) {
-        jArray->Push(item.c_str());
-    }
-    return jArray->Stringify();
-}
-
-std::string Utils::BoolToString(bool value)
-{
-    return value ? "true" : "false";
-}
 } // namespace AppPackingTool
 } // namespace OHOS
