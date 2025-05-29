@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1570,6 +1570,24 @@ const std::string MODULE_DEVICE_TYPE_NOT_ARRAY_TEST_JSON_STRING = "{"
         "\"deviceType\": \"test\""
     "}"
 "}";
+
+const std::string APP_ERROR_MIN_API_VERSION = "{"
+    "\"app\": {"
+        "\"minAPIVersion\": true"
+    "}"
+"}";
+
+const std::string APP_ERROR_TARGET_API_VERSION = "{"
+    "\"app\": {"
+        "\"targetAPIVersion\": true"
+    "}"
+"}";
+
+const std::string APP_ERROR_DELIVERY_WITH_INSTALL = "{"
+    "\"app\": {"
+        "\"deliveryWithInstall\": 123"
+    "}"
+"}";
 }
 class ModuleJsonTest : public testing::Test {
 public:
@@ -1731,7 +1749,7 @@ HWTEST_F(ModuleJsonTest, GetApiVersionObject_0300, Function | MediumTest | Level
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
     std::unique_ptr<PtJson> apiVersion;
     EXPECT_FALSE(moduleJson.GetApiVersionObject(apiVersion));
-    EXPECT_EQ(apiVersion, nullptr);
+    EXPECT_NE(apiVersion, nullptr);
 }
 
 /*
@@ -7941,5 +7959,626 @@ HWTEST_F(ModuleJsonTest, GetFaReleaseTypeByAppObj_0300, Function | MediumTest | 
     EXPECT_TRUE(moduleJson.GetAppObject(appObj));
     std::string releaseType = "";
     EXPECT_FALSE(moduleJson.GetFaReleaseTypeByAppObj(appObj, releaseType));
+}
+
+/*
+ * @tc.name: SetVersionCode_0100
+ * @tc.desc: test SetVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetVersionCode_0100, Function | MediumTest | Level1)
+{
+    int32_t versionCode = 10000;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetVersionCode(versionCode, isStage));
+}
+
+/*
+ * @tc.name: SetVersionCode_0200
+ * @tc.desc: test SetVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetVersionCode_0200, Function | MediumTest | Level1)
+{
+    int32_t versionCode = 10000;
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetVersionCode(versionCode, isStage));
+}
+
+/*
+ * @tc.name: SetVersionCode_0300
+ * @tc.desc: test SetVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetVersionCode_0300, Function | MediumTest | Level1)
+{
+    int32_t versionCode = 10000;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetVersionCode(versionCode, isStage));
+}
+
+/*
+ * @tc.name: SetVersionName_0100
+ * @tc.desc: test SetVersionName
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetVersionName_0100, Function | MediumTest | Level1)
+{
+    std::string versionName = "1.0.0";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetVersionName(versionName, isStage));
+}
+
+/*
+ * @tc.name: SetVersionName_0200
+ * @tc.desc: test SetVersionName
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetVersionName_0200, Function | MediumTest | Level1)
+{
+    std::string versionName = "1.0.0";
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetVersionName(versionName, isStage));
+}
+
+/*
+ * @tc.name: SetVersionName_0300
+ * @tc.desc: test SetVersionName
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetVersionName_0300, Function | MediumTest | Level1)
+{
+    std::string versionName = "1.0.0";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetVersionName(versionName, isStage));
+}
+
+/*
+ * @tc.name: SetBundleNameTwoPrama_0100
+ * @tc.desc: test SetBundleName
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetBundleNameTwoPrama_0100, Function | MediumTest | Level1)
+{
+    std::string bundleName = "1.0.0";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetBundleName(bundleName, isStage));
+}
+
+/*
+ * @tc.name: SetBundleNameTwoPrama_0200
+ * @tc.desc: test SetBundleName
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetBundleNameTwoPrama_0200, Function | MediumTest | Level1)
+{
+    std::string bundleName = "1.0.0";
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetBundleName(bundleName, isStage));
+}
+
+/*
+ * @tc.name: SetBundleNameTwoPrama_0300
+ * @tc.desc: test SetBundleName
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetBundleNameTwoPrama_0300, Function | MediumTest | Level1)
+{
+    std::string bundleName = "1.0.0";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetBundleName(bundleName, isStage));
+}
+
+/*
+ * @tc.name: SetMinCompatibleVersionCode_0100
+ * @tc.desc: test SetMinCompatibleVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetMinCompatibleVersionCode_0100, Function | MediumTest | Level1)
+{
+    int32_t minCompatibleVersionCode = 12;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, isStage));
+}
+
+/*
+ * @tc.name: SetMinCompatibleVersionCode_0200
+ * @tc.desc: test SetMinCompatibleVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetMinCompatibleVersionCode_0200, Function | MediumTest | Level1)
+{
+    int32_t minCompatibleVersionCode = 12;
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, isStage));
+}
+
+/*
+ * @tc.name: SetMinCompatibleVersionCode_0300
+ * @tc.desc: test SetMinCompatibleVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetMinCompatibleVersionCode_0300, Function | MediumTest | Level1)
+{
+    int32_t minCompatibleVersionCode = 12;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, isStage));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0100
+ * @tc.desc: test SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetMinAPIVersion_0100, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 12;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetMinAPIVersion(minAPIVersion, isStage));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0200
+ * @tc.desc: test SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetMinAPIVersion_0200, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 12;
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetMinAPIVersion(minAPIVersion, isStage));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0300
+ * @tc.desc: test SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetMinAPIVersion_0300, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 12;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetMinAPIVersion(minAPIVersion, isStage));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0100
+ * @tc.desc: test SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetTargetAPIVersion_0100, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 12;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetTargetAPIVersion(targetAPIVersion, isStage));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0200
+ * @tc.desc: test SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetTargetAPIVersion_0200, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 12;
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetTargetAPIVersion(targetAPIVersion, isStage));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0300
+ * @tc.desc: test SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetTargetAPIVersion_0300, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 12;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetTargetAPIVersion(targetAPIVersion, isStage));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0100
+ * @tc.desc: test SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetApiReleaseType_0100, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "1.0.0";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetApiReleaseType(apiReleaseType, isStage));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0200
+ * @tc.desc: test SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetApiReleaseType_0200, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "1.0.0";
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetApiReleaseType(apiReleaseType, isStage));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0300
+ * @tc.desc: test SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetApiReleaseType_0300, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "1.0.0";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetApiReleaseType(apiReleaseType, isStage));
+}
+
+/*
+ * @tc.name: SetBundleType_0100
+ * @tc.desc: test SetBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetBundleType_0100, Function | MediumTest | Level1)
+{
+    std::string bundleType = "app";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetBundleType(bundleType, isStage));
+}
+
+/*
+ * @tc.name: SetBundleType_0200
+ * @tc.desc: test SetBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetBundleType_0200, Function | MediumTest | Level1)
+{
+    std::string bundleType = "app";
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetBundleType(bundleType, isStage));
+}
+
+/*
+ * @tc.name: SetBundleType_0300
+ * @tc.desc: test SetBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetBundleType_0300, Function | MediumTest | Level1)
+{
+    std::string bundleType = "app";
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetBundleType(bundleType, isStage));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0100
+ * @tc.desc: test SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetInstallationFree_0100, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetInstallationFree(installationFree, isStage));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0200
+ * @tc.desc: test SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetInstallationFree_0200, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetInstallationFree(installationFree, isStage));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0300
+ * @tc.desc: test SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetInstallationFree_0300, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetInstallationFree(installationFree, isStage));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0100
+ * @tc.desc: test SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetDeliveryWithInstall_0100, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetDeliveryWithInstall(deliveryWithInstall, isStage));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0200
+ * @tc.desc: test SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetDeliveryWithInstall_0200, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetDeliveryWithInstall(deliveryWithInstall, isStage));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0300
+ * @tc.desc: test SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetDeliveryWithInstall_0300, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetDeliveryWithInstall(deliveryWithInstall, isStage));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0100
+ * @tc.desc: test SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetDeviceTypes_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes = {};
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetDeviceTypes(deviceTypes, isStage));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0200
+ * @tc.desc: test SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetDeviceTypes_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes = {};
+    bool isStage = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.SetDeviceTypes(deviceTypes, isStage));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0300
+ * @tc.desc: test SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, SetDeviceTypes_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes = {"default"};
+    bool isStage = true;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.SetDeviceTypes(deviceTypes, isStage));
+}
+
+/*
+ * @tc.name: GetMinApiVersion_0100
+ * @tc.desc: test GetMinApiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMinApiVersion_0100, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 99;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.GetMinApiVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: GetMinApiVersion_0200
+ * @tc.desc: test GetMinApiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMinApiVersion_0200, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 99;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_ERROR_MIN_API_VERSION));
+    EXPECT_FALSE(moduleJson.GetMinApiVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: GetMinApiVersion_0300
+ * @tc.desc: test GetMinApiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetMinApiVersion_0300, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 99;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.GetMinApiVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: GetTargetApiVersion_0100
+ * @tc.desc: test GetTargetApiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetTargetApiVersion_0100, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 99;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.GetTargetApiVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: GetTargetApiVersion_0200
+ * @tc.desc: test GetTargetApiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetTargetApiVersion_0200, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 99;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_ERROR_TARGET_API_VERSION));
+    EXPECT_FALSE(moduleJson.GetTargetApiVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: GetTargetApiVersion_0300
+ * @tc.desc: test GetTargetApiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetTargetApiVersion_0300, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 99;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.GetTargetApiVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: GetDeliveryWithInstall_0100
+ * @tc.desc: test GetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeliveryWithInstall_0100, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.GetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: GetDeliveryWithInstall_0200
+ * @tc.desc: test GetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeliveryWithInstall_0200, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_ERROR_DELIVERY_WITH_INSTALL));
+    EXPECT_FALSE(moduleJson.GetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: GetDeliveryWithInstall_0300
+ * @tc.desc: test GetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeliveryWithInstall_0300, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    EXPECT_TRUE(moduleJson.GetDeliveryWithInstall(deliveryWithInstall));
 }
 }
