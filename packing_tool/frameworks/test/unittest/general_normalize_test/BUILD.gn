@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,11 +14,10 @@
 import("//build/ohos.gni")
 import("//build/test.gni")
 
-config("shell_command_test_config") {
+config("general_normalize_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
-    "../../../../../../../third_party/json/include",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -27,46 +26,30 @@ config("shell_command_test_config") {
 
 module_output_path = "packing_tool/packing_tool"
 
-ohos_unittest("shell_command_test") {
+ohos_unittest("general_normalize_test") {
   module_out_path = module_output_path
-  public_configs = [ ":shell_command_test_config" ]
+  public_configs = [ ":general_normalize_test_config" ]
   sources = [
-    "../../../src/app_packager.cpp",
-    "../../../src/appqf_packager.cpp",
-    "../../../src/fast_app_packager.cpp",
     "../../../src/general_normalize.cpp",
     "../../../src/hap_packager.cpp",
-    "../../../src/hqf_packager.cpp",
-    "../../../src/hqf_verify.cpp",
     "../../../src/hsp_packager.cpp",
-    "../../../src/json/distro_filter.cpp",
     "../../../src/json/general_normalize_version_utils.cpp",
-    "../../../src/json/hap_verify_info.cpp",
-    "../../../src/json/hap_verify_utils.cpp",
     "../../../src/json/json_utils.cpp",
     "../../../src/json/module_json.cpp",
     "../../../src/json/module_json_fa.cpp",
     "../../../src/json/module_json_stage.cpp",
-    "../../../src/json/module_json_utils.cpp",
     "../../../src/json/normalize_version_utils.cpp",
     "../../../src/json/pack_info.cpp",
-    "../../../src/json/pack_info_utils.cpp",
-    "../../../src/json/patch_json.cpp",
-    "../../../src/json/patch_json_utils.cpp",
     "../../../src/json/pt_json.cpp",
     "../../../src/log.cpp",
-    "../../../src/multiapp_packager.cpp",
-    "../../../src/package_normalize.cpp",
     "../../../src/packager.cpp",
-    "../../../src/res_packager.cpp",
-    "../../../src/shell_command.cpp",
     "../../../src/unzip_wrapper.cpp",
     "../../../src/utils.cpp",
-    "../../../src/version_normalize.cpp",
     "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
-    "shell_command_test.cpp",
+    "general_normalize_test.cpp",
   ]
+
   external_deps = [
     "bounds_checking_function:libsec_static",
     "cJSON:cjson_static",
@@ -74,9 +57,21 @@ ohos_unittest("shell_command_test") {
     "openssl:libcrypto_shared",
     "zlib:libz",
   ]
+
+  deps = [
+    ":copy_test_file",
+    "../ohos_test:copy_ohos_test",
+  ]
 }
 
 group("unittest") {
   testonly = true
-  deps = [ ":shell_command_test" ]
+  deps = [ ":general_normalize_test" ]
+}
+
+ohos_copy("copy_test_file") {
+  subsystem_name = "developtools"
+  part_name = "packing_tool"
+  sources = [ "./general_normalize_file" ]
+  outputs = [ "$root_out_dir/tests/unittest/packing_tool/packing_tool/test_file/general_normalize_file/" ]
 }
