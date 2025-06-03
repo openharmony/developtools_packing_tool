@@ -279,7 +279,8 @@ bool HapVerifyUtils::IsEntryOrFeature(const std::string& moduleType)
 void HapVerifyUtils::ShowCheckTips(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2,
     const std::string& tip)
 {
-    LOGE("Module: (%s) and Module: (%s) have the same %s, please check deviceType or distroFilter/distributionFilter of the module.",
+    LOGE("Module: (%s) and Module: (%s) have the same %s, "
+        "please check deviceType or distroFilter/distributionFilter of the module.",
         hapVerifyInfo1.GetModuleName().c_str(), hapVerifyInfo2.GetModuleName().c_str(), tip.c_str());
     LOGE("Module: %s has deviceType %s.", hapVerifyInfo1.GetModuleName().c_str(),
         Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()).c_str());
