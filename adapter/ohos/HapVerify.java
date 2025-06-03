@@ -464,18 +464,18 @@ class HapVerify {
                     !checkDuplicatedIsValid(hapVerifyInfos.get(i), hapVerifyInfos.get(j))) {
                     String cause = "Module: (" + hapVerifyInfos.get(i).getModuleName() + ") and Module: (" +
                             hapVerifyInfos.get(j).getModuleName() + ") have the same moduleName, " +
-                            "please check deviceType or distroFilter of the module.\n" + "Module: " +
+                            "please check deviceType or distroFilter/distributionFilter of the module.\n" + "Module: " +
                             hapVerifyInfos.get(i).getModuleName() + " has deviceType " +
                             hapVerifyInfos.get(i).getDeviceType() + ".\n" + "Another Module: " +
                             hapVerifyInfos.get(j).getModuleName() + " has deviceType " +
                             hapVerifyInfos.get(j).getDeviceType() + ".";
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(i).getDistroFilter().dump())) {
-                        cause += "\n" + "Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter is " +
+                        cause += "\n" + "Module: " + hapVerifyInfos.get(i).getModuleName() + " DistroFilter/DistributionFilter is " +
                                 hapVerifyInfos.get(i).getDistroFilter().dump() + ".";
                     }
                     if (!EMPTY_STRING.equals(hapVerifyInfos.get(j).getDistroFilter().dump())) {
                         cause += "\n" + "Another Module: " + hapVerifyInfos.get(j).getModuleName() +
-                                " DistroFilter is " + hapVerifyInfos.get(j).getDistroFilter().dump() + ".";
+                                " DistroFilter/DistributionFilter is " + hapVerifyInfos.get(j).getDistroFilter().dump() + ".";
                     }
                     String solution = "Make sure the module name is valid and unique.\n" +
                             "Reference: " + REFERENCE_LINK + ".";
