@@ -279,18 +279,18 @@ bool HapVerifyUtils::IsEntryOrFeature(const std::string& moduleType)
 void HapVerifyUtils::ShowCheckTips(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2,
     const std::string& tip)
 {
-    LOGE("Module: (%s) and Module: (%s) have the same %s, please check deviceType or distroFilter of the module.",
+    LOGE("Module: (%s) and Module: (%s) have the same %s, please check deviceType or distroFilter/distributionFilter of the module.",
         hapVerifyInfo1.GetModuleName().c_str(), hapVerifyInfo2.GetModuleName().c_str(), tip.c_str());
     LOGE("Module: %s has deviceType %s.", hapVerifyInfo1.GetModuleName().c_str(),
         Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()).c_str());
     LOGE("Another Module: %s has deviceType %s.", hapVerifyInfo2.GetModuleName().c_str(),
         Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()).c_str());
     if (hapVerifyInfo1.GetDistroFilter().Dump() != EMPTY_STRING) {
-        LOGE("Module: %s DistroFilter is : %s.", hapVerifyInfo1.GetModuleName().c_str(),
+        LOGE("Module: %s DistroFilter/DistributionFilter is : %s.", hapVerifyInfo1.GetModuleName().c_str(),
             hapVerifyInfo1.GetDistroFilter().Dump().c_str());
     }
     if (hapVerifyInfo2.GetDistroFilter().Dump() != EMPTY_STRING) {
-        LOGE("Another Module: %s DistroFilter is %s.", hapVerifyInfo2.GetModuleName().c_str(),
+        LOGE("Another Module: %s DistroFilter/DistributionFilter is %s.", hapVerifyInfo2.GetModuleName().c_str(),
             hapVerifyInfo2.GetDistroFilter().Dump().c_str());
     }
     LOGE("Solution: Make sure the %s is valid and unique.", tip.c_str());
