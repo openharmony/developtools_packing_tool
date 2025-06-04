@@ -202,11 +202,18 @@
     "insightIntentsSrcEntry": {
       "description": "Indicates the srcEntry of insightIntents.",
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "object",
+        "propertyNames": {
+          "enum": [
+            "srcEntry"
+          ]
+        },
         "required": [
           "srcEntry"
         ],
+        "additionalProperties": false,
         "properties": {
           "srcEntry": {
             "description": "Indicates the js code path corresponding to the insight intent entry executor.",
