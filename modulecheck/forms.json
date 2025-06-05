@@ -322,6 +322,9 @@
                 "keepStateDuration"
               ]
             },
+            "required": [
+              "targetBundleName"
+            ],
             "properties": {
               "abilityName": {
                 "description": "The ability name of the fun interaction form.",
@@ -356,6 +359,9 @@
                 "disabledDesktopBehaviors"
               ]
             },
+            "required": [
+              "abilityName"
+            ],
             "properties": {
               "abilityName": {
                 "description": "The ability name of the scene animation form.",
