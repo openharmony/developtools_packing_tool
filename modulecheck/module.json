@@ -51,7 +51,8 @@
                 "targetPriority",
                 "generateBuildHash",
                 "routerMap",
-                "appStartup"
+                "appStartup",
+                "formWidgetModule"
               ]
             },
             "required": [
@@ -150,6 +151,7 @@
                 "routerMap",
                 "appEnvironments",
                 "appStartup",
+                "formExtensionModule",
                 "hnpPackages"
               ]
             },
@@ -204,7 +206,9 @@
                 "proxyData",
                 "routerMap",
                 "appEnvironments",
-                "appStartup"
+                "appStartup",
+                "formExtensionModule",
+                "formWidgetModule"
               ]
             },
             "required": [
@@ -1836,6 +1840,18 @@
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
+        },
+        "formExtensionModule": {
+          "description": "Module name for associating the frontend form package with the backend form.",
+          "type": "string",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+          "maxLength": 128
+        },
+        "formWidgetModule": {
+          "description": "The backend of the application package form is associated with the frontend module name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+          "maxLength": 128
         },
         "hnpPackages": {
           "description": "Native package configuration file.",
