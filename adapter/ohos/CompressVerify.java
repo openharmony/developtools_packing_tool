@@ -95,7 +95,7 @@ public class CompressVerify {
     private static final List<String> bundleTypeList =
         Arrays.asList("app", "atomicService", "shared", "appService", "appPlugin");
     private static final List<String> deviceTypeList =
-        Arrays.asList("default", "tablet", "tv", "wearable", "car", "2in1");
+        Arrays.asList("default", "tablet", "tv", "wearable", "car", "2in1", "phone");
     private static final Log LOG = new Log(CompressVerify.class.toString());
 
     private static final boolean TYPE_FILE = true;
