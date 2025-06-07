@@ -15,6 +15,9 @@
 
 package ohos;
 
+import ohos.restool.ResourcesParserFactory;
+import ohos.restool.ResourcesParserV2;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -1803,7 +1806,7 @@ public class Uncompress {
             File srcFile = new File(srcPath);
             zipFile = new ZipFile(srcFile);
             byte[] data = getResourceDataFromHap(zipFile);
-            return ResourcesParser.getAllDataItem(data);
+            return ResourcesParserFactory.createParser(data).getAllDataItem(data);
         } finally {
             Utility.closeStream(zipFile);
         }
