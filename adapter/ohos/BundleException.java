@@ -19,7 +19,7 @@ package ohos;
  * bundle tool exception class.
  *
  */
-class BundleException extends Exception {
+public class BundleException extends Exception {
     private static final long serialVersionUID = 1813070042705457755L;
 
     /**
