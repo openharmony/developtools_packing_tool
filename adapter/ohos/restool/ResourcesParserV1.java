@@ -13,26 +13,32 @@
  * limitations under the License.
  */
 
-package ohos;
+package ohos.restool;
+
+import ohos.BundleException;
+import ohos.Log;
+import ohos.ResourceIndexResult;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Resources Parser.
  *
+ * @since 2021-03-11
  */
-public class ResourcesParser {
+public class ResourcesParserV1 implements ResourcesParser {
     /**
      * Parses resources default id.
      */
     public static final int RESOURCE_DEFAULT_ID = -1;
 
+    private static final Log LOG = new Log(ResourcesParserV1.class.toString());
     private static final int VERSION_BYTE_LENGTH = 128;
     private static final int TAG_BYTE_LENGTH = 4;
     private static final String LEFT_BRACKET = "<";
@@ -48,30 +54,31 @@ public class ResourcesParser {
     private static final String BASE = "base";
     private static final int CHAR_LENGTH = 1;
     private static final String EMPTY_STRING = "";
+
     private enum ResType {
-        Values(0, "Values"),
-        Animator(1, "Animator"),
-        Drawable(2, "Drawable"),
-        Layout(3, "Layout"),
-        Menu(4, "Menu"),
-        Mipmap(5, "Mipmap"),
-        Raw(6, "Raw"),
-        Xml(7, "Xml"),
-        Integer(8, "Integer"),
-        String(9, "String"),
-        StrArray(10, "StrArray"),
-        IntArray(11, "IntArray"),
-        Boolean(12, "Boolean"),
-        Dimen(13, "Dimen"),
-        Color(14, "Color"),
-        Id(15, "Id"),
-        Theme(16, "Theme"),
-        Plurals(17, "Plurals"),
-        Float(18, "Float"),
-        Media(19, "Media"),
-        Prof(20, "Prof"),
-        Svg(21, "Svg"),
-        Pattern(22, "Pattern");
+        VALUES(0, "Values"),
+        ANIMATOR(1, "Animator"),
+        DRAWABLE(2, "Drawable"),
+        LAYOUT(3, "Layout"),
+        MENU(4, "Menu"),
+        MIPMAP(5, "Mipmap"),
+        RAW(6, "Raw"),
+        XML(7, "Xml"),
+        INTEGER(8, "Integer"),
+        STRING(9, "String"),
+        STR_ARRAY(10, "StrArray"),
+        INT_ARRAY(11, "IntArray"),
+        BOOLEAN(12, "Boolean"),
+        DIMEN(13, "Dimen"),
+        COLOR(14, "Color"),
+        ID(15, "Id"),
+        THEME(16, "Theme"),
+        PLURALS(17, "Plurals"),
+        FLOAT(18, "Float"),
+        MEDIA(19, "Media"),
+        PROF(20, "Prof"),
+        SVG(21, "Svg"),
+        PATTERN(22, "Pattern");
 
         private final int index;
         private final String type;
@@ -99,15 +106,15 @@ public class ResourcesParser {
     }
 
     private enum DeviceType {
-        Phone(0, "phone"),
-        Tablet(1, "tablet"),
-        Car(2, "car"),
-        Pc(3, "pc"),
-        Tv(4, "tv"),
-        Speaker(5, "speaker"),
-        Wearable(6, "wearable"),
-        Glasses(7, "glasses"),
-        Headset(8, "headset");
+        PHONE(0, "phone"),
+        TABLET(1, "tablet"),
+        CAR(2, "car"),
+        PC(3, "pc"),
+        TV(4, "tv"),
+        SPEAKER(5, "speaker"),
+        WEARABLE(6, "wearable"),
+        GLASSES(7, "glasses"),
+        HEADSET(8, "headset");
 
         private final int index;
         private final String type;
@@ -134,15 +141,15 @@ public class ResourcesParser {
     }
 
     private enum Resolution {
-        Nodpi(-2, "nodpi"),
-        Anydpi(-1, "anydpi"),
-        Sdpi(120, "sdpi"),
-        Mdpi(160, "mdpi"),
-        Tvdpi(213, "tvdpi"),
-        Ldpi(240, "ldpi"),
-        Xldpi(320, "xldpi"),
-        Xxldpi(480, "xxldpi"),
-        Xxxldpi(640, "xxxldpi");
+        NODPI(-2, "nodpi"),
+        ANYDPI(-1, "anydpi"),
+        SDPI(120, "sdpi"),
+        MDPI(160, "mdpi"),
+        TVDPI(213, "tvdpi"),
+        LDPI(240, "ldpi"),
+        XLDPI(320, "xldpi"),
+        XXLDPI(480, "xxldpi"),
+        XXXLDPI(640, "xxxldpi");
 
         private final int index;
         private final String type;
@@ -168,10 +175,16 @@ public class ResourcesParser {
     }
 
     private enum ConfigType {
-        Language, Region, Resolution, Direction, DeviceType, Script, LightMode, MCC, MNC
+        LANGUAGE,
+        REGION,
+        RESOLUTION,
+        DIRECTION,
+        DEVICE_TYPE,
+        SCRIPT,
+        LIGHT_MODE,
+        MCC,
+        MNC
     }
-
-    private static final Log LOG = new Log(ResourcesParser.class.toString());
 
     /**
      * Key Param.
@@ -210,7 +223,7 @@ public class ResourcesParser {
      * @return the resourceId value
      * @throws BundleException IOException.
      */
-    static String getResourceById(int resourceId, byte[] data) throws BundleException {
+    public String getResourceById(int resourceId, byte[] data) throws BundleException {
         String resourceIdValue = "";
         if (data == null || data.length <= 0 || resourceId == RESOURCE_DEFAULT_ID) {
             LOG.error("ResourcesParser::getIconPath data byte or ResourceId is null");
@@ -232,7 +245,7 @@ public class ResourcesParser {
      * @return the resource value
      * @throws BundleException IOException.
      */
-    static String getBaseResourceById(int resourceId, byte[] data) throws BundleException {
+    public String getBaseResourceById(int resourceId, byte[] data) throws BundleException {
         String resourceIdValue = "";
         if (data == null || data.length <= 0 || resourceId == RESOURCE_DEFAULT_ID) {
             LOG.error("ResourcesParser::getBaseResourceById data byte or ResourceId is null");
@@ -276,7 +289,7 @@ public class ResourcesParser {
      * @return the base config index
      * @throws BundleException IOException.
      */
-    static  Optional<ConfigIndex> loadBaseConfig(ByteBuffer bufBuf, int count) {
+    static Optional<ConfigIndex> loadBaseConfig(ByteBuffer bufBuf, int count) {
         for (int i = 0; i < count; i++) {
             ConfigIndex cfg = new ConfigIndex();
             byte[] tag = new byte[TAG_BYTE_LENGTH];
@@ -433,7 +446,7 @@ public class ResourcesParser {
      * @param data config byte buffer
      * @return the item info.
      */
-    static List<ResourceIndexResult> getAllDataItem(byte[] data) {
+    public List<ResourceIndexResult> getAllDataItem(byte[] data) {
         ByteBuffer byteBuf = ByteBuffer.wrap(data);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
         byte[] version = new byte[VERSION_BYTE_LENGTH];
@@ -447,10 +460,11 @@ public class ResourcesParser {
     /**
      * Read resource map by id.
      *
+     * @param resId resource id
      * @param data config byte buffer
      * @return the resource map of id.
      */
-    static HashMap<String, String> getResourceMapById(int resId, byte[] data) {
+    public HashMap<String, String> getResourceMapById(int resId, byte[] data) {
         List<ResourceIndexResult> resources = getAllDataItem(data);
         HashMap<String, String> resourceMap = new HashMap<>();
         for (ResourceIndexResult indexResult : resources) {
@@ -461,7 +475,14 @@ public class ResourcesParser {
         return resourceMap;
     }
 
-    static String getResourceStringById(int resId, byte[] data) {
+    /**
+     * Read resource by id.
+     *
+     * @param resId resource id
+     * @param data config byte buffer
+     * @return the resource.
+     */
+    public String getResourceStringById(int resId, byte[] data) {
         List<ResourceIndexResult> resources = getAllDataItem(data);
         for (ResourceIndexResult indexResult : resources) {
             if (indexResult.id == resId) {
@@ -505,7 +526,8 @@ public class ResourcesParser {
     /**
      * convert DataItems to ResourceIndexResult.
      *
-     * @param item Indicates the DataItem.
+     *  @param item Indicates the DataItem.
+     *  @param configClass config info.
      *  @return the final ResourceIndexResult
      */
     static ResourceIndexResult parseDataItems(DataItem item, String configClass) {
@@ -515,9 +537,7 @@ public class ResourcesParser {
             resourceIndexResult.type = ResType.getType(item.type);
             resourceIndexResult.id = item.id;
             resourceIndexResult.name = item.name.substring(0, item.name.length() - 1);
-            if (item.type == ResType.StrArray.getIndex() || item.type == ResType.IntArray.getIndex()
-                    || item.type == ResType.Theme.getIndex() || item.type == ResType.Plurals.getIndex()
-                    || item.type == ResType.Pattern.getIndex()) {
+            if (requireBytesConversion(item.type)) {
                 byte[] bytes =
                         item.value.substring(0, item.value.length() - 1).getBytes(StandardCharsets.UTF_8);
                 resourceIndexResult.value = convertBytesToString(bytes);
@@ -526,6 +546,14 @@ public class ResourcesParser {
             }
         }
         return resourceIndexResult;
+    }
+
+    private static boolean requireBytesConversion(int resType) {
+        return resType == ResType.STR_ARRAY.getIndex()
+                || resType == ResType.INT_ARRAY.getIndex()
+                || resType == ResType.THEME.getIndex()
+                || resType == ResType.PLURALS.getIndex()
+                || resType == ResType.PATTERN.getIndex();
     }
 
     /**
@@ -538,7 +566,7 @@ public class ResourcesParser {
         StringBuilder result = new StringBuilder();
         ByteBuffer byteBuf = ByteBuffer.wrap(data);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
-        while(byteBuf.hasRemaining()) {
+        while (byteBuf.hasRemaining()) {
             result.append(LEFT_BRACKET);
             int len = byteBuf.getShort();
             if (len <= 0) {
@@ -566,38 +594,39 @@ public class ResourcesParser {
         int lastKeyType = -1;
         for (int i = 0; i < configIndex.keyCount; ++i) {
             KeyParam param = configIndex.params[i];
-            if (param.keyType == ConfigType.Language.ordinal() || param.keyType == ConfigType.Region.ordinal()
-                    || param.keyType == ConfigType.Script.ordinal()) {
+            if (param.keyType == ConfigType.LANGUAGE.ordinal()
+                    || param.keyType == ConfigType.REGION.ordinal()
+                    || param.keyType == ConfigType.SCRIPT.ordinal()) {
                 if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(parseAscii(param.value));
                 } else {
-                    if (lastKeyType == ConfigType.Language.ordinal() ||
-                            lastKeyType == ConfigType.Region.ordinal() || lastKeyType == ConfigType.Script.ordinal()) {
+                    if (lastKeyType == ConfigType.LANGUAGE.ordinal() ||
+                            lastKeyType == ConfigType.REGION.ordinal() || lastKeyType == ConfigType.SCRIPT.ordinal()) {
                         configClass.append(MCC_CONJUNCTION).append(parseAscii(param.value));
                     } else {
                         configClass.append(CONFIG_CONJUNCTION).append(parseAscii(param.value));
                     }
                 }
                 lastKeyType = param.keyType;
-            } else if (param.keyType == ConfigType.Resolution.ordinal()) {
+            } else if (param.keyType == ConfigType.RESOLUTION.ordinal()) {
                 if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(Resolution.getType(param.value));
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(Resolution.getType(param.value));
                 }
-            } else if (param.keyType == ConfigType.Direction.ordinal()) {
+            } else if (param.keyType == ConfigType.DIRECTION.ordinal()) {
                 if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(param.value == 0 ? VERTICAL : HORIZONTAL);
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(param.value == 0 ? VERTICAL : HORIZONTAL);
                 }
-            } else if (param.keyType == ConfigType.DeviceType.ordinal()) {
+            } else if (param.keyType == ConfigType.DEVICE_TYPE.ordinal()) {
                 if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(DeviceType.getType(param.value));
                 } else {
                     configClass.append(CONFIG_CONJUNCTION).append(DeviceType.getType(param.value));
                 }
-            } else if (param.keyType == ConfigType.LightMode.ordinal()) {
+            } else if (param.keyType == ConfigType.LIGHT_MODE.ordinal()) {
                 if (EMPTY_STRING.equals(configClass.toString())) {
                     configClass.append(param.value == 0 ? DARK : LIGHT);
                 } else {
@@ -631,7 +660,7 @@ public class ResourcesParser {
      */
     private static String parseAscii(Integer value) {
         StringBuilder result = new StringBuilder();
-        while(value > 0) {
+        while (value > 0) {
             result.insert(0, (char) (value & 0xFF));
             value = value >> 8;
         }
@@ -649,7 +678,7 @@ public class ResourcesParser {
             return inputString;
         }
         StringBuilder result = new StringBuilder();
-        while(result.length() < length - inputString.length()) {
+        while (result.length() < length - inputString.length()) {
             result.append('0');
         }
         result.append(inputString);
