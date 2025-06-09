@@ -41,7 +41,7 @@ const std::string DEVICE_TYPES = "deviceTypes";
 const std::string INSTALLATION_FREE = "installationFree";
 const std::string DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string MODULE_NAME = "moduleName";
-const std::vector<std::string> DEVICE_TYPE_LIST = {"default", "tablet", "tv", "wearable", "car", "2in1"};
+const std::vector<std::string> DEVICE_TYPE_LIST = {"default", "tablet", "tv", "wearable", "car", "2in1", "phone"};
 }
 GeneralNormalize::GeneralNormalize(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
