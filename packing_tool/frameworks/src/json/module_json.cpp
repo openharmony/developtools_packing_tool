@@ -573,7 +573,7 @@ bool ModuleJson::ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetada
         std::unique_ptr<PtJson> distroFilterObj;
         if (distroFilterJsonObj->Contains(DISTRIBUTION_FILTER.c_str())) {
             if (distroFilterJsonObj->GetObject(DISTRIBUTION_FILTER.c_str(), &distroFilterObj) != Result::SUCCESS) {
-                LOGE("DistroFilter node get %s failed!", DISTRO_FILTER.c_str());
+                LOGE("DistroFilter node get %s failed!", DISTRIBUTION_FILTER.c_str());
                 return false;
             }
         } else if (distroFilterJsonObj->Contains(DISTRO_FILTER.c_str())) {
