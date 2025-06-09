@@ -19,13 +19,13 @@
 #include <filesystem>
 #include <iterator>
 
+#include "constants.h"
 #include "hap_verify_utils.h"
 #include "log.h"
 #include "mock_fast_app_module_json_utils.h"
 #include "module_json.h"
 #include "utils.h"
 #include "zip_utils.h"
-#include "constants.h"
 
 namespace fs = std::filesystem;
 
