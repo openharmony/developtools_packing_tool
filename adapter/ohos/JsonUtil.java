@@ -1291,14 +1291,8 @@ public class JsonUtil {
             moduleExtensionAbilityInfo.srcEntrance = getJsonString(extensionAbilityJson, SRC_ENTRANCE);
         }
         moduleExtensionAbilityInfo.icon = parseIconById(extensionAbilityJson, data);
-        if (extensionAbilityJson.containsKey(ICON_ID)) {
-            moduleExtensionAbilityInfo.setIconId(extensionAbilityJson.getIntValue(ICON_ID));
-        }
         moduleExtensionAbilityInfo.label =
                 parseResourceByKey(extensionAbilityJson, data, LABEL, LABEL_ID);
-        if (extensionAbilityJson.containsKey(LABEL_ID)) {
-            moduleExtensionAbilityInfo.setLabelId(extensionAbilityJson.getIntValue(LABEL_ID));
-        }
         moduleExtensionAbilityInfo.setLabels(parseResourceMapByKey(extensionAbilityJson, data, LABEL_ID));
         moduleExtensionAbilityInfo.description =
                 parseResourceByKey(extensionAbilityJson, data, DESCRIPTION, DESCRIPTION_ID);
