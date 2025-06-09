@@ -21,7 +21,7 @@
 
 #include "hap_verify_utils.h"
 #include "log.h"
-#include "mock_module_json_utils.h"
+#include "mock_fast_app_module_json_utils.h"
 #include "module_json.h"
 #include "utils.h"
 #include "zip_utils.h"
@@ -31,22 +31,23 @@ namespace fs = std::filesystem;
 
 namespace OHOS {
 
-bool MockModuleJsonUtils::mockGetStageHapVerifyInfo_ = false;
-bool MockModuleJsonUtils::mockGetFaHapVerifyInfo_ = false;
-bool MockModuleJsonUtils::mockCheckHapsIsValid_ = false;
-bool MockModuleJsonUtils::mockIsModuleHap_ = false;
-bool MockModuleJsonUtils::mockCheckHapsIsValidResult_ = false;
-bool MockModuleJsonUtils::mockIsModuleHapResult_ = false;
-bool MockModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValid_ = false;
-bool MockModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValidResult_ = false;
-bool MockModuleJsonUtils::mockGetHapVerifyInfosMapfromFileList_ = false;
-bool MockModuleJsonUtils::mockGetHapVerifyInfosMapfromFileListResult_ = false;
-ResultSeries MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeries_;
+bool MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfo_ = false;
+bool MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfo_ = false;
+bool MockFastAppModuleJsonUtils::mockCheckHapsIsValid_ = false;
+bool MockFastAppModuleJsonUtils::mockIsModuleHap_ = false;
+bool MockFastAppModuleJsonUtils::mockCheckHapsIsValidResult_ = false;
+bool MockFastAppModuleJsonUtils::mockIsModuleHapResult_ = false;
+bool MockFastAppModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValid_ = false;
+bool MockFastAppModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValidResult_ = false;
+bool MockFastAppModuleJsonUtils::mockGetHapVerifyInfosMapfromFileList_ = false;
+bool MockFastAppModuleJsonUtils::mockGetHapVerifyInfosMapfromFileListResult_ = false;
+ResultSeries MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeries_;
 ResultSeries::const_iterator
-    MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_ = mockGetStageHapVerifyInfoResultSeries_.cbegin();
-ResultSeries MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeries_;
+    MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_ =
+    mockGetStageHapVerifyInfoResultSeries_.cbegin();
+ResultSeries MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeries_;
 ResultSeries::const_iterator
-    MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_ = mockGetFaHapVerifyInfoResultSeries_.cbegin();
+    MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_ = mockGetFaHapVerifyInfoResultSeries_.cbegin();
 
 namespace AppPackingTool {
 namespace {
@@ -67,13 +68,13 @@ static int32_t g_sumModuleSizeLimit = 10;
 // java : parseStageHapVerifyInfo
 bool ModuleJsonUtils::GetStageHapVerifyInfo(const std::string& hapFilePath, HapVerifyInfo& hapVerifyInfo)
 {
-    if (MockModuleJsonUtils::mockGetStageHapVerifyInfo_) {
-        const bool result = MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_->first;
-        hapVerifyInfo = MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_->second;
+    if (MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfo_) {
+        const bool result = MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_->first;
+        hapVerifyInfo = MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_->second;
 
-        const auto next = MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_ + 1;
-        if (next != MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeries_.cend()) {
-            MockModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_ = next;
+        const auto next = MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_ + 1;
+        if (next != MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeries_.cend()) {
+            MockFastAppModuleJsonUtils::mockGetStageHapVerifyInfoResultSeriesIter_ = next;
         }
 
         return result;
@@ -112,13 +113,13 @@ bool ModuleJsonUtils::GetStageHapVerifyInfo(const std::string& hapFilePath, HapV
 
 bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVerifyInfo& hapVerifyInfo)
 {
-    if (MockModuleJsonUtils::mockGetFaHapVerifyInfo_) {
-        const bool result = MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_->first;
-        hapVerifyInfo = MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_->second;
+    if (MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfo_) {
+        const bool result = MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_->first;
+        hapVerifyInfo = MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_->second;
 
-        const auto next = MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_ + 1;
-        if (next != MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeries_.cend()) {
-            MockModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_ = next;
+        const auto next = MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_ + 1;
+        if (next != MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeries_.cend()) {
+            MockFastAppModuleJsonUtils::mockGetFaHapVerifyInfoResultSeriesIter_ = next;
         }
 
         return result;
@@ -208,8 +209,8 @@ bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>
 bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::string>& fileList,
     std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
 {
-    if (MockModuleJsonUtils::mockGetHapVerifyInfosMapfromFileList_) {
-        return MockModuleJsonUtils::mockGetHapVerifyInfosMapfromFileListResult_;
+    if (MockFastAppModuleJsonUtils::mockGetHapVerifyInfosMapfromFileList_) {
+        return MockFastAppModuleJsonUtils::mockGetHapVerifyInfosMapfromFileListResult_;
     }
 
     for (auto& hapPath : fileList) {
@@ -325,8 +326,8 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(
     std::map<std::string, std::string> parameterMap,
     std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap)
 {
-    if (MockModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValid_) {
-        return MockModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValidResult_;
+    if (MockFastAppModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValid_) {
+        return MockFastAppModuleJsonUtils::mockCheckAppAtomicServiceCompressedSizeValidResult_;
     }
 
     if (!ValidateParameters(parameterMap)) {
@@ -350,8 +351,8 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(
 // java : checkHapIsValid
 bool ModuleJsonUtils::CheckHapsIsValid(const std::list<std::string>& fileList, const bool& isSharedApp)
 {
-    if (MockModuleJsonUtils::mockCheckHapsIsValid_) {
-        return MockModuleJsonUtils::mockCheckHapsIsValidResult_;
+    if (MockFastAppModuleJsonUtils::mockCheckHapsIsValid_) {
+        return MockFastAppModuleJsonUtils::mockCheckHapsIsValidResult_;
     }
 
     std::list<HapVerifyInfo> hapVerifyInfos;
@@ -386,8 +387,8 @@ bool ModuleJsonUtils::CheckHapsIsValid(const std::list<std::string>& fileList, c
 
 bool ModuleJsonUtils::IsModuleHap(const std::string hapFilePath)
 {
-    if (MockModuleJsonUtils::mockIsModuleHap_) {
-        return MockModuleJsonUtils::mockIsModuleHapResult_;
+    if (MockFastAppModuleJsonUtils::mockIsModuleHap_) {
+        return MockFastAppModuleJsonUtils::mockIsModuleHapResult_;
     }
 
     return ZipUtils::IsFileExistsInZip(hapFilePath, MODULE_JSON);

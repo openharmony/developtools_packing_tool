@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef MOCK_MODULE_JSON_UTILS_H
-#define MOCK_MODULE_JSON_UTILS_H
+#ifndef MOCK_MULTIAPP_MODULE_JSON_UTILS_H
+#define MOCK_MULTIAPP_MODULE_JSON_UTILS_H
 
 #include <vector>
 #include "hap_verify_info.h"
@@ -24,7 +24,7 @@ namespace OHOS {
 using namespace OHOS::AppPackingTool;
 using ResultSeries = std::vector<std::pair<bool, HapVerifyInfo>>;
 
-class MockModuleJsonUtils {
+class MockMultiAppModuleJsonUtils {
 public:
     static bool mockGetStageHapVerifyInfo_;
     static bool mockGetFaHapVerifyInfo_;
@@ -113,4 +113,4 @@ public:
     }
 };
 } // namespace OHOS
-#endif // MOCK_MODULE_JSON_UTILS_H
+#endif // MOCK_MULTIAPP_MODULE_JSON_UTILS_H
