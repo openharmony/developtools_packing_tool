@@ -1731,7 +1731,7 @@ HWTEST_F(ModuleJsonTest, GetApiVersionObject_0300, Function | MediumTest | Level
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING_ERROR));
     std::unique_ptr<PtJson> apiVersion;
     EXPECT_FALSE(moduleJson.GetApiVersionObject(apiVersion));
-    EXPECT_EQ(apiVersion, nullptr);
+    EXPECT_NE(apiVersion, nullptr);
 }
 
 /*

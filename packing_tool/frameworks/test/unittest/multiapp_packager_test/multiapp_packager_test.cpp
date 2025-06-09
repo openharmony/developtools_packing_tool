@@ -22,6 +22,7 @@
 #define protected public
 #include "packager.h"
 #include "multiapp_packager.h"
+#include "mock/mock_multiapp_module_json_utils.h"
 #include "zip_wrapper.h"
 #include "zip_utils.h"
 #include "log.h"
@@ -107,6 +108,8 @@ HWTEST_F(MultiAppPackagerTest, MultiAppPackager_0100, Function | MediumTest | Le
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    MockMultiAppModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockMultiAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(multiAppPackager.InitAllowedParam(), 0);
     EXPECT_EQ(multiAppPackager.PreProcess(), 0);
     EXPECT_EQ(multiAppPackager.Process(), 0);
@@ -300,6 +303,8 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1000, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    MockMultiAppModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockMultiAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(multiAppPackager.PreProcess(), 1);
 }
 
@@ -381,6 +386,8 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1400, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    MockMultiAppModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockMultiAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(multiAppPackager.PreProcess(), 1);
     EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), true);
 }
@@ -425,6 +432,8 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1600, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    MockMultiAppModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockMultiAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(multiAppPackager.PreProcess(), 1);
     EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), true);
 }

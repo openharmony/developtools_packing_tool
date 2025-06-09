@@ -48,6 +48,7 @@ ohos_unittest("multiapp_packager_test") {
     "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
     "multiapp_packager_test.cpp",
+    "mock/mock_multiapp_module_json_utils.cpp",
   ]
   external_deps = [
     "bounds_checking_function:libsec_static",
