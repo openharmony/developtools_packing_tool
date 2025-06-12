@@ -98,16 +98,22 @@ bool Packager::CheckForceFlag()
 
 bool Packager::IsPathValid(const std::string &path, const bool &isFile, const std::string suffix)
 {
-    if (isFile && fs::is_regular_file(path)) {
-        std::string name = fs::path(path).filename();
-        std::locale englishLocale(EN_US_UTF_8);
-        std::transform(name.begin(), name.end(), name.begin(),
-                       [&englishLocale](unsigned char c) { return std::tolower(c); });
-        if (Utils::EndsWith(name, suffix)) {
-            return true;
+    try {
+        if (isFile) {
+            if (!fs::is_regular_file(path)) {
+                return false;
+            }
+            const std::locale englishLocale(EN_US_UTF_8);
+            std::string name = fs::path(path).filename();
+            std::transform(name.begin(), name.end(), name.begin(),
+                           [&englishLocale](unsigned char c) { return std::tolower(c); });
+            return Utils::EndsWith(name, suffix);
         }
+        return fs::is_directory(path);
+    } catch (...) {
+        LOGW("Param parse error");
+        return false;
     }
-    return (!isFile) && fs::is_directory(path);
 }
 
 bool Packager::IsFileMatch(const std::string &path, const std::string &matchFileName)
