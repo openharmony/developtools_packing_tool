@@ -20,6 +20,7 @@
           "bounds_checking_function",
           "cJSON",
           "hilog",
+          "json",
           "openssl",
           "zlib"
         ]
