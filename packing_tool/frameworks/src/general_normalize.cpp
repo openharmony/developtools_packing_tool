@@ -82,8 +82,18 @@ int32_t GeneralNormalize::PreProcess()
 
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
-        if (!Utils::IsPositiveInteger(it->second) || stoi(it->second)> Constants::MAX_VERSION_CODE) {
+        if (!Utils::IsPositiveInteger(it->second)) {
             LOGE("--version-code is invalid.");
+            return ERR_INVALID_VALUE;
+        }
+        try {
+            int32_t versionCode = std::stoi(it->second);
+            if (versionCode > Constants::MAX_VERSION_CODE) {
+                LOGE("--version-code is invalid.");
+                return ERR_INVALID_VALUE;
+            }
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
             return ERR_INVALID_VALUE;
         }
     }
@@ -115,24 +125,54 @@ int32_t GeneralNormalize::PreProcess()
 
     it = parameterMap_.find(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE);
     if (it != parameterMap_.end()) {
-        if (!Utils::IsPositiveInteger(it->second) || stoi(it->second) > Constants::MAX_VERSION_CODE) {
+        if (!Utils::IsPositiveInteger(it->second)) {
             LOGE("--min-compatible-version-code is invalid.");
+            return ERR_INVALID_VALUE;
+        }
+        try {
+            int32_t minCompatibleVersionCode = std::stoi(it->second);
+            if (minCompatibleVersionCode > Constants::MAX_VERSION_CODE) {
+                LOGE("--min-compatible-version-code is invalid.");
+                return ERR_INVALID_VALUE;
+            }
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
             return ERR_INVALID_VALUE;
         }
     }
 
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
-        if (!Utils::IsPositiveInteger(it->second) || stoi(it->second) > Constants::MAX_VERSION_CODE) {
+        if (!Utils::IsPositiveInteger(it->second)) {
             LOGE("--min-api-version is invalid.");
+            return ERR_INVALID_VALUE;
+        }
+        try {
+            int32_t minApiVersion = std::stoi(it->second);
+            if (minApiVersion > Constants::MAX_VERSION_CODE) {
+                LOGE("--min-api-version is invalid.");
+                return ERR_INVALID_VALUE;
+            }
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
             return ERR_INVALID_VALUE;
         }
     }
 
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
-        if (!Utils::IsPositiveInteger(it->second) || stoi(it->second) > Constants::MAX_VERSION_CODE) {
+        if (!Utils::IsPositiveInteger(it->second)) {
             LOGE("--target-api-version is invalid.");
+            return ERR_INVALID_VALUE;
+        }
+        try {
+            int32_t targetApiVersion = std::stoi(it->second);
+            if (targetApiVersion > Constants::MAX_VERSION_CODE) {
+                LOGE("--target-api-version is invalid.");
+                return ERR_INVALID_VALUE;
+            }
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
             return ERR_INVALID_VALUE;
         }
     }
@@ -187,10 +227,16 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
     }
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
-        int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
         Version version;
         moduleJson.GetStageVersion(version);
         generalNormalizeVersion.originVersionCode = version.versionCode;
+        int32_t versionCode = 0;
+        try {
+            versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!moduleJson.SetVersionCode(versionCode, true)) {
             LOGE("SetVersionCode failed");
             return false;
@@ -226,7 +272,13 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         Version version;
         moduleJson.GetStageVersion(version);
         generalNormalizeVersion.originMinCompatibleVersionCode = version.minCompatibleVersionCode;
-        int32_t minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
+        int32_t minCompatibleVersionCode = 0;
+        try {
+            minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, true)) {
             LOGE("SetMinCompatibleVersionCode failed");
             return false;
@@ -235,10 +287,16 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
-        int32_t minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
         int32_t originMinAPIVersion = -1;
         moduleJson.GetMinApiVersion(originMinAPIVersion);
         generalNormalizeVersion.originMinAPIVersion = originMinAPIVersion;
+        int32_t minAPIVersion = 0;
+        try {
+            minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!moduleJson.SetMinAPIVersion(minAPIVersion, true)) {
             LOGE("SetMinAPIVersion failed");
             return false;
@@ -247,10 +305,16 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
-        int32_t targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
         int32_t originTargetAPIVersion = -1;
         moduleJson.GetTargetApiVersion(originTargetAPIVersion);
         generalNormalizeVersion.originTargetAPIVersion = originTargetAPIVersion;
+        int32_t targetAPIVersion = 0;
+        try {
+            targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!moduleJson.SetTargetAPIVersion(targetAPIVersion, true)) {
             LOGE("SetTargetAPIVersion failed");
             return false;
@@ -343,7 +407,13 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         Version version;
         configJson.GetFaVersion(version);
         generalNormalizeVersion.originVersionCode = version.versionCode;
-        int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+        int32_t versionCode = 0;
+        try {
+            versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!configJson.SetVersionCode(versionCode, false)) {
             LOGE("SetVersionCode failed");
             return false;
@@ -379,7 +449,13 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         Version version;
         configJson.GetFaVersion(version);
         generalNormalizeVersion.originMinCompatibleVersionCode = version.minCompatibleVersionCode;
-        int32_t minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
+        int32_t minCompatibleVersionCode = 0;
+        try {
+            minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!configJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, false)) {
             LOGE("SetMinCompatibleVersionCode failed");
             return false;
@@ -391,7 +467,13 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         ModuleApiVersion moduleApiVersion;
         configJson.GetFaModuleApiVersion(moduleApiVersion);
         generalNormalizeVersion.originMinAPIVersion = moduleApiVersion.compatibleApiVersion;
-        int32_t minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
+        int32_t minAPIVersion = 0;
+        try {
+            minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!configJson.SetMinAPIVersion(minAPIVersion, false)) {
             LOGE("SetMinAPIVersion failed");
             return false;
@@ -403,7 +485,13 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         ModuleApiVersion moduleApiVersion;
         configJson.GetFaModuleApiVersion(moduleApiVersion);
         generalNormalizeVersion.originTargetAPIVersion = moduleApiVersion.targetApiVersion;
-        int32_t targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
+        int32_t targetAPIVersion = 0;
+        try {
+            targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!configJson.SetTargetAPIVersion(targetAPIVersion, false)) {
             LOGE("SetTargetAPIVersion failed");
             return false;
@@ -493,7 +581,13 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
 
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
-        int32_t versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+        int32_t versionCode = 0;
+        try {
+            versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!packInfo.SetVersionCode(versionCode)) {
             LOGW("SetVersionCode packInfo failed");
             return false;
@@ -520,7 +614,13 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
 
     it = parameterMap_.find(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE);
     if (it != parameterMap_.end()) {
-        int32_t minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
+        int32_t minCompatibleVersionCode = 0;
+        try {
+            minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!packInfo.SetMinCompatibleVersionCode(minCompatibleVersionCode)) {
             LOGW("SetMinCompatibleVersionCode failed");
             return false;
@@ -529,7 +629,13 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
 
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
-        int32_t minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
+        int32_t minAPIVersion = 0;
+        try {
+            minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!packInfo.SetMinAPIVersion(minAPIVersion)) {
             LOGW("SetMinAPIVersion failed");
             return false;
@@ -538,7 +644,13 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
 
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
-        int32_t targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
+        int32_t targetAPIVersion = 0;
+        try {
+            targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return ERR_INVALID_VALUE;
+        }
         if (!packInfo.SetTargetAPIVersion(targetAPIVersion)) {
             LOGW("SetTargetAPIVersion failed");
             return false;
