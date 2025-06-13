@@ -145,6 +145,7 @@
                 "generateBuildHash",
                 "isolationMode",
                 "proxyData",
+                "crossAppSharedConfig",
                 "fileContextMenu",
                 "querySchemes",
                 "routerMap",
@@ -202,6 +203,7 @@
                 "generateBuildHash",
                 "isolationMode",
                 "proxyData",
+                "crossAppSharedConfig",
                 "routerMap",
                 "appEnvironments",
                 "appStartup"
@@ -1715,6 +1717,12 @@
               }
             }
           }
+        },
+        "crossAppSharedConfig": {
+          "description": "Indicates the name of the configuration file used to identify configurations shared across applications.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         },
         "fileContextMenu": {
           "description": "Indicates the menu profile.",
