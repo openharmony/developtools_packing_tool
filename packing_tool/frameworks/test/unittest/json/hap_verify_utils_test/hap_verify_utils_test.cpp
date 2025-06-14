@@ -1113,7 +1113,7 @@ HWTEST_F(HapVerifyUtilsTest, CheckAtomicServiceIsValid_0300, Function | MediumTe
     int64_t fileLength = 1024;
     hapVerifyInfo3.SetFileLength(fileLength);
     hapVerifyInfos.push_back(hapVerifyInfo3);
-    EXPECT_FALSE(utils.CheckAtomicServiceIsValid(hapVerifyInfos));
+    EXPECT_TRUE(utils.CheckAtomicServiceIsValid(hapVerifyInfos));
 }
 
 /*

@@ -93,6 +93,8 @@ HWTEST_F(AppPackagerTest, InitAllowedParam_0100, Function | MediumTest | Level1)
     };
 
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    MockModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(appPackager.InitAllowedParam(), ERR_OK);
     EXPECT_EQ(appPackager.PreProcess(), ERR_OK);
     EXPECT_EQ(appPackager.Process(), ERR_OK);
@@ -994,8 +996,10 @@ HWTEST_F(AppPackagerTest, AddHapListToApp_5400, Function | MediumTest | Level1)
     hapVerifyInfo.SetDebug(true);
     MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
     appPackager.formattedHapPathList_.emplace_back(HAP_PATH);
+    MockModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_FALSE(appPackager.AddHapListToApp(appPackager.formattedHapPathList_));
-    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_0);
+    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_DEFAULT);
 }
 
 /*
@@ -1015,8 +1019,10 @@ HWTEST_F(AppPackagerTest, AddHapListToApp_5500, Function | MediumTest | Level1)
     hapVerifyInfo.SetDebug(true);
     MockModuleJsonUtils::MockGetFaHapVerifyInfo(true, hapVerifyInfo);
     appPackager.formattedHapPathList_.emplace_back(HAP_PATH);
+    MockModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_FALSE(appPackager.AddHapListToApp(appPackager.formattedHapPathList_));
-    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_0);
+    EXPECT_EQ(appPackager.zipWrapper_.zipLevel_, ZipLevel::ZIP_LEVEL_DEFAULT);
 }
 
 /*
@@ -1118,6 +1124,8 @@ HWTEST_F(AppPackagerTest, CompressAppMode_6100, Function | MediumTest | Level1)
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
 
     MockModuleJsonUtils::MockCheckHapsIsValid(true);
+    MockModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_TRUE(appPackager.CompressAppMode());
 }
 

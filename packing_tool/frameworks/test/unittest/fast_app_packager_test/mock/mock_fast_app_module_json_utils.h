@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef MOCK_MODULE_JSON_UTILS_H
-#define MOCK_MODULE_JSON_UTILS_H
+#ifndef MOCK_FAST_APP_MODULE_JSON_UTILS_H
+#define MOCK_FAST_APP_MODULE_JSON_UTILS_H
 
 #include <vector>
 #include "hap_verify_info.h"
@@ -24,7 +24,7 @@ namespace OHOS {
 using namespace OHOS::AppPackingTool;
 using ResultSeries = std::vector<std::pair<bool, HapVerifyInfo>>;
 
-class MockModuleJsonUtils {
+class MockFastAppModuleJsonUtils {
 public:
     static bool mockGetStageHapVerifyInfo_;
     static bool mockGetFaHapVerifyInfo_;
@@ -113,4 +113,4 @@ public:
     }
 };
 } // namespace OHOS
-#endif // MOCK_MODULE_JSON_UTILS_H
+#endif // MOCK_FAST_APP_MODULE_JSON_UTILS_H

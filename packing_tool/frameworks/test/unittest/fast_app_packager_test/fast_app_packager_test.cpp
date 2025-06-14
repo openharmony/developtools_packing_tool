@@ -21,6 +21,7 @@
 #define private public
 #define protected public
 #include "fast_app_packager.h"
+#include "mock/mock_fast_app_module_json_utils.h"
 #undef private
 #undef protected
 
@@ -173,6 +174,8 @@ HWTEST_F(FastAppPackagerTest, fastAppPackager_0100, Function | MediumTest | Leve
         "/data/test/resource/packingtool/test_file/pack.info");
     system("cp -f /data/test/resource/packingtool/test_file/hap/entry/pack.json "
         "/data/test/resource/packingtool/test_file/hap/entry/pack.info");
+    MockFastAppModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockFastAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(fastAppackager.InitAllowedParam(), 0);
     EXPECT_EQ(fastAppackager.PreProcess(), 0);
     EXPECT_EQ(fastAppackager.Process(), 0);
