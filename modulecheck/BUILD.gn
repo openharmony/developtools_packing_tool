@@ -97,3 +97,8 @@ ohos_prebuilt_etc("insightIntentInnerSchema_json") {
   source = "insightIntentInner.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("crossAppSharedConfigSchema_json") {
+  source = "crossAppSharedConfig.json"
+  install_enable = false
+}
