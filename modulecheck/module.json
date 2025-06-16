@@ -1198,7 +1198,8 @@
                   "awc/webpage",
                   "awc/newsfeed",
                   "vpn",
-                  "appService"
+                  "appService",
+                  "selection"
                 ]
               },
               "permissions": {
