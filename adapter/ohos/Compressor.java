@@ -1537,7 +1537,7 @@ public class Compressor {
             packPacJsonFile(utility);
         } catch (BundleException e) {
             LOG.error(PackingToolErrMsg.COMPRESS_APP_FAILED.toString(
-                "Compress app file exist BundleException: " + e.getMessage()));
+          "Compress app file exist BundleException: " + e.getMessage()));
             throw new BundleException("Compress app failed.");
         } finally {
             // delete temp file
