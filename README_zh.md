@@ -98,9 +98,11 @@ java -jar app_packing_tool.jar --mode app [--hap-path <path>] [--hsp-path <path>
 
 #### 1.3.3 打包app时hap的合法性校验
 
-在对工程内的hap、hsp包打包生成app包时，需要保证被打包的每个hap、hsp在json文件中配置的bundleName，versionCode，minCompatibleVersionCode，minAPIVersion，targetAPIVersion相同，moduleName唯一，对于fa模型，还需要保证json文件中配置的package唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
+在打包生成App包时，需要保证被打包的每个HAP和HSP在pack.info/module.json文件中配置的bundleName、bundleType、versionCode、debug相同，moduleName唯一。所有HAP的minCompatibleVersionCode、targetAPIVersion、minAPIVersion保持一致，且分别不低于所有HSP对应字段的最大值。
 
-API 16变更：每个hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion相同，hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion要大于等于hsp在json文件中配置的minCompatibleVersionCode、targetAPIVersion。
+从API version 12开始，App打包不再对versionName校验。
+在API version 16之前，App打包时要求所有HAP/HSP的minCompatibleVersionCode、targetAPIVersion一致。
+在API version 20之前，App打包时要求所有HAP/HSP的minAPIVersion一致。
 #### 1.3.4 打包app时的压缩规则
 
 打包app时，对release模式的hap、hsp包会进行压缩，对debug模式的hap、hsp包不会压缩。
@@ -128,9 +130,11 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list <1.hap,2.hap> --hsp-li
 
 #### 1.4.3 多工程打包hap合法性校验
 
-需要保证被打包的每个hap在json文件中配置的bundleName，versionCode，minCompatibleVersionCode相同，minAPIVersion，targetAPIVersion相同，moduleName唯一，同一设备entry唯一，对于fa模型，还需要保证json文件中配置的package唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
+在打包生成App包时，需要保证被打包的每个HAP和HSP在pack.info/module.json文件中配置的bundleName、bundleType、versionCode、debug相同，moduleName唯一。
 
-API 16变更：每个hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion相同，hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion要大于等于hsp在json文件中配置的minCompatibleVersionCode、targetAPIVersion。
+从API version 12开始，多工程打包不再对versionName校验。
+在API version 16之前，App打包时要求所有HAP/HSP的minCompatibleVersionCode、targetAPIVersion一致。
+在API version 20之前，App打包时要求所有HAP/HSP的minAPIVersion一致。
 ### 1.5 hqf模式打包指令
 
 #### 1.5.1 示例
@@ -262,9 +266,10 @@ java -jar app_packing_tool.jar --mode fastApp --hap-path <option> --hsp-path <op
 
 #### 1.10.3 打包app时hap、hsp的合法性校验
 
-在对工程内的hap、hsp包打包生成app包时，需要保证被打包的每个hap、hsp在json文件中配置的bundleName，versionCode，minCompatibleVersionCode，minAPIVersion，targetAPIVersion相同，moduleName唯一。hap模块之间需要保证apiReleaseType相同，hsp模块不校验apiReleaseType。
+在打包生成App包时，需要保证被打包的每个HAP和HSP在pack.info/module.json文件中配置的bundleName、bundleType、versionCode、debug相同，moduleName唯一。所有HAP的minCompatibleVersionCode、targetAPIVersion、minAPIVersion保持一致，且分别不低于所有HSP对应字段的最大值。
 
-API 16变更：每个hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion相同，hap在json文件中配置的minCompatibleVersionCode、targetAPIVersion要大于等于hsp在json文件中配置的minCompatibleVersionCode、targetAPIVersion。
+在API version 16之前，App打包时要求所有HAP/HSP的minCompatibleVersionCode、targetAPIVersion一致。
+在API version 20之前，App打包时要求所有HAP/HSP的minAPIVersion一致。
 ## 2. 拆包指令说明
 
 ### 2.1 hap包模式拆包指令
