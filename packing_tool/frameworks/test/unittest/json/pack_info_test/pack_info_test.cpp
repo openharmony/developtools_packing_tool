@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -82,14 +82,135 @@ const std::string JSON_STRING = "{"
     "]"
 "}";
 
+const std::string PACKAGES_NO_DEVICETYPE_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true,"
+            "\"name\": \"entry-default\""
+        "}"
+    "]"
+"}";
+
+const std::string NO_PACKAGES_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"apiVersion\": {"
+            "}"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+"}";
+
 const std::string JSON_STRING_NULL = "{}";
 
 const std::string JSON_STRING_EMPTY = "{"
     "\"summary\": {"
         "\"app\": {"
-            "}"
         "},"
         "\"modules\": ["
+        "]"
+    "},"
+    "\"packages\":["
+    "]"
+"}";
+
+const std::string JSON_STRING_EMPTY_MODULEOBJ = "{"
+    "\"summary\": {"
+        "\"app\": {"
+        "},"
+        "\"modules\": ["
+            "{"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+    "]"
+"}";
+
+const std::string JSON_STRING_ERROR_MODULEOBJ = "{"
+    "\"summary\": {"
+        "\"app\": {"
+        "},"
+        "\"modules\": ["
+            "{"
+            "},"
+            "\"tablet\""
         "]"
     "},"
     "\"packages\":["
@@ -484,6 +605,59 @@ const std::string NO_FORM_NAME_JSON_STRING = "{"
     "}"
 "}";
 
+const std::string NO_MODULES_API_VERSION_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"apiVersion\": {"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string EMPTY_MODULES_DISTRO_OBJECT_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"distro\": {"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+const std::string NO_API_VERSION_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                    "{"
+                        "\"name\": \"EntryFormAbility2\","
+                        "\"type\": \"form\","
+                        "\"forms\": \"form\""
+                    "}"
+                "],"
+            "}"
+        "]"
+    "}"
+"}";
 const std::string MODULES_NOT_ARRAY_TEST_JSON_STRING = "{"
     "\"summary\": {"
         "\"modules\": \"test\""
@@ -593,6 +767,88 @@ const std::string MODULES_EXTENSION_ABILITIES_FORMS_DEFAULT_DIMENSION_NOT_STRING
             "}"
         "]"
     "}"
+"}";
+const std::string MODULES_VERSION_MIN_COMOATIBLE_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"version\": {"
+                "\"minCompatibleVersionCode\": 99"
+            "}"
+        "}"
+    "}"
+"}";
+const std::string EMPTY_MODULES_API_VERSION_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"apiVersion\": {"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+const std::string MODULES_API_VERSION_COMOATIBLE_TEST_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_APIVERSION_TARGET_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"apiVersion\": {"
+                    "\"target\": 10"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_APIVERSION_API_RELEASE_TYPE_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"apiVersion\": {"
+                    "\"releaseType\": \"Canary2\""
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_DISTRO_INSTALLATION_FREE_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+            "{"
+                "\"distro\": {"
+                    "\"installationFree\": false"
+                "}"
+            "}"
+        "]"
+    "}"
+"}";
+
+const std::string MODULES_PACKAGES_NO_DELIVERY_WITH_INSTALL_JSON_STRING = "{"
+    "\"summary\": {"
+        "\"modules\": ["
+        "]"
+    "},"
+    "\"packages\": ["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\""
+        "}"
+    "]"
 "}";
 }
 
@@ -2614,5 +2870,645 @@ HWTEST_F(PackInfoTest, GetPackageNamesByPackagesObj_0300, Function | MediumTest 
     EXPECT_TRUE(packInfo.GetPackagesObject(packagesObj));
     std::list<std::string> packageNames;
     EXPECT_FALSE(packInfo.GetPackageNamesByPackagesObj(packagesObj, packageNames));
+}
+
+/*
+ * @tc.name: SetMinCompatibleVersionCode_0100
+ * @tc.desc: SetMinCompatibleVersionCode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinCompatibleVersionCode_0100, Function | MediumTest | Level1)
+{
+    int32_t minCompatibleVersionCode = 99;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetMinCompatibleVersionCode(minCompatibleVersionCode));
+}
+
+/*
+ * @tc.name: SetMinCompatibleVersionCode_0200
+ * @tc.desc: SetMinCompatibleVersionCode.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinCompatibleVersionCode_0200, Function | MediumTest | Level1)
+{
+    int32_t minCompatibleVersionCode = 99;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(ERR_VERSION_CODE_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetMinCompatibleVersionCode(minCompatibleVersionCode));
+}
+
+/*
+ * @tc.name: SetMinCompatibleVersionCode_0300
+ * @tc.desc: SetMinCompatibleVersionCode
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinCompatibleVersionCode_0300, Function | MediumTest | Level1)
+{
+    int32_t minCompatibleVersionCode = 99;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_VERSION_MIN_COMOATIBLE_TEST_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetMinCompatibleVersionCode(minCompatibleVersionCode));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0100
+ * @tc.desc: SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinAPIVersion_0100, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetMinAPIVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0200
+ * @tc.desc: SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinAPIVersion_0200, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetMinAPIVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0300
+ * @tc.desc: SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinAPIVersion_0300, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_API_VERSION_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetMinAPIVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0400
+ * @tc.desc: SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinAPIVersion_0400, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_MODULES_API_VERSION_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetMinAPIVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: SetMinAPIVersion_0500
+ * @tc.desc: SetMinAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetMinAPIVersion_0500, Function | MediumTest | Level1)
+{
+    int32_t minAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_API_VERSION_COMOATIBLE_TEST_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetMinAPIVersion(minAPIVersion));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0100
+ * @tc.desc: SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetTargetAPIVersion_0100, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetTargetAPIVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0200
+ * @tc.desc: SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetTargetAPIVersion_0200, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetTargetAPIVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0300
+ * @tc.desc: SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetTargetAPIVersion_0300, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_API_VERSION_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetTargetAPIVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0400
+ * @tc.desc: SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetTargetAPIVersion_0400, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_MODULES_API_VERSION_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetTargetAPIVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: SetTargetAPIVersion_0500
+ * @tc.desc: SetTargetAPIVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetTargetAPIVersion_0500, Function | MediumTest | Level1)
+{
+    int32_t targetAPIVersion = 1;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_APIVERSION_TARGET_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetTargetAPIVersion(targetAPIVersion));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0100
+ * @tc.desc: SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetApiReleaseType_0100, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "Canary";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetApiReleaseType(apiReleaseType));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0200
+ * @tc.desc: SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetApiReleaseType_0200, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "Canary";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetApiReleaseType(apiReleaseType));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0300
+ * @tc.desc: SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetApiReleaseType_0300, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_API_VERSION_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetApiReleaseType(apiReleaseType));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0400
+ * @tc.desc: SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetApiReleaseType_0400, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "Canary";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_MODULES_API_VERSION_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetApiReleaseType(apiReleaseType));
+}
+
+/*
+ * @tc.name: SetApiReleaseType_0500
+ * @tc.desc: SetApiReleaseType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetApiReleaseType_0500, Function | MediumTest | Level1)
+{
+    std::string apiReleaseType = "Canary";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_APIVERSION_API_RELEASE_TYPE_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetApiReleaseType(apiReleaseType));
+}
+
+/*
+ * @tc.name: SetBundleType_0100
+ * @tc.desc: SetBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetBundleType_0100, Function | MediumTest | Level1)
+{
+    std::string bundleType = "test_bundle_type";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetBundleType(bundleType));
+}
+
+/*
+ * @tc.name: SetBundleType_0200
+ * @tc.desc: SetBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetBundleType_0200, Function | MediumTest | Level1)
+{
+    std::string bundleType = "test_bundle_type";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_EMPTY);
+    EXPECT_TRUE(packInfo.SetBundleType(bundleType));
+}
+
+/*
+ * @tc.name: SetBundleType_0300
+ * @tc.desc: SetBundleType
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetBundleType_0300, Function | MediumTest | Level1)
+{
+    std::string bundleType = "test_bundle_type";
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    EXPECT_TRUE(packInfo.SetBundleType(bundleType));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0100
+ * @tc.desc: SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetInstallationFree_0100, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetInstallationFree(installationFree));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0200
+ * @tc.desc: SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetInstallationFree_0200, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetInstallationFree(installationFree));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0300
+ * @tc.desc: SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetInstallationFree_0300, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_DISTRO_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetInstallationFree(installationFree));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0400
+ * @tc.desc: SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetInstallationFree_0400, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_DISTRO_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetInstallationFree(installationFree));
+}
+
+/*
+ * @tc.name: SetInstallationFree_0500
+ * @tc.desc: SetInstallationFree
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetInstallationFree_0500, Function | MediumTest | Level1)
+{
+    bool installationFree = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_DISTRO_INSTALLATION_FREE_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetInstallationFree(installationFree));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0100
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0100, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0200
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0200, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0300
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0300, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_DISTRO_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0400
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0400, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_DISTRO_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0500
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0500, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0600
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0600, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_PACKAGES_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0700
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0700, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_EMPTY);
+    EXPECT_TRUE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: SetDeliveryWithInstall_0800
+ * @tc.desc: SetDeliveryWithInstall
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeliveryWithInstall_0800, Function | MediumTest | Level1)
+{
+    bool deliveryWithInstall = false;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(MODULES_PACKAGES_NO_DELIVERY_WITH_INSTALL_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: GetApiVersionObjectByModuleObj_0100
+ * @tc.desc: GetApiVersionObjectByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetApiVersionObjectByModuleObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> moduleObj;
+    std::unique_ptr<AppPackingTool::PtJson> apiVersionObj;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.GetApiVersionObjectByModuleObj(moduleObj, apiVersionObj));
+}
+
+/*
+ * @tc.name: GetApiVersionObjectByModuleObj_0200
+ * @tc.desc: GetApiVersionObjectByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetApiVersionObjectByModuleObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    std::unique_ptr<AppPackingTool::PtJson> apiVersionObj;
+    packInfo.ParseFromString(JSON_STRING_EMPTY_MODULEOBJ);
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    EXPECT_TRUE(packInfo.GetApiVersionObjectByModuleObj(modulesObj->Get(0), apiVersionObj));
+}
+
+/*
+ * @tc.name: GetApiVersionObjectByModuleObj_0300
+ * @tc.desc: GetApiVersionObjectByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetApiVersionObjectByModuleObj_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_API_VERSION_TEST_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    std::unique_ptr<AppPackingTool::PtJson> apiVersionObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    EXPECT_TRUE(packInfo.GetApiVersionObjectByModuleObj(modulesObj->Get(0), apiVersionObj));
+}
+
+/*
+ * @tc.name: GetApiVersionObjectByModuleObj_0400
+ * @tc.desc: GetApiVersionObjectByModuleObj.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, GetApiVersionObjectByModuleObj_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_EXTENSION_JSON_STRING);
+    std::unique_ptr<AppPackingTool::PtJson> modulesObj;
+    std::unique_ptr<AppPackingTool::PtJson> apiVersionObj;
+    EXPECT_TRUE(packInfo.GetModulesObject(modulesObj));
+    ASSERT_NE(modulesObj, nullptr);
+    EXPECT_TRUE(packInfo.GetApiVersionObjectByModuleObj(modulesObj->Get(0), apiVersionObj));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0100
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_NULL);
+    EXPECT_FALSE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0200
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_ERROR_MODULEOBJ);
+    EXPECT_TRUE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0300
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(EMPTY_MODULES_DISTRO_OBJECT_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0400
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0400, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_PACKAGES_JSON_STRING);
+    EXPECT_FALSE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0500
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0500, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING_EMPTY);
+    EXPECT_TRUE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0600
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0600, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(PACKAGES_NO_DEVICETYPE_JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetDeviceTypes_0700
+ * @tc.desc: SetDeviceTypes
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetDeviceTypes_0700, Function | MediumTest | Level1)
+{
+    std::list<std::string> deviceTypes;
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    EXPECT_TRUE(packInfo.SetDeviceTypes(deviceTypes));
 }
 } // namespace OHOS
