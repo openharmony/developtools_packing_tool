@@ -371,9 +371,16 @@
               },
               "disabledDesktopBehaviors": {
                 "description": "Indicates disabled desktop behaviors, only takes effect for system app.",
-                "type": "string",
-                "pattern": "^[A-Z_|]+$",
-                "maxLength": 255
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "SWIPE_DESKTOP",
+                    "PULL_DOWN_SEARCH",
+                    "LONG_CLICK",
+                    "DRAG"
+                  ]
+                }
               }
             }
           }
