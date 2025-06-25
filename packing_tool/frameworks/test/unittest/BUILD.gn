@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2024-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -20,6 +20,7 @@ group("unittest") {
     "app_packager_test:unittest",
     "appqf_packager_test:unittest",
     "fast_app_packager_test:unittest",
+    "general_normalize_test:unittest",
     "hap_packager_test:unittest",
     "hqf_packager_test:unittest",
     "hqf_verify_test:unittest",
@@ -28,6 +29,7 @@ group("unittest") {
     "json/hap_verify_info_test:unittest",
     "json/hap_verify_utils_test:unittest",
     "json/json_utils_test:unittest",
+    "json/module_json_fa_test:unittest",
     "json/module_json_stage_test:unittest",
     "json/module_json_test:unittest",
     "json/module_json_utils_test:unittest",
