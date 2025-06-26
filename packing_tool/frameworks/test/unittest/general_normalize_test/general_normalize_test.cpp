@@ -383,6 +383,264 @@ const std::string CONFIG_JSON_STRING_NO_BUNDLE_NAME = "{"
         "\"package\" : \"com.example.packingtoolfademo\""
     "}"
 "}";
+const std::string JSON_STRING = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true,"
+            "\"name\": \"entry-default\""
+        "}"
+    "]"
+"}";
+
+const std::string JSON_STRING_NO_APP_VERSION = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"bundleType\": \"bundleApp\""
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true,"
+            "\"name\": \"entry-default\""
+        "}"
+    "]"
+"}";
+const std::string MODULE_JSON_STRING = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": true,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "},"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
+const std::string TEST_STRING_NOTHING = "{"
+"}";
+const std::string EXPECT_CJSON_RESULT = "["
+    "{"
+        "\"moduleName\":\"moduleName\","
+        "\"deviceTypes\":[\"phone\",\"tablet\"],"
+        "\"bundleName\":\"originBundleName\","
+        "\"versionCode\":1,"
+        "\"versionName\":\"originVersionName\","
+        "\"minCompatibleVersionCode\":1,"
+        "\"minAPIVersion\":1,"
+        "\"targetAPIVersion\":1,"
+        "\"apiReleaseType\":\"1.0.0\","
+        "\"bundleType\":\"originBundleType\","
+        "\"installationFree\":false,"
+        "\"deliveryWithInstall\":false"
+    "}"
+"]";
 }
 
 class GeneralNormalizeTest : public testing::Test {
@@ -567,5 +825,674 @@ HWTEST_F(GeneralNormalizeTest, PreProcess_0400, Function | MediumTest | Level1)
     EXPECT_EQ(generalNormalize.PreProcess(), 1);
     system("rm -rf /data/test/testouthap");
     system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_0500
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME] = TOO_LONG_VERSION_NAME;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize2(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_0600
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE] = INVAILD_INT_NUM;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize2(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_0700
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME] = TOO_SHORT_BUNDLE_NAME;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize2(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME] = TOO_LONG_BUNDLE_NAME;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize3(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_0800
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_0800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE] = INVAILD_INT_NUM;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize2(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_0900
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_0900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION] = INVAILD_INT_NUM;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize2(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_1000
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_1000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION] = INVAILD_INT_NUM;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize2(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_1100
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_1100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, TARGET_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_API_RELEASE_TYPE, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_1200
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_1200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, TARGET_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_API_RELEASE_TYPE, API_RELEASE_TYPE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_TYPE, INVAILD_PATTERN},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_1300
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_1300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, TARGET_API_VERSION},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 0);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: PreProcess_1400
+ * @tc.desc: PreProcess
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, PreProcess_1400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_INPUT_LIST, INPUT_LIST},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, VERSION_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, BUNDLE_NAME},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, TARGET_API_VERSION},
+        {OHOS::AppPackingTool::Constants::PARAM_DEVICE_TYPES, INVALID_DEVICE_TYPES},
+    };
+    system("mkdir /data/test/testouthap");
+    system("mkdir /data/test/testinputhap");
+    system("touch /data/test/testinputhap/test.hap");
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_EQ(generalNormalize.PreProcess(), 1);
+    system("rm -rf /data/test/testouthap");
+    system("rm -rf /data/test/testinputhap");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0100
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0100, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "";
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0200
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0200, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << MODULE_JSON_STRING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_TRUE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0300
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0300, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0400
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0400, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0500
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0500, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0600
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0600, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0700
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0700, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0800
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0800, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, TARGET_API_VERSION},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_0900
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0900, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_API_RELEASE_TYPE, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_1000
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_1000, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_TYPE, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_1100
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_1100, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INSTALLATION_FREE, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_1200
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_1200, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_DELIVERY_WITH_INSTALL, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyModuleJson_1300
+ * @tc.desc: ModifyModuleJson
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_1300, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_DEVICE_TYPES, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string moduleJsonPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    GeneralNormalizeVersion generalNormalizeVersion;
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ArrayToString_0100
+ * @tc.desc: ArrayToString
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ArrayToString, Function | MediumTest | Level1)
+{
+    GeneralNormalizeVersion generalNormalizeVersion;
+    generalNormalizeVersion.moduleName = "moduleName";
+    generalNormalizeVersion.originDeviceTypes = {"phone", "tablet"};
+    generalNormalizeVersion.originBundleName = "originBundleName";
+    generalNormalizeVersion.originVersionCode = 1;
+    generalNormalizeVersion.originVersionName = "originVersionName";
+    generalNormalizeVersion.originMinCompatibleVersionCode = 1;
+    generalNormalizeVersion.originMinAPIVersion = 1;
+    generalNormalizeVersion.originTargetAPIVersion = 1;
+    generalNormalizeVersion.originApiReleaseType = "1.0.0";
+    generalNormalizeVersion.originBundleType = "originBundleType";
+    generalNormalizeVersion.modifyInstallationFree = true;
+    generalNormalizeVersion.modifyDeliveryWithInstall = true;
+    std::list<GeneralNormalizeVersion> generalNormalizeVersions;
+    generalNormalizeVersions.push_back(generalNormalizeVersion);
+    OHOS::AppPackingTool::GeneralNormalizeVersionUtils generalNormalizeVersionUtils;
+    EXPECT_EQ(generalNormalizeVersionUtils.ArrayToString(generalNormalizeVersions), EXPECT_CJSON_RESULT);
 }
 }
