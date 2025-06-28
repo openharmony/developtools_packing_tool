@@ -392,10 +392,10 @@
             "default": false
           },
           "groupId": {
-            "description": "The group id of the form.",
+            "description": "The group id of the form. Forms in the same group can be resized.",
             "type": "string",
             "pattern": "^[0-9]*$",
-            "maxLength": 127
+            "maxLength": 2
           }
         }
       }
