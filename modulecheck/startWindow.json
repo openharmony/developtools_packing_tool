@@ -13,7 +13,8 @@
         "startWindowBrandingImage",
         "startWindowBackgroundColor",
         "startWindowBackgroundImage",
-        "startWindowBackgroundImageFit"
+        "startWindowBackgroundImageFit",
+        "startWindowType"
       ]
     },
     "properties": {
@@ -59,6 +60,16 @@
           "None"
         ],
         "default": "Cover"
+      },
+      "startWindowType": {
+        "description": "Indicates that whether to show the startup page. The value is the string",
+        "type": "string",
+        "enum": [
+          "REQUIRED_SHOW",
+          "REQUIRED_HIDE",
+          "OPTIONAL_SHOW"
+        ],
+        "default": "REQUIRED_SHOW"
       }
     }
   }
