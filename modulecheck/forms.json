@@ -47,7 +47,9 @@
             "renderingMode",
             "enableBlurBackground",
             "funInteractionParams",
-            "sceneAnimationParams"
+            "sceneAnimationParams",
+            "resizable",
+            "groupId"
           ]
         },
         "required": [
@@ -383,6 +385,17 @@
                 }
               }
             }
+          },
+          "resizable": {
+            "description": "This label indicates whether the form can resizable.",
+            "type": "boolean",
+            "default": false
+          },
+          "groupId": {
+            "description": "The group id of the form.",
+            "type": "string",
+            "pattern": "^[0-9]*$",
+            "maxLength": 127
           }
         }
       }
