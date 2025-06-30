@@ -223,6 +223,7 @@ public class ResourcesParserV1 implements ResourcesParser {
      * @return the resourceId value
      * @throws BundleException IOException.
      */
+    @Override
     public String getResourceById(int resourceId, byte[] data) throws BundleException {
         String resourceIdValue = "";
         if (data == null || data.length <= 0 || resourceId == RESOURCE_DEFAULT_ID) {
@@ -245,6 +246,7 @@ public class ResourcesParserV1 implements ResourcesParser {
      * @return the resource value
      * @throws BundleException IOException.
      */
+    @Override
     public String getBaseResourceById(int resourceId, byte[] data) throws BundleException {
         String resourceIdValue = "";
         if (data == null || data.length <= 0 || resourceId == RESOURCE_DEFAULT_ID) {
@@ -446,6 +448,7 @@ public class ResourcesParserV1 implements ResourcesParser {
      * @param data config byte buffer
      * @return the item info.
      */
+    @Override
     public List<ResourceIndexResult> getAllDataItem(byte[] data) {
         ByteBuffer byteBuf = ByteBuffer.wrap(data);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -464,6 +467,7 @@ public class ResourcesParserV1 implements ResourcesParser {
      * @param data config byte buffer
      * @return the resource map of id.
      */
+    @Override
     public HashMap<String, String> getResourceMapById(int resId, byte[] data) {
         List<ResourceIndexResult> resources = getAllDataItem(data);
         HashMap<String, String> resourceMap = new HashMap<>();
@@ -482,6 +486,7 @@ public class ResourcesParserV1 implements ResourcesParser {
      * @param data config byte buffer
      * @return the resource.
      */
+    @Override
     public String getResourceStringById(int resId, byte[] data) {
         List<ResourceIndexResult> resources = getAllDataItem(data);
         for (ResourceIndexResult indexResult : resources) {
