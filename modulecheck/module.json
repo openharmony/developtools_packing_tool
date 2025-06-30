@@ -51,7 +51,8 @@
                 "generateBuildHash",
                 "routerMap",
                 "appStartup",
-                "formWidgetModule"
+                "formWidgetModule",
+                "crossAppSharedConfig"
               ]
             },
             "required": [
@@ -93,7 +94,8 @@
                 "dependencies",
                 "libIsolation",
                 "routerMap",
-                "appStartup"
+                "appStartup",
+                "crossAppSharedConfig"
               ]
             },
             "required": [
