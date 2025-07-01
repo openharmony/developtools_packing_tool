@@ -131,6 +131,7 @@
             "multiAppMode",
             "hwasanEnabled",
             "cloudFileSyncEnabled",
+            "cloudStructuredDataSyncEnabled",
             "configuration",
             "assetAccessGroups",
             "startMode",
@@ -179,6 +180,7 @@
             "maxChildProcess",
             "hwasanEnabled",
             "cloudFileSyncEnabled",
+            "cloudStructuredDataSyncEnabled",
             "configuration",
             "assetAccessGroups",
             "startMode"
@@ -470,6 +472,11 @@
         },
         "cloudFileSyncEnabled": {
           "description": "Indicates whether the application enables cloud file sync.",
+          "type": "boolean",
+          "default": false
+        },
+        "cloudStructuredDataSyncEnabled": {
+          "description": "Indicates whether the application enables cloud structured data sync.",
           "type": "boolean",
           "default": false
         },
