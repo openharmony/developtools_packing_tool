@@ -308,6 +308,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @return the resourceId value
      * @throws BundleException IOException.
      */
+    @Override
     public String getResourceById(int resourceId, byte[] data) throws BundleException {
         String resourceIdValue = "";
         if (data == null || data.length <= 0 || resourceId == RESOURCE_DEFAULT_ID) {
@@ -330,6 +331,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @return the resource value
      * @throws BundleException IOException.
      */
+    @Override
     public String getBaseResourceById(int resourceId, byte[] data) throws BundleException {
         String resourceIdValue = "";
         if (data == null || data.length <= 0 || resourceId == RESOURCE_DEFAULT_ID) {
@@ -467,6 +469,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param data config byte buffer
      * @return the item info.
      */
+    @Override
     public List<ResourceIndexResult> getAllDataItem(byte[] data) {
         ByteBuffer byteBuf = ByteBuffer.wrap(data);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -486,6 +489,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param data config byte buffer
      * @return the resource map of id.
      */
+    @Override
     public HashMap<String, String> getResourceMapById(int resId, byte[] data) {
         List<ResourceIndexResult> resources = getAllDataItem(data);
         HashMap<String, String> resourceMap = new HashMap<>();
@@ -504,6 +508,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param data config byte buffer
      * @return resource
      */
+    @Override
     public String getResourceStringById(int resId, byte[] data) {
         List<ResourceIndexResult> resources = getAllDataItem(data);
         for (ResourceIndexResult indexResult : resources) {
@@ -532,11 +537,11 @@ public class ResourcesParserV2 implements ResourcesParser {
                                             .values()
                                             .forEach(
                                                     dataItemV2 -> {
-                if (dataItemV2.resCfgId == index.resCfgId) {
-                    resourceIndexResults.add(
-                            parseDataItems(dataItemV2, configClass));
-                }
-            }));
+                                                        if (dataItemV2.resCfgId == index.resCfgId) {
+                                                            resourceIndexResults.add(
+                                                                    parseDataItems(dataItemV2, configClass));
+                                                        }
+                                                    }));
         }
         return resourceIndexResults;
     }
@@ -669,8 +674,8 @@ public class ResourcesParserV2 implements ResourcesParser {
         boolean isLastLanguageRegionScript =
                 lastKeyType != null
                         && (lastKeyType == ConfigType.LANGUAGE
-                                || lastKeyType == ConfigType.REGION
-                                || lastKeyType == ConfigType.SCRIPT);
+                        || lastKeyType == ConfigType.REGION
+                        || lastKeyType == ConfigType.SCRIPT);
 
         return isCurrentMccMnc || isLastLanguageRegionScript;
     }
@@ -818,7 +823,7 @@ public class ResourcesParserV2 implements ResourcesParser {
                                 dataItemV2 -> {
                                     dataItemV2.type = idssItemV2.type;
                                     dataItemV2.name = idssItemV2.name;
-                });
+                                });
                 map.put(idssItemV2.resId, idssItemV2);
             }
             idssMap.put(type, map);
