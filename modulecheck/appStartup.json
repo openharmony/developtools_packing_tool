@@ -10,7 +10,8 @@
     "enum": [
       "startupTasks",
       "configEntry",
-      "appPreloadHintStartupTasks"
+      "appPreloadHintStartupTasks",
+      "systemPreloadHintStartupTasks"
     ]
   },
   "properties": {
@@ -217,6 +218,43 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "systemPreloadHintStartupTasks": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "name",
+            "srcEntry",
+            "ohmurl"
+          ]
+        },
+        "required": [
+          "name",
+          "srcEntry",
+          "ohmurl"
+        ],
+        "properties": {
+          "name": {
+            "description": "Indicates the name of the preload task.",
+            "type": "string",
+            "pattern": "^[@a-zA-Z][0-9a-zA-Z_.]+$",
+            "maxLength": 127
+          },
+          "srcEntry": {
+            "description": "Indicates the js code path corresponding to the preload task.",
+            "type": "string",
+            "maxLength": 127
+          },
+          "ohmurl": {
+            "description": "Indicates the system so name of the preload task.",
+            "type": "string",
+            "maxLength": 127
           }
         }
       }
