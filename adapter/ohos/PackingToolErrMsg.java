@@ -265,6 +265,17 @@ public class PackingToolErrMsg {
             .setCause("%s")
             .build();
 
+    /**
+     * PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED
+     */
+    public static final ErrorMsg PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("11")
+            .setErrCode("022")
+            .setDescription("Parse atomicService size limit failed.")
+            .setCause("%s")
+            .addSolution("%s")
+            .build();
+
     // compress process error
     /**
      * COMPRESS_PROCESS_FAILED

@@ -369,7 +369,7 @@ void HapVerifyInfo::ConvertToDependency()
 {
     for (DependencyItem item : dependencyItemList_) {
         if (!item.bundleName.empty() && item.bundleName.compare(bundleName_) == 0) {
-            dependencies_.emplace_back(item.bundleName);
+            dependencies_.emplace_back(item.moduleName);
         }
     }
 }

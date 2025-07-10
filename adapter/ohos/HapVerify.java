@@ -44,6 +44,7 @@ class HapVerify {
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String TYPE_SHARED = "shared";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
+    private static final long FILE_LENGTH_1KB = 1024L;
     private static final double FILE_SIZE_OFFSET_DOUBLE = 0.01d;
     private static final int FILE_SIZE_DECIMAL_PRECISION = 2;
     private static final String HAP_SUFFIX = ".hap";
@@ -1437,7 +1438,8 @@ class HapVerify {
         return moduleNames;
     }
 
-    private static boolean checkAtomicServiceModuleSize(List<HapVerifyInfo> hapVerifyInfoList) throws BundleException {
+    private static boolean checkAtomicServiceModuleAndDependenciesSize(List<HapVerifyInfo> hapVerifyInfoList)
+            throws BundleException {
         if (hapVerifyInfoList.isEmpty()) {
             String cause = "Hap verify infos is empty";
             LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString(cause));
@@ -1459,16 +1461,20 @@ class HapVerify {
                 }
                 fileSize += dependency.getFileLength();
             }
-            if (hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize >= entryLimit * FILE_LENGTH_1M)) {
+            if (hapVerifyInfo.getModuleType().equals(ENTRY) &&
+                    entryLimit != 0 &&
+                    (fileSize >= entryLimit * FILE_LENGTH_1KB)) {
                 String errMsg = "Module " + hapVerifyInfo.getModuleName() + " and it's dependencies size sum is " +
-                        getCeilFileSize(fileSize, entryLimit) + "MB, which is overlarge than " + entryLimit + "MB.";
+                        getCeilFileSize(fileSize, entryLimit) + "KB, which is overlarge than " + entryLimit + "KB.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_MODULE_SIZE.toString(errMsg));
                 return false;
             }
-            if (!hapVerifyInfo.getModuleType().equals(ENTRY) && (fileSize >= notEntryLimit * FILE_LENGTH_1M)) {
+            if (!hapVerifyInfo.getModuleType().equals(ENTRY) &&
+                    notEntryLimit != 0 &&
+                    (fileSize >= notEntryLimit * FILE_LENGTH_1KB)) {
                 String errMsg = "Module " + hapVerifyInfo.getModuleName() + " and it's dependencies size sum is " +
-                        getCeilFileSize(fileSize, notEntryLimit) + "MB, which is overlarge than " + notEntryLimit +
-                        "MB.";
+                        getCeilFileSize(fileSize, notEntryLimit) + "KB, which is overlarge than " + notEntryLimit +
+                        "KB.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_MODULE_SIZE.toString(errMsg));
                 return false;
             }
@@ -1479,7 +1485,7 @@ class HapVerify {
     private static double getCeilFileSize(long fileSize, int sizeLimit) {
         double threshold = Double.valueOf(sizeLimit) + FILE_SIZE_OFFSET_DOUBLE;
         double size = new BigDecimal((float) fileSize
-                / FILE_LENGTH_1M).setScale(FILE_SIZE_DECIMAL_PRECISION, BigDecimal.ROUND_HALF_UP).doubleValue();
+                / FILE_LENGTH_1KB).setScale(FILE_SIZE_DECIMAL_PRECISION, BigDecimal.ROUND_HALF_UP).doubleValue();
         if (size < threshold && size >= sizeLimit) {
             size = threshold;
         }
@@ -1640,18 +1646,20 @@ class HapVerify {
         int notEntryLimit = hapVerifyInfoList.get(0).getNotEntrySizeLimit();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfoList) {
             if (hapVerifyInfo.getModuleType().equals(ENTRY) &&
-                    (hapVerifyInfo.getFileLength() >= entryLimit * FILE_LENGTH_1M)) {
+                    entryLimit != 0 &&
+                    (hapVerifyInfo.getFileLength() >= entryLimit * FILE_LENGTH_1KB)) {
                 String errMsg = "Module " + hapVerifyInfo.getModuleName() + "'s size is " +
                         getCeilFileSize(hapVerifyInfo.getFileLength(), entryLimit) +
-                        "MB, which is overlarge than " + entryLimit + "MB.";
+                        "KB, which is overlarge than " + entryLimit + "KB.";
                 LOG.error(PackingToolErrMsg.CHECK_FILE_SIZE_INVALID.toString(errMsg));
                 return false;
             }
             if (!hapVerifyInfo.getModuleType().equals(ENTRY) &&
-                    (hapVerifyInfo.getFileLength() >= notEntryLimit * FILE_LENGTH_1M)) {
+                    notEntryLimit != 0 &&
+                    (hapVerifyInfo.getFileLength() >= notEntryLimit * FILE_LENGTH_1KB)) {
                     String errMsg = "Module " + hapVerifyInfo.getModuleName() + "'s size is " +
                             getCeilFileSize(hapVerifyInfo.getFileLength(), notEntryLimit) +
-                            "MB, which is overlarge than " + notEntryLimit + "MB.";
+                            "KB, which is overlarge than " + notEntryLimit + "KB.";
                 LOG.error(PackingToolErrMsg.CHECK_FILE_SIZE_INVALID.toString(errMsg));
                 return false;
             }
@@ -1660,7 +1668,7 @@ class HapVerify {
         Map<String, List<HapVerifyInfo>> deviceInfoMap = getDeviceHapVerifyInfoMap(hapVerifyInfoList);
         for (String device : deviceInfoMap.keySet()) {
             List<HapVerifyInfo>hapVerifyInfoList1 = deviceInfoMap.get(device);
-            if (!checkAtomicServiceModuleSize(hapVerifyInfoList1)) {
+            if (!checkAtomicServiceModuleAndDependenciesSize(hapVerifyInfoList1)) {
                 String errMsg = "Check the atomicService module size failed on device " + device + ".";
                 LOG.error(PackingToolErrMsg.CHECK_FILE_SIZE_INVALID.toString(errMsg));
                 return false;

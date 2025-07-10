@@ -53,6 +53,11 @@ public:
 
     int32_t MakePackage();
 
+    static int32_t getAtomicServiceEntrySizeLimit();
+    static void setAtomicServiceEntrySizeLimit(int32_t atomicServiceEntrySizeLimit);
+    static int32_t getAtomicServiceNonEntrySizeLimit();
+    static void setAtomicServiceNonEntrySizeLimit(int32_t atomicServiceNonEntrySizeLimit);
+
     virtual int32_t InitAllowedParam() = 0;
     virtual int32_t PreProcess() = 0;
     virtual int32_t Process() = 0;
@@ -84,6 +89,13 @@ protected:
     bool IsModuleHap(const std::string& hapPath);
     void CompressPackinfoIntoHap(const std::string& hapPathItem, const std::string& unzipPathString,
         const std::string& outPathString, const std::string& packInfoPath);
+    bool ParseAtomicServiceSizeLimit();
+    bool ParseAtomicServiceEntrySizeLimitParameter();
+    bool ParseAtomicServiceNonEntrySizeLimitParameter();
+
+private:
+    static int32_t atomicServiceEntrySizeLimit_;
+    static int32_t atomicServiceNonEntrySizeLimit_;
 };
 
 }  // namespace AppExecFwk
