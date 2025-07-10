@@ -42,6 +42,7 @@ ohos_unittest("module_json_utils_test") {
     "../../../../src/utils.cpp",
     "../../../../src/zip_utils.cpp",
     "../../../../src/zip_wrapper.cpp",
+    "../../../../src/packager.cpp",
     "module_json_utils_test.cpp",
   ]
   external_deps = [

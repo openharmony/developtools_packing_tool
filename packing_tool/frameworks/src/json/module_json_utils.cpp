@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "zip_utils.h"
 #include "constants.h"
+#include "packager.h"
 
 namespace fs = std::filesystem;
 
@@ -40,8 +41,6 @@ const std::string TYPE_SHARED = "shared";
 const std::string INCLUDE = "include";
 const std::string EXCLUDE = "exclude";
 const std::string ATOMIC_SERVICE = "atomicService";
-static int32_t g_entryModuleSizeLimit = 2;
-static int32_t g_notEntryModuleSizeLimit = 2;
 static int32_t g_sumModuleSizeLimit = 10;
 }
 
@@ -186,7 +185,6 @@ bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::stri
             LOGE("Hap file name is empty!");
             return false;
         }
-        std::transform(fileName.begin(), fileName.end(), fileName.begin(), ::tolower);
         if (!Utils::EndsWith(fileName, HAP_SUFFIX) && !Utils::EndsWith(fileName, HSP_SUFFIX)) {
             LOGE("Hap file is not a hap or hsp file!");
             return false;
@@ -204,6 +202,19 @@ bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::stri
             }
         }
         hapVerifyInfoMap.emplace(fileName, hapVerifyInfo);
+    }
+    std::list<HapVerifyInfo> hapVerifyInfos;
+    for (const auto& [key, ptr] : hapVerifyInfoMap) {
+        if (ptr) {
+            hapVerifyInfos.push_back(*ptr);
+        }
+    }
+    ModuleJsonUtils::setAtomicServiceFileSizeLimit(hapVerifyInfos);
+    auto listIt = hapVerifyInfos.begin();
+    for (auto& [key, ptr] : hapVerifyInfoMap) {
+        if (ptr && listIt != hapVerifyInfos.end()) {
+            *ptr = *listIt++;
+        }
     }
     return true;
 }
@@ -316,8 +327,8 @@ void ModuleJsonUtils::setAtomicServiceFileSizeLimit(std::list<HapVerifyInfo>& ha
 {
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetBundleType().compare(ATOMIC_SERVICE) == 0) {
-            hapVerifyInfo.SetEntrySizeLimit(g_entryModuleSizeLimit);
-            hapVerifyInfo.SetNotEntrySizeLimit(g_notEntryModuleSizeLimit);
+            hapVerifyInfo.SetEntrySizeLimit(Packager::getAtomicServiceEntrySizeLimit());
+            hapVerifyInfo.SetNotEntrySizeLimit(Packager::getAtomicServiceNonEntrySizeLimit());
             hapVerifyInfo.SetSumSizeLimit(g_sumModuleSizeLimit);
         }
     }

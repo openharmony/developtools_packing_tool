@@ -48,6 +48,9 @@ int32_t MultiAppPackager::PreProcess()
     if (!ret) {
         return ERR_INVALID_VALUE;
     }
+    if (!Packager::ParseAtomicServiceSizeLimit()) {
+        return ERR_INVALID_VALUE;
+    }
     return ERR_OK;
 }
 
