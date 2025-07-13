@@ -101,6 +101,8 @@ const std::string PARAM_RPCID = "rpcid";
 const std::string PARAM_APPQF_PATH = "appqf-path";
 const std::string PARAM_MAIN_MODULE_LIMIT = "main-module-limit";
 const std::string PARAM_NORMAL_MODULE_LIMIT = "normal-module-limit";
+const std::string PARAM_ATOMIC_SERVICE_ENTRY_SIZE_LIMIT = "atomic-service-entry-size-limit";
+const std::string PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT = "atomic-service-non-entry-size-limit";
 const std::string PARAM_TOTAL_LIMIT = "total-limit";
 const std::string PARAM_BUNDLE_NAME = "bundle-name";
 const std::string PARAM_PAC_JSON_PATH = "pac-json-path";
@@ -171,6 +173,9 @@ const int32_t APP_SUFFIX_LENGTH = 4;
 const char COMMA_SPLIT = ',';
 const int32_t MAX_VERSION_NAME_LENGTH = 127;
 const int32_t MAX_VERSION_CODE = 2147483647;
+const int32_t ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT = 2048;
+const int32_t ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT_DEFAULT = 2048;
+const int32_t ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX = 4194304;
 
 constexpr const char* SHORT_OPTIONS = "";
 const struct option LONG_OPTIONS[] = {
@@ -228,6 +233,8 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_INSTALLATION_FREE.c_str(), required_argument, nullptr, 53},
     {PARAM_DELIVERY_WITH_INSTALL.c_str(), required_argument, nullptr, 54},
     {PARAM_PAC_JSON_PATH.c_str(), required_argument, nullptr, 55},
+    {PARAM_ATOMIC_SERVICE_ENTRY_SIZE_LIMIT.c_str(), required_argument, nullptr, 56},
+    {PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT.c_str(), required_argument, nullptr, 57},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

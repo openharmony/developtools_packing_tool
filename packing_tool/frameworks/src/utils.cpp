@@ -38,7 +38,7 @@ namespace {
 const int BUFFER_SIZE = 1024;
 const int HEX_WIDTH = 2;
 const char PATH_DELIMITER = '/';
-const long FILE_LENGTH_1M = 1024 * 1024L;
+const long FILE_LENGTH_1KB = 1024L;
 const double FILE_SIZE_OFFSET_DOUBLE = 0.01;
 const int FILE_SIZE_DECIMAL_PRECISION = 2;
 const int MAX_UUID_LENGTH = 32;
@@ -317,7 +317,7 @@ bool Utils::ForceRemoveDirectory(const std::string& dir, bool isDeleteSelf)
 double Utils::GetCeilFileSize(long fileSize, int sizeLimit)
 {
     double threshold = static_cast<double>(sizeLimit) + FILE_SIZE_OFFSET_DOUBLE;
-    double size = static_cast<double>(fileSize) / FILE_LENGTH_1M;
+    double size = static_cast<double>(fileSize) / FILE_LENGTH_1KB;
     size = std::round(size * std::pow(TEN, FILE_SIZE_DECIMAL_PRECISION)) / std::pow(TEN, FILE_SIZE_DECIMAL_PRECISION);
     if (size < threshold && size >= sizeLimit) {
         size = threshold;
