@@ -106,6 +106,8 @@ public class Utility {
     private String mainModuleLimit = "";
     private String normalModuleLimit = "";
     private String totalLimit = "";
+    private String atomicServiceEntrySizeLimit = "";
+    private String atomicServiceNonEntrySizeLimit = "";
     private int compressLevel = 1;
     private String pkgContextPath = "";
     private String bundleName = "";
@@ -834,12 +836,12 @@ public class Utility {
         return isAppService;
     }
 
-    public void setMainModuleLimit(String limit) {
-        this.mainModuleLimit = limit;
-    }
-
     public String getMainModuleLimit() {
         return mainModuleLimit;
+    }
+
+    public void setMainModuleLimit(String limit) {
+        this.mainModuleLimit = limit;
     }
 
     public String getNormalModuleLimit() {
@@ -850,12 +852,28 @@ public class Utility {
         this.normalModuleLimit = limit;
     }
 
-    public String getTotalLimit() {
+    public String getAtomicServiceTotalSizeLimit() {
         return totalLimit;
     }
 
-    public void setTotalLimit(String limit) {
+    public void setAtomicServiceTotalSizeLimit(String limit) {
         this.totalLimit = limit;
+    }
+
+    public String getAtomicServiceEntrySizeLimit() {
+        return atomicServiceEntrySizeLimit;
+    }
+
+    public void setAtomicServiceEntrySizeLimit(String limit) {
+        this.atomicServiceEntrySizeLimit = limit;
+    }
+
+    public String getAtomicServiceNonEntrySizeLimit() {
+        return atomicServiceNonEntrySizeLimit;
+    }
+
+    public void setAtomicServiceNonEntrySizeLimit(String limit) {
+        this.atomicServiceNonEntrySizeLimit = limit;
     }
 
     public int getCompressLevel() {

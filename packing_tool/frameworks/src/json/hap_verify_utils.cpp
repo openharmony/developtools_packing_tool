@@ -43,7 +43,7 @@ const std::string HAP_SUFFIX = ".hap";
 const std::string HSP_SUFFIX = ".hsp";
 const std::string APP_PLUGIN = "appPlugin";
 const int32_t TWO = 2;
-const long FILE_LENGTH_1M = 1024 * 1024L;
+const long FILE_LENGTH_1KB = 1024L;
 }
 
 bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
@@ -950,15 +950,15 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
     int32_t notEntryLimit = hapVerifyInfos.begin()->GetNotEntrySizeLimit();
     for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetModuleType() == ENTRY &&
-            (hapVerifyInfo.GetFileLength() >= entryLimit * FILE_LENGTH_1M)) {
-            LOGE("module %s's size is %.2f MB, which is overlarge than %d MB.",
+            (hapVerifyInfo.GetFileLength() >= entryLimit * FILE_LENGTH_1KB)) {
+            LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
                 Utils::GetCeilFileSize(hapVerifyInfo.GetFileLength(), entryLimit), entryLimit);
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != ENTRY &&
-            (hapVerifyInfo.GetFileLength() >= notEntryLimit * FILE_LENGTH_1M)) {
-            LOGE("module %s's size is %.2f MB, which is overlarge than %d MB.",
+            (hapVerifyInfo.GetFileLength() >= notEntryLimit * FILE_LENGTH_1KB)) {
+            LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
                 Utils::GetCeilFileSize(hapVerifyInfo.GetFileLength(), notEntryLimit),
                 notEntryLimit);
@@ -1005,15 +1005,15 @@ bool HapVerifyUtils::CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>
         for (auto& dependency : dependenciesInfos) {
             fileSize += dependency.GetFileLength();
         }
-        if (hapVerifyInfo.GetModuleType() == ENTRY && (fileSize >= entryLimit * FILE_LENGTH_1M)) {
-            LOGE("module %s and it's dependencies size is %.2f MB, which is overlarge than %d MB.",
+        if (hapVerifyInfo.GetModuleType() == ENTRY && (fileSize >= entryLimit * FILE_LENGTH_1KB)) {
+            LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
                 Utils::GetCeilFileSize(fileSize, entryLimit),
                 entryLimit);
             return false;
         }
-        if (hapVerifyInfo.GetModuleType() != ENTRY && (fileSize >= notEntryLimit * FILE_LENGTH_1M)) {
-            LOGE("module %s and it's dependencies size is %.2f MB, which is overlarge than %d MB.",
+        if (hapVerifyInfo.GetModuleType() != ENTRY && (fileSize >= notEntryLimit * FILE_LENGTH_1KB)) {
+            LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
                 Utils::GetCeilFileSize(fileSize, notEntryLimit),
                 notEntryLimit);

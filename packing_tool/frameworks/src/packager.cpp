@@ -29,6 +29,10 @@
 
 namespace OHOS {
 namespace AppPackingTool {
+
+int32_t Packager::atomicServiceEntrySizeLimit_ = 2048;
+int32_t Packager::atomicServiceNonEntrySizeLimit_ = 2048;
+
 namespace {
 const std::string EN_US_UTF_8 = "en_US.UTF-8";
 }
@@ -477,6 +481,75 @@ bool Packager::IsOutDirectoryValid()
         return false;
     }
     return true;
+}
+
+bool Packager::ParseAtomicServiceSizeLimit()
+{
+    bool parseEntry = ParseAtomicServiceEntrySizeLimitParameter();
+    bool parseNonEntry = ParseAtomicServiceNonEntrySizeLimitParameter();
+    return parseEntry && parseNonEntry;
+}
+
+bool Packager::ParseAtomicServiceEntrySizeLimitParameter()
+{
+    auto it = parameterMap_.find(Constants::PARAM_ATOMIC_SERVICE_ENTRY_SIZE_LIMIT);
+    int32_t entrySizeLimit = Constants::ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT;
+    if (it != parameterMap_.end()) {
+        try {
+            entrySizeLimit = std::stoi(it->second);
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return false;
+        }
+        if (entrySizeLimit < 0 || entrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
+            LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
+                "input --atomic-service-entry-size-limit value out of range.");
+            return false;
+        }
+    }
+    Packager::setAtomicServiceEntrySizeLimit(entrySizeLimit);
+    return true;
+}
+
+bool Packager::ParseAtomicServiceNonEntrySizeLimitParameter()
+{
+    auto it = parameterMap_.find(Constants::PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT);
+    int32_t nonEntrySizeLimit = Constants::ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT_DEFAULT;
+    if (it != parameterMap_.end()) {
+        try {
+            nonEntrySizeLimit = std::stoi(it->second);
+        } catch (const std::exception& e) {
+            LOGE("Exception: %s", e.what());
+            return false;
+        }
+        if (nonEntrySizeLimit < 0 || nonEntrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
+            LOGE("ParseAtomicServiceNonEntrySizeLimitParameter failed, "
+                "input --atomic-service-non-entry-size-limit value out of range.");
+            return false;
+        }
+    }
+    Packager::setAtomicServiceNonEntrySizeLimit(nonEntrySizeLimit);
+    return true;
+}
+
+int32_t Packager::getAtomicServiceEntrySizeLimit()
+{
+    return atomicServiceEntrySizeLimit_;
+}
+
+void Packager::setAtomicServiceEntrySizeLimit(int32_t atomicServiceEntrySizeLimit)
+{
+    atomicServiceEntrySizeLimit_ = atomicServiceEntrySizeLimit;
+}
+
+int32_t Packager::getAtomicServiceNonEntrySizeLimit()
+{
+    return atomicServiceNonEntrySizeLimit_;
+}
+
+void Packager::setAtomicServiceNonEntrySizeLimit(int32_t atomicServiceNonEntrySizeLimit)
+{
+    atomicServiceNonEntrySizeLimit_ = atomicServiceNonEntrySizeLimit;
 }
 } // namespace AppPackingTool
 } // namespace OHOS

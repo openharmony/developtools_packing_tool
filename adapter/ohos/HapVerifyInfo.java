@@ -128,11 +128,11 @@ class HapVerifyInfo {
     private List<PreloadItem> preloadItems = new ArrayList<>();
 
     private long fileLength = 0L;
-    private int entrySizeLimit = 2;
+    private int entrySizeLimit = 2048;
 
-    private int notEntrySizeLimit = 2;
+    private int notEntrySizeLimit = 2048;
 
-    private int sumSizeLimit = 10;
+    private int sumSizeLimit = 10240;
 
     private boolean debug = false;
 

@@ -185,10 +185,10 @@ public class Compressor {
     private static final String BACKUP_PREFIX = "backup";
 
     // set timestamp to get fixed MD5
-    private static final int ENTRY_FILE_LIMIT_DEFAULT = 2;
-    private static final int NOT_ENTRY_FILE_LIMIT_DEFAULT = 2;
-    private static final int TOTAL_FILE_LIMIT_DEFAULT = 10;
-    private static final int FILE_LIMIT = 10;
+    private static final int ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT =  2048; // 2MB;unit is KB
+    private static final int ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT_DEFAULT = 2048; // 2MB;unit is KB
+    private static final int ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_DEFAULT = 4194304; // 4GB;unit is KB
+    private static final int ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX = 4194304; // 4GB;unit is KB
     private static final int SHA256_BASE = 0xff;
     private static final int SHA256_OFFSET = 0x100;
     private static final int RADIX = 16;
@@ -201,9 +201,9 @@ public class Compressor {
     private static final Log LOG = new Log(Compressor.class.toString());
     private static final int SHARED_APP_HSP_LIMIT = 1;
 
-    private static int entryModuleSizeLimit = 2;
-    private static int notEntryModuleSizeLimit = 2;
-    private static int sumModuleSizeLimit = 10;
+    private static int entryModuleSizeLimit = 2048;
+    private static int notEntryModuleSizeLimit = 2048;
+    private static int sumModuleSizeLimit = 10240;
     private static final int INVALID_VERSION = -1;
     private static boolean isOverlay = false;
 
@@ -344,56 +344,94 @@ public class Compressor {
     }
 
     /**
-     * parse file size limit from utility.
+     * Parse atomicService size limit parameter from utility.
      *
      * @param utility Indicates the utility.
      */
-    public void parseFileSizeLimit(Utility utility) throws BundleException {
-        int sumLimit = TOTAL_FILE_LIMIT_DEFAULT;
-        String totalLimit = utility.getTotalLimit();
+    public void parseAtomicServiceSizeLimit(Utility utility) throws BundleException {
+        parseAtomicServiceEntrySizeLimitParameter(utility);
+        parseAtomicServiceNonEntrySizeLimitParameter(utility);
+    }
+
+    private int parseAtomicServiceSumSizeLimitParameter(Utility utility) throws BundleException{
+        int sumLimit = ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_DEFAULT;
+        String totalLimit = utility.getAtomicServiceTotalSizeLimit();
         if (!totalLimit.isEmpty()) {
             try {
                 sumLimit = Integer.parseInt(totalLimit);
             } catch (NumberFormatException e) {
-                LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
-                throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
+                String errMsg = "parseAtomicServiceSumSizeLimitParameter failed, input --atomic-service-total-size-limit invalid.";
+                String solution = "Check the --atomic-service-total-size-limit parameter.";
+                LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
+                throw new BundleException("parseAtomicServiceSumSizeLimitParameter failed, " +
+                        "input --atomic-service-total-size-limit invalid.");
             }
-            if (sumLimit <= 0 || sumLimit > FILE_LIMIT) {
-                LOG.error("parseFileSizeLimit failed, input total-limit invalid.");
-                throw new BundleException("parseFileSizeLimit failed, input total-limit invalid.");
-            }
-        }
-        String normalLimit = utility.getNormalModuleLimit();
-        int notEntry = NOT_ENTRY_FILE_LIMIT_DEFAULT;
-        if (!normalLimit.isEmpty()) {
-            try {
-                notEntry = Integer.parseInt(normalLimit);
-            } catch (NumberFormatException e) {
-                LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
-                throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
-            }
-            if (notEntry <= 0 || notEntry > sumLimit || notEntry > FILE_LIMIT) {
-                LOG.error("parseFileSizeLimit failed, input normal-module-limit invalid.");
-                throw new BundleException("parseFileSizeLimit failed, input normal-module-limit invalid.");
+            if (sumLimit < 0 || sumLimit > ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
+                String errMsg = "parseAtomicServiceSumSizeLimitParameter failed, " +
+                        "input --atomic-service-total-size-limit value out of range.";
+                String solution = "Check the --atomic-service-total-size-limit parameter is " +
+                        "within the range of [0,4194304].";
+                LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
+                throw new BundleException("parseAtomicServiceSumSizeLimitParameter failed, " +
+                        "input --atomic-service-total-size-limit value out of range.");
             }
         }
-        String mainLimit = utility.getMainModuleLimit();
-        int entryLimit = ENTRY_FILE_LIMIT_DEFAULT;
-        if (!mainLimit.isEmpty()) {
+        setSumModuleSizeLimit(sumLimit);
+        return sumLimit;
+    }
+
+    private void parseAtomicServiceEntrySizeLimitParameter(Utility utility) throws BundleException{
+        String entrySizeLimitParamValue = utility.getAtomicServiceEntrySizeLimit();
+        int entryLimit = ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT;
+        if (!entrySizeLimitParamValue.isEmpty()) {
             try {
-                entryLimit = Integer.parseInt(mainLimit);
+                entryLimit = Integer.parseInt(entrySizeLimitParamValue);
             } catch (NumberFormatException e) {
-                LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
-                throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
+                String errMsg = "parseAtomicServiceEntrySizeLimitParameter failed, " +
+                        "input --atomic-service-entry-size-limit invalid.";
+                String solution = "Check the --atomic-service-entry-size-limit parameter is invalid";
+                LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
+                throw new BundleException("parseAtomicServiceEntrySizeLimitParameter failed, " +
+                        "input --atomic-service-entry-size-limit invalid.");
             }
-            if (entryLimit <= 0 || entryLimit > sumLimit || entryLimit > FILE_LIMIT) {
-                LOG.error("parseFileSizeLimit failed, input main-module-limit invalid.");
-                throw new BundleException("parseFileSizeLimit failed, input main-module-limit invalid.");
+            if (entryLimit < 0 || entryLimit > ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
+                String errMsg = "parseAtomicServiceEntrySizeLimitParameter failed, " +
+                        "input --atomic-service-entry-size-limit value out of range.";
+                String solution = "Check the --atomic-service-entry-size-limit parameter is " +
+                        "within the valid range.";
+                LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
+                throw new BundleException("parseAtomicServiceEntrySizeLimitParameter failed, " +
+                        "input --atomic-service-entry-size-limit value out of range.");
             }
         }
         setEntryModuleSizeLimit(entryLimit);
-        setNotEntryModuleSizeLimit(notEntry);
-        setSumModuleSizeLimit(sumLimit);
+    }
+
+    private void parseAtomicServiceNonEntrySizeLimitParameter(Utility utility) throws BundleException{
+        String nonEntryLimitParamValue = utility.getAtomicServiceNonEntrySizeLimit();
+        int notEntryLimit = ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT_DEFAULT;
+        if (!nonEntryLimitParamValue.isEmpty()) {
+            try {
+                notEntryLimit = Integer.parseInt(nonEntryLimitParamValue);
+            } catch (NumberFormatException e) {
+                String errMsg = "parseAtomicServiceSizeLimit failed, " +
+                        "input --atomic-service-non-entry-size-limit invalid.";
+                String solution = "Check the --atomic-service-non-entry-size-limit parameter";
+                LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
+                throw new BundleException("parseAtomicServiceSizeLimit failed, " +
+                        "input --atomic-service-non-entry-size-limit invalid.");
+            }
+            if (notEntryLimit < 0 || notEntryLimit > ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
+                String errMsg = "parseAtomicServiceSizeLimit failed, " +
+                        "input --atomic-service-non-entry-size-limit value out of range.";
+                String solution = "Check the --atomic-service-non-entry-size-limit parameter is " +
+                        "within the valid range.";
+                LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
+                throw new BundleException("parseAtomicServiceSizeLimit failed, " +
+                        "input --atomic-service-non-entry-size-limit value out of range.");
+            }
+        }
+        setNotEntryModuleSizeLimit(notEntryLimit);
     }
 
     /**
@@ -454,6 +492,8 @@ public class Compressor {
         FileOutputStream fileOut = null;
         CheckedOutputStream checkedOut = null;
         try {
+            parseAtomicServiceSizeLimit(utility);
+
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipArchiveOutputStream(checkedOut);
@@ -476,8 +516,8 @@ public class Compressor {
 
         if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility)) {
             compressResult = false;
-            String errMsg = "The size of a single module, or the size of a module plus its dependencies, exceeds " +
-                    getEntryModuleSizeLimit() + "MB.";
+            String errMsg = "The size of a single module, or the size of a module plus its dependencies, " +
+                    "exceeds the maximum.";
             LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_SIZE_FAILED.toString(errMsg));
         }
 
@@ -966,7 +1006,8 @@ public class Compressor {
 
     private boolean checkAppAtomicServiceCompressedSizeValid(Utility utility) {
         if (!utility.getMode().equals(Utility.MODE_APP) &&
-                !utility.getMode().equals(Utility.MODE_FAST_APP)) {
+                !utility.getMode().equals(Utility.MODE_FAST_APP) &&
+                !utility.getMode().equals(Utility.MODE_MULTI_APP)) {
             return true;
         }
 

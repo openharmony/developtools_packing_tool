@@ -21,6 +21,7 @@
 #define protected public
 #include "module_json_utils.h"
 #include "constants.h"
+#include "packager.h"
 #include "pt_json.h"
 #include "log.h"
 #include "zip_wrapper.h"

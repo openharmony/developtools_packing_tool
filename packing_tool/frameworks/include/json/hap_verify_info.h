@@ -136,9 +136,9 @@ private:
     std::list<PreloadItem> preloadItems_;
     // json file size
     int64_t fileLength_ = 0L;
-    int32_t entrySizeLimit_ = 2;
-    int32_t notEntrySizeLimit_ = 2;
-    int32_t sumSizeLimit_ = 10;
+    int32_t entrySizeLimit_ = 2048;
+    int32_t notEntrySizeLimit_ = 2048;
+    int32_t sumSizeLimit_ = 10240;
     bool debug_ = false;
     std::string compileSdkVersion_ = "";
     std::string compileSdkType_ = "";
