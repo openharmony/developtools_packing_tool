@@ -368,12 +368,12 @@ public class Compressor {
             }
             if (sumLimit < 0 || sumLimit > ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
                 String errMsg = "parseAtomicServiceSumSizeLimitParameter failed, " +
-                        "input --atomic-service-total-size-limit value out of range.";
+                        "input --atomic-service-total-size-limit value out of range [0,4194304].";
                 String solution = "Check the --atomic-service-total-size-limit parameter is " +
                         "within the range of [0,4194304].";
                 LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
                 throw new BundleException("parseAtomicServiceSumSizeLimitParameter failed, " +
-                        "input --atomic-service-total-size-limit value out of range.");
+                        "input --atomic-service-total-size-limit value out of range [0,4194304].");
             }
         }
         setSumModuleSizeLimit(sumLimit);
@@ -396,12 +396,12 @@ public class Compressor {
             }
             if (entryLimit < 0 || entryLimit > ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
                 String errMsg = "parseAtomicServiceEntrySizeLimitParameter failed, " +
-                        "input --atomic-service-entry-size-limit value out of range.";
+                        "input --atomic-service-entry-size-limit value out of range [0,4194304].";
                 String solution = "Check the --atomic-service-entry-size-limit parameter is " +
-                        "within the valid range.";
+                        "within the valid range [0,4194304].";
                 LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
                 throw new BundleException("parseAtomicServiceEntrySizeLimitParameter failed, " +
-                        "input --atomic-service-entry-size-limit value out of range.");
+                        "input --atomic-service-entry-size-limit value out of range [0,4194304].");
             }
         }
         setEntryModuleSizeLimit(entryLimit);
@@ -423,12 +423,12 @@ public class Compressor {
             }
             if (notEntryLimit < 0 || notEntryLimit > ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
                 String errMsg = "parseAtomicServiceSizeLimit failed, " +
-                        "input --atomic-service-non-entry-size-limit value out of range.";
+                        "input --atomic-service-non-entry-size-limit value out of range [0,4194304].";
                 String solution = "Check the --atomic-service-non-entry-size-limit parameter is " +
-                        "within the valid range.";
+                        "within the valid range [0,4194304].";
                 LOG.error(PackingToolErrMsg.PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toString(errMsg, solution));
                 throw new BundleException("parseAtomicServiceSizeLimit failed, " +
-                        "input --atomic-service-non-entry-size-limit value out of range.");
+                        "input --atomic-service-non-entry-size-limit value out of range [0,4194304].");
             }
         }
         setNotEntryModuleSizeLimit(notEntryLimit);

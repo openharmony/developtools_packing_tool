@@ -498,12 +498,14 @@ bool Packager::ParseAtomicServiceEntrySizeLimitParameter()
         try {
             entrySizeLimit = std::stoi(it->second);
         } catch (const std::exception& e) {
+            LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
+                "input --atomic-service-entry-size-limit value invalid.");
             LOGE("Exception: %s", e.what());
             return false;
         }
         if (entrySizeLimit < 0 || entrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
             LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
-                "input --atomic-service-entry-size-limit value out of range.");
+                "input --atomic-service-entry-size-limit value out of range [0,4194304].");
             return false;
         }
     }
@@ -519,12 +521,14 @@ bool Packager::ParseAtomicServiceNonEntrySizeLimitParameter()
         try {
             nonEntrySizeLimit = std::stoi(it->second);
         } catch (const std::exception& e) {
+            LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
+                "input --atomic-service-non-entry-size-limit value invalid.");
             LOGE("Exception: %s", e.what());
             return false;
         }
         if (nonEntrySizeLimit < 0 || nonEntrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
             LOGE("ParseAtomicServiceNonEntrySizeLimitParameter failed, "
-                "input --atomic-service-non-entry-size-limit value out of range.");
+                "input --atomic-service-non-entry-size-limit value out of range [0,4194304].");
             return false;
         }
     }
