@@ -950,6 +950,7 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
     int32_t notEntryLimit = hapVerifyInfos.begin()->GetNotEntrySizeLimit();
     for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetModuleType() == ENTRY &&
+            entryLimit != 0 &&
             (hapVerifyInfo.GetFileLength() >= entryLimit * FILE_LENGTH_1KB)) {
             LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
@@ -957,6 +958,7 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != ENTRY &&
+            notEntryLimit != 0 &&
             (hapVerifyInfo.GetFileLength() >= notEntryLimit * FILE_LENGTH_1KB)) {
             LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
@@ -1005,14 +1007,18 @@ bool HapVerifyUtils::CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>
         for (auto& dependency : dependenciesInfos) {
             fileSize += dependency.GetFileLength();
         }
-        if (hapVerifyInfo.GetModuleType() == ENTRY && (fileSize >= entryLimit * FILE_LENGTH_1KB)) {
+        if (hapVerifyInfo.GetModuleType() == ENTRY &&
+            entryLimit != 0 &&
+            (fileSize >= entryLimit * FILE_LENGTH_1KB)) {
             LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
                 Utils::GetCeilFileSize(fileSize, entryLimit),
                 entryLimit);
             return false;
         }
-        if (hapVerifyInfo.GetModuleType() != ENTRY && (fileSize >= notEntryLimit * FILE_LENGTH_1KB)) {
+        if (hapVerifyInfo.GetModuleType() != ENTRY &&
+            notEntryLimit != 0 &&
+            (fileSize >= notEntryLimit * FILE_LENGTH_1KB)) {
             LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
                 hapVerifyInfo.GetModuleName().c_str(),
                 Utils::GetCeilFileSize(fileSize, notEntryLimit),
