@@ -51,7 +51,7 @@
                 "generateBuildHash",
                 "routerMap",
                 "appStartup",
-                "formWidgetModule",
+                "formExtensionModule",
                 "crossAppSharedConfig"
               ]
             },
@@ -152,7 +152,7 @@
                 "routerMap",
                 "appEnvironments",
                 "appStartup",
-                "formExtensionModule",
+                "formWidgetModule",
                 "hnpPackages"
               ]
             },
@@ -208,7 +208,6 @@
                 "routerMap",
                 "appEnvironments",
                 "appStartup",
-                "formExtensionModule",
                 "formWidgetModule"
               ]
             },
@@ -217,6 +216,48 @@
               "type",
               "deviceTypes",
               "deliveryWithInstall"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": ["formExtensionModule"]
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "name",
+                "type",
+                "srcEntry",
+                "abilitySrcEntryDelegator",
+                "abilityStageSrcEntryDelegator",
+                "description",
+                "deliveryWithInstall",
+                "deviceTypes",
+                "pages",
+                "metadata",
+                "extensionAbilities",
+                "requestPermissions",
+                "dependencies",
+                "libIsolation",
+                "compressNativeLibs",
+                "extractNativeLibs",
+                "installationFree",
+                "atomicService",
+                "targetModuleName",
+                "targetPriority",
+                "generateBuildHash",
+                "routerMap",
+                "appStartup",
+                "formExtensionModule",
+                "crossAppSharedConfig"
+              ]
+            },
+            "required": [
+              "name",
+              "type",
+              "deliveryWithInstall",
+              "deviceTypes"
             ]
           }
         }
