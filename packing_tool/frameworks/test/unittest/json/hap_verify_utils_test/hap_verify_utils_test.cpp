@@ -463,7 +463,7 @@ HWTEST_F(HapVerifyUtilsTest, CheckAppFieldsIsSame_0900, Function | MediumTest | 
     std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
     OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
     hapVerifyInfo3.SetBundleName("test");
-    hapVerifyInfo3.SetBundleType("hap");
+    hapVerifyInfo3.SetBundleType("hsp");
     OHOS::AppPackingTool::Version version;
     version.versionCode = 1;
     version.versionName = "1.0.0";
