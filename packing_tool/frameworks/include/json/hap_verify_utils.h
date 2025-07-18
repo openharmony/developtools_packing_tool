@@ -136,6 +136,7 @@ private:
     static bool CheckContinueTypeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2);
+    static bool ModuleDebugValidation(const std::list<HapVerifyInfo> hapList, const std::list<HapVerifyInfo> hspList);
     static bool AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos,
         int32_t minCompatibleVersionCode, int32_t targetApiVersion, int32_t minApiVersion);
     static bool AppAssetAccessGroupsIsSame(const std::list<std::string>& assetAccessGroups,
