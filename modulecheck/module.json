@@ -208,6 +208,7 @@
                 "routerMap",
                 "appEnvironments",
                 "appStartup",
+                "formExtensionModule",
                 "formWidgetModule"
               ]
             },
