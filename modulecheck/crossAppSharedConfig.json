@@ -11,7 +11,6 @@
   "properties": {
     "crossAppSharedConfig": {
       "type": "array",
-      "maxItems": 32,
       "additionalProperties": false,
       "uniqueItems": true,
       "items": {
