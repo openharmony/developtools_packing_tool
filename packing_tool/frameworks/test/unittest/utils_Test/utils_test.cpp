@@ -385,10 +385,10 @@ HWTEST_F(UtilsTest, GetListDistinctCount_1900, Function | MediumTest | Level1)
  */
 HWTEST_F(UtilsTest, GetCeilFileSize_2000, Function | MediumTest | Level1)
 {
-    long fileSize = 12 * 1024 * 1014L;
-    int sizeLimit = 12;
+    long fileSize = 12 * 1024 * 1024L;
+    int sizeLimit = 12 * 1024;
 
-    EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetCeilFileSize(fileSize, sizeLimit) < 12);
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::GetCeilFileSize(fileSize, sizeLimit) > 12 * 1024);
 }
 
 /*
