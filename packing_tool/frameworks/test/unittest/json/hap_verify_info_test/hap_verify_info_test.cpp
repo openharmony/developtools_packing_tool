@@ -618,6 +618,6 @@ HWTEST_F(HapVerifyInfoTest, ConvertToDependency_0200, Function | MediumTest | Le
     hapVerifyInfo.ConvertToDependency();
     EXPECT_FALSE(hapVerifyInfo.dependencies_.empty());
     EXPECT_TRUE(std::find(hapVerifyInfo.dependencies_.begin(), hapVerifyInfo.dependencies_.end(),
-                          dependencyItem1.bundleName) != hapVerifyInfo.dependencies_.end());
+                          dependencyItem1.moduleName) != hapVerifyInfo.dependencies_.end());
 }
 }

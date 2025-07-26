@@ -129,6 +129,7 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
         return false;
     }
     std::list<HapVerifyInfo> hapList;
+    std::list<HapVerifyInfo> hspList;
     int32_t hspMinCompatibleVersionCodeMax = -1;
     int32_t hspTargetApiVersionMax = -1;
     int32_t hspMinApiVersionMax = -1;
@@ -174,6 +175,7 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
         if (hapVerifyInfo.GetFileType() == HAP_SUFFIX) {
             hapList.emplace_back(hapVerifyInfo);
         } else if (hapVerifyInfo.GetFileType() == HSP_SUFFIX) {
+            hspList.emplace_back(hapVerifyInfo);
             if (hapVerifyInfo.GetVersion().minCompatibleVersionCode > hspMinCompatibleVersionCodeMax) {
                 hspMinCompatibleVersionCodeMax = hapVerifyInfo.GetVersion().minCompatibleVersionCode;
             }
@@ -187,6 +189,36 @@ bool HapVerifyUtils::CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVer
     }
     if (!AppFieldsIsValid(hapList, hspMinCompatibleVersionCodeMax, hspTargetApiVersionMax, hspMinApiVersionMax)) {
         return false;
+    }
+    if (!ModuleDebugValidation(hapList, hspList)) {
+        return false;
+    }
+    return true;
+}
+
+bool HapVerifyUtils::ModuleDebugValidation(const std::list<HapVerifyInfo> hapList,
+    const std::list<HapVerifyInfo> hspList)
+{
+    if (hapList.empty()) {
+        LOGW("hapList empty");
+        return true;
+    }
+    HapVerifyInfo hap = *hapList.begin();
+    for (const HapVerifyInfo& hapInfo : hapList) {
+        if (hap.IsDebug() != hapInfo.IsDebug()) {
+            LOGE("The debug fields of multiple Hap are different.");
+            return false;
+        }
+    }
+    if (hap.IsDebug() || hspList.empty()) {
+        LOGW("hap debug is true or hspList empty");
+        return true;
+    }
+    for (const HapVerifyInfo& hapInfo : hspList) {
+        if (hapInfo.IsDebug()) {
+            LOGE("Detected HAP(s) with debug=false, but some HSP(s) are debug=true.");
+            return false;
+        }
     }
     return true;
 }
@@ -246,11 +278,6 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
     }
     if (verifyCollection.targetPriority != hapVerifyInfo.GetTargetPriority()) {
         LOGE("targetPriority is different.");
-        return false;
-    }
-    if (verifyCollection.debug != hapVerifyInfo.IsDebug()) {
-        LOGE("debug is different.");
-        LOGE("Solutions: > Check if the debug type is the same in different modules.");
         return false;
     }
     if (IsEntryOrFeature(verifyCollection.moduleType) && IsEntryOrFeature(hapVerifyInfo.GetModuleType())) {

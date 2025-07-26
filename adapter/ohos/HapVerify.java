@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -284,6 +285,7 @@ class HapVerify {
             verifyInfo = optional.get();
         }
         List<HapVerifyInfo> hapList = new ArrayList<>();
+        List<HapVerifyInfo> hspList = new ArrayList<>();
         int hspMinCompatibleVersionCodeMax = -1;
         int hspTargetApiVersionMax = -1;
         int hspMinApiVersionMax = -1;
@@ -321,9 +323,10 @@ class HapVerify {
                 LOG.warning("Module: (" + moduleName + ") and Module: (" +
                         hapVerifyInfo.getModuleName() + ") has different values.");
             }
-            if (hapVerifyInfo.getFileType() == HAP_SUFFIX) {
+            if (Objects.equals(hapVerifyInfo.getFileType(), HAP_SUFFIX)) {
                 hapList.add(hapVerifyInfo);
-            } else if (hapVerifyInfo.getFileType() == HSP_SUFFIX) {
+            } else if (Objects.equals(hapVerifyInfo.getFileType(), HSP_SUFFIX)) {
+                hspList.add(hapVerifyInfo);
                 if (hapVerifyInfo.getVersion().minCompatibleVersionCode > hspMinCompatibleVersionCodeMax) {
                     hspMinCompatibleVersionCodeMax = hapVerifyInfo.getVersion().minCompatibleVersionCode;
                 }
@@ -336,6 +339,9 @@ class HapVerify {
             }
         }
         if (!appFieldsIsValid(hapList, hspMinCompatibleVersionCodeMax, hspTargetApiVersionMax, hspMinApiVersionMax)) {
+            return false;
+        }
+        if (!moduleDebugValidation(hapList, hspList)) {
             return false;
         }
         return true;
@@ -368,6 +374,35 @@ class HapVerify {
                     " and minApiVersion in the module.json file of the HAP module" +
                     " are greater than or equal to those of the HSP module.";
             LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(cause, solution));
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean moduleDebugValidation(List<HapVerifyInfo> hapVerifyInfos,
+                                                 List<HapVerifyInfo> hspVerifyInfos) {
+        if (hapVerifyInfos.isEmpty()) {
+            LOG.warning("Hap verify infos is empty");
+            return true;
+        }
+        HapVerifyInfo hap = hapVerifyInfos.get(0);
+        for (HapVerifyInfo hapInfo : hapVerifyInfos) {
+            if (hap.isDebug() != hapInfo.isDebug()) {
+                String errMsg = "The debug fields of multiple Hap are different.";
+                String solution = "Ensure that the values of 'debug' in the module.json file of each HAP module" +
+                        " are the same.";
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(errMsg, solution));
+                return false;
+            }
+        }
+        if (hap.isDebug() || hspVerifyInfos.isEmpty()) {
+            LOG.warning("Hap debug is true or Hsp verify infos is empty");
+            return true;
+        }
+        if (hspVerifyInfos.stream().anyMatch(HapVerifyInfo::isDebug)) {
+            String errMsg = "Detected HAP(s) with debug=false, but some HSP(s) are debug=true.";
+            String solution = "When the debug value of Hap is false,the debug value of Hsp should also be false.";
+            LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(errMsg, solution));
             return false;
         }
         return true;
@@ -414,12 +449,6 @@ class HapVerify {
         if (verifyCollection.targetPriority != hapVerifyInfo.getTargetPriority()) {
             String errMsg = "The targetPriority parameter values are different.";
             String solution = "Check if the targetPriority is the same in different modules.";
-            LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
-            return false;
-        }
-        if (verifyCollection.debug != hapVerifyInfo.isDebug()) {
-            String errMsg = "The debug parameter values are different.";
-            String solution = "Check if the debug setting is the same in different modules.";
             LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
             return false;
         }
