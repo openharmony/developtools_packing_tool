@@ -25,42 +25,84 @@
             }
           },
           "then": {
-            "propertyNames": {
-              "enum": [
+            "if": {
+              "required": ["formExtensionModule"]
+            },
+            "then": {
+              "propertyNames": {
+                "enum": [
+                  "name",
+                  "type",
+                  "srcEntry",
+                  "abilitySrcEntryDelegator",
+                  "abilityStageSrcEntryDelegator",
+                  "description",
+                  "deliveryWithInstall",
+                  "deviceTypes",
+                  "pages",
+                  "metadata",
+                  "extensionAbilities",
+                  "requestPermissions",
+                  "dependencies",
+                  "libIsolation",
+                  "compressNativeLibs",
+                  "extractNativeLibs",
+                  "installationFree",
+                  "atomicService",
+                  "targetModuleName",
+                  "targetPriority",
+                  "generateBuildHash",
+                  "routerMap",
+                  "appStartup",
+                  "formExtensionModule",
+                  "crossAppSharedConfig"
+                ]
+              },
+              "required": [
                 "name",
                 "type",
-                "srcEntry",
-                "abilitySrcEntryDelegator",
-                "abilityStageSrcEntryDelegator",
-                "description",
                 "deliveryWithInstall",
-                "deviceTypes",
-                "pages",
-                "metadata",
-                "abilities",
-                "extensionAbilities",
-                "requestPermissions",
-                "dependencies",
-                "libIsolation",
-                "compressNativeLibs",
-                "extractNativeLibs",
-                "installationFree",
-                "atomicService",
-                "targetModuleName",
-                "targetPriority",
-                "generateBuildHash",
-                "routerMap",
-                "appStartup",
-                "formWidgetModule",
-                "crossAppSharedConfig"
+                "deviceTypes"
               ]
             },
-            "required": [
-              "name",
-              "type",
-              "deliveryWithInstall",
-              "deviceTypes"
-            ]
+            "else": {
+              "propertyNames": {
+                "enum": [
+                  "name",
+                  "type",
+                  "srcEntry",
+                  "abilitySrcEntryDelegator",
+                  "abilityStageSrcEntryDelegator",
+                  "description",
+                  "deliveryWithInstall",
+                  "deviceTypes",
+                  "pages",
+                  "metadata",
+                  "abilities",
+                  "extensionAbilities",
+                  "requestPermissions",
+                  "dependencies",
+                  "libIsolation",
+                  "compressNativeLibs",
+                  "extractNativeLibs",
+                  "installationFree",
+                  "atomicService",
+                  "targetModuleName",
+                  "targetPriority",
+                  "generateBuildHash",
+                  "routerMap",
+                  "appStartup",
+                  "formExtensionModule",
+                  "crossAppSharedConfig"
+                ]
+              },
+              "required": [
+                "name",
+                "type",
+                "deliveryWithInstall",
+                "deviceTypes"
+              ]
+            }
           }
         },
         {
@@ -152,7 +194,7 @@
                 "routerMap",
                 "appEnvironments",
                 "appStartup",
-                "formExtensionModule",
+                "formWidgetModule",
                 "hnpPackages"
               ]
             },
@@ -173,51 +215,102 @@
             }
           },
           "then": {
-            "propertyNames": {
-              "enum": [
+            "if": {
+              "required": ["formExtensionModule"]
+            },
+            "then": {
+              "propertyNames": {
+                "enum": [
+                  "name",
+                  "type",
+                  "srcEntrance",
+                  "srcEntry",
+                  "abilitySrcEntryDelegator",
+                  "abilityStageSrcEntryDelegator",
+                  "description",
+                  "process",
+                  "mainElement",
+                  "deviceTypes",
+                  "deliveryWithInstall",
+                  "installationFree",
+                  "virtualMachine",
+                  "uiSyntax",
+                  "pages",
+                  "metadata",
+                  "extensionAbilities",
+                  "requestPermissions",
+                  "definePermissions",
+                  "testRunner",
+                  "dependencies",
+                  "libIsolation",
+                  "compressNativeLibs",
+                  "extractNativeLibs",
+                  "atomicService",
+                  "generateBuildHash",
+                  "isolationMode",
+                  "proxyData",
+                  "crossAppSharedConfig",
+                  "routerMap",
+                  "appEnvironments",
+                  "appStartup",
+                  "formExtensionModule",
+                  "formWidgetModule"
+                ]
+              },
+              "required": [
                 "name",
                 "type",
-                "srcEntrance",
-                "srcEntry",
-                "abilitySrcEntryDelegator",
-                "abilityStageSrcEntryDelegator",
-                "description",
-                "process",
-                "mainElement",
                 "deviceTypes",
-                "deliveryWithInstall",
-                "installationFree",
-                "virtualMachine",
-                "uiSyntax",
-                "pages",
-                "metadata",
-                "abilities",
-                "extensionAbilities",
-                "requestPermissions",
-                "definePermissions",
-                "testRunner",
-                "dependencies",
-                "libIsolation",
-                "compressNativeLibs",
-                "extractNativeLibs",
-                "atomicService",
-                "generateBuildHash",
-                "isolationMode",
-                "proxyData",
-                "crossAppSharedConfig",
-                "routerMap",
-                "appEnvironments",
-                "appStartup",
-                "formExtensionModule",
-                "formWidgetModule"
+                "deliveryWithInstall"
               ]
             },
-            "required": [
-              "name",
-              "type",
-              "deviceTypes",
-              "deliveryWithInstall"
-            ]
+            "else": {
+              "propertyNames": {
+                "enum": [
+                  "name",
+                  "type",
+                  "srcEntrance",
+                  "srcEntry",
+                  "abilitySrcEntryDelegator",
+                  "abilityStageSrcEntryDelegator",
+                  "description",
+                  "process",
+                  "mainElement",
+                  "deviceTypes",
+                  "deliveryWithInstall",
+                  "installationFree",
+                  "virtualMachine",
+                  "uiSyntax",
+                  "pages",
+                  "metadata",
+                  "abilities",
+                  "extensionAbilities",
+                  "requestPermissions",
+                  "definePermissions",
+                  "testRunner",
+                  "dependencies",
+                  "libIsolation",
+                  "compressNativeLibs",
+                  "extractNativeLibs",
+                  "atomicService",
+                  "generateBuildHash",
+                  "isolationMode",
+                  "proxyData",
+                  "crossAppSharedConfig",
+                  "routerMap",
+                  "appEnvironments",
+                  "appStartup",
+                  "formExtensionModule",
+                  "formWidgetModule"
+                ]
+              },
+              "required": [
+                "name",
+                "type",
+                "deviceTypes",
+                "deliveryWithInstall"
+              ]
+            }
           }
         }
       ],
