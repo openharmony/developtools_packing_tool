@@ -332,13 +332,13 @@
           ]
         },
         "srcEntrance": {
-          "description": "This tag indicates the entry js code path corresponding to hap",
+          "description": "This tag indicates the entry code path corresponding to hap",
           "type": "string",
           "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
           "maxLength": 127
         },
         "srcEntry": {
-          "description": "This tag indicates the entry js code path corresponding to hap",
+          "description": "This tag indicates the entry code path corresponding to hap",
           "type": "string",
           "maxLength": 127
         },
@@ -522,13 +522,13 @@
                 "maxLength": 127
               },
               "srcEntrance": {
-                "description": "Indicates the js code path corresponding to the ability.",
+                "description": "Indicates the code path corresponding to the ability.",
                 "type": "string",
                 "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
                 "maxLength": 127
               },
               "srcEntry": {
-                "description": "Indicates the js code path corresponding to the ability.",
+                "description": "Indicates the code path corresponding to the ability.",
                 "type": "string",
                 "maxLength": 127
               },
@@ -1182,13 +1182,13 @@
                 "maxLength": 127
               },
               "srcEntrance": {
-                "description": "Indicates the js code path corresponding to the extension.",
+                "description": "Indicates the code path corresponding to the extension.",
                 "deprecationMessage": "Deprecated since api 9, use srcEntry instead.",
                 "type": "string",
                 "maxLength": 127
               },
               "srcEntry": {
-                "description": "Indicates the js code path corresponding to the extension.",
+                "description": "Indicates the code path corresponding to the extension.",
                 "type": "string",
                 "maxLength": 127
               },
