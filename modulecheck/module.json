@@ -1885,7 +1885,7 @@
           "description": "Indicates the URL schemes control list",
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 50,
+          "maxItems": 200,
           "items": {
             "type": "string",
             "maxLength": 128,
