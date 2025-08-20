@@ -31,6 +31,9 @@ const std::string VERSIONNAME = "versionName";
 const std::string MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
 const std::string API_VERSION = "apiVersion";
 const std::string MIN_API_VERSION = "minAPIVersion";
+const std::string QUERY_SCHEMES = "querySchemes";
+const int32_t QUERY_SCHEMES_CHECK_COUNT = 50;
+const int32_t QUERY_SCHEMES_CHECK_MIN_API_VERSION = 21;
 const std::string TARGET_API_VERSION = "targetAPIVersion";
 const std::string API_RELEASE_TYPE = "apiReleaseType";
 const std::string DEBUG = "debug";
@@ -1236,6 +1239,22 @@ bool ModuleJson::CheckStageAtomicService()
     return true;
 }
 
+bool ModuleJson::CheckQuerySchemes()
+{
+    int32_t rawMinAPIVersion = -1;
+    GetMinApiVersion(rawMinAPIVersion);
+    int32_t minAPIVersion = rawMinAPIVersion % 1000;
+    std::list<std::string> querySchemes;
+    GetQuerySchemes(querySchemes);
+    int querySchemesCount = querySchemes.size();
+    if (querySchemesCount > QUERY_SCHEMES_CHECK_COUNT && minAPIVersion < QUERY_SCHEMES_CHECK_MIN_API_VERSION) {
+        LOGE("The number of querySchemes in the Hap(entry) exceeds %d, and the minAPIVersion is less than %d",
+            QUERY_SCHEMES_CHECK_COUNT, QUERY_SCHEMES_CHECK_MIN_API_VERSION);
+        return false;
+    }
+    return true;
+}
+
 bool ModuleJson::CheckStageOverlayCfg()
 {
     std::string targetModuleName;
@@ -1644,6 +1663,54 @@ bool ModuleJson::GetDeliveryWithInstall(bool& deliveryWithInstall)
             LOGE("Module node get %s failed!", DELIVERY_WITH_INSTALL.c_str());
             return false;
         }
+    }
+    return true;
+}
+
+bool ModuleJson::GetQuerySchemes(std::list<std::string>& querySchemes)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    return GetQuerySchemesByModuleObj(moduleObj, querySchemes);
+}
+
+bool ModuleJson::GetQuerySchemesByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& querySchemes)
+{
+    if (!moduleObj) {
+        LOGE("Module node is null!");
+        return false;
+    }
+    if (moduleObj->Contains(QUERY_SCHEMES.c_str())) {
+        std::unique_ptr<PtJson> querySchemesObj;
+        if (moduleObj->GetArray(QUERY_SCHEMES.c_str(), &querySchemesObj) != Result::SUCCESS) {
+            LOGE("Module node get %s array node failed!", QUERY_SCHEMES.c_str());
+            return false;
+        }
+        if (!GetQuerySchemesByArray(querySchemesObj, querySchemes)) {
+            LOGE("GetQuerySchemesByArray failed!");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModuleJson::GetQuerySchemesByArray(std::unique_ptr<PtJson>& querySchemesObj,
+    std::list<std::string>& querySchemes)
+{
+    if (!querySchemesObj) {
+        LOGE("querySchemes node is null!");
+        return false;
+    }
+    for (int32_t i = 0; i < querySchemesObj->GetSize(); i++) {
+        std::unique_ptr<PtJson> obj = querySchemesObj->Get(i);
+        if (obj == nullptr) {
+            LOGE("querySchemesObj->Get(%{public}d) returned null", i);
+            continue;
+        }
+        querySchemes.push_back(obj->GetString());
     }
     return true;
 }

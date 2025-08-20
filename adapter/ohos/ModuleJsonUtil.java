@@ -36,6 +36,7 @@ class ModuleJsonUtil {
     private static final String MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
     private static final String API_VERSION = "apiVersion";
     private static final String MIN_API_VERSION = "minAPIVersion";
+    private static final int MIN_API_VERSION_ERROR_VALUE = -1;
     private static final String TARGET_API_VERSION = "targetAPIVersion";
     private static final String API_RELEASE_TYPE = "apiReleaseType";
     private static final String DEBUG = "debug";
@@ -107,6 +108,7 @@ class ModuleJsonUtil {
     private static final String PROXY_DATAS = "proxyDatas";
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_URI = "uri";
+    private static final String QUERY_SCHEMES = "querySchemes";
     private static final String CONTINUE_TYPE = "continueType";
     private static final String CONTINUE_BUNDLE_NAME = "continueBundleName";
     private static final String MULTI_APP_MODE = "multiAppMode";
@@ -1716,6 +1718,50 @@ class ModuleJsonUtil {
             }
         }
         return continueBundleName;
+    }
+
+    /**
+     * get querySchemes from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return querySchemes URL list
+     */
+    public static List<String> getQuerySchemes(String jsonString) throws BundleException {
+        List<String> querySchemes = new ArrayList<>();
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (!moduleObj.containsKey(QUERY_SCHEMES)) {
+            return querySchemes;
+        }
+        JSONArray querySchemesArray = moduleObj.getJSONArray(QUERY_SCHEMES);
+        if (querySchemesArray != null) {
+            querySchemesArray.stream()
+                    .map(Object::toString)
+                    .forEach(querySchemes::add);
+        }
+        return querySchemes;
+    }
+
+    /**
+     * Gets the minAPIVersion from a {@code module.json} string.
+     * <p>
+     * For example:
+     * <pre>
+     *   build-profile.json5                  module.json  minAPIVersion
+     *   "compatibleSdkVersion": "5.0.0(12)"  50000012     50000012 % 1000 //The last three digits represent the version
+     *   12                                   12           12
+     * </pre>
+     *
+     * @param jsonString the JSON string of module.json
+     * @return the minAPIVersion value extracted from the module.json
+     */
+    public static int getMinAPIVersion(String jsonString) throws BundleException {
+        JSONObject appObj = ModuleJsonUtil.getAppObj(jsonString);
+        if (!appObj.containsKey(MIN_API_VERSION)) {
+            LOG.warning("Get minAPIVersion in the Stage module.json failed.");
+            return MIN_API_VERSION_ERROR_VALUE;
+        }
+        int rawMinAPIVersion = appObj.getIntValue(MIN_API_VERSION);
+        return rawMinAPIVersion % 1000;
     }
 
     /**
