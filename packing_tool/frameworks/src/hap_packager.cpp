@@ -423,6 +423,11 @@ bool HapPackager::CheckStageHap(const std::string &jsonPath)
         return false;
     }
 
+    if (!moduleJson_.CheckQuerySchemes()) {
+        LOGE("CheckQuerySchemes failed.");
+        return false;
+    }
+
     return true;
 }
 
