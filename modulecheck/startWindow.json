@@ -14,7 +14,8 @@
         "startWindowBackgroundColor",
         "startWindowBackgroundImage",
         "startWindowBackgroundImageFit",
-        "startWindowType"
+        "startWindowType",
+        "startWindowColorModeType"
       ]
     },
     "properties": {
@@ -70,6 +71,15 @@
           "OPTIONAL_SHOW"
         ],
         "default": "REQUIRED_SHOW"
+      },
+      "startWindowColorModeType": {
+        "description": "Indicates that color mode type of the startup page. The value is the string",
+        "type": "string",
+        "enum": [
+          "FOLLOW_SYSTEM",
+          "FOLLOW_APPLICATION"
+        ],
+        "default": "FOLLOW_SYSTEM"
       }
     }
   }
