@@ -1588,6 +1588,79 @@ const std::string APP_ERROR_DELIVERY_WITH_INSTALL = "{"
         "\"deliveryWithInstall\": 123"
     "}"
 "}";
+
+const std::string APP_ERROR_QUERY_SCHEMES = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99"
+    "},"
+    "\"module\": {"
+        "\"deviceType\": \"test\""
+    "]"
+"}";
+
+const std::string MODULE_JSON_STRING_WITH_QUERY_SCHEMES_1 = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99,"
+        "\"minAPIVersion\": 20"
+    "},"
+    "\"module\": {"
+        "\"querySchemes\": ["
+            "\"queryUrl1\"," "\"queryUrl2\"," "\"queryUrl3\"," "\"queryUrl4\"," "\"queryUrl5\""
+        "]"
+    "}"
+"}";
+
+const std::string MODULE_JSON_STRING_WITH_QUERY_SCHEMES_2 = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99,"
+        "\"minAPIVersion\": 20"
+    "},"
+    "\"module\": {"
+        "\"querySchemes\": ["
+            "\"queryUrl1\"," "\"queryUrl2\"," "\"queryUrl3\"," "\"queryUrl4\"," "\"queryUrl5\","
+            "\"queryUrl6\"," "\"queryUrl7\"," "\"queryUrl8\"," "\"queryUrl9\"," "\"queryUrl10\","
+            "\"queryUrl11\"," "\"queryUrl12\"," "\"queryUrl13\"," "\"queryUrl14\"," "\"queryUrl15\","
+            "\"queryUrl16\"," "\"queryUrl17\"," "\"queryUrl18\"," "\"queryUrl19\"," "\"queryUrl20\","
+            "\"queryUrl21\"," "\"queryUrl22\"," "\"queryUrl23\"," "\"queryUrl24\"," "\"queryUrl25\","
+            "\"queryUrl26\"," "\"queryUrl27\"," "\"queryUrl28\"," "\"queryUrl29\"," "\"queryUrl30\","
+            "\"queryUrl31\"," "\"queryUrl32\"," "\"queryUrl33\"," "\"queryUrl34\"," "\"queryUrl35\","
+            "\"queryUrl36\"," "\"queryUrl37\"," "\"queryUrl38\"," "\"queryUrl39\"," "\"queryUrl440\","
+            "\"queryUrl41\"," "\"queryUrl42\"," "\"queryUrl43\"," "\"queryUrl44\"," "\"queryUrl45\","
+            "\"queryUrl46\"," "\"queryUrl47\"," "\"queryUrl48\"," "\"queryUrl49\"," "\"queryUrl50\","
+            "\"queryUrl51\"," "\"queryUrl52\"," "\"queryUrl53\"," "\"queryUrl54\"," "\"queryUrl55\""
+        "]"
+    "}"
+"}";
+
+const std::string MODULE_JSON_STRING_WITH_QUERY_SCHEMES_3 = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99,"
+        "\"minAPIVersion\": 21"
+    "},"
+    "\"module\": {"
+        "\"querySchemes\": ["
+            "\"queryUrl1\"," "\"queryUrl2\"," "\"queryUrl3\"," "\"queryUrl4\"," "\"queryUrl5\","
+            "\"queryUrl6\"," "\"queryUrl7\"," "\"queryUrl8\"," "\"queryUrl9\"," "\"queryUrl10\","
+            "\"queryUrl11\"," "\"queryUrl12\"," "\"queryUrl13\"," "\"queryUrl14\"," "\"queryUrl15\","
+            "\"queryUrl16\"," "\"queryUrl17\"," "\"queryUrl18\"," "\"queryUrl19\"," "\"queryUrl20\","
+            "\"queryUrl21\"," "\"queryUrl22\"," "\"queryUrl23\"," "\"queryUrl24\"," "\"queryUrl25\","
+            "\"queryUrl26\"," "\"queryUrl27\"," "\"queryUrl28\"," "\"queryUrl29\"," "\"queryUrl30\","
+            "\"queryUrl31\"," "\"queryUrl32\"," "\"queryUrl33\"," "\"queryUrl34\"," "\"queryUrl35\","
+            "\"queryUrl36\"," "\"queryUrl37\"," "\"queryUrl38\"," "\"queryUrl39\"," "\"queryUrl440\","
+            "\"queryUrl41\"," "\"queryUrl42\"," "\"queryUrl43\"," "\"queryUrl44\"," "\"queryUrl45\","
+            "\"queryUrl46\"," "\"queryUrl47\"," "\"queryUrl48\"," "\"queryUrl49\"," "\"queryUrl50\","
+            "\"queryUrl51\"," "\"queryUrl52\"," "\"queryUrl53\"," "\"queryUrl54\"," "\"queryUrl55\""
+        "]"
+    "}"
+"}";
 }
 class ModuleJsonTest : public testing::Test {
 public:
@@ -8580,5 +8653,208 @@ HWTEST_F(ModuleJsonTest, GetDeliveryWithInstall_0300, Function | MediumTest | Le
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
     EXPECT_TRUE(moduleJson.GetDeliveryWithInstall(deliveryWithInstall));
+}
+
+/*
+ * @tc.name: GetQuerySchemes_0100
+ * @tc.desc: test GetQuerySchemes when root is nullptr
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemes_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.GetQuerySchemes(querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemes_0200
+ * @tc.desc: test GetQuerySchemes when querySchemes field is invalid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemes_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_ERROR_QUERY_SCHEMES));
+    EXPECT_FALSE(moduleJson.GetQuerySchemes(querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemes_0300
+ * @tc.desc: test GetQuerySchemes when querySchemes field exists and is valid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemes_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_QUERY_SCHEMES_1));
+    EXPECT_TRUE(moduleJson.GetQuerySchemes(querySchemes));
+    EXPECT_FALSE(querySchemes.empty());
+}
+
+/*
+ * @tc.name: GetQuerySchemesByModuleObj_0100
+ * @tc.desc: test GetQuerySchemesByModuleObj when moduleObj is nullptr
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByModuleObj_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> moduleObj; // nullptr
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.GetQuerySchemesByModuleObj(moduleObj, querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemesByModuleObj_0200
+ * @tc.desc: test GetQuerySchemesByModuleObj when querySchemes field not exists
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByModuleObj_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> moduleObj = PtJson::Parse("{\"module\": {}}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.GetQuerySchemesByModuleObj(moduleObj, querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemesByModuleObj_0300
+ * @tc.desc: test GetQuerySchemesByModuleObj when querySchemes exists but invalid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByModuleObj_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> moduleObj = PtJson::Parse("{\"querySchemes\": 123}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.GetQuerySchemesByModuleObj(moduleObj, querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemesByModuleObj_0400
+ * @tc.desc: test GetQuerySchemesByModuleObj when querySchemes is valid array
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByModuleObj_0400, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> moduleObj = PtJson::Parse("{\"querySchemes\": [\"https\", \"ftp\"]}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.GetQuerySchemesByModuleObj(moduleObj, querySchemes));
+    EXPECT_EQ(querySchemes.size(), 2);
+    EXPECT_EQ(querySchemes.front(), "https");
+}
+
+/*
+ * @tc.name: GetQuerySchemesByArray_0100
+ * @tc.desc: test GetQuerySchemesByArray when input is not array
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0100, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> notArray = PtJson::Parse("{\"querySchemes\": \"https\"}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.GetQuerySchemesByArray(notArray, querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemesByArray_0200
+ * @tc.desc: test GetQuerySchemesByArray when array is empty
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0200, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> emptyArray = PtJson::Parse("{\"querySchemes\": []}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.GetQuerySchemesByArray(emptyArray, querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemesByArray_0300
+ * @tc.desc: test GetQuerySchemesByArray when array contains non-string element
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0300, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> mixedArray = PtJson::Parse("{\"querySchemes\": 123}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_FALSE(moduleJson.GetQuerySchemesByArray(mixedArray, querySchemes));
+}
+
+/*
+ * @tc.name: GetQuerySchemesByArray_0400
+ * @tc.desc: test GetQuerySchemesByArray when array contains valid strings
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0400, Function | MediumTest | Level1)
+{
+    std::list<std::string> querySchemes;
+    std::unique_ptr<PtJson> array = PtJson::Parse("{\"querySchemes\": [\"https\", \"ftp\"]}");
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.GetQuerySchemesByArray(array, querySchemes));
+    EXPECT_EQ(querySchemes.size(), 2);
+    EXPECT_EQ(querySchemes.front(), "http");
+}
+
+/*
+ * @tc.name: CheckQuerySchemes_0100
+ * @tc.desc: test CheckQuerySchemes when root is nullptr
+ */
+HWTEST_F(ModuleJsonTest, CheckQuerySchemes_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_TRUE(moduleJson.CheckQuerySchemes());
+}
+
+/*
+ * @tc.name: CheckQuerySchemes_0200
+ * @tc.desc: test CheckQuerySchemes when querySchemes count <= limit
+ */
+HWTEST_F(ModuleJsonTest, CheckQuerySchemes_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_QUERY_SCHEMES_1));
+    EXPECT_TRUE(moduleJson.CheckQuerySchemes());
+}
+
+/*
+ * @tc.name: CheckQuerySchemes_0300
+ * @tc.desc: test CheckQuerySchemes when querySchemes count > limit but minAPIVersion >= threshold
+ */
+HWTEST_F(ModuleJsonTest, CheckQuerySchemes_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_QUERY_SCHEMES_3));
+    EXPECT_TRUE(moduleJson.CheckQuerySchemes());
+}
+
+/*
+ * @tc.name: CheckQuerySchemes_0400
+ * @tc.desc: test CheckQuerySchemes when querySchemes count > limit and minAPIVersion < threshold
+ */
+HWTEST_F(ModuleJsonTest, CheckQuerySchemes_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_QUERY_SCHEMES_2));
+    EXPECT_FALSE(moduleJson.CheckQuerySchemes());
 }
 }

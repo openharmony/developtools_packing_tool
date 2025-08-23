@@ -203,12 +203,16 @@ public:
     bool GetMinApiVersion(int32_t& minAPIVersion);
     bool GetTargetApiVersion(int32_t& targetAPIVersion);
     bool GetDeliveryWithInstall(bool& deliveryWithInstall);
+    bool GetQuerySchemes(std::list<std::string>& querySchemes);
+    bool GetQuerySchemesByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& querySchemes);
+    bool GetQuerySchemesByArray(std::unique_ptr<PtJson>& querySchemesObj, std::list<std::string>& querySchemes);
 
     bool IsModuleAtomicServiceValid();
     bool CheckEntryInAtomicService();
     bool CheckAtomicServiceInstallationFree();
     bool CheckStageAsanTsanEnabledValid();
     bool CheckStageAtomicService();
+    bool CheckQuerySchemes();
     bool CheckStageOverlayCfg();
 
     bool GetGenerateBuildHash(bool& generateBuildHash);
