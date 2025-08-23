@@ -183,6 +183,9 @@ public class Compressor {
     private static final String TARGET_FILE_PATH = HAPADDITION_FOLDER_NAME + LINUX_FILE_SEPARATOR + "resources"
             + LINUX_FILE_SEPARATOR + "base" + LINUX_FILE_SEPARATOR + "profile";
     private static final String BACKUP_PREFIX = "backup";
+    private static final int QUERY_SCHEMES_CHECK_COUNT = 50;
+    private static final int QUERY_SCHEMES_CHECK_MIN_API_VERSION = 21;
+    private static final int MIN_API_VERSION_ERROR_VALUE = -1;
 
     // set timestamp to get fixed MD5
     private static final int ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT =  2048; // 2MB;unit is KB
@@ -1079,6 +1082,12 @@ public class Compressor {
                     "Check the continueBundleName parameter in the Stage module failed."));
             return false;
         }
+        // check querySchemes in module.json
+        if (!checkQuerySchemes(jsonString)) {
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the querySchemes parameter in the Stage module failed."));
+            return false;
+        }
         return true;
     }
 
@@ -1132,6 +1141,20 @@ public class Compressor {
                     return false;
                 }
             }
+        }
+        return true;
+    }
+
+    private static boolean checkQuerySchemes(String jsonString) throws BundleException {
+        int minAPIVersion = ModuleJsonUtil.getMinAPIVersion(jsonString);
+        minAPIVersion = (minAPIVersion == MIN_API_VERSION_ERROR_VALUE) ? QUERY_SCHEMES_CHECK_MIN_API_VERSION : minAPIVersion;
+        List<String> querySchemes = ModuleJsonUtil.getQuerySchemes(jsonString);
+        int querySchemesCount = querySchemes.size();
+        if (querySchemesCount > QUERY_SCHEMES_CHECK_COUNT && minAPIVersion < QUERY_SCHEMES_CHECK_MIN_API_VERSION) {
+            String errMsg = "The number of querySchemes in the Hap(entry) exceeds " + QUERY_SCHEMES_CHECK_COUNT +
+                    ", and the minAPIVersion is less than " + QUERY_SCHEMES_CHECK_MIN_API_VERSION;
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(errMsg));
+            return false;
         }
         return true;
     }
