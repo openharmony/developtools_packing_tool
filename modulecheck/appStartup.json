@@ -28,7 +28,8 @@
             "excludeFromAutoStart",
             "runOnThread",
             "waitOnMainThread",
-            "matchRules"
+            "matchRules",
+            "schedulerPhase"
           ]
         },
         "required": [
@@ -120,6 +121,15 @@
                 }
               }
             }
+          },
+          "schedulerPhase": {
+            "description": "Indicates the running phase of the startup task.",
+            "type": "string",
+            "enum": [
+              "preAbilityStageLoad",
+              "postAbilityStageLoad"
+            ],
+            "default": "postAbilityStageLoad"
           }
         }
       }
