@@ -835,6 +835,16 @@ public class PackingToolErrMsg {
             .setCause("%s")
             .build();
 
+    /**
+     * CHECK_HSP_DEDUPLICATE_HAR_FAILED
+     */
+    public static final ErrorMsg CHECK_DEDUPLICATE_HAR_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("054")
+            .setDescription("Check deduplicateHar field failed.")
+            .setCause("%s")
+            .build();
+
     // module json check error
     /**
      * PARSE_JSON_OBJECT_EXCEPTION

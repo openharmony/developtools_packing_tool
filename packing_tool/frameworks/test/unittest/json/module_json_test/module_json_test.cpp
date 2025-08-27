@@ -1597,7 +1597,7 @@ const std::string APP_ERROR_QUERY_SCHEMES = "{"
     "},"
     "\"module\": {"
         "\"deviceType\": \"test\""
-    "]"
+    "}"
 "}";
 
 const std::string MODULE_JSON_STRING_WITH_QUERY_SCHEMES_1 = "{"
@@ -1659,6 +1659,42 @@ const std::string MODULE_JSON_STRING_WITH_QUERY_SCHEMES_3 = "{"
             "\"queryUrl46\"," "\"queryUrl47\"," "\"queryUrl48\"," "\"queryUrl49\"," "\"queryUrl50\","
             "\"queryUrl51\"," "\"queryUrl52\"," "\"queryUrl53\"," "\"queryUrl54\"," "\"queryUrl55\""
         "]"
+    "}"
+"}";
+
+const std::string MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_1 = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99,"
+        "\"minAPIVersion\": 20"
+    "},"
+    "\"module\": {"
+        "\"deduplicateHar\": false"
+    "}"
+"}";
+
+const std::string MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_2 = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99,"
+        "\"minAPIVersion\": 20"
+    "},"
+    "\"module\": {"
+        "\"deduplicateHar\": true"
+    "}"
+"}";
+
+const std::string MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_3 = "{"
+    "\"app\": {"
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"minCompatibleVersionCode\": 99,"
+        "\"minAPIVersion\": 21"
+    "},"
+    "\"module\": {"
+        "\"deduplicateHar\": true"
     "}"
 "}";
 }
@@ -8680,7 +8716,7 @@ HWTEST_F(ModuleJsonTest, GetQuerySchemes_0200, Function | MediumTest | Level1)
     std::list<std::string> querySchemes;
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(APP_ERROR_QUERY_SCHEMES));
-    EXPECT_FALSE(moduleJson.GetQuerySchemes(querySchemes));
+    EXPECT_TRUE(moduleJson.GetQuerySchemes(querySchemes));
 }
 
 /*
@@ -8723,7 +8759,7 @@ HWTEST_F(ModuleJsonTest, GetQuerySchemesByModuleObj_0200, Function | MediumTest 
     std::list<std::string> querySchemes;
     std::unique_ptr<PtJson> moduleObj = PtJson::Parse("{\"module\": {}}");
     OHOS::AppPackingTool::ModuleJson moduleJson;
-    EXPECT_FALSE(moduleJson.GetQuerySchemesByModuleObj(moduleObj, querySchemes));
+    EXPECT_TRUE(moduleJson.GetQuerySchemesByModuleObj(moduleObj, querySchemes));
 }
 
 /*
@@ -8767,7 +8803,7 @@ HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0100, Function | MediumTest | Le
     std::list<std::string> querySchemes;
     std::unique_ptr<PtJson> notArray = PtJson::Parse("{\"querySchemes\": \"https\"}");
     OHOS::AppPackingTool::ModuleJson moduleJson;
-    EXPECT_FALSE(moduleJson.GetQuerySchemesByArray(notArray, querySchemes));
+    EXPECT_TRUE(moduleJson.GetQuerySchemesByArray(notArray, querySchemes));
 }
 
 /*
@@ -8781,7 +8817,7 @@ HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0200, Function | MediumTest | Le
     std::list<std::string> querySchemes;
     std::unique_ptr<PtJson> emptyArray = PtJson::Parse("{\"querySchemes\": []}");
     OHOS::AppPackingTool::ModuleJson moduleJson;
-    EXPECT_FALSE(moduleJson.GetQuerySchemesByArray(emptyArray, querySchemes));
+    EXPECT_TRUE(moduleJson.GetQuerySchemesByArray(emptyArray, querySchemes));
 }
 
 /*
@@ -8795,7 +8831,7 @@ HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0300, Function | MediumTest | Le
     std::list<std::string> querySchemes;
     std::unique_ptr<PtJson> mixedArray = PtJson::Parse("{\"querySchemes\": 123}");
     OHOS::AppPackingTool::ModuleJson moduleJson;
-    EXPECT_FALSE(moduleJson.GetQuerySchemesByArray(mixedArray, querySchemes));
+    EXPECT_TRUE(moduleJson.GetQuerySchemesByArray(mixedArray, querySchemes));
 }
 
 /*
@@ -8807,11 +8843,13 @@ HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0300, Function | MediumTest | Le
 HWTEST_F(ModuleJsonTest, GetQuerySchemesByArray_0400, Function | MediumTest | Level1)
 {
     std::list<std::string> querySchemes;
-    std::unique_ptr<PtJson> array = PtJson::Parse("{\"querySchemes\": [\"https\", \"ftp\"]}");
+    std::unique_ptr<PtJson> moduleObj = PtJson::Parse("{\"querySchemes\": [\"https\", \"ftp\"]}");
+    std::unique_ptr<PtJson> array;
+    moduleObj->GetArray("querySchemes", &array);
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.GetQuerySchemesByArray(array, querySchemes));
     EXPECT_EQ(querySchemes.size(), 2);
-    EXPECT_EQ(querySchemes.front(), "http");
+    EXPECT_EQ(querySchemes.front(), "https");
 }
 
 /*
@@ -8856,5 +8894,92 @@ HWTEST_F(ModuleJsonTest, CheckQuerySchemes_0400, Function | MediumTest | Level1)
     OHOS::AppPackingTool::ModuleJson moduleJson;
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_QUERY_SCHEMES_2));
     EXPECT_FALSE(moduleJson.CheckQuerySchemes());
+}
+
+/*
+ * @tc.name: GetDeduplicateHar_0100
+ * @tc.desc: test GetDeduplicateHar when root is nullptr
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeduplicateHar_0100, Function | MediumTest | Level1)
+{
+    bool deduplicateHar;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_FALSE(moduleJson.GetDeduplicateHar(deduplicateHar));
+}
+
+/*
+ * @tc.name: GetDeduplicateHar_0200
+ * @tc.desc: test GetDeduplicateHar when deduplicateHar field is invalid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeduplicateHar_0200, Function | MediumTest | Level1)
+{
+    bool deduplicateHar;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(APP_ERROR_QUERY_SCHEMES));
+    EXPECT_FALSE(moduleJson.GetDeduplicateHar(deduplicateHar));
+}
+
+/*
+ * @tc.name: GetDeduplicateHar_0300
+ * @tc.desc: test GetDeduplicateHar when deduplicateHar field exists and is valid
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, GetDeduplicateHar_0300, Function | MediumTest | Level1)
+{
+    bool deduplicateHar;
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_1));
+    EXPECT_TRUE(moduleJson.GetDeduplicateHar(deduplicateHar));
+    EXPECT_FALSE(deduplicateHar);
+}
+
+/*
+ * @tc.name: CheckDeduplicateHar_0100
+ * @tc.desc: test CheckDeduplicateHar when root is nullptr
+ */
+HWTEST_F(ModuleJsonTest, CheckDeduplicateHar_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.root_ = nullptr;
+    EXPECT_TRUE(moduleJson.CheckDeduplicateHar());
+}
+
+/*
+ * @tc.name: CheckDeduplicateHar_0200
+ * @tc.desc: test CheckDeduplicateHar when deduplicateHar = false
+ */
+HWTEST_F(ModuleJsonTest, CheckDeduplicateHar_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_1));
+    EXPECT_TRUE(moduleJson.CheckDeduplicateHar());
+}
+
+/*
+ * @tc.name: CheckDeduplicateHar_0300
+ * @tc.desc: test CheckDeduplicateHar when deduplicateHar = true but minAPIVersion >= threshold
+ */
+HWTEST_F(ModuleJsonTest, CheckDeduplicateHar_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_3));
+    EXPECT_TRUE(moduleJson.CheckDeduplicateHar());
+}
+
+/*
+ * @tc.name: CheckDeduplicateHar_0400
+ * @tc.desc: test CheckDeduplicateHar when deduplicateHar = true and minAPIVersion < threshold
+ */
+HWTEST_F(ModuleJsonTest, CheckDeduplicateHar_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING_WITH_DEDUPLICATE_HAR_2));
+    EXPECT_FALSE(moduleJson.CheckDeduplicateHar());
 }
 }

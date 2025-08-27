@@ -140,7 +140,7 @@ bool HspPackager::IsVerifyValidInHspMode()
             return false;
         }
     }
-    
+
     std::string outPath = "";
     std::string forceRewrite = "";
     it = parameterMap_.find(Constants::PARAM_OUT_PATH);
@@ -237,6 +237,10 @@ bool HspPackager::CompressHsp()
             LOGE("module type must be shared.");
             return false;
         }
+        if (!moduleJson_.CheckDeduplicateHar()) {
+            LOGE("CheckDeduplicateHar failed.");
+            return false;
+        }
     }
     if (!CompressHspMode(jsonPath_) || !BuildHash(buildHashFinish_, generateBuildHash_, parameterMap_, jsonPath_)) {
         return false;
@@ -275,7 +279,7 @@ bool HspPackager::CompressHspMode(const std::string &jsonPath)
             return false;
         }
     }
-    
+
     if (!AddCommonFileOrDirectoryToZip(Constants::PARAM_PROFILE_PATH, Constants::PROFILE_NAME)) {
         return false;
     }
