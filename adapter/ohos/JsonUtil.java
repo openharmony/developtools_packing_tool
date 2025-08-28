@@ -53,6 +53,7 @@ public class JsonUtil {
     private static final String LEGACY_VERSION_NAME = "legacyVersionName";
     private static final String MULTI_FRAMEWORK_BUNDLE = "multiFrameworkBundle";
     private static final String ACTION_SYSTEM_HOME = "action.system.home";
+    private static final String OHOS_WANT_ACTION_HOME = "ohos.want.action.home";
     private static final String ENTITY_SYSTEM_HOME = "entity.system.home";
     private static final String MAIN_ABILITY = "mainAbility";
     private static final String MAIN_ELEMENT = "mainElement";
@@ -1047,7 +1048,8 @@ public class JsonUtil {
         // parse appName
         for (ModuleAbilityInfo abilityInfo : moduleProfileInfo.moduleInfo.abilities) {
             for (SkillInfo skill : abilityInfo.skills) {
-                if (skill.actions.contains(ACTION_SYSTEM_HOME) && skill.entities.contains(ENTITY_SYSTEM_HOME)) {
+                if ((skill.actions.contains(ACTION_SYSTEM_HOME) || skill.actions.contains(OHOS_WANT_ACTION_HOME)) &&
+                        skill.entities.contains(ENTITY_SYSTEM_HOME)) {
                     moduleProfileInfo.moduleAppInfo.appName = abilityInfo.label;
                     moduleProfileInfo.moduleAppInfo.appNameEN = abilityInfo.label;
                     break;
@@ -2154,7 +2156,9 @@ public class JsonUtil {
 
     private static boolean isSystemHomeAbility(List<SkillInfo> skills) {
         for (SkillInfo skillInfo : skills) {
-            if (skillInfo.entities.contains(ENTITY_SYSTEM_HOME) && skillInfo.actions.contains(ACTION_SYSTEM_HOME)) {
+            if (skillInfo.entities.contains(ENTITY_SYSTEM_HOME) &&
+                    (skillInfo.actions.contains(ACTION_SYSTEM_HOME) ||
+                            skillInfo.actions.contains(OHOS_WANT_ACTION_HOME))) {
                 return true;
             }
         }
