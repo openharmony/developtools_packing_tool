@@ -206,6 +206,7 @@ public:
     bool GetQuerySchemes(std::list<std::string>& querySchemes);
     bool GetQuerySchemesByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& querySchemes);
     bool GetQuerySchemesByArray(std::unique_ptr<PtJson>& querySchemesObj, std::list<std::string>& querySchemes);
+    bool GetDeduplicateHar(bool &deduplicateHar);
 
     bool IsModuleAtomicServiceValid();
     bool CheckEntryInAtomicService();
@@ -213,6 +214,7 @@ public:
     bool CheckStageAsanTsanEnabledValid();
     bool CheckStageAtomicService();
     bool CheckQuerySchemes();
+    bool CheckDeduplicateHar();
     bool CheckStageOverlayCfg();
 
     bool GetGenerateBuildHash(bool& generateBuildHash);
