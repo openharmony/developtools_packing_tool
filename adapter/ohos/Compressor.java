@@ -185,6 +185,7 @@ public class Compressor {
     private static final String BACKUP_PREFIX = "backup";
     private static final int QUERY_SCHEMES_CHECK_COUNT = 50;
     private static final int QUERY_SCHEMES_CHECK_MIN_API_VERSION = 21;
+    private static final int DEDUPLICATE_HAR_CHECK_MIN_API_VERSION = 21;
     private static final int MIN_API_VERSION_ERROR_VALUE = -1;
 
     // set timestamp to get fixed MD5
@@ -609,6 +610,12 @@ public class Compressor {
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
             if (!TYPE_SHARED.equals(moduleType)) {
                 LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Module type must be shared."));
+                throw new BundleException("Compress hsp failed.");
+            }
+            // check deduplicateHar
+            if (!checkDeduplicateHar(jsonString)) {
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check the deduplicateHar in the Stage module failed."));
                 throw new BundleException("Compress hsp failed.");
             }
         }
@@ -1088,6 +1095,12 @@ public class Compressor {
                     "Check the querySchemes parameter in the Stage module failed."));
             return false;
         }
+        // check deduplicateHar
+        if (!checkDeduplicateHar(jsonString)) {
+            LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(
+                    "Check the deduplicateHar in the Stage module failed."));
+            return false;
+        }
         return true;
     }
 
@@ -1147,12 +1160,15 @@ public class Compressor {
 
     private static boolean checkQuerySchemes(String jsonString) throws BundleException {
         int minAPIVersion = ModuleJsonUtil.getMinAPIVersion(jsonString);
-        minAPIVersion = (minAPIVersion == MIN_API_VERSION_ERROR_VALUE) ? QUERY_SCHEMES_CHECK_MIN_API_VERSION : minAPIVersion;
+        if (minAPIVersion == MIN_API_VERSION_ERROR_VALUE || minAPIVersion >= QUERY_SCHEMES_CHECK_MIN_API_VERSION) {
+            return true;
+        }
         List<String> querySchemes = ModuleJsonUtil.getQuerySchemes(jsonString);
         int querySchemesCount = querySchemes.size();
-        if (querySchemesCount > QUERY_SCHEMES_CHECK_COUNT && minAPIVersion < QUERY_SCHEMES_CHECK_MIN_API_VERSION) {
+        if (querySchemesCount > QUERY_SCHEMES_CHECK_COUNT) {
             String errMsg = "The number of querySchemes in the Hap(entry) exceeds " + QUERY_SCHEMES_CHECK_COUNT +
-                    ", and the minAPIVersion is less than " + QUERY_SCHEMES_CHECK_MIN_API_VERSION;
+                    ", and the minAPIVersion(" + minAPIVersion + ") is less than " +
+                    QUERY_SCHEMES_CHECK_MIN_API_VERSION;
             LOG.error(PackingToolErrMsg.CHECK_STAGE_HAP_FAILED.toString(errMsg));
             return false;
         }
@@ -1250,6 +1266,23 @@ public class Compressor {
                         "without the targetBundleName in app.json. The moduleName is " + moduleName + "."));
                 return false;
             }
+        }
+        return true;
+    }
+
+    private static boolean checkDeduplicateHar(String jsonString) throws BundleException {
+        int minAPIVersion = ModuleJsonUtil.getMinAPIVersion(jsonString);
+        if (minAPIVersion == MIN_API_VERSION_ERROR_VALUE || minAPIVersion >= DEDUPLICATE_HAR_CHECK_MIN_API_VERSION) {
+            return true;
+        }
+        boolean deduplicateHar = ModuleJsonUtil.getDeduplicateHar(jsonString);
+        if (deduplicateHar) {
+            String moduleName = ModuleJsonUtil.parseStageModuleName(jsonString);
+            String errMsg = "The deduplicateHar of module " + moduleName + " is true, " +
+                    "and the minAPIVersion(" + minAPIVersion + ") is less than " +
+                    DEDUPLICATE_HAR_CHECK_MIN_API_VERSION;
+            LOG.error(PackingToolErrMsg.CHECK_DEDUPLICATE_HAR_FAILED.toString(errMsg));
+            return false;
         }
         return true;
     }

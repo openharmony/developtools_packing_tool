@@ -109,6 +109,7 @@ class ModuleJsonUtil {
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_URI = "uri";
     private static final String QUERY_SCHEMES = "querySchemes";
+    private static final String DEDUPLICATE_HAR = "deduplicateHar";
     private static final String CONTINUE_TYPE = "continueType";
     private static final String CONTINUE_BUNDLE_NAME = "continueBundleName";
     private static final String MULTI_APP_MODE = "multiAppMode";
@@ -1739,6 +1740,21 @@ class ModuleJsonUtil {
                     .forEach(querySchemes::add);
         }
         return querySchemes;
+    }
+
+    /**
+     * get deduplicateHar from json file.
+     *
+     * @param jsonString is the json String of module.json
+     * @return deduplicateHar value
+     */
+    public static boolean getDeduplicateHar(String jsonString) throws BundleException {
+        boolean deduplicateHar = false;
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (!moduleObj.containsKey(DEDUPLICATE_HAR)) {
+            return deduplicateHar;
+        }
+        return moduleObj.getBoolean(DEDUPLICATE_HAR);
     }
 
     /**

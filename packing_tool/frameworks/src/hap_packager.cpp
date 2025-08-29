@@ -428,6 +428,11 @@ bool HapPackager::CheckStageHap(const std::string &jsonPath)
         return false;
     }
 
+    if (!moduleJson_.CheckDeduplicateHar()) {
+        LOGE("CheckDeduplicateHar failed.");
+        return false;
+    }
+
     return true;
 }
 
