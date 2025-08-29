@@ -73,6 +73,7 @@ public:
 
 private:
     static bool CheckAppFieldsIsSame(const std::list<HapVerifyInfo>& hapVerifyInfos);
+    static VerifyCollection GetVerifyCollection(const HapVerifyInfo& baseInfo);
     static bool CheckIsPluginApp(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool AppFieldsIsSame(const VerifyCollection& verifyCollection, const HapVerifyInfo& hapVerifyInfo);
     static bool IsEntryOrFeature(const std::string& moduleType);
@@ -138,7 +139,11 @@ private:
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2);
     static bool ModuleDebugValidation(const std::list<HapVerifyInfo> hapList, const std::list<HapVerifyInfo> hspList);
     static bool AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos,
-        int32_t minCompatibleVersionCode, int32_t targetApiVersion, int32_t minApiVersion);
+                                 const HapVerifyInfo& minCompatibleVersionCodeMaxInfo,
+                                 const HapVerifyInfo& targetApiVersionMaxInfo,
+                                 const HapVerifyInfo& minApiVersionMaxInfo);
+    static bool CheckField(const std::string& field, int32_t hapVal, const HapVerifyInfo& hap,
+                           int32_t hspVal, const HapVerifyInfo& hsp);
     static bool AppAssetAccessGroupsIsSame(const std::list<std::string>& assetAccessGroups,
         const HapVerifyInfo& hapVerifyInfo);
 };
