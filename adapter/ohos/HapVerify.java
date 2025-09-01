@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -272,47 +273,22 @@ class HapVerify {
      * @return true if app fields is same
      */
     private static boolean checkAppFieldsIsSame(List<HapVerifyInfo> hapVerifyInfos) {
-        if (hapVerifyInfos.isEmpty()) {
-            String cause = "Hap verify infos is empty.";
-            LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString(cause));
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString("Hap verify infos is empty."));
             return false;
         }
-        HapVerifyInfo verifyInfo = hapVerifyInfos.get(0);
-        Optional<HapVerifyInfo> optional = hapVerifyInfos.stream()
-                .filter(hapVerifyInfo -> !hapVerifyInfo.getModuleType().equals(TYPE_SHARED))
-                .findFirst();
-        if (optional.isPresent()) {
-            verifyInfo = optional.get();
-        }
+        HapVerifyInfo baseInfo = hapVerifyInfos.stream().filter(h -> !TYPE_SHARED.equals(h.getModuleType()))
+                .findFirst().orElse(hapVerifyInfos.get(0));
+        VerifyCollection verifyCollection = getVerifyCollection(baseInfo);
+        HapVerifyInfo entryInfo = hapVerifyInfos.stream()
+                .filter(hapInfo -> ENTRY.equals(hapInfo.getModuleType())).findFirst().orElse(baseInfo);
+        String moduleName = entryInfo.getModuleName();
+        List<String> assetAccessGroups = entryInfo.getAssetAccessGroups();
         List<HapVerifyInfo> hapList = new ArrayList<>();
         List<HapVerifyInfo> hspList = new ArrayList<>();
-        int hspMinCompatibleVersionCodeMax = -1;
-        int hspTargetApiVersionMax = -1;
-        int hspMinApiVersionMax = -1;
-        VerifyCollection verifyCollection = new VerifyCollection();
-        verifyCollection.bundleName = verifyInfo.getBundleName();
-        verifyCollection.setBundleType(verifyInfo.getBundleType());
-        verifyCollection.vendor = verifyInfo.getVendor();
-        verifyCollection.versionCode = verifyInfo.getVersion().versionCode;
-        verifyCollection.versionName = verifyInfo.getVersion().versionName;
-        verifyCollection.compatibleApiVersion = verifyInfo.getApiVersion().getCompatibleApiVersion();
-        verifyCollection.releaseType = verifyInfo.getApiVersion().getReleaseType();
-        verifyCollection.targetBundleName = verifyInfo.getTargetBundleName();
-        verifyCollection.targetPriority = verifyInfo.getTargetPriority();
-        verifyCollection.debug = verifyInfo.isDebug();
-        verifyCollection.setModuleName(verifyInfo.getModuleName());
-        verifyCollection.setModuleType(verifyInfo.getModuleType());
-        verifyCollection.setMultiAppMode(verifyInfo.getMultiAppMode());
-
-        List<String> assetAccessGroups = verifyInfo.getAssetAccessGroups();
-        String moduleName = verifyInfo.getModuleName();
-        Optional<HapVerifyInfo> entryOptional = hapVerifyInfos.stream()
-                .filter(hapVerifyInfo -> ENTRY.equals(hapVerifyInfo.getModuleType()))
-                .findFirst();
-        if (entryOptional.isPresent()) {
-            moduleName = entryOptional.get().getModuleName();
-            assetAccessGroups = entryOptional.get().getAssetAccessGroups();
-        }
+        HapVerifyInfo minCompatibleVersionCodeMaxInfo = new HapVerifyInfo();
+        HapVerifyInfo targetApiVersionMaxInfo = new HapVerifyInfo();
+        HapVerifyInfo minApiVersionMaxInfo = new HapVerifyInfo();
         for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
             if (!appFieldsIsSame(verifyCollection, hapVerifyInfo)) {
                 LOG.warning("Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
@@ -327,52 +303,101 @@ class HapVerify {
                 hapList.add(hapVerifyInfo);
             } else if (Objects.equals(hapVerifyInfo.getFileType(), HSP_SUFFIX)) {
                 hspList.add(hapVerifyInfo);
-                if (hapVerifyInfo.getVersion().minCompatibleVersionCode > hspMinCompatibleVersionCodeMax) {
-                    hspMinCompatibleVersionCodeMax = hapVerifyInfo.getVersion().minCompatibleVersionCode;
+                if (hapVerifyInfo.getVersion().minCompatibleVersionCode >
+                        minCompatibleVersionCodeMaxInfo.getVersion().minCompatibleVersionCode) {
+                    minCompatibleVersionCodeMaxInfo = hapVerifyInfo;
                 }
-                if (hapVerifyInfo.getApiVersion().getTargetApiVersion() > hspTargetApiVersionMax) {
-                    hspTargetApiVersionMax = hapVerifyInfo.getApiVersion().getTargetApiVersion();
+                if (hapVerifyInfo.getApiVersion().getTargetApiVersion() >
+                        targetApiVersionMaxInfo.getApiVersion().getTargetApiVersion()) {
+                    targetApiVersionMaxInfo = hapVerifyInfo;
                 }
-                if (hapVerifyInfo.getApiVersion().getCompatibleApiVersion() > hspMinApiVersionMax) {
-                    hspMinApiVersionMax = hapVerifyInfo.getApiVersion().getCompatibleApiVersion();
+                if (hapVerifyInfo.getApiVersion().getCompatibleApiVersion() >
+                        minApiVersionMaxInfo.getApiVersion().getCompatibleApiVersion()) {
+                    minApiVersionMaxInfo = hapVerifyInfo;
                 }
             }
         }
-        if (!appFieldsIsValid(hapList, hspMinCompatibleVersionCodeMax, hspTargetApiVersionMax, hspMinApiVersionMax)) {
-            return false;
-        }
-        if (!moduleDebugValidation(hapList, hspList)) {
-            return false;
-        }
-        return true;
+        return appFieldsIsValid(hapList, minCompatibleVersionCodeMaxInfo, targetApiVersionMaxInfo, minApiVersionMaxInfo)
+                && moduleDebugValidation(hapList, hspList);
+    }
+    
+    private static VerifyCollection getVerifyCollection(HapVerifyInfo baseInfo) {
+        VerifyCollection verifyCollection = new VerifyCollection();
+        verifyCollection.bundleName = baseInfo.getBundleName();
+        verifyCollection.setBundleType(baseInfo.getBundleType());
+        verifyCollection.vendor = baseInfo.getVendor();
+        verifyCollection.versionCode = baseInfo.getVersion().versionCode;
+        verifyCollection.versionName = baseInfo.getVersion().versionName;
+        verifyCollection.compatibleApiVersion = baseInfo.getApiVersion().getCompatibleApiVersion();
+        verifyCollection.releaseType = baseInfo.getApiVersion().getReleaseType();
+        verifyCollection.targetBundleName = baseInfo.getTargetBundleName();
+        verifyCollection.targetPriority = baseInfo.getTargetPriority();
+        verifyCollection.debug = baseInfo.isDebug();
+        verifyCollection.setModuleName(baseInfo.getModuleName());
+        verifyCollection.setModuleType(baseInfo.getModuleType());
+        verifyCollection.setMultiAppMode(baseInfo.getMultiAppMode());
+        return verifyCollection;
     }
 
-    private static boolean appFieldsIsValid(List<HapVerifyInfo> hapVerifyInfos, int minCompatibleVersionCode,
-        int targetApiVersion, int minApiVersion) {
-        if (hapVerifyInfos.isEmpty()) {
+    private static boolean appFieldsIsValid(List<HapVerifyInfo> hapVerifyInfos,
+                                            HapVerifyInfo minCompatibleVersionCodeMaxInfo,
+                                            HapVerifyInfo targetApiVersionMaxInfo,
+                                            HapVerifyInfo minApiVersionMaxInfo) {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
             LOG.warning("Hap verify infos is empty");
             return true;
         }
-        HapVerifyInfo hap = hapVerifyInfos.get(0);
+        HapVerifyInfo baseHap = hapVerifyInfos.get(0);
+        int baseMinCompatibleVersionCode = baseHap.getVersion().minCompatibleVersionCode;
+        int baseTargetApiVersion = baseHap.getApiVersion().getTargetApiVersion();
+        int baseCompatibleApiVersion = baseHap.getApiVersion().getCompatibleApiVersion();
+
+        // 校验所有 HAP 是否一致
         for (HapVerifyInfo hapInfo : hapVerifyInfos) {
-            if (hap.getVersion().minCompatibleVersionCode != hapInfo.getVersion().minCompatibleVersionCode ||
-                hap.getApiVersion().getTargetApiVersion() != hapInfo.getApiVersion().getTargetApiVersion() ||
-                hap.getApiVersion().getCompatibleApiVersion() != hapInfo.getApiVersion().getCompatibleApiVersion()) {
-                String errMsg = "Hap minCompatibleVersionCode or targetApiVersion or minApiVersion different.";
-                String solution = "Ensure that the values of 'minCompatibleVersionCode' and 'targetApiVersion' " +
-                        "and 'minApiVersion' in the module.json file of each HAP module are the same.";
-                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(errMsg, solution));
+            if (baseMinCompatibleVersionCode != hapInfo.getVersion().minCompatibleVersionCode) {
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(
+                        String.format("The minCompatibleVersionCode attribute values of two Hap are different. " +
+                        "Hap[%s]: (minCompatibleVersionCode: %d); Hap[%s]: (minCompatibleVersionCode: %d).",
+                        baseHap.getModuleName(), baseMinCompatibleVersionCode, hapInfo.getModuleName(),
+                        hapInfo.getVersion().minCompatibleVersionCode),
+                        "Ensure values of minCompatibleVersionCode are same in each HAP." ));
+                return false;
+            }
+            if (baseTargetApiVersion != hapInfo.getApiVersion().getTargetApiVersion()) {
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(
+                        String.format("The targetApiVersion attribute values of two Hap are different. " +
+                                        "Hap[%s]: (targetApiVersion: %d); Hap[%s]: (targetApiVersion: %d).",
+                                baseHap.getModuleName(), baseTargetApiVersion,
+                                hapInfo.getModuleName(), hapInfo.getApiVersion().getTargetApiVersion()),
+                        "Ensure values of targetApiVersion are same in each HAP." ));
+                return false;
+            }
+            if (baseCompatibleApiVersion != hapInfo.getApiVersion().getCompatibleApiVersion()) {
+                LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(
+                        String.format("The minApiVersion attribute values of two Hap are different. " +
+                                        "Hap[%s]: (minApiVersion: %d); Hap[%s]: (minApiVersion: %d).",
+                                baseHap.getModuleName(), baseCompatibleApiVersion,
+                                hapInfo.getModuleName(), hapInfo.getApiVersion().getCompatibleApiVersion()),
+                        "Ensure values of minApiVersion are same in each HAP." ));
                 return false;
             }
         }
-        if (hap.getVersion().minCompatibleVersionCode < minCompatibleVersionCode ||
-            hap.getApiVersion().getTargetApiVersion() < targetApiVersion ||
-            hap.getApiVersion().getCompatibleApiVersion() < minApiVersion) {
-            String cause = "The values of minCompatibleVersionCode or targetApiVersion or minApiVersion in the" +
-                    " module.json file of the HAP module are smaller than those of the HSP module.";
-            String solution = "Ensure that the values of aminCompatibleVersionCode and targetApiVersion" +
-                    " and minApiVersion in the module.json file of the HAP module" +
-                    " are greater than or equal to those of the HSP module.";
+
+        // 封装公共检查逻辑：HAP >= HSP
+        return checkField("minCompatibleVersionCode", baseMinCompatibleVersionCode, baseHap,
+                minCompatibleVersionCodeMaxInfo.getVersion().minCompatibleVersionCode, minCompatibleVersionCodeMaxInfo)
+                && checkField("targetApiVersion", baseTargetApiVersion, baseHap,
+                targetApiVersionMaxInfo.getApiVersion().getTargetApiVersion(), targetApiVersionMaxInfo)
+                && checkField("minApiVersion", baseCompatibleApiVersion, baseHap,
+                minApiVersionMaxInfo.getApiVersion().getCompatibleApiVersion(), minApiVersionMaxInfo);
+    }
+
+    private static boolean checkField(String field, int hapVal, HapVerifyInfo hap,
+                                      int hspVal, HapVerifyInfo hsp) {
+        if (hapVal < hspVal) {
+            String cause = String.format("The values of %s[%d] in HAP[%s] < %s[%d] of HSP[%s].",
+                    field, hapVal, hap.getModuleName(), field, hspVal, hsp.getModuleName());
+            String solution = String.format("Ensure that the values of %s in HAP >= HSP.", field);
             LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(cause, solution));
             return false;
         }
@@ -382,13 +407,14 @@ class HapVerify {
     private static boolean moduleDebugValidation(List<HapVerifyInfo> hapVerifyInfos,
                                                  List<HapVerifyInfo> hspVerifyInfos) {
         if (hapVerifyInfos.isEmpty()) {
-            LOG.warning("Hap verify infos is empty");
+            LOG.warning("Hap verify infos is empty.");
             return true;
         }
         HapVerifyInfo hap = hapVerifyInfos.get(0);
         for (HapVerifyInfo hapInfo : hapVerifyInfos) {
             if (hap.isDebug() != hapInfo.isDebug()) {
-                String errMsg = "The debug fields of multiple Hap are different.";
+                String errMsg = String.format("The debug fields of Hap[%s] and Hap[%s] are different.",
+                        hap.getModuleName(), hapInfo.getModuleName());
                 String solution = "Ensure that the values of 'debug' in the module.json file of each HAP module" +
                         " are the same.";
                 LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(errMsg, solution));
@@ -396,11 +422,17 @@ class HapVerify {
             }
         }
         if (hap.isDebug() || hspVerifyInfos.isEmpty()) {
-            LOG.warning("Hap debug is true or Hsp verify infos is empty");
+            LOG.info("Hap debug is true or Hsp verify infos is empty");
             return true;
         }
+        List<String> hspInfosNames = hspVerifyInfos.stream()
+                .filter(HapVerifyInfo::isDebug)
+                .map(HapVerifyInfo::getModuleName)
+                .collect(Collectors.toList());
+        String hspNames = hspInfosNames.stream()
+                .collect(Collectors.joining(", ", "[", "]"));
         if (hspVerifyInfos.stream().anyMatch(HapVerifyInfo::isDebug)) {
-            String errMsg = "Detected HAP(s) with debug=false, but some HSP(s) are debug=true.";
+            String errMsg = "Detected HAP(s) with debug=false, but some HSP" + hspNames + " are debug=true.";
             String solution = "When the debug value of Hap is false,the debug value of Hsp should also be false.";
             LOG.error(PackingToolErrMsg.CHECK_APP_FIELDS_INVALID.toString(errMsg, solution));
             return false;
