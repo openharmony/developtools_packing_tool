@@ -1275,6 +1275,7 @@
                   "assetAcceleration",
                   "formEdit",
                   "liveForm",
+                  "webNativeMessaging",
                   "distributed",
                   "awc/webpage",
                   "awc/newsfeed",
