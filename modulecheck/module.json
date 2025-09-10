@@ -1281,7 +1281,8 @@
                   "awc/newsfeed",
                   "vpn",
                   "appService",
-                  "selection"
+                  "selection",
+                  "faultLog"
                 ]
               },
               "permissions": {
