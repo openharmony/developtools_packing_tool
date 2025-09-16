@@ -246,7 +246,7 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
         return false;
     }
     if (!CheckInputModulePath(hapPath, hspPath)) {
-        LOGE("input hap-path or hsp-path is invalid.");
+        LOGW("input hap-path or hsp-path is invalid.");
     }
     if (!hapPath.empty() && !CompatibleProcess(hapPath, formattedHapPathList_, Constants::HAP_SUFFIX)) {
         LOGE("hap-path is invalid.");
