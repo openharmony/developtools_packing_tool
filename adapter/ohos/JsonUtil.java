@@ -26,7 +26,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import ohos.restool.ResourcesParserFactory;
-import ohos.restool.ResourcesParserV2;
 
 /**
  * Json Util.
@@ -1051,7 +1050,7 @@ public class JsonUtil {
                 if ((skill.actions.contains(ACTION_SYSTEM_HOME) || skill.actions.contains(OHOS_WANT_ACTION_HOME)) &&
                         skill.entities.contains(ENTITY_SYSTEM_HOME)) {
                     moduleProfileInfo.moduleAppInfo.appName = abilityInfo.label;
-                    moduleProfileInfo.moduleAppInfo.appNameEN = abilityInfo.label;
+                    moduleProfileInfo.moduleAppInfo.appNameEN = abilityInfo.baseLabel;
                     break;
                 }
             }
@@ -1390,6 +1389,7 @@ public class JsonUtil {
             moduleAbilityInfo.setIconId(abilityJson.getIntValue(ICON_ID));
         }
         moduleAbilityInfo.label = parseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
+        moduleAbilityInfo.baseLabel = parseBaseResourceByKey(abilityJson, data, LABEL, LABEL_ID);
         if (abilityJson.containsKey(LABEL_ID)) {
             moduleAbilityInfo.setLabelId(abilityJson.getIntValue(LABEL_ID));
         }
@@ -1954,6 +1954,31 @@ public class JsonUtil {
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
             res = ResourcesParserFactory.createParser(data).getResourceStringById(resId, data);
+        }
+        if (res != null && !res.isEmpty()) {
+            return res;
+        } else if (jsonObject.containsKey(key)) {
+            return getJsonString(jsonObject, key);
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * get base resource from JSONObject by the key.
+     *
+     * @param jsonObject uncompress json object.
+     * @param data is resource byte in hap.
+     * @param key is the index of json object.
+     * @param keyId is the index id of resource.
+     * @return the result
+     */
+    static String parseBaseResourceByKey(JSONObject jsonObject, byte[] data, String key, String keyId)
+            throws BundleException {
+        String res = "";
+        if (jsonObject.containsKey(keyId)) {
+            int resId = jsonObject.getIntValue(keyId);
+            res = ResourcesParserFactory.createParser(data).getBaseResourceById(resId, data);
         }
         if (res != null && !res.isEmpty()) {
             return res;
