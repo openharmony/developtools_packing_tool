@@ -169,4 +169,9 @@ class ModuleInfo {
     public HashMap<String, String> getDescriptions() {
         return descriptions;
     }
+
+    /**
+     * Indicates whether the module.abc file is compressed.
+     */
+    public boolean isModuleAbcCompressed = false;
 }

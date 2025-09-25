@@ -80,6 +80,7 @@ public class Uncompress {
     private static final String PATCH_JSON = "patch.json";
     private static final String HAP_PREFIX = "HAP";
     private static final String HSP_SUFFIX = ".hsp";
+    private static final String MODULE_ABC = "ets/modules.abc";
     private static final int MAX_CPU_ABI_TYPE_NUM = 128;
 
     private static final Log LOG = new Log(Uncompress.class.toString());
@@ -780,6 +781,7 @@ public class Uncompress {
             hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
             hapZipInfo.setPackInfoJsonStr(FileUtils.getFileStringFromZip(PACK_INFO, zipFile));
             hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
+            hapZipInfo.setIsModuleAbcCompressed(isModuleAbcCompressed(srcPath));
         }  finally {
             Utility.closeStream(zipFile);
         }
@@ -866,6 +868,10 @@ public class Uncompress {
                 if (isHarmonyProfile(entry.getName())) {
                     bufferedReader = new BufferedReader(new InputStreamReader(zipIn));
                     hapZipInfo.setHarmonyProfileJsonStr(readStringFromInputStream(zipIn, bufferedReader));
+                }
+                if (entry.getName().equals(MODULE_ABC)) {
+                    boolean isCompressed = entry.getMethod() != ZipEntry.STORED;
+                    hapZipInfo.setIsModuleAbcCompressed(isCompressed);
                 }
             }
         } finally {
@@ -1346,10 +1352,29 @@ public class Uncompress {
             hapZipInfo.setPackInfoJsonStr(FileUtils.getFileStringFromZip(PACK_INFO, zipFile));
             hapZipInfo.setResDataBytes(getResourceDataFromHap(zipFile));
             hapZipInfo.setHapFileName(getHapNameWithoutSuffix(srcFile.getName()));
+            hapZipInfo.setIsModuleAbcCompressed(isModuleAbcCompressed(srcPath));
         } finally {
             Utility.closeStream(zipFile);
         }
         return hapZipInfo;
+    }
+
+    private static boolean isModuleAbcCompressed(String srcPath) throws IOException {
+        ZipFile zipFile = null;
+        try {
+            File srcFile = new File(srcPath);
+            zipFile = new ZipFile(srcFile);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (MODULE_ABC.equals(entry.getName())) {
+                    return entry.getMethod() != ZipEntry.STORED;
+                }
+            }
+        } finally {
+            Utility.closeStream(zipFile);
+        }
+        return false;
     }
 
     /**
@@ -1367,6 +1392,7 @@ public class Uncompress {
         moduleProfileInfo.hapName = hapZipInfo.getHapFileName();
         moduleResult.addModuleProfileInfo(moduleProfileInfo);
         moduleResult.moduleProfileStr.add(hapZipInfo.getHarmonyProfileJsonStr());
+        moduleProfileInfo.moduleInfo.isModuleAbcCompressed = hapZipInfo.getIsModuleAbcCompressed();
     }
 
     /**
@@ -1508,6 +1534,10 @@ public class Uncompress {
                     String fileName = filePath.replaceAll(RESOURCE_PATH, "");
                     String fileContent = readStringFromInputStream(zipIn, bufferedReader);
                     hapZipInfo.pushResourceMap(fileName, fileContent);
+                }
+                if (entry.getName().equals(MODULE_ABC)) {
+                    boolean isCompressed = entry.getMethod() != ZipEntry.STORED;
+                    hapZipInfo.setIsModuleAbcCompressed(isCompressed);
                 }
             }
         } catch (BundleException | IOException e) {
