@@ -101,6 +101,29 @@ class HapZipInfo {
     }
 
     /**
+     * Indicates whether the module.abc file is compressed.
+     */
+    private boolean isModuleAbcCompressed = false;
+
+    /**
+     * Set module.abc compression status.
+     *
+     * @param isModuleAbcCompressed compression status
+     */
+    public void setIsModuleAbcCompressed(boolean isModuleAbcCompressed) {
+        this.isModuleAbcCompressed = isModuleAbcCompressed;
+    }
+
+    /**
+     * Get module.abc compression status.
+     *
+     * @return true if module.abc is compressed, false otherwise
+     */
+    public boolean getIsModuleAbcCompressed() {
+        return isModuleAbcCompressed;
+    }
+
+    /**
      * push json file to map.
      *
      * @param fileName Indicates the file name of json file.
