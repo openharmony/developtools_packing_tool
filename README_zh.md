@@ -605,9 +605,9 @@ java -jar app_unpacking_tool.jar --mode <option> --hsp-path <options> --out-path
 | 字段      | 类型                               | 描述                                                       | 备注 |
 | --------- | ---------------------------------- |------------------------------------------------------------| ---- |
 | name      | String                             | 标识ReqPermission的名称信息                                 | NA   |
-| reason    | String                             | 当申请的权限为user_grant权限时此字段必填，描述申请权限的原因 | NA   |
+| reason    | String                             | 当申请的权限为user_grant或manual_settings权限时此字段必填，描述申请权限的原因 | NA   |
 | usedScene | UsedScene结构体（见下述UsedScene） | 描述权限使用的场景和时机。场景类型有：ability、调用时机（when），可配置多个ability | NA   |
-| reasons   | HashMap\<String, String>           | 当申请的权限为user_grant权限时此字段必填，描述申请权限的原因 | NA    |
+| reasons   | HashMap\<String, String>           | 当申请的权限为user_grant或manual_settings权限时此字段必填，描述申请权限的原因 | NA    |
 
 ### 4.12 UsedScene结构体信息
 

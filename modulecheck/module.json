@@ -1577,7 +1577,8 @@
                 "type": "string",
                 "enum": [
                   "system_grant",
-                  "user_grant"
+                  "user_grant",
+                  "manual_settings"
                 ],
                 "default": "system_grant"
               },
