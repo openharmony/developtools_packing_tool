@@ -169,6 +169,7 @@ class ModuleAdaption {
         hapInfo.appModel = moduleInfo.appModel;
         hapInfo.dependencies = moduleInfo.dependenies;
         hapInfo.proxyData = moduleInfo.proxyData;
+        hapInfo.isModuleAbcCompressed = moduleInfo.isModuleAbcCompressed;
         return hapInfo;
     }
 
