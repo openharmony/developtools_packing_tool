@@ -202,4 +202,9 @@ public class HapInfo {
         }
         return "";
     }
+
+    /**
+     * Indicates whether the module.abc file is compressed.
+     */
+    public boolean isModuleAbcCompressed = false;
 }
