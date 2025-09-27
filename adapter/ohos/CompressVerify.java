@@ -749,6 +749,12 @@ public class CompressVerify {
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
+        if (!utility.getReplacePackInfo().isEmpty() && !utility.getReplacePackInfo().equals(Constants.TRUE) &&
+                !utility.getReplacePackInfo().equals(Constants.FALSE)) {
+            LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(
+                    "--replace-pack-info is invalid."));
+            return false;
+        }
 
         return isOutPathValid(utility, APP_SUFFIX);
     }
