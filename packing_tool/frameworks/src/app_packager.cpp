@@ -337,6 +337,25 @@ bool AppPackager::CheckPacJsonPath()
     return true;
 }
 
+bool AppPackager::GetAndCheckReplacePackInfo()
+{
+    auto it = parameterMap_.find(Constants::PARAM_REPLACE_PACK_INFO);
+    if (it != parameterMap_.end()) {
+        if (it->second == Constants::TRUE_STRING) {
+            isReplacePackInfo_ = true;
+            return true;
+        } else if (it->second == Constants::FALSE_STRING) {
+            isReplacePackInfo_ = false;
+            return true;
+        } else {
+            LOGE("--replace-pack-info is invalid.");
+            return false;
+        }
+    }
+    isReplacePackInfo_ = true;
+    return true;
+}
+
 bool AppPackager::IsVerifyValidInAppMode()
 {
     std::string hapPath;
@@ -370,6 +389,10 @@ bool AppPackager::IsVerifyValidInAppMode()
     std::string force;
     if (parameterMap_.find(Constants::PARAM_FORCE) != parameterMap_.end()) {
         force = parameterMap_.at(Constants::PARAM_FORCE);
+    }
+    if (!GetAndCheckReplacePackInfo()) {
+        LOGE("GetAndCheckReplacePackInfo failed!");
+        return false;
     }
     return IsOutPathValid(outPath, force, Constants::APP_SUFFIX);
 }
@@ -416,6 +439,10 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
     if (it != parameterMap_.end()) {
         for (const auto& hapPathItem : formattedHapPathList_) {
             fs::path hapFile = hapPathItem;
+            if (!isReplacePackInfo_) {
+                fileList.push_back(hapFile.string());
+                continue;
+            }
             fs::path hapTempPath = tempPath / hapFile.filename();
             fs::path hapUnzipTempPath = tempPath / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
                 Utils::GenerateUUID());
@@ -430,6 +457,10 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
     if (it != parameterMap_.end()) {
         for (const auto& hspPathItem : formattedHspPathList_) {
             fs::path hspFile = hspPathItem;
+            if (!isReplacePackInfo_) {
+                fileList.push_back(hspFile.string());
+                continue;
+            }
             fs::path hspTempPath = hspTempDirPath / hspFile.filename();
             fs::path hspUnzipTempPath = tempPath / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
             Utils::GenerateUUID());
