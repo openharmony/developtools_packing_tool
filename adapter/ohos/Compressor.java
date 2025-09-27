@@ -1571,6 +1571,10 @@ public class Compressor {
             }
 
             for (String hapPathItem : utility.getFormattedHapPathList()) {
+                if (!utility.isReplacePackInfo()) {
+                    fileList.add(hapPathItem.trim());
+                    continue;
+                }
                 File hapFile = new File(hapPathItem.trim());
                 String hapTempPath = tempDir + File.separator + hapFile.getName();
                 fileList.add(hapTempPath);
@@ -1589,6 +1593,10 @@ public class Compressor {
                 hspTempDir.mkdirs();
             }
             for (String hspPathItem : utility.getFormattedHspPathList()) {
+                if (!utility.isReplacePackInfo()) {
+                    fileList.add(hspPathItem.trim());
+                    continue;
+                }
                 File hspFile = new File(hspPathItem.trim());
                 String hspTempPath = hspTempDir + File.separator + hspFile.getName();
                 fileList.add(hspTempPath);
@@ -1638,8 +1646,10 @@ public class Compressor {
             throw new BundleException("Compress app failed.");
         } finally {
             // delete temp file
-            for (String path : fileList) {
-                deleteFile(path);
+            if (utility.isReplacePackInfo()) {
+                for (String path : fileList) {
+                    deleteFile(path);
+                }
             }
             deleteFile(tempPath);
             deleteFile(hspTempDirPath);

@@ -68,6 +68,7 @@ public class Utility {
     private String forceRewrite = "false";
     private String outPath = "";
     private String packInfoPath = "";
+    private String replacePackInfo = "";
     private String encryptPath = "";
     private String pacJsonPath = "";
     private String binPath = "";
@@ -430,6 +431,17 @@ public class Utility {
         }
     }
 
+    public String getReplacePackInfo() {
+        return replacePackInfo;
+    }
+
+    public void setReplacePackInfo(String replacePackInfo) {
+        this.replacePackInfo = replacePackInfo;
+    }
+
+    public boolean isReplacePackInfo() {
+        return !replacePackInfo.equals(FALSE_STRING);
+    }
     public String getEncryptPath() {
         return encryptPath;
     }
