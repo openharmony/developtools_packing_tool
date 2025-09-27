@@ -77,7 +77,7 @@ java -jar app_packing_tool.jar --mode res --entrycard-path [option] --pack-info-
 #### 1.3.1 示例
 
 ```
-java -jar app_packing_tool.jar --mode app [--hap-path <path>] [--hsp-path <path>] --out-path <path> [--signature-path <path>] [--certificate-path <path>] [--pack-info-path <path>] --force <option> [--encrypt-path <path>] [--pac-json-path <path>]
+java -jar app_packing_tool.jar --mode app [--hap-path <path>] [--hsp-path <path>] --out-path <path> [--signature-path <path>] [--certificate-path <path>] [--pack-info-path <path>] --force <option> [--encrypt-path <path>] [--pac-json-path <path>] [--replace-pack-info <option>]
 ```
 
 #### 1.3.2 参数含义及规范
@@ -95,6 +95,7 @@ java -jar app_packing_tool.jar --mode app [--hap-path <path>] [--hsp-path <path>
 | --force            | 否     | true或者false | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                           |
 | --encrypt-path     | 否     | NA          | 文件名必须为encrypt.json。                                          |
 | --pac-json-path    | 否     | NA          | 文件名必须为pac.json。                                              |
+| --replace-pack-info    | 否     | true或者false          | 打包app时，是否替换hap、hsp文件中的pack.info文件。默认值为true。 |
 
 #### 1.3.3 打包app时hap的合法性校验
 
