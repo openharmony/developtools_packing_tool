@@ -1276,6 +1276,7 @@
                   "formEdit",
                   "liveForm",
                   "webNativeMessaging",
+                  "notificationSubscriber",
                   "distributed",
                   "awc/webpage",
                   "awc/newsfeed",
