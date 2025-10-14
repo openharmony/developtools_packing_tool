@@ -344,7 +344,7 @@ class HapVerify {
                                             HapVerifyInfo targetApiVersionMaxInfo,
                                             HapVerifyInfo minApiVersionMaxInfo) {
         if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
-            LOG.warning("Hap verify infos is empty");
+            LOG.debug("Hap verify infos is empty");
             return true;
         }
         HapVerifyInfo baseHap = hapVerifyInfos.get(0);
@@ -407,7 +407,7 @@ class HapVerify {
     private static boolean moduleDebugValidation(List<HapVerifyInfo> hapVerifyInfos,
                                                  List<HapVerifyInfo> hspVerifyInfos) {
         if (hapVerifyInfos.isEmpty()) {
-            LOG.warning("Hap verify infos is empty.");
+            LOG.debug("Hap verify infos is empty.");
             return true;
         }
         HapVerifyInfo hap = hapVerifyInfos.get(0);

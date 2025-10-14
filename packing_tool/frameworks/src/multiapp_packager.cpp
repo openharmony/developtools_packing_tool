@@ -237,7 +237,7 @@ std::string MultiAppPackager::ReadModuleNameFromHap(const std::string &hapPath)
     std::string moduleName;
     fs::path hapFile(hapPath);
     ModuleJson module;
-    if (IsModuleHap(hapFile)) {
+    if (ModuleJsonUtils::IsModuleHap(hapFile)) {
         std::string jsonString = GetJsonInZips(hapFile, Constants::MODULE_JSON);
         module.ParseFromString(jsonString);
         module.GetStageModuleName(moduleName);
