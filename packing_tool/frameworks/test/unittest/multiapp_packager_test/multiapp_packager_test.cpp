@@ -532,7 +532,7 @@ HWTEST_F(MultiAppPackagerTest, ReadModuleNameFromHap_0300, Function | MediumTest
     };
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
-    EXPECT_EQ(multiAppPackager.ReadModuleNameFromHap(HSP_LIST), "");
+    EXPECT_EQ(multiAppPackager.ReadModuleNameFromHap(HSP_LIST), "library1");
 }
 
 /*

@@ -80,6 +80,11 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
     std::list<std::string> tmpHspPathList;
     Packager::CompatibleProcess(hapPath, tmpHapPathList, Constants::HAP_SUFFIX);
     Packager::CompatibleProcess(hspPath, tmpHspPathList, Constants::HSP_SUFFIX);
+    if ((!tmpHapPathList.empty() && !ModuleJsonUtils::IsModuleHap(tmpHapPathList.front())) ||
+        (!tmpHspPathList.empty() && !ModuleJsonUtils::IsModuleHap(tmpHspPathList.front()))) {
+        LOGD("Module is FA");
+        return true;
+    }
     if (!tmpHapPathList.empty()) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(tmpHapPathList.front(), hapVerifyInfo)) {
@@ -87,7 +92,7 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
             return true;
         }
         bundleType = hapVerifyInfo.GetBundleType();
-    } else {
+    } else if (!tmpHspPathList.empty()) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(tmpHspPathList.front(), hapVerifyInfo)) {
             LOGW("GetStageHapVerifyInfo failed, this hap maybe fa module");
@@ -153,6 +158,11 @@ bool AppPackager::VerifyIsAppService(const std::list<std::string>& modulePathLis
 {
     if (modulePathList.empty()) {
         LOGE("Module path list is empty");
+        return false;
+    }
+
+    if (!ModuleJsonUtils::IsModuleHap(modulePathList.front())) {
+        LOGD("Module is FA");
         return false;
     }
 

@@ -203,7 +203,7 @@ bool HapVerifyUtils::AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyI
                                       const HapVerifyInfo& minApiVersionMaxInfo)
 {
     if (hapVerifyInfos.empty()) {
-        LOGW("Hap verify infos is empty");
+        LOGD("Hap verify infos is empty");
         return true;
     }
     const HapVerifyInfo& baseHap = *hapVerifyInfos.begin();
@@ -265,7 +265,7 @@ bool HapVerifyUtils::ModuleDebugValidation(const std::list<HapVerifyInfo> hapVer
     const std::list<HapVerifyInfo> hspVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGW("Hap verify infos is empty.");
+        LOGD("Hap verify infos is empty.");
         return true;
     }
     HapVerifyInfo hap = *hapVerifyInfos.begin();
