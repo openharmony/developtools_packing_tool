@@ -1285,7 +1285,8 @@
                   "vpn",
                   "appService",
                   "selection",
-                  "faultLog"
+                  "faultLog",
+                  "crypto"
                 ]
               },
               "permissions": {
