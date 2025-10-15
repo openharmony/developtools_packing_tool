@@ -55,6 +55,11 @@ class ModuleAbilityInfo {
     public String label = "";
 
     /**
+     * Indicates the base label of module ModuleJson.
+     */
+    public String baseLabel = "";
+
+    /**
      * Indicates the permissions of module ModuleJson.
      */
     public List<String> permissions = new ArrayList<String>();
