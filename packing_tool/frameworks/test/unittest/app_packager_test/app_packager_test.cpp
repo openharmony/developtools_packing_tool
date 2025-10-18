@@ -535,6 +535,7 @@ HWTEST_F(AppPackagerTest, VerifyIsAppService_2300, Function | MediumTest | Level
 
     hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
     MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    MockModuleJsonUtils::MockIsModuleHap(true);
     EXPECT_TRUE(appPackager.VerifyIsAppService(modulePathList));
 }
 
