@@ -485,7 +485,7 @@ bool ModuleJson::GetFaDebugByDeviceConfigObj(std::unique_ptr<PtJson>& deviceConf
         return false;
     }
     if (!deviceConfigObj->Contains(DEFAULT.c_str())) {
-        LOGE("DeviceConfig node has no %s node!", DEFAULT.c_str());
+        LOGI("DeviceConfig node has no %s node!", DEFAULT.c_str());
         return false;
     }
     std::unique_ptr<PtJson> defaultObj;

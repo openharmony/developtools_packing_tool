@@ -97,7 +97,7 @@ bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVeri
         return false;
     }
     if (!ZipUtils::GetFileContentFromZip(hapFilePath, CONFIG_JSON, fileContent)) {
-        LOGE("Get module.json content from hap file failed! hapFile=%s", hapFilePath.c_str());
+        LOGE("Get config.json content from hap file failed! hapFile=%s", hapFilePath.c_str());
         return false;
     }
     ModuleJson moduleJson;
