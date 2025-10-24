@@ -203,7 +203,7 @@ def main():
     fastjson2ext_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2ext/fastjson2-extension-2.0.52.jar')
     compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/compress/commons-compress-1.26.1.jar')
     io_jar = os.path.join(root_dir,
-        '../../prebuilts/packing_tool/io/commons-io-2.15.1-bin/commons-io-2.15.1/commons-io-2.15.1.jar')
+        '../../prebuilts/packing_tool/io/commons-io-2.18.0-bin/commons-io-2.18.0/commons-io-2.18.0.jar')
     print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar)
 
     # compile haptobin_tool.jar
