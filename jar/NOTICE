@@ -413,8 +413,8 @@ License: Apache License Version 2.0
    limitations under the License.
 
 -----------------------------------------------------------------------------
-Software: Apache Commons IO 2.15.1
-Path: //prebuilts/packing_tool/commons-io-2.15.1.jar
+Software: Apache Commons IO 2.18.0
+Path: //prebuilts/packing_tool/commons-io-2.18.0.jar
 License: Apache License Version 2.0
 -----------------------------------------------------------------------------
                                  Apache License
