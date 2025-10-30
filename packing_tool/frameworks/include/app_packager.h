@@ -50,6 +50,7 @@ public:
     bool CheckEntrycardPath();
     bool CheckPackResPath();
     bool CheckPacJsonPath();
+    bool GetAndCheckReplacePackInfo();
 
 protected:
     int32_t InitAllowedParam() override;
@@ -64,6 +65,7 @@ private:
     std::list<std::string> formattedEntryCardPathList_;
     bool isSharedApp_ = false;
     bool isAppService_ = false;
+    bool isReplacePackInfo_ = true;
     std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
 };
 }  // namespace AppExecFwk
