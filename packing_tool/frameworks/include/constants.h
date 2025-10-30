@@ -106,6 +106,9 @@ const std::string PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT = "atomic-service-no
 const std::string PARAM_TOTAL_LIMIT = "total-limit";
 const std::string PARAM_BUNDLE_NAME = "bundle-name";
 const std::string PARAM_PAC_JSON_PATH = "pac-json-path";
+const std::string PARAM_REPLACE_PACK_INFO = "replace-pack-info";
+const std::string TRUE_STRING = "true";
+const std::string FALSE_STRING = "false";
 
 const std::string MODULE_JSON = "module.json";
 const std::string CONFIG_JSON = "config.json";
@@ -235,6 +238,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_PAC_JSON_PATH.c_str(), required_argument, nullptr, 55},
     {PARAM_ATOMIC_SERVICE_ENTRY_SIZE_LIMIT.c_str(), required_argument, nullptr, 56},
     {PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT.c_str(), required_argument, nullptr, 57},
+    {PARAM_REPLACE_PACK_INFO.c_str(), required_argument, nullptr, 58},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

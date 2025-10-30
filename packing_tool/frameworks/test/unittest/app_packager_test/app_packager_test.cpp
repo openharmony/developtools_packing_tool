@@ -1235,4 +1235,40 @@ HWTEST_F(AppPackagerTest, CheckPackResPath_6800, Function | MediumTest | Level1)
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
     EXPECT_TRUE(appPackager.CheckPackResPath());
 }
+
+/*
+ * @tc.name: GetAndCheckReplacePackInfo_0100
+ * @tc.desc: GetAndCheckReplacePackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, GetAndCheckReplacePackInfo_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    EXPECT_TRUE(appPackager.GetAndCheckReplacePackInfo());
+    EXPECT_TRUE(appPackager.isReplacePackInfo_);
+
+    std::map<std::string, std::string> parameterMap2 = {
+        {OHOS::AppPackingTool::Constants::PARAM_REPLACE_PACK_INFO, "true"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager2(parameterMap2, resultReceiver);
+    EXPECT_TRUE(appPackager2.GetAndCheckReplacePackInfo());
+    EXPECT_TRUE(appPackager2.isReplacePackInfo_);
+
+    std::map<std::string, std::string> parameterMap3 = {
+        {OHOS::AppPackingTool::Constants::PARAM_REPLACE_PACK_INFO, "false"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager3(parameterMap3, resultReceiver);
+    EXPECT_TRUE(appPackager3.GetAndCheckReplacePackInfo());
+    EXPECT_FALSE(appPackager3.isReplacePackInfo_);
+
+    std::map<std::string, std::string> parameterMap4 = {
+        {OHOS::AppPackingTool::Constants::PARAM_REPLACE_PACK_INFO, "test"},
+    };
+    OHOS::AppPackingTool::AppPackager appPackager4(parameterMap4, resultReceiver);
+    EXPECT_FALSE(appPackager4.GetAndCheckReplacePackInfo());
+    EXPECT_TRUE(appPackager4.isReplacePackInfo_);
+}
 } // namespace OHOS
