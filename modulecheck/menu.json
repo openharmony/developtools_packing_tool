@@ -107,6 +107,42 @@
                     "pattern": "^\\.[a-zA-Z]+$",
                     "maxLength": 20
                   }
+                },
+                "ignoreActiveStatus": {
+                  "description": "Indicates the name of the ignoreActiveStatus.",
+                  "type": "boolean"
+                },
+                "fileSupportSyncStatus": {
+                  "description": "Indicates the name of the fileSupportSyncStatus.",
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "IDLE",
+                      "SYNCING",
+                      "SYNC_SUCCESSED",
+                      "SYNC_FAILED",
+                      "SYNC_CANCELED",
+                      "SYNC_CONFLICTED"
+                    ]
+                  }
+                },
+                "fileNotSupportSyncStatus": {
+                  "description": "Indicates the name of the fileNotSupportSyncStatus.",
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "IDLE",
+                      "SYNCING",
+                      "SYNC_SUCCESSED",
+                      "SYNC_FAILED",
+                      "SYNC_CANCELED",
+                      "SYNC_CONFLICTED"
+                    ]
+                  }
                 }
               }
             }
