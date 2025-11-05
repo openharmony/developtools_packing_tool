@@ -39,6 +39,7 @@ ohos_unittest("hsp_packager_test") {
     "../../../src/packager.cpp",
     "../../../src/utils.cpp",
     "../../../src/zip_wrapper.cpp",
+    "../../../src/incremental_pack.cpp",
     "hsp_packager_test.cpp",
   ]
   external_deps = [

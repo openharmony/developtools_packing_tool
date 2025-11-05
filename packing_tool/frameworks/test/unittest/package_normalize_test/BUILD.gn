@@ -45,6 +45,7 @@ ohos_unittest("package_normalize_test") {
     "../../../src/utils.cpp",
     "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
+    "../../../src/incremental_pack.cpp",
     "package_normalize_test.cpp",
   ]
 

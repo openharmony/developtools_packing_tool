@@ -64,6 +64,7 @@ ohos_unittest("shell_command_test") {
     "../../../src/version_normalize.cpp",
     "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
+    "../../../src/incremental_pack.cpp",
     "shell_command_test.cpp",
   ]
   external_deps = [
