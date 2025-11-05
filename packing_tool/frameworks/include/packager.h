@@ -72,6 +72,8 @@ protected:
     
     bool CheckForceFlag();
     bool IsPathValid(const std::string &path, const bool &isFile, const std::string suffix = "");
+    bool IsPathParamValid(const std::string &parameterMapKey, const bool &isFile, const std::string &suffix);
+    bool IsCompressLevelValid();
     bool IsFileMatch(const std::string &path, const std::string &matchFileName);
     bool SplitDirList(const std::string &dirList, std::list<std::string> &fileList);
     void RemoveDuplicatePath(const std::string &path, std::list<std::string> &pathList);

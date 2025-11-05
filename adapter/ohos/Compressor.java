@@ -140,6 +140,7 @@ public class Compressor {
     private static final String GENERATE_BUILD_HASH = "generateBuildHash";
     private static final String BUILD_HASH = "buildHash";
     private static final String TEMP_DIR = "temp";
+    private static final String TEMP_EXIST_SRC_DIR = "tempExistSrc";
     private static final String SHA_256 = "SHA-256";
     private static final String JSON_SUFFIX = ".json";
     private static final String ATOMIC_SERVICE = "atomicService";
@@ -216,6 +217,8 @@ public class Compressor {
     private ZipArchiveOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
     private boolean isEntryOpen = false;
+    private boolean isExistSrcCopied = false;
+    private String existSrcCopiedDir = "";
     private List<String> list = new ArrayList<String>();
     private List<String> formNamesList = new ArrayList<String>();
     private List<String> fileNameList = new ArrayList<String>();
@@ -499,7 +502,7 @@ public class Compressor {
         CheckedOutputStream checkedOut = null;
         try {
             parseAtomicServiceSizeLimit(utility);
-
+            existSrcCopiedDir = IncrementalPack.copyExistSrcFile(utility);
             fileOut = new FileOutputStream(destFile);
             checkedOut = new CheckedOutputStream(fileOut, new CRC32());
             zipOut = new ZipArchiveOutputStream(checkedOut);
@@ -518,6 +521,7 @@ public class Compressor {
             Utility.closeStream(zipOut);
             Utility.closeStream(checkedOut);
             Utility.closeStream(fileOut);
+            IncrementalPack.deleteExistSrcFile(existSrcCopiedDir);
         }
 
         if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility)) {
@@ -902,7 +906,7 @@ public class Compressor {
         }
         String oldFileParent = oldfile.getParent();
         String tempDir = TEMP_DIR + File.separator + UUID.randomUUID();
-        mkdir(new File(oldFileParent + File.separator + tempDir));
+        FileUtils.mkdir(new File(oldFileParent + File.separator + tempDir));
         String fileName;
         if (isModuleJSON(utility.getJsonPath())) {
             fileName = MODULE_JSON;
@@ -923,13 +927,6 @@ public class Compressor {
             LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(
                     "Copy file to temp dir exist IOException:" + e.getMessage()));
             throw new BundleException("Copy file to temp dir failed.");
-        }
-    }
-
-    private static void mkdir(File file) {
-        if (null != file && !file.exists()) {
-            mkdir(file.getParentFile());
-            file.mkdir();
         }
     }
 
@@ -1394,9 +1391,7 @@ public class Compressor {
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
         }
 
-        if (!utility.getLibPath().isEmpty()) {
-            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
-        }
+        compressLibs(utility);
 
         if (!utility.getANPath().isEmpty()) {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
@@ -3040,7 +3035,9 @@ public class Compressor {
      * @param entry   zip file entry
      * @return true if process success
      */
-    private boolean jsonSpecialProcess(Utility utility, File srcFile, ZipArchiveEntry entry) {
+    private boolean jsonSpecialProcess(Utility utility,
+                                       File srcFile,
+                                       ZipArchiveEntry entry) {
         FileInputStream fileInputStream = null;
         BufferedReader bufferedReader = null;
         InputStreamReader inputStreamReader = null;
@@ -3531,9 +3528,7 @@ public class Compressor {
             pathToFile(utility, utility.getIndexPath(), assetsPath, false);
         }
 
-        if (!utility.getLibPath().isEmpty()) {
-            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
-        }
+        compressLibs(utility);
 
         if (!utility.getANPath().isEmpty()) {
             pathToFile(utility, utility.getANPath(), AN_DIR_NAME, false);
@@ -4496,6 +4491,21 @@ public class Compressor {
             for (File child : children) {
                 child.delete();
             }
+        }
+    }
+
+    private void compressLibs(Utility utility) throws BundleException {
+        if (IncrementalPack.isIncrementalMode(utility)) {
+            try (org.apache.commons.compress.archivers.zip.ZipFile prevZip =
+                new org.apache.commons.compress.archivers.zip.ZipFile(utility.getExistSrcPath())) {
+                IncrementalPack.addRawArchiveEntry(prevZip, zipOut);
+            } catch (IOException e) {
+                LOG.error(PackingToolErrMsg.INCREMENTAL_PACK_HAP_EXCEPTION.toString(
+                    "Incremental pack has exception: " + e.getMessage()));
+                throw new BundleException("Incremental pack has exception.");
+            }
+        } else if (!utility.getLibPath().isEmpty()) {
+            pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
         }
     }
 }

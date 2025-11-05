@@ -32,6 +32,8 @@ public:
     ZipWrapper(const ZipWrapper &) = delete;
     ZipWrapper &operator=(const ZipWrapper &) = delete;
 
+    zipFile GetZipFile() const;
+
     int32_t Open(std::string& zipPath, int32_t append = APPEND_STATUS_CREATE);
     int32_t Open(int32_t append = APPEND_STATUS_CREATE);
     void Close();
@@ -61,16 +63,30 @@ public:
         return (zipFile_ != nullptr);
     }
 
-    int32_t AddFileOrDirectoryToZip(const std::string &filePath, const std::string &zipPath);
-    int32_t AddFileOrDirectoryToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
+    int32_t AddFileOrDirectoryToZip(const std::string &filePath,
+                                    const std::string &zipPath,
+                                    const bool isCompress = false,
+                                    const ZipLevel &zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT);
+    int32_t AddFileOrDirectoryToZip(const fs::path &fsFilePath,
+                                    const fs::path &fsZipPath,
+                                    const bool isCompress = false,
+                                    const ZipLevel &zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT);
 
     int32_t WriteStringToZip(const std::string &content, const std::string &zipPath);
+    int32_t AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std::string &entryName);
+    ZipLevel StringToZipLevel(const std::string& levelStr);
     
 protected:
     int32_t AddEmptyDirToZip(const std::string &zipPath);
     int32_t AddEmptyDirToZip(const fs::path &fsZipPath);
-    int32_t AddFileToZip(const std::string &filePath, const std::string &zipPath);
-    int32_t AddFileToZip(const fs::path &fsFilePath, const fs::path &fsZipPath);
+    int32_t AddFileToZip(const std::string &filePath,
+                         const std::string &zipPath,
+                         const bool isCompress = false,
+                         const ZipLevel &zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT);
+    int32_t AddFileToZip(const fs::path &fsFilePath,
+                         const fs::path &fsZipPath,
+                         const bool isCompress = false,
+                         const ZipLevel &zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT);
 
 private:
     zipFile zipFile_ = nullptr;

@@ -618,18 +618,24 @@ class FileUtils {
         }
     }
 
-    /**
-     * copy Stream
-     *
-     * @param inputStream input stream
-     * @param outputStream out stream
-     * @throws IOException IOException.
-     */
+
     public static void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
         byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead = 0;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, bytesRead);
+        }
+    }
+
+    /**
+     * Make dir
+     *
+     * @param file File that require directory creation
+     */
+    public static void mkdir(File file) {
+        if (null != file && !file.exists()) {
+            mkdir(file.getParentFile());
+            file.mkdir();
         }
     }
 }

@@ -106,6 +106,8 @@ const std::string PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT = "atomic-service-no
 const std::string PARAM_TOTAL_LIMIT = "total-limit";
 const std::string PARAM_BUNDLE_NAME = "bundle-name";
 const std::string PARAM_PAC_JSON_PATH = "pac-json-path";
+const std::string PARAM_EXIST_SRC_PATH = "exist-src-path";
+const std::string PARAM_LIB_PATH_RETAIN = "lib-path-retain";
 const std::string PARAM_REPLACE_PACK_INFO = "replace-pack-info";
 const std::string TRUE_STRING = "true";
 const std::string FALSE_STRING = "false";
@@ -149,6 +151,7 @@ const std::string DEVICE_TYPE_FITNESSWATCH = "fitnessWatch";
 const std::string DEVICE_TYPE_FITNESSWATCH_NEW = "liteWearable";
 const std::string VERSION_RECORD = "version_record.json";
 const std::string GENERAL_RECORD = "general_record.json";
+const std::string TEMP_EXIST_SRC_DIR = "tempExistSrcDir";
 const std::string VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
 const std::string BUNDLE_NAME_PATTERN =
     "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
@@ -179,6 +182,8 @@ const int32_t MAX_VERSION_CODE = 2147483647;
 const int32_t ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT = 2048;
 const int32_t ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT_DEFAULT = 2048;
 const int32_t ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX = 4194304;
+const int32_t MIN_COMPRESS_LEVEL = 1;
+const int32_t MAX_COMPRESS_LEVEL = 9;
 
 constexpr const char* SHORT_OPTIONS = "";
 const struct option LONG_OPTIONS[] = {
@@ -239,6 +244,8 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_ATOMIC_SERVICE_ENTRY_SIZE_LIMIT.c_str(), required_argument, nullptr, 56},
     {PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT.c_str(), required_argument, nullptr, 57},
     {PARAM_REPLACE_PACK_INFO.c_str(), required_argument, nullptr, 58},
+    {PARAM_EXIST_SRC_PATH.c_str(), required_argument, nullptr, 59},
+    {PARAM_LIB_PATH_RETAIN.c_str(), required_argument, nullptr, 60},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

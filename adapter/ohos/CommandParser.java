@@ -120,6 +120,8 @@ public class CommandParser {
     private static final String CMD_COMPRESS_LEVEL = "--compress-level";
     private static final String CMD_PKG_CONTEXT_PATH = "--pkg-context-path";
     private static final String CMD_BUNDLE_NAME = "--bundle-name";
+    private static final String CMD_EXIST_SRC_PATH = "--exist-src-path";
+    private static final String CMD_LIB_PATH_RETAIN = "--lib-path-retain";
     private static final String PARSER_STAT_DUPLICATE_ERROR = "code:9132600 " +
             "error:statDuplicate is invalid! Must be true or false.";
     private static final String PARSER_STAT_SUFFIX_ERROR = "code:9132601 " +
@@ -486,6 +488,14 @@ public class CommandParser {
         commandFuncs.put(PARAM_DELIVERY_WITH_INSTALL, entry -> {
             entry.getKey().setDeliveryWithInstall(entry.getValue());
             entry.getKey().addGeneralNormalizeList(DELIVERY_WITH_INSTALL_PARAM);
+            return true;
+        });
+        commandFuncs.put(CMD_EXIST_SRC_PATH, entry -> {
+            entry.getKey().setExistSrcPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_LIB_PATH_RETAIN, entry -> {
+            entry.getKey().setLibPathRetain(entry.getValue());
             return true;
         });
     }

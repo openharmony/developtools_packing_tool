@@ -40,6 +40,7 @@ ohos_unittest("hap_packager_test") {
     "../../../src/packager.cpp",
     "../../../src/utils.cpp",
     "../../../src/zip_wrapper.cpp",
+    "../../../src/incremental_pack.cpp",
     "hap_packager_test.cpp",
   ]
   external_deps = [

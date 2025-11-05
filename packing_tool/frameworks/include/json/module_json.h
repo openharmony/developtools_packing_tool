@@ -107,7 +107,7 @@ public:
     bool GetStageApiReleaseType(std::string& apiReleaseType);
     bool GetStageApiReleaseTypeByAppObj(std::unique_ptr<PtJson>& appObj, std::string& apiReleaseType);
     bool GetStageCompressNativeLibs(bool& compressNativeLibs);
-    bool GetStageCompressNativeLibsByAppObj(std::unique_ptr<PtJson>& appObj, bool& compressNativeLibs);
+    bool GetStageCompressNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& compressNativeLibs);
     bool GetAbilityContinueTypeMap(std::map<std::string, std::list<std::string>>& abilityContinueTypeMap);
     bool GetAbilityContinueTypeMapByModuleObj(std::unique_ptr<PtJson>& moduleObj,
         std::map<std::string, std::list<std::string>>& abilityContinueTypeMap);

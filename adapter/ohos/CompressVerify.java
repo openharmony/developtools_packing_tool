@@ -527,43 +527,52 @@ public class CompressVerify {
             return false;
         }
 
-        if (isHapPathValid(utility.getSoDir())) {
+        if (isHapPathInvalid(utility.getSoDir())) {
             String errMsg = "--maple-so-dir is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getLibPath())) {
+        if (isHapPathInvalid(utility.getLibPath())) {
             String errMsg = "--lib-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getHnpPath())) {
+        File existSrcFile = new File(utility.getExistSrcPath());
+        boolean isValidExistSrcFileName = existSrcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX);
+        if (!utility.getExistSrcPath().isEmpty() &&
+            !(existSrcFile.isFile() && isValidExistSrcFileName)) {
+            String errMsg = "The value of --exist-src-path must be a file with the .hap suffix.";
+            LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (isHapPathInvalid(utility.getHnpPath())) {
             String errMsg = "--hnp-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getResPath())) {
+        if (isHapPathInvalid(utility.getResPath())) {
             String errMsg = "--res-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getResourcesPath())) {
+        if (isHapPathInvalid(utility.getResourcesPath())) {
             String errMsg = "--resources-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getAssetsPath())) {
+        if (isHapPathInvalid(utility.getAssetsPath())) {
             String errMsg = "--assets-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getSharedLibsPath())) {
+        if (isHapPathInvalid(utility.getSharedLibsPath())) {
             String errMsg = "--shared-libs-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -583,7 +592,7 @@ public class CompressVerify {
             return false;
         }
 
-        if (isHapPathValid(utility.getANPath())) {
+        if (isHapPathInvalid(utility.getANPath())) {
             String errMsg = "--an-path is invalid.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -591,6 +600,13 @@ public class CompressVerify {
 
         if (!utility.getEtsPath().isEmpty() && !isPathExists(utility.getEtsPath())) {
             String errMsg = "--ets-path is invalid.";
+            LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (!utility.getLibPathRetain().isEmpty() && !"true".equals(utility.getLibPathRetain()) &&
+            !"false".equals(utility.getLibPathRetain())) {
+            String errMsg = "--lib-path-retain parameter value must be either 'true' or 'false'.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
@@ -604,7 +620,7 @@ public class CompressVerify {
      * @param path path input
      * @return isPathValid if path verify
      */
-    private static boolean isHapPathValid(String path) {
+    private static boolean isHapPathInvalid(String path) {
         return (!path.isEmpty() && !isPathValid(path, TYPE_DIR, null));
     }
 
@@ -1230,6 +1246,15 @@ public class CompressVerify {
             return false;
         }
 
+        File existSrcFile = new File(utility.getExistSrcPath());
+        boolean isValidExistSrcFileName = existSrcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX);
+        if (!utility.getExistSrcPath().isEmpty() &&
+                !(existSrcFile.isFile() && isValidExistSrcFileName)) {
+            String errMsg = "The value of --exist-src-path must be a file with the .hsp suffix.";
+            LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
         if (!utility.getResPath().isEmpty() && !isPathValid(utility.getResPath(), TYPE_DIR, null)) {
             String errMsg = "--res-path is invalid.";
             LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
@@ -1255,13 +1280,13 @@ public class CompressVerify {
             return false;
         }
 
-        if (isHapPathValid(utility.getAPPath())) {
+        if (isHapPathInvalid(utility.getAPPath())) {
             String errMsg = "--ap-path is invalid.";
             LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (isHapPathValid(utility.getANPath())) {
+        if (isHapPathInvalid(utility.getANPath())) {
             String errMsg = "--an-path is invalid.";
             LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
             return false;

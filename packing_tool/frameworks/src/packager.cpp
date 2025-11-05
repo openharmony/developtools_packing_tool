@@ -120,6 +120,41 @@ bool Packager::IsPathValid(const std::string &path, const bool &isFile, const st
     }
 }
 
+bool Packager::IsPathParamValid(const std::string &parameterMapKey, const bool &isFile, const std::string &suffix)
+{
+    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(parameterMapKey);
+    if (it == parameterMap_.end()) {
+        return true;
+    }
+    const std::string path = it->second;
+    return (path.empty() || IsPathValid(path, isFile, suffix));
+}
+
+bool Packager::IsCompressLevelValid()
+{
+    auto it = parameterMap_.find(Constants::PARAM_COMPRESS_LEVEL);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        const std::string& levelStr = it->second;
+        bool allDigits = std::all_of(levelStr.begin(), levelStr.end(),
+                                     [](unsigned char c) { return std::isdigit(c); });
+        if (!allDigits) {
+            LOGE("Param parse compress-level [%s] invalid: contains non-digit characters.", levelStr.c_str());
+            return false;
+        }
+        try {
+            int level = std::stoi(levelStr);
+            if (level < Constants::MIN_COMPRESS_LEVEL || level > Constants::MAX_COMPRESS_LEVEL) {
+                LOGE("Param parse compress-level [%s] invalid: must be between 1 and 9.", levelStr.c_str());
+                return false;
+            }
+        } catch (const std::exception& e) {
+            LOGE("Param parse compress-level [%s] invalid: conversion failed.", levelStr.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
 bool Packager::IsFileMatch(const std::string &path, const std::string &matchFileName)
 {
     try {
