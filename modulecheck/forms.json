@@ -49,7 +49,9 @@
             "funInteractionParams",
             "sceneAnimationParams",
             "resizable",
-            "groupId"
+            "groupId",
+            "supportDeviceTypes",
+            "supportDevicePerformanceClasses"
           ]
         },
         "required": [
@@ -394,6 +396,33 @@
             "type": "string",
             "pattern": "^[0-9]*$",
             "maxLength": 2
+          },
+          "supportDeviceTypes": {
+            "description": "This tag identifies the device type supported by the card. The values are \"phone\", \"tablet\", \"2*4\", \"4*4\", \"tv\", \"wearable\", \"car\", \"2in1\".",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "phone",
+                "tablet",
+                "tv",
+                "wearable",
+                "car",
+                "2in1"
+              ]
+            }
+          },
+          "supportDevicePerformanceClasses": {
+            "description": "This label identifies the performance level supported by the card. The values are \"high\", \"medium\", \"low\" ",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ]
+            }
           }
         }
       }
