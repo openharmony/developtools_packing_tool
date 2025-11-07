@@ -413,7 +413,7 @@
             }
           },
           "supportDevicePerformanceClasses": {
-            "description": "This label identifies the performance level supported by the card. The values are \"high\", \"medium\", \"low\" ",
+            "description": "This label identifies the performance level supported by the card. The values are \"high\", \"medium\", \"low\".",
             "type": "array",
             "items": {
               "type": "string",
