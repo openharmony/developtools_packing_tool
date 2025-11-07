@@ -28,6 +28,8 @@ const std::string NAME = "name";
 const std::string EXTENSION_ABILITIES = "extensionAbilities";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
+const std::string EXTENSION_ABILITY_TYPE_FIELD = "type";
+const std::string EMBEDDED_UI_TYPE = "embeddedUI";
 }
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -327,7 +329,7 @@ bool HspPackager::CheckAppPlugin()
         }
         if (extensionAbilitiesObj) {
             if (!IsExtensionAbility(extensionAbilitiesObj)) {
-                LOGE("IsExtensionAbility failed.");
+                LOGE("IsExtensionAbility failed: only EmbeddedUIExtensionAbility is allowed.");
                 return false;
             }
         }
@@ -375,12 +377,15 @@ bool HspPackager::IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilities
 {
     for (int32_t i = 0; i < extensionAbilitiesObj->GetSize(); i++) {
         std::unique_ptr<PtJson> extensionAbilityObj = extensionAbilitiesObj->Get(i);
-        if (extensionAbilityObj->Contains(NAME.c_str())) {
-            std::string extensionAbilityName;
-            if (extensionAbilityObj->GetString(NAME.c_str(), &extensionAbilityName) == Result::SUCCESS) {
-                LOGE("extendAbilities of plugin package must empty");
-                return false;
-            }
+
+        std::string type;
+        if (extensionAbilityObj->GetString(EXTENSION_ABILITY_TYPE_FIELD.c_str(), &type) != Result::SUCCESS) {
+            LOGE("ExtensionAbility failed");
+            return false;
+        }
+        if (type != EMBEDDED_UI_TYPE.c_str()) {
+            LOGE("Plugin package only allows EmbeddedUIExtensionAbility, but found: %{public}s", type.c_str());
+            return false;
         }
     }
     return true;

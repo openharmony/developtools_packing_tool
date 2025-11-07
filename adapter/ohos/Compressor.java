@@ -183,6 +183,8 @@ public class Compressor {
     private static final String TARGET_FILE_PATH = HAPADDITION_FOLDER_NAME + LINUX_FILE_SEPARATOR + "resources"
             + LINUX_FILE_SEPARATOR + "base" + LINUX_FILE_SEPARATOR + "profile";
     private static final String BACKUP_PREFIX = "backup";
+    private static final String EXTENSION_ABILITY_TYPE_FIELD = "type";
+    private static final String EMBEDDED_UI_TYPE = "embeddedUI";
     private static final int QUERY_SCHEMES_CHECK_COUNT = 50;
     private static final int QUERY_SCHEMES_CHECK_MIN_API_VERSION = 21;
     private static final int DEDUPLICATE_HAR_CHECK_MIN_API_VERSION = 21;
@@ -755,8 +757,12 @@ public class Compressor {
                 for (int j = 0; j < extensionAbilityJsonList.size(); j++) {
                     JSONObject extensionAbilityJson = extensionAbilityJsonList.getJSONObject(j);
                     if (extensionAbilityJson != null) {
-                        LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString("extensionAbilities is not null."));
-                        return false;
+                        String type = extensionAbilityJson.getString(EXTENSION_ABILITY_TYPE_FIELD);
+                        if (!EMBEDDED_UI_TYPE.equals(type)) {
+                            LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString(
+                                "Plugin package only allows EmbeddedUIExtensionAbility, but found: " + type));
+                            return false;
+                        }
                     }
                 }
             }
