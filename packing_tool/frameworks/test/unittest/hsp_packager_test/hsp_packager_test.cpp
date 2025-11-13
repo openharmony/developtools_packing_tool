@@ -793,6 +793,28 @@ const std::string MODULE_SUPPORT_PLUGIN_JSON_STRING = "{"
         "\"default\": {\"debug\": true}"
     "}"
 "}";
+const std::string EXTENSION_ABILITIES_EMBEDDED_UI_ONLY = R"({
+    "module": {
+        "extensionAbilities": [
+            {
+                "name": "embeddedUI1",
+                "type": "embeddedUI",
+                "srcEntry": "./ets/embeddedui/EmbeddedUI1.ets"
+            }
+        ]
+    }
+})";
+const std::string EXTENSION_ABILITIES_WITH_SERVICE = R"({
+    "module": {
+        "extensionAbilities": [
+            {
+                "name": "service1",
+                "type": "service",
+                "srcEntry": "./ets/service/Service1.ets"
+            }
+        ]
+    }
+})";
 }
 
 class HspPackagerTest : public testing::Test {
@@ -1979,5 +2001,47 @@ HWTEST_F(HspPackagerTest, CheckAppPlugin_0900, Function | MediumTest | Level1)
     hspPackager.moduleJson_.ParseFromString(MODULE_APP_PLUGIN_JSON_STRING);
     EXPECT_FALSE(hspPackager.CheckAppPlugin());
     system("rm -f /data/test/pkgContextInfo.json");
+}
+
+/*
+ * @tc.name: IsExtensionAbility_0100
+ * @tc.desc: Test IsExtensionAbility with only EmbeddedUIExtensionAbility
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsExtensionAbility_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(hspPackager.moduleJson_.ParseFromString(EXTENSION_ABILITIES_EMBEDDED_UI_ONLY));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(hspPackager.moduleJson_.GetModuleObject(moduleObj));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> extensionAbilitiesObj;
+    moduleObj->GetArray("extensionAbilities", &extensionAbilitiesObj);
+    
+    EXPECT_TRUE(hspPackager.IsExtensionAbility(extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: IsExtensionAbility_0200
+ * @tc.desc: Test IsExtensionAbility with non-EmbeddedUIExtensionAbility
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsExtensionAbility_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    
+    EXPECT_TRUE(hspPackager.moduleJson_.ParseFromString(EXTENSION_ABILITIES_WITH_SERVICE));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(hspPackager.moduleJson_.GetModuleObject(moduleObj));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> extensionAbilitiesObj;
+    moduleObj->GetArray("extensionAbilities", &extensionAbilitiesObj);
+    
+    EXPECT_FALSE(hspPackager.IsExtensionAbility(extensionAbilitiesObj));
 }
 } // namespace OHOS
