@@ -398,11 +398,12 @@
             "maxLength": 2
           },
           "supportDeviceTypes": {
-            "description": "This tag identifies the device type supported by the card. The values are \"tablet\", \"tv\", \"wearable\", \"car\", \"2in1\".",
+            "description": "This tag identifies the device type supported by the card. The values are \"phone\", \"tablet\", \"tv\", \"wearable\", \"car\", \"2in1\".",
             "type": "array",
             "items": {
               "type": "string",
               "enum": [
+                "phone",
                 "tablet",
                 "tv",
                 "wearable",
