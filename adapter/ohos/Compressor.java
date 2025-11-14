@@ -183,6 +183,7 @@ public class Compressor {
     private static final String TARGET_FILE_PATH = HAPADDITION_FOLDER_NAME + LINUX_FILE_SEPARATOR + "resources"
             + LINUX_FILE_SEPARATOR + "base" + LINUX_FILE_SEPARATOR + "profile";
     private static final String BACKUP_PREFIX = "backup";
+    private static final String SCAN_RESULT = "scan_result";
     private static final String EXTENSION_ABILITY_TYPE_FIELD = "type";
     private static final String EMBEDDED_UI_TYPE = "embeddedUI";
     private static final int QUERY_SCHEMES_CHECK_COUNT = 50;
@@ -536,6 +537,25 @@ public class Compressor {
                 errMsg = "Delete the output file " + utility.getOutPath() + " failed.";
                 solution = "Try to close the output file using programme.";
                 LOG.error(PackingToolErrMsg.FILE_DELETE_FAILED.toString(errMsg, solution));
+            }
+        }
+
+        String mode = utility.getMode();
+        if ((mode == Utility.MODE_APP || mode == Utility.MODE_FAST_APP || mode == Utility.MODE_MULTI_APP)
+            && compressResult && utility.getStatDuplicate()) {
+            Scan scan = new Scan();
+            Utility utilityForScan = new Utility();
+            File outputFile = new File(utility.getOutPath().trim());
+            String reportPath = outputFile.getParent() + LINUX_FILE_SEPARATOR + SCAN_RESULT;
+            try {
+                utilityForScan.setInput(utility.getOutPath().trim());
+                utilityForScan.setOutPath(outputFile.getParent());
+                scan.scanSoFiles(utilityForScan);
+                LOG.warning("Scanning for duplicate SO files has completed successfully. "
+                    + "The scan report is located at = " + reportPath);
+            } catch (BundleException | NoSuchAlgorithmException | IOException exception) {
+                LOG.error(ScanErrorEnum.SCAN_REMIND_ERROR + exception.getMessage());
+                deleteFile(reportPath);
             }
         }
         return compressResult;

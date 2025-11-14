@@ -70,6 +70,7 @@ ohos_executable("ohos_packing_tool") {
     "src/package_normalize.cpp",
     "src/packager.cpp",
     "src/res_packager.cpp",
+    "src/scan_statdulpicate.cpp",
     "src/shell_command.cpp",
     "src/unzip_wrapper.cpp",
     "src/utils.cpp",
@@ -82,6 +83,7 @@ ohos_executable("ohos_packing_tool") {
   cflags = [ "-fstack-protector-strong" ]
 
   external_deps = [
+    "json:nlohmann_json_static",
     "openssl:libcrypto_shared",
     "zlib:libz",
   ]

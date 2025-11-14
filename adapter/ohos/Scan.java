@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -61,6 +63,8 @@ public class Scan {
     private static final String HTML_BODY_END = "</body>";
     private static final String USER_DIR = "user.dir";
     private static final String HTML_BR = "<br/>";
+    private static final String SCAN_RESULT = "scan_result";
+    private static final String SO_SUFFIX = ".*\\.so(?:\\.\\d+)*$";
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final Log LOG = new Log(Scan.class.toString());
 
@@ -98,6 +102,42 @@ public class Scan {
             }
         }
         return scanResult;
+    }
+
+    private static boolean isSharedLibrary(String filePath) {
+        return Pattern.compile(SO_SUFFIX).matcher(filePath).find();
+    }
+
+    public void scanSoFiles(Utility utility)
+        throws BundleException, IOException, NoSuchAlgorithmException {
+        List<String> jsonList = new ArrayList<>();
+        String templateHtml = getJsTemplate(TEMPLATE_HTML);
+        templateHtml = templateHtml.replace(HTML_BR, System.lineSeparator());
+        String htmlStr = HTML_START + HTML_HEAD + DIV_BOX + HTML_BODY + templateHtml;
+        String currentDir = System.getProperty(USER_DIR);
+        String targetPath = currentDir + LINUX_FILE_SEPARATOR + UNPACK_NAME;
+        List<String> fileList = getAllInputFileList(utility, targetPath);
+        fileList.removeIf(filePath -> !isSharedLibrary(filePath));
+
+        ScanStatDuplicate scanStatDuplicate = new ScanStatDuplicate();
+        String duplicateHtml = scanStatDuplicate.statDuplicateForSo(utility, jsonList, fileList);
+        htmlStr = htmlStr + duplicateHtml;
+        htmlStr = htmlStr + HTML_DIV_END + HTML_BODY_END + HTML_END;
+        String reportPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + SCAN_RESULT;
+        File reportDir = new File(reportPath);
+        if (!reportDir.exists()) {
+            reportDir.mkdirs();
+        }
+        String jsonPath = reportPath + LINUX_FILE_SEPARATOR + STAT_JSON;
+        String htmlPath = reportPath + LINUX_FILE_SEPARATOR + STAT_HTML;
+        String cssPath = reportPath + LINUX_FILE_SEPARATOR + STAT_CSS;
+        String jsonStr = jsonList.get(0);
+        writeFile(jsonPath, jsonStr);
+        writeFile(htmlPath, htmlStr);
+        String templateCss = getJsTemplate(TEMPLATE_CSS);
+        writeFile(cssPath, templateCss);
+        File deleteFile = new File(targetPath);
+        deleteFile(deleteFile);
     }
 
     private void scanExecute(Utility utility) throws BundleException, IOException, NoSuchAlgorithmException {
