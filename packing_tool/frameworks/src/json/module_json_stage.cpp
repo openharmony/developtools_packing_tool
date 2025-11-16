@@ -722,23 +722,23 @@ bool ModuleJson::GetStageTsanEnabledByAppObj(std::unique_ptr<PtJson>& appObj, bo
 
 bool ModuleJson::GetStageCompressNativeLibs(bool& compressNativeLibs)
 {
-    std::unique_ptr<PtJson> appObj;
-    if (!GetAppObject(appObj)) {
-        LOGE("GetAppObject failed!");
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
         return false;
     }
-    return GetStageCompressNativeLibsByAppObj(appObj, compressNativeLibs);
+    return GetStageCompressNativeLibsByAppObj(moduleObj, compressNativeLibs);
 }
 
-bool ModuleJson::GetStageCompressNativeLibsByAppObj(std::unique_ptr<PtJson>& appObj, bool& compressNativeLibs)
+bool ModuleJson::GetStageCompressNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& compressNativeLibs)
 {
-    if (!appObj) {
-        LOGE("App node is null!");
+    if (!moduleObj) {
+        LOGE("Module node is null!");
         return false;
     }
-    if (appObj->Contains(COMPRESS_NATIVE_LIBS.c_str())) {
-        if (appObj->GetBool(COMPRESS_NATIVE_LIBS.c_str(), &compressNativeLibs) != Result::SUCCESS) {
-            LOGE("App node get %s failed!", COMPRESS_NATIVE_LIBS.c_str());
+    if (moduleObj->Contains(COMPRESS_NATIVE_LIBS.c_str())) {
+        if (moduleObj->GetBool(COMPRESS_NATIVE_LIBS.c_str(), &compressNativeLibs) != Result::SUCCESS) {
+            LOGE("Module node get %s failed!", COMPRESS_NATIVE_LIBS.c_str());
             return false;
         }
     } else {

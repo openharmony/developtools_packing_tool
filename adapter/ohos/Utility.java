@@ -158,6 +158,8 @@ public class Utility {
     private boolean statSuffix = false;
     private String statFileSize = "";
     private boolean isSuccess = true;
+    private String existSrcPath = "";
+    private String isLibPathRetain = "false";
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -1053,5 +1055,23 @@ public class Utility {
 
     public void setParameterIsInvalid(Boolean isSuccess) {
         this.isSuccess = isSuccess;
+    }
+
+    public String getExistSrcPath() {
+        return existSrcPath;
+    }
+
+    public void setExistSrcPath(String existSrcPath) {
+        this.existSrcPath = existSrcPath;
+    }
+
+    public String getLibPathRetain() {
+        return isLibPathRetain;
+    }
+
+    public void setLibPathRetain(String isLibPathRetain) {
+        if (!isLibPathRetain.startsWith(CMD_PREFIX)) {
+            this.isLibPathRetain = isLibPathRetain.toLowerCase(Locale.ENGLISH);
+        }
     }
 }

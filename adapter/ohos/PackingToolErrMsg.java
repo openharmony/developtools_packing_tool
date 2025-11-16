@@ -1502,4 +1502,24 @@ public class PackingToolErrMsg {
             .setDescription("Repack hsp exception.")
             .setCause("%s")
             .build();
+
+    /**
+     * INCREMENTAL_PACK_HAP_EXCEPTION
+     */
+    public static final ErrorMsg INCREMENTAL_PACK_HAP_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("19")
+            .setErrCode("001")
+            .setDescription("Incremental pack hap exception.")
+            .setCause("%s")
+            .build();
+
+    /**
+     * INCREMENTAL_PACK_HSP_EXCEPTION
+     */
+    public static final ErrorMsg INCREMENTAL_PACK_HSP_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("19")
+            .setErrCode("002")
+            .setDescription("Incremental pack hsp exception.")
+            .setCause("%s")
+            .build();
 }

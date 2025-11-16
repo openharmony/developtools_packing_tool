@@ -76,6 +76,7 @@ ohos_executable("ohos_packing_tool") {
     "src/version_normalize.cpp",
     "src/zip_utils.cpp",
     "src/zip_wrapper.cpp",
+    "src/incremental_pack.cpp",
   ]
   configs = []
 
