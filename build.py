@@ -137,7 +137,8 @@ def compile_packing_tool(root_path, src_path, jar_output, out_path,
         'ShowHelp.java',
         'Utility.java',
         'VerifyCollection.java',
-        'Version.java'
+        'Version.java',
+        'IncrementalPack.java'
     ]
     compile_java = get_compile_str(src_path, java_sources)
 

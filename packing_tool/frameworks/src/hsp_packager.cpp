@@ -20,6 +20,8 @@
 #include "constants.h"
 #include "json/json_utils.h"
 #include "log.h"
+#include "utils.h"
+#include "incremental_pack.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -30,6 +32,7 @@ const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
 const std::string EXTENSION_ABILITY_TYPE_FIELD = "type";
 const std::string EMBEDDED_UI_TYPE = "embeddedUI";
+const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 }
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -118,6 +121,16 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
                 " must be CAPABILITY.profile file.");
             return false;
         }
+    }
+    if (!IsPathParamValid(Constants::PARAM_EXIST_SRC_PATH, true, Constants::HSP_SUFFIX)) {
+        LOGE("exist-src-path must be a file with the .hsp suffix.");
+        return false;
+    }
+    if (!CheckLibPathRetainParam()) {
+        return false;
+    }
+    if (!IsCompressLevelValid()) {
+        return false;
     }
     it = parameterMap_.find(Constants::PARAM_PKG_CONTEXT_PATH);
     if (it != parameterMap_.end() && !it ->second.empty()) {
@@ -243,6 +256,7 @@ bool HspPackager::CompressHsp()
             LOGE("CheckDeduplicateHar failed.");
             return false;
         }
+        moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
     }
     if (!CompressHspMode(jsonPath_) || !BuildHash(buildHashFinish_, generateBuildHash_, parameterMap_, jsonPath_)) {
         return false;
@@ -252,6 +266,8 @@ bool HspPackager::CompressHsp()
 
 bool HspPackager::CompressHspMode(const std::string &jsonPath)
 {
+    IncrementalPack::CopyExistSrcFile(parameterMap_);
+
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     std::string outPath;
     if (it != parameterMap_.end()) {
@@ -443,6 +459,7 @@ bool HspPackager::CompressHspModePartSecond(const std::string &jsonPath)
             return false;
         }
     }
+    IncrementalPack::DeleteExistSrcTempDir();
 
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_FILE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
@@ -555,7 +572,7 @@ bool HspPackager::CompressHspModeMultiple()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_MAPLE_SO_DIR);
     if (it != parameterMap_.end() && formattedSoPathList_.size() == 0 && !it->second.empty()) {
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::SO_DIR) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
+            LOGE("HspPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
     }
@@ -590,12 +607,40 @@ bool HspPackager::CompressHspModeMultiple()
 
 bool HspPackager::AddCommonFileOrDirectoryToZip(const std::string &paramPath, const std::string &targetPath)
 {
+    bool isCompress = (paramPath == Constants::PARAM_LIB_PATH && compressNativeLibs_);
+    ZipLevel zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT;
+    if (isCompress) {
+        zipLevel = ZipLevel::ZIP_LEVEL_1;
+        auto it = parameterMap_.find(Constants::PARAM_COMPRESS_LEVEL);
+        if (it != parameterMap_.end() && !it->second.empty()) {
+            zipLevel = zipWrapper_.StringToZipLevel(it->second);
+        }
+    }
+
+    if (paramPath == Constants::PARAM_LIB_PATH &&
+        IncrementalPack::IsIncrementalMode(parameterMap_)) {
+        return IncrementalPack::IncrementalPackProcess(paramPath, zipWrapper_);
+    }
+
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(paramPath);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, targetPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(it->second,
+                                                targetPath,
+                                                isCompress,
+                                                zipLevel) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("HspPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
+    }
+    return true;
+}
+
+bool HspPackager::CheckLibPathRetainParam()
+{
+    auto it = parameterMap_.find(Constants::PARAM_LIB_PATH_RETAIN);
+    if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
+        LOGE("Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.");
+        return false;
     }
     return true;
 }

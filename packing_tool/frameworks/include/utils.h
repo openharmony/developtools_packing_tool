@@ -70,10 +70,15 @@ public:
     static bool CheckFileName(const std::string& filePath, const std::string& fileName);
     static bool CheckFileSuffix(const std::string& filePath, const std::string& suffix);
     static bool CopyFile(const std::string& srcFile, const std::string& dstFile);
+    static bool CopyFileToTempDir(const std::string& srcPath,
+                                  const std::string& tempSubDir,
+                                  std::string& destFilePath,
+                                  std::string& destTempDir);
     static bool GetFormattedPath(const std::string& path, std::string& formattedPath);
     static bool GetRealPath(const std::string& path, std::string& realPath);
     static bool GetRealPathOfNoneExistFile(const std::string& path, std::string& realPath);
     static bool RemoveAllFilesInDirectory(const std::string& directoryPath);
+    static bool IsPathValid(const std::string &path, const bool &isFile, const std::string suffix = "");
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

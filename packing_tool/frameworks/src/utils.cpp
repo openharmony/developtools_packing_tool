@@ -31,6 +31,7 @@
 
 #include "log.h"
 #include "pt_json.h"
+#include "constants.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -45,6 +46,7 @@ const int MAX_UUID_LENGTH = 32;
 const int RANGE_MIN = 0;
 const int RANGE_MAX = 15;
 const int TEN = 10;
+const std::string EN_US_UTF_8 = "en_US.UTF-8";
 }
 
 std::string Utils::GetFileContent(const std::string filePath)
@@ -438,6 +440,35 @@ bool Utils::CopyFile(const std::string& srcPath, const std::string& dstPath)
     return true;
 }
 
+bool Utils::CopyFileToTempDir(const std::string& srcPath,
+                              const std::string& tempSubDir,
+                              std::string& destFilePath,
+                              std::string& destTempDir)
+{
+    fs::path src(srcPath);
+    if (!fs::exists(src) || !fs::is_regular_file(src)) {
+        LOGE("Source file does not exist or is not a regular file: %s", srcPath.c_str());
+        return false;
+    }
+    fs::path parentDir = src.parent_path();
+    fs::path tempDir = parentDir.string() + Constants::LINUX_FILE_SEPARATOR + tempSubDir;
+    destTempDir = tempDir.string();
+    std::error_code ec;
+    fs::create_directories(tempDir, ec);
+    if (ec) {
+        LOGE("Failed to create temp directory: %s - %s", tempDir.string().c_str(), ec.message().c_str());
+        return false;
+    }
+    fs::path destFile = tempDir.string() + Constants::LINUX_FILE_SEPARATOR + src.filename().string();
+    fs::copy_file(src, destFile, fs::copy_options::overwrite_existing, ec);
+    if (ec) {
+        LOGE("Failed to copy file to temp directory: %s", ec.message().c_str());
+        return false;
+    }
+    destFilePath = destFile.string();
+    return true;
+}
+
 bool Utils::GetFormattedPath(const std::string& path, std::string& formattedPath)
 {
     if (path.empty()) {
@@ -496,5 +527,24 @@ bool Utils::RemoveAllFilesInDirectory(const std::string& directoryPath)
     return true;
 }
 
+bool Utils::IsPathValid(const std::string &path, const bool &isFile, const std::string suffix)
+{
+    try {
+        if (isFile) {
+            if (!fs::is_regular_file(path)) {
+                return false;
+            }
+            const std::locale englishLocale(EN_US_UTF_8);
+            std::string name = fs::path(path).filename();
+            std::transform(name.begin(), name.end(), name.begin(),
+                           [&englishLocale](unsigned char c) {return std::tolower(c);});
+            return Utils::EndsWith(name, suffix);
+        }
+        return fs::is_directory(path);
+    } catch (...) {
+        LOGW("Param parse error.");
+        return false;
+    }
+}
 } // namespace AppPackingTool
 } // namespace OHOS

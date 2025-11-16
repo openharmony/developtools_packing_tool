@@ -24,6 +24,8 @@
 #include "json/module_json.h"
 #include "packager.h"
 #include "zip_wrapper.h"
+#include "contrib/minizip/unzip.h"
+#include "contrib/minizip/zip.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -48,6 +50,7 @@ public:
     bool IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj);
     bool CheckPkgContext();
     bool IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilitiesObj);
+    bool CheckLibPathRetainParam();
 
 protected:
     int32_t InitAllowedParam() override;
@@ -66,6 +69,7 @@ private:
     std::list<std::string> deviceTypes_;
     ZipWrapper zipWrapper_;
     ModuleJson moduleJson_;
+    bool compressNativeLibs_ = false;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

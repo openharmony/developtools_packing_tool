@@ -20,6 +20,8 @@
 #include "constants.h"
 #include "json/json_utils.h"
 #include "log.h"
+#include "utils.h"
+#include "incremental_pack.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -27,6 +29,7 @@ namespace {
 const std::string NAME = "name";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
+const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 }
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -124,6 +127,16 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         return false;
     }
     if (!IsValidRpcid() || !IsValidPackInfo()) {
+        return false;
+    }
+    if (!IsPathParamValid(Constants::PARAM_EXIST_SRC_PATH, true, Constants::HAP_SUFFIX)) {
+        LOGE("exist-src-path must be a file with the .hap suffix.");
+        return false;
+    }
+    if (!CheckLibPathRetainParam()) {
+        return false;
+    }
+    if (!IsCompressLevelValid()) {
         return false;
     }
     it = parameterMap_.find(Constants::PARAM_PROFILE_PATH);
@@ -332,6 +345,7 @@ bool HapPackager::CompressHap()
         if (Constants::TYPE_SHARED == bundleType) {
             LOGW("warning:Compress mode is hap, but app type is shared.");
         }
+        moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
         if (!CompressHapModeForModule(jsonPath_) || !BuildHash(buildHashFinish_, generateBuildHash_,
             parameterMap_, jsonPath_)) {
             return false;
@@ -444,6 +458,7 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
     if (!moduleJson_.GetStageDeviceTypes(deviceTypes_)) {
         LOGE("HapPackager::Process: GetStageDeviceTypes failed!");
     }
+    IncrementalPack::CopyExistSrcFile(parameterMap_);
     if (!OpenZipWrapper()) {
         return false;
     }
@@ -475,7 +490,7 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
             return false;
         }
     }
-
+    IncrementalPack::DeleteExistSrcTempDir();
     if (!AddParamFileToZip() || !AddResFileAndDirLsitToZip() || !AddPkgAndBinFileToZipForStageMaode()) {
         return false;
     }
@@ -594,9 +609,27 @@ bool HapPackager::OpenZipWrapper()
 
 bool HapPackager::AddCommonFileOrDirectoryToZip(const std::string &paramPath, const std::string &targetPath)
 {
-    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(paramPath);
+    bool isCompress = (paramPath == Constants::PARAM_LIB_PATH && compressNativeLibs_);
+    ZipLevel zipLevel = ZipLevel::ZIP_LEVEL_DEFAULT;
+    if (isCompress) {
+        zipLevel = ZipLevel::ZIP_LEVEL_1;
+        auto it = parameterMap_.find(Constants::PARAM_COMPRESS_LEVEL);
+        if (it != parameterMap_.end() && !it->second.empty()) {
+            zipLevel = zipWrapper_.StringToZipLevel(it->second);
+        }
+    }
+
+    if (paramPath == Constants::PARAM_LIB_PATH &&
+        IncrementalPack::IsIncrementalMode(parameterMap_)) {
+        return IncrementalPack::IncrementalPackProcess(paramPath, zipWrapper_);
+    }
+
+    auto it = parameterMap_.find(paramPath);
     if (it != parameterMap_.end() && !it->second.empty()) {
-        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, targetPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(it->second,
+                                                targetPath,
+                                                isCompress,
+                                                zipLevel) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
@@ -698,6 +731,16 @@ bool HapPackager::AddPkgAndBinFileToZipForStageMaode()
             LOGE("HapPackager::Process: jsonFile error!");
             return false;
         }
+    }
+    return true;
+}
+
+bool HapPackager::CheckLibPathRetainParam()
+{
+    auto it = parameterMap_.find(Constants::PARAM_LIB_PATH_RETAIN);
+    if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
+        LOGE("Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.");
+        return false;
     }
     return true;
 }
