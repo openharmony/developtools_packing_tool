@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1725,6 +1725,21 @@ HWTEST_F(FastAppPackagerTest, preProcess_0002, Function | MediumTest | Level1)
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
         {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, ""},
+    };
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    EXPECT_EQ(fastAppackager.PreProcess(), 1);
+}
+
+/*
+ * @tc.name: PreProcess_0003
+ * @tc.desc: ProProcess.
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, preProcess_0003, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, "fail"},
     };
     OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
     EXPECT_EQ(fastAppackager.PreProcess(), 1);

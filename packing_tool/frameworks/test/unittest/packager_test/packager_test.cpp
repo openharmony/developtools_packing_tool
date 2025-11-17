@@ -364,4 +364,55 @@ HWTEST_F(PackagerTest, CompatibleProcess_1500, Function | MediumTest | Level1)
         g_stageJsonPath, fileList, extraSuffix, extraSuffix));
     system("rm -f /data/test/module.json");
 }
+
+/*
+ * @tc.name: CheckStatDuplicateFlag_0100
+ * @tc.desc: CheckStatDuplicateFlag.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, CheckStatDuplicateFlag_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, "true"},
+    };
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_TRUE(packager.CheckStatDuplicateFlag());
+}
+
+/*
+ * @tc.name: CheckStatDuplicateFlag_0200
+ * @tc.desc: CheckStatDuplicateFlag.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, CheckStatDuplicateFlag_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, "false"},
+    };
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_TRUE(packager.CheckStatDuplicateFlag());
+}
+
+/*
+ * @tc.name: CheckStatDuplicateFlag_0300
+ * @tc.desc: CheckStatDuplicateFlag.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackagerTest, CheckStatDuplicateFlag_000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, ""},
+    };
+
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    EXPECT_FALSE(packager.CheckStatDuplicateFlag());
+}
 } // namespace OHOS

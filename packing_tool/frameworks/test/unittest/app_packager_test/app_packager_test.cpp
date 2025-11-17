@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,7 @@
 #define protected public
 #include "app_packager.h"
 #include "mock/mock_module_json_utils.h"
+#include "scan_statdulpicate.h"
 #include "utils.h"
 #include "zip_wrapper.h"
 #undef private
@@ -36,12 +37,15 @@ namespace {
 const std::string TEST_PATH = "/data/test/";
 const std::string TEST_FILE_PATH = TEST_PATH + std::string("resource/packingtool/test_file/");
 const std::string OUT_PATH = "/data/test.app";
+const std::string REPORT_PATH = "/data/scan_result";
 const std::string HAP_PATH = TEST_FILE_PATH + std::string("hap/appPackagerHapTest.hap");
 const std::string HSP_PATH = TEST_FILE_PATH + std::string("hsp/appPackagerHspTest.hsp");
 const std::string PACK_INFO_PATH = TEST_FILE_PATH + std::string("packinfo/pack.info");
 const std::string SIGNATURE_PATH = TEST_FILE_PATH + std::string("signature/com.test.apppackagertest.csr");
 const std::string CERTIFICATE_PATH = TEST_FILE_PATH + std::string("certificate/com.test.apppackagertest.p7b");
 const std::string PACK_RES_PATH = TEST_FILE_PATH + std::string("packres/pack.res");
+const std::string UNPACK_NAME = "unpack";
+const std::string SCAN_RESULT = "scan_result";
 }
 
 class AppPackagerTest : public testing::Test {
@@ -1270,5 +1274,92 @@ HWTEST_F(AppPackagerTest, GetAndCheckReplacePackInfo_0100, Function | MediumTest
     OHOS::AppPackingTool::AppPackager appPackager4(parameterMap4, resultReceiver);
     EXPECT_FALSE(appPackager4.GetAndCheckReplacePackInfo());
     EXPECT_TRUE(appPackager4.isReplacePackInfo_);
+}
+
+/*
+ * @tc.name: ScanSoFiles_0100
+ * @tc.desc: ScanSoFiles.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, ScanSoFiles_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::AppPackager packager(parameterMap, resultReceiver);
+    packager.ScanSoFiles();
+    parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_MODE, ""));
+    packager.ScanSoFiles();
+    parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""));
+    packager.ScanSoFiles();
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_APP;
+    packager.ScanSoFiles();
+    parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, ""));
+    packager.ScanSoFiles();
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE] = "false";
+    packager.ScanSoFiles();
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE] = "true";
+    packager.ScanSoFiles();
+    std::map<std::string, std::string> parameterMap1 = {
+        {OHOS::AppPackingTool::Constants::PARAM_MODE, OHOS::AppPackingTool::Constants::MODE_APP},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, HSP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_SIGNATURE_PATH, SIGNATURE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_CERTIFICATE_PATH, CERTIFICATE_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_RES_PATH, PACK_RES_PATH},
+    };
+
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap1, resultReceiver);
+    MockModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
+    EXPECT_EQ(appPackager.InitAllowedParam(), ERR_OK);
+    EXPECT_EQ(appPackager.PreProcess(), ERR_OK);
+    EXPECT_EQ(appPackager.Process(), ERR_OK);
+    EXPECT_EQ(appPackager.PostProcess(), ERR_OK);
+    EXPECT_TRUE(fs::exists(OUT_PATH));
+    EXPECT_FALSE(fs::exists(fs::path(REPORT_PATH)));
+    appPackager.ScanSoFiles();
+    ScanStatDuplicate scanStatDuplicate;
+    std::vector<std::string> fileList;
+    fileList = scanStatDuplicate.GetAllInputFileList("", OUT_PATH);
+    EXPECT_EQ(fileList.size(), 0);
+    EXPECT_TRUE(fs::exists(fs::path(REPORT_PATH)));
+    fs::remove_all(REPORT_PATH);
+}
+
+/*
+ * @tc.name: WriteFile_0100
+ * @tc.desc: WriteFile.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, WriteFile_0100, Function | MediumTest | Level1)
+{
+    std::string filepath(PATH_MAX + 1, 'c');
+    std::string data = "";
+    ScanStatDuplicate scanStatDuplicate;
+    EXPECT_EQ(scanStatDuplicate.WriteFile(filepath, data), false);
+    EXPECT_EQ(scanStatDuplicate.WriteFile(OUT_PATH, data), false);
+}
+
+/*
+ * @tc.name: SplitPath_0100
+ * @tc.desc: SplitPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, SplitPath_0100, Function | MediumTest | Level1)
+{
+    ScanStatDuplicate scanStatDuplicate;
+    std::string filePath = UNPACK_NAME + Constants::LINUX_FILE_SEPARATOR + SCAN_RESULT;
+    std::string retPath = Constants::LINUX_FILE_SEPARATOR + SCAN_RESULT;
+    EXPECT_EQ(scanStatDuplicate.SplitPath(filePath, UNPACK_NAME), retPath);
+
+    std::string pathName = "pathName";
+    EXPECT_EQ(scanStatDuplicate.SplitPath(filePath, pathName), filePath);
 }
 } // namespace OHOS

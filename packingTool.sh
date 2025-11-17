@@ -35,6 +35,8 @@ io_jar_file="commons-io-2.18.0.jar"
 jar_directory="${root_path}/jar"
 pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
 manifest_path="${root_path}/META-INF/packing_tool/MANIFEST.MF"
+css_path="${root_path}/adapter/ohos/scan_template.css"
+html_path="${root_path}/adapter/ohos/scan_template.html"
 
 out_dir="${root_path}/out/${toolchain}/packTool"
 if [ -d "${out_dir}/ohos" ]
@@ -57,6 +59,8 @@ if [ -d "${temp_dir}" ]
 fi
 
 cd ${out_dir}
+cp ${css_path} ./ohos
+cp ${html_path} ./ohos
 product_pack_jar_command="jar -cvfm ${temp_dir}/${pack_jar_file} ${manifest_path} ./ohos"
 eval ${product_pack_jar_command}
 

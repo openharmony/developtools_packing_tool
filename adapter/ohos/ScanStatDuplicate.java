@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public class ScanStatDuplicate {
     private static final String RESULT_SIZE = "size";
     private static final String RESULT_FILES = "files";
     private static final String DUPLICATE_DESC = "find the duplicated files";
+    private static final String DUPLICATE_SO_DESC = "find the duplicated so";
     private static final String DUPLICATE_PARAM = "--stat-duplicate";
     private static final String TASK_TYPE = "taskType";
     private static final String TASK_DESC = "taskDesc";
@@ -53,6 +54,7 @@ public class ScanStatDuplicate {
     private static final String STOP_TIME = "stopTime";
     private static final String RESULT = "result";
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss:SSS";
+    private static final int UNDUPLICATED_SIZE = 1;
     private static final int MD5_BUFFER_SIZE = 1024;
     private static final long DUPLICATE_TYPE = 1L;
     private static final int MD5_LENGTH = 16;
@@ -156,6 +158,38 @@ public class ScanStatDuplicate {
         }
     }
 
+    private static class DuplicateSoResult {
+        private String taskDesc = DUPLICATE_SO_DESC;
+        private String startTime = EMPTY_STRING;
+        private String stopTime = EMPTY_STRING;
+        private List<ParamModel> result = new ArrayList<>();
+
+        public String getTaskDesc() {
+            return this.taskDesc;
+        }
+        public void setTaskDesc(String taskDesc) {
+            this.taskDesc = taskDesc;
+        }
+        public String getStartTime() {
+            return this.startTime;
+        }
+        public void setStartTime(String startTime) {
+            this.startTime = startTime;
+        }
+        public String getStopTime() {
+            return this.stopTime;
+        }
+        public void setStopTime(String stopTime) {
+            this.stopTime = stopTime;
+        }
+        public List<ParamModel> getResult() {
+            return this.result;
+        }
+        public void setResult(List<ParamModel> result) {
+            this.result = result;
+        }
+    }
+
     /**
      * scan statDuplicate.
      *
@@ -196,6 +230,48 @@ public class ScanStatDuplicate {
         String jsonStr = JSON.toJSONString(duplicateResult, new SerializerFeature[] {
                 SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
                 SerializerFeature.WriteDateUseDateFormat});
+        jsonList.add(jsonStr);
+        return htmlStr;
+    }
+
+    /**
+     * scan statDuplicate for So.
+     *
+     * @param utility utility data
+     * @param jsonList List<String> data
+     * @param fileList List<String> data
+     * @return duplicate html
+     * @throws IOException Throws this exception if getDuplicateResList exception
+     * @throws NoSuchAlgorithmException Throws this exception if getDuplicateResList exception
+     */
+    public String statDuplicateForSo(Utility utility, List<String> jsonList, List<String> fileList)
+            throws IOException, NoSuchAlgorithmException {
+        DuplicateSoResult duplicateSoResult = new DuplicateSoResult();
+        duplicateSoResult.setStartTime(getCurrentTime());
+        List<ParamModel> resList = getDuplicateResList(fileList);
+        File parentFile = new File(utility.getOutPath());
+        if (!parentFile.exists() && !parentFile.mkdirs()) {
+            LOG.error(ScanErrorEnum.STAT_DUPLICATE_CREATE_FILE_ERROR.toString());
+        }
+        List<ParamModel> filterList = new ArrayList<>();
+        for (ParamModel model : resList) {
+            List<String> files = model.getFiles();
+            if (files.size() > UNDUPLICATED_SIZE) {
+                filterList.add(model);
+            }
+        }
+        duplicateSoResult.setResult(filterList);
+        duplicateSoResult.setStopTime(getCurrentTime());
+        String taskDescHtml = getHtmlRow(TASK_DESC, duplicateSoResult.getTaskDesc());
+        String startTimeHtml = getHtmlRow(START_TIME, duplicateSoResult.getStartTime());
+        String stopTimeHtml = getHtmlRow(STOP_TIME, duplicateSoResult.getStopTime());
+        String resultValue = getResultHtml(duplicateSoResult.getResult());
+        String resultHtml = getHtmlRowResultClass(RESULT, resultValue);
+        String htmlStr = HTML_TABLE_BOX + taskDescHtml + startTimeHtml + stopTimeHtml + resultHtml + HTML_TABLE_END;
+        String jsonStr = JSON.toJSONString(duplicateSoResult, new SerializerFeature[] {
+                SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
+                SerializerFeature.WriteDateUseDateFormat});
+        jsonStr = jsonStr.replaceAll("\\[\\s*\\]", "[]");
         jsonList.add(jsonStr);
         return htmlStr;
     }
