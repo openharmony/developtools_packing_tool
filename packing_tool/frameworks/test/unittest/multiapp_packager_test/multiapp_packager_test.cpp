@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -436,6 +436,23 @@ HWTEST_F(MultiAppPackagerTest, PreProcess_1600, Function | MediumTest | Level1)
     MockMultiAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
     EXPECT_EQ(multiAppPackager.PreProcess(), 1);
     EXPECT_EQ(multiAppPackager.CompressAppModeForMultiProject(), true);
+}
+
+/*
+ * @tc.name: PreProcess_1700
+ * @tc.desc: test pre process.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppPackagerTest, PreProcess_1700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, "fail"},
+    };
+
+    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
+    EXPECT_EQ(multiAppPackager.PreProcess(), 1);
 }
 
 /*

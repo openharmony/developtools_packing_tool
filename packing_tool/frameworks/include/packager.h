@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,6 +71,7 @@ protected:
     bool generateBuildHash_ = false;
     
     bool CheckForceFlag();
+    bool CheckStatDuplicateFlag();
     bool IsPathValid(const std::string &path, const bool &isFile, const std::string suffix = "");
     bool IsPathParamValid(const std::string &parameterMapKey, const bool &isFile, const std::string &suffix);
     bool IsCompressLevelValid();
@@ -94,6 +95,9 @@ protected:
     bool ParseAtomicServiceSizeLimit();
     bool ParseAtomicServiceEntrySizeLimitParameter();
     bool ParseAtomicServiceNonEntrySizeLimitParameter();
+
+private:
+    void ScanSoFiles();
 
 private:
     static int32_t atomicServiceEntrySizeLimit_;

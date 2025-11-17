@@ -126,6 +126,7 @@ public class CommandParser {
             "error:statDuplicate is invalid! Must be true or false.";
     private static final String PARSER_STAT_SUFFIX_ERROR = "code:9132601 " +
             "error:statSuffix is invalid! Must be true or false.";
+    private static final String INVALID_PARAM = "invalid";
     private static final int PARSE_MODE_VALUE_LENGTH = 2;
     private static final Log LOG = new Log(CommandParser.class.toString());
     private static final Map<String, Function<Map.Entry<Utility, String>, Boolean>> commandFuncs = new HashMap<>();
@@ -382,10 +383,11 @@ public class CommandParser {
         });
         commandFuncs.put(STAT_DUPLICATE, entry -> {
             if (Boolean.TRUE.toString().equals(entry.getValue()) || Boolean.FALSE.toString().equals(entry.getValue())) {
-                entry.getKey().setStatDuplicate(Boolean.parseBoolean(entry.getValue()));
+                entry.getKey().setStatDuplicate(entry.getValue());
                 return true;
             } else {
                 LOG.error(PARSER_STAT_DUPLICATE_ERROR);
+                entry.getKey().setStatDuplicate(INVALID_PARAM);
                 return false;
             }
         });
