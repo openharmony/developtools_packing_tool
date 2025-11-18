@@ -75,7 +75,7 @@ int32_t GeneralNormalize::PreProcess()
     std::regex pattern(Constants::VERSION_NAME_PATTERN);
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, pattern) || it->second.size() > Constants::MAX_VERSION_NAME_LENGTH) {
-            LOGE("--device-types is invalid.");
+            LOGE("--version-name is invalid.");
             return ERR_INVALID_VALUE;
         }
     }
