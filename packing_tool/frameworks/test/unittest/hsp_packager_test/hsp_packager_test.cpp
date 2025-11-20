@@ -815,6 +815,21 @@ const std::string EXTENSION_ABILITIES_WITH_SERVICE = R"({
         ]
     }
 })";
+const std::string EXTENSION_ABILITIES_NO_TYPE = R"({
+    "module": {
+        "extensionAbilities": [
+            {
+                "name": "embeddedUI1",
+                "srcEntry": "./ets/embeddedui/EmbeddedUI1.ts"
+            }
+        ]
+    }
+})";
+const std::string EMPTY_EXTENSION_ABILITIES = R"({
+    "module": {
+        "extensionAbilities": []
+    }
+})";
 }
 
 class HspPackagerTest : public testing::Test {
@@ -2042,6 +2057,48 @@ HWTEST_F(HspPackagerTest, IsExtensionAbility_0200, Function | MediumTest | Level
     std::unique_ptr<OHOS::AppPackingTool::PtJson> extensionAbilitiesObj;
     moduleObj->GetArray("extensionAbilities", &extensionAbilitiesObj);
     
+    EXPECT_FALSE(hspPackager.IsExtensionAbility(extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: IsExtensionAbility_0300
+ * @tc.desc: Test IsExtensionAbility with empty extensionAbilities array
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsExtensionAbility_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(hspPackager.moduleJson_.ParseFromString(EMPTY_EXTENSION_ABILITIES));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(hspPackager.moduleJson_.GetModuleObject(moduleObj));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> extensionAbilitiesObj;
+    moduleObj->GetArray("extensionAbilities", &extensionAbilitiesObj);
+
+    EXPECT_TRUE(hspPackager.IsExtensionAbility(extensionAbilitiesObj));
+}
+
+/*
+ * @tc.name: IsExtensionAbility_0400
+ * @tc.desc: Test IsExtensionAbility with missing type field
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, IsExtensionAbility_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(hspPackager.moduleJson_.ParseFromString(EXTENSION_ABILITIES_NO_TYPE));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> moduleObj;
+    EXPECT_TRUE(hspPackager.moduleJson_.GetModuleObject(moduleObj));
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> extensionAbilitiesObj;
+    moduleObj->GetArray("extensionAbilities", &extensionAbilitiesObj);
+
     EXPECT_FALSE(hspPackager.IsExtensionAbility(extensionAbilitiesObj));
 }
 } // namespace OHOS
