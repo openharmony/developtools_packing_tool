@@ -1522,4 +1522,14 @@ public class PackingToolErrMsg {
             .setDescription("Incremental pack hsp exception.")
             .setCause("%s")
             .build();
+
+    /**
+     * SCAN_SO_FILES_EXCEPTION
+     */
+    public static final ErrorMsg SCAN_SO_FILES_EXCEPTION = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("20")
+            .setErrCode("001")
+            .setDescription("Scan so files exception.")
+            .setCause("%s")
+            .build();
 }

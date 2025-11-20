@@ -154,7 +154,7 @@ public class Utility {
     private String hspList = "";
     private String inputList = "";
     private String input = "";
-    private boolean statDuplicate = false;
+    private String statDuplicate = "";
     private boolean statSuffix = false;
     private String statFileSize = "";
     private boolean isSuccess = true;
@@ -954,11 +954,11 @@ public class Utility {
         this.input = getFormattedPath(input);
     }
 
-    public boolean getStatDuplicate() {
+    public String getStatDuplicate() {
         return statDuplicate;
     }
 
-    public void setStatDuplicate(boolean statDuplicate) {
+    public void setStatDuplicate(String statDuplicate) {
         this.statDuplicate = statDuplicate;
     }
 

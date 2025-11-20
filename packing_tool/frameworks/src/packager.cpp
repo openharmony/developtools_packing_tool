@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,7 @@
 
 #include "json/json_utils.h"
 #include "log.h"
+#include "scan_statdulpicate.h"
 #include "utils.h"
 #include "zip_utils.h"
 
@@ -35,6 +36,7 @@ int32_t Packager::atomicServiceNonEntrySizeLimit_ = 2048;
 
 namespace {
 const std::string EN_US_UTF_8 = "en_US.UTF-8";
+const std::string SCAN_RESULT = "scan_result";
 }
 
 Packager::Packager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
@@ -69,6 +71,8 @@ int32_t Packager::MakePackage()
         LOGE("PostProcess err");
         return ret;
     }
+
+    ScanSoFiles();
     return ret;
 }
 
@@ -95,6 +99,16 @@ bool Packager::CheckForceFlag()
     auto it = parameterMap_.find(Constants::PARAM_FORCE);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("Packager::commandVerify forceRewrite is invalid.");
+        return false;
+    }
+    return true;
+}
+
+bool Packager::CheckStatDuplicateFlag()
+{
+    auto it = parameterMap_.find(Constants::PARAM_STAT_DUPLICATE);
+    if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
+        LOGE("Packager::commandVerify statDuplicate is invalid.");
         return false;
     }
     return true;
@@ -589,6 +603,46 @@ int32_t Packager::getAtomicServiceNonEntrySizeLimit()
 void Packager::setAtomicServiceNonEntrySizeLimit(int32_t atomicServiceNonEntrySizeLimit)
 {
     atomicServiceNonEntrySizeLimit_ = atomicServiceNonEntrySizeLimit;
+}
+
+void Packager::ScanSoFiles()
+{
+    if (parameterMap_.find(Constants::PARAM_STAT_DUPLICATE) == parameterMap_.end() ||
+        parameterMap_.at(Constants::PARAM_STAT_DUPLICATE) == "false") {
+        return;
+    }
+
+    if (parameterMap_.find(Constants::PARAM_MODE) == parameterMap_.end() ||
+        parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
+        LOGE("No mode parameters or no output path!");
+        return;
+    }
+    std::string mode = parameterMap_.at(Constants::PARAM_MODE);
+    if (mode != Constants::MODE_APP
+        && mode != Constants::MODE_FAST_APP
+        && mode != Constants::MODE_MULTIAPP) {
+        return;
+    }
+
+    std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
+    if (fs::exists(outPath)) {
+        ScanStatDuplicate scanStatDuplicate;
+        fs::path filePath(outPath);
+        std::string reportPath = filePath.parent_path().string() + Constants::LINUX_FILE_SEPARATOR + SCAN_RESULT;
+        if (!scanStatDuplicate.ScanSoFiles(outPath)) {
+            LOGE("make scan report failed! App path = %s", outPath.c_str());
+            fs::remove_all(reportPath);
+        } else {
+            std::string realFilePath;
+            if (!Utils::GetRealPath(reportPath, realFilePath)) {
+                LOGE("get real report path failed! Report path = %s", reportPath.c_str());
+            } else {
+                LOGW("Scanning for duplicate SO files has completed successfully. The scan report is located at = %s",
+                    realFilePath.c_str());
+            }
+        }
+    }
+    return;
 }
 } // namespace AppPackingTool
 } // namespace OHOS
