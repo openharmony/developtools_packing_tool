@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -61,6 +62,8 @@ public class Scan {
     private static final String HTML_BODY_END = "</body>";
     private static final String USER_DIR = "user.dir";
     private static final String HTML_BR = "<br/>";
+    private static final String SCAN_RESULT = "scan_result";
+    private static final String SO_SUFFIX = ".*\\.so(?:\\.\\d+)*$";
     private static final int BUFFER_SIZE = 10 * 1024;
     private static final Log LOG = new Log(Scan.class.toString());
 
@@ -100,6 +103,53 @@ public class Scan {
         return scanResult;
     }
 
+    private static boolean isSharedLibrary(String filePath) {
+        return Pattern.compile(SO_SUFFIX).matcher(filePath).find();
+    }
+
+    /**
+     * start scanSoFiles.
+     *
+     * @param utility common data
+     * @return scanSoFiles if compress succeed
+     */
+    public void scanSoFiles(Utility utility)
+        throws BundleException, IOException, NoSuchAlgorithmException {
+        List<String> jsonList = new ArrayList<>();
+        String templateHtml = getJsTemplate(TEMPLATE_HTML);
+        templateHtml = templateHtml.replace(HTML_BR, System.lineSeparator());
+        String htmlStr = HTML_START + HTML_HEAD + DIV_BOX + HTML_BODY + templateHtml;
+        String currentDir = System.getProperty(USER_DIR);
+        String targetPath = currentDir + LINUX_FILE_SEPARATOR + UNPACK_NAME;
+        try {
+            List<String> fileList = getAllInputFileList(utility, targetPath);
+            fileList.removeIf(filePath -> !isSharedLibrary(filePath));
+            ScanStatDuplicate scanStatDuplicate = new ScanStatDuplicate();
+            String duplicateHtml = scanStatDuplicate.statDuplicateForSo(utility, jsonList, fileList);
+            htmlStr = htmlStr + duplicateHtml;
+            htmlStr = htmlStr + HTML_DIV_END + HTML_BODY_END + HTML_END;
+            String reportPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + SCAN_RESULT;
+            File reportDir = new File(reportPath);
+            if (!reportDir.exists()) {
+                reportDir.mkdirs();
+            }
+            String jsonPath = reportPath + LINUX_FILE_SEPARATOR + STAT_JSON;
+            String htmlPath = reportPath + LINUX_FILE_SEPARATOR + STAT_HTML;
+            String cssPath = reportPath + LINUX_FILE_SEPARATOR + STAT_CSS;
+            String jsonStr = jsonList.get(0);
+            writeFile(jsonPath, jsonStr);
+            writeFile(htmlPath, htmlStr);
+            String templateCss = getJsTemplate(TEMPLATE_CSS);
+            writeFile(cssPath, templateCss);
+        } catch (BundleException | NoSuchAlgorithmException | IOException exception){
+            LOG.error(ScanErrorEnum.SCAN_REMIND_ERROR.toString());
+            throw exception;
+        } finally {
+            File deleteFile = new File(targetPath);
+            deleteFile(deleteFile);
+        }
+    }
+
     private void scanExecute(Utility utility) throws BundleException, IOException, NoSuchAlgorithmException {
         List<String> jsonList = new ArrayList<>();
         String templateHtml = getJsTemplate(TEMPLATE_HTML);
@@ -108,7 +158,7 @@ public class Scan {
         String currentDir = System.getProperty(USER_DIR);
         String targetPath = currentDir + LINUX_FILE_SEPARATOR + UNPACK_NAME;
         List<String> fileList = getAllInputFileList(utility, targetPath);
-        if (utility.getStatDuplicate()) {
+        if ("true".equals(utility.getStatDuplicate())) {
             ScanStatDuplicate scanStatDuplicate = new ScanStatDuplicate();
             String duplicateHtml = scanStatDuplicate.statDuplicate(utility, jsonList, fileList);
             htmlStr = htmlStr + duplicateHtml;
@@ -123,7 +173,7 @@ public class Scan {
             String suffixHtml = scanStatSuffix.statSuffix(utility, jsonList, fileList);
             htmlStr = htmlStr + suffixHtml;
         }
-        if (!((!utility.getStatDuplicate()) && !utility.getStatSuffix()
+        if (!((!"true".equals(utility.getStatDuplicate())) && !utility.getStatSuffix()
                 && EMPTY_STRING.equals(utility.getStatFileSize()))) {
             htmlStr = htmlStr + HTML_DIV_END + HTML_BODY_END + HTML_END;
             String jsonPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + STAT_JSON;

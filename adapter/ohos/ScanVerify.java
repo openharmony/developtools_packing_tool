@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class ScanVerify {
             }
         }
 
-        if (!utility.getStatSuffix() && !utility.getStatDuplicate()
+        if (!utility.getStatSuffix() && !"true".equals(utility.getStatDuplicate())
                 && EMPTY_STRING.equals(utility.getStatFileSize())) {
             LOG.error(ScanErrorEnum.SCAN_VERIFY_STAT_PARAMETER_EMPTY_ERROR.toString());
         }

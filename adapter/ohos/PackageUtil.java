@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -815,6 +815,12 @@ public class PackageUtil {
         if (!utility.getEncryptPath().isEmpty()
                 && !isFileValid(utility.getEncryptPath(), Constants.FILE_ENCRYPT_JSON)) {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--encrypt-path is invalid."));
+            return false;
+        }
+        if (!utility.getStatDuplicate().isEmpty() && !utility.getStatDuplicate().equals(Constants.TRUE) &&
+                !utility.getStatDuplicate().equals(Constants.FALSE)) {
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--stat-duplicate is invalid, must be " +
+                    "'true' or 'false'."));
             return false;
         }
         Path outPath = Paths.get(utility.getOutPath());

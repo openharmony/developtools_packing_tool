@@ -771,6 +771,12 @@ public class CompressVerify {
                     "--replace-pack-info is invalid."));
             return false;
         }
+        if (!utility.getStatDuplicate().isEmpty() && !utility.getStatDuplicate().equals(Constants.TRUE) &&
+                !utility.getStatDuplicate().equals(Constants.FALSE)) {
+            String errMsg = "--stat-duplicate is invalid, must be 'true' or 'false'.";
+            LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
 
         return isOutPathValid(utility, APP_SUFFIX);
     }
@@ -869,6 +875,13 @@ public class CompressVerify {
 
         if (!isValidPacJsonFile(utility)) {
             String errMsg = "--pac-json-path is invalid.";
+            LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
+        if (!utility.getStatDuplicate().isEmpty() && !utility.getStatDuplicate().equals(Constants.TRUE) &&
+                !utility.getStatDuplicate().equals(Constants.FALSE)) {
+            String errMsg = "--stat-duplicate is invalid, must be 'true' or 'false'.";
             LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }

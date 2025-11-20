@@ -184,6 +184,7 @@ public class Compressor {
     private static final String TARGET_FILE_PATH = HAPADDITION_FOLDER_NAME + LINUX_FILE_SEPARATOR + "resources"
             + LINUX_FILE_SEPARATOR + "base" + LINUX_FILE_SEPARATOR + "profile";
     private static final String BACKUP_PREFIX = "backup";
+    private static final String SCAN_RESULT = "scan_result";
     private static final String EXTENSION_ABILITY_TYPE_FIELD = "type";
     private static final String EMBEDDED_UI_TYPE = "embeddedUI";
     private static final int QUERY_SCHEMES_CHECK_COUNT = 50;
@@ -486,6 +487,7 @@ public class Compressor {
     }
 
     private boolean defaultProcess(Utility utility) {
+
         File destFile = new File(utility.getOutPath());
         // if out file directory not exist, mkdirs.
         File outParentFile = destFile.getParentFile();
@@ -542,6 +544,8 @@ public class Compressor {
                 LOG.error(PackingToolErrMsg.FILE_DELETE_FAILED.toString(errMsg, solution));
             }
         }
+
+        appScanStatDuplicate(compressResult, utility);
         return compressResult;
     }
 
@@ -4050,6 +4054,32 @@ public class Compressor {
             return;
         }
         writeGeneralRecord(utils, utility.getOutPath());
+    }
+
+    private void appScanStatDuplicate(boolean compressResult, Utility utility) {
+        if (!utility.getMode().equals(Utility.MODE_APP) &&
+                !utility.getMode().equals(Utility.MODE_FAST_APP) &&
+                !utility.getMode().equals(Utility.MODE_MULTI_APP)) {
+            return;
+        }
+        if (compressResult && "true".equals(utility.getStatDuplicate())) {
+            File outputFile = new File(utility.getOutPath().trim());
+            String reportPath = outputFile.getParent() + LINUX_FILE_SEPARATOR + SCAN_RESULT;
+            Scan scan = new Scan();
+            Utility utilityForScan = new Utility();
+            utilityForScan.setInput(utility.getOutPath().trim());
+            utilityForScan.setOutPath(outputFile.getParent());
+            try {
+                scan.scanSoFiles(utilityForScan);
+                LOG.warning("Scanning for duplicate SO files has completed successfully. "
+                    + "The scan report is located at = " + reportPath);
+            } catch (BundleException | NoSuchAlgorithmException | IOException exception) {
+                String errMsg = "Scan so files in app exist Exception" + 
+                    " (BundleException | NoSuchAlgorithmException | IOException): " + exception.getMessage();
+                LOG.error(PackingToolErrMsg.SCAN_SO_FILES_EXCEPTION .toString(errMsg));
+                deleteFile(reportPath);
+            }
+        }
     }
 
     private GeneralNormalizeUtil parseAndModifyGeneralModuleJson(String jsonFilePath, Utility utility, String[] name)
