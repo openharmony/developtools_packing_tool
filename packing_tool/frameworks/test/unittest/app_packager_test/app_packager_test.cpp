@@ -1288,17 +1288,21 @@ HWTEST_F(AppPackagerTest, ScanSoFiles_0100, Function | MediumTest | Level1)
     std::map<std::string, std::string> parameterMap = {};
     OHOS::AppPackingTool::AppPackager packager(parameterMap, resultReceiver);
     packager.ScanSoFiles();
+    parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, ""));
+    packager.ScanSoFiles();
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE] = "false";
+    packager.ScanSoFiles();
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE] = "true";
+    packager.ScanSoFiles();
     parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_MODE, ""));
     packager.ScanSoFiles();
     parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, ""));
     packager.ScanSoFiles();
     parameterMap[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_APP;
     packager.ScanSoFiles();
-    parameterMap.insert(std::make_pair(OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, ""));
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_MULTIAPP;
     packager.ScanSoFiles();
-    parameterMap[OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE] = "false";
-    packager.ScanSoFiles();
-    parameterMap[OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE] = "true";
+    parameterMap[OHOS::AppPackingTool::Constants::PARAM_MODE] = OHOS::AppPackingTool::Constants::MODE_HAP;
     packager.ScanSoFiles();
     std::map<std::string, std::string> parameterMap1 = {
         {OHOS::AppPackingTool::Constants::PARAM_MODE, OHOS::AppPackingTool::Constants::MODE_APP},
