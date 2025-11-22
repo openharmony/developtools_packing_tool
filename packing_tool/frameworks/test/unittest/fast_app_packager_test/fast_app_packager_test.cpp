@@ -22,6 +22,7 @@
 #define protected public
 #include "fast_app_packager.h"
 #include "mock/mock_fast_app_module_json_utils.h"
+#include "scan_statdulpicate.h"
 #undef private
 #undef protected
 
@@ -31,6 +32,7 @@ using namespace testing::ext;
 namespace OHOS {
 namespace {
 const std::string OUT_PATH = "/data/test/packingToolDemo-default-unsigned.app";
+const std::string REPORT_PATH = "/data/test/scan_result";
 const std::string HAP_PATH = "/data/test/resource/packingtool/test_file/hap/entry";
 const std::string FAIL_PATH = "/data/test/resource/packingtool/test_file/hap/fail";
 const std::string PACK_JSON_PATH = "/data/test/resource/packingtool/test_file/pack.json";
@@ -149,6 +151,52 @@ void TouchFile(const std::string& file)
 void DeleteFile(const std::string& file)
 {
     std::string cmd = "rm -f " + file;
+    system(cmd.c_str());
+}
+
+/*
+ * @tc.name: statDuplicate_0100
+ * @tc.desc: statDuplicate.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(FastAppPackagerTest, statDuplicate_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_MODE, OHOS::AppPackingTool::Constants::MODE_FAST_APP},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_STAT_DUPLICATE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_HSP_PATH, HSP_PATH},
+        {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
+    };
+
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+    system("cp -f /data/test/resource/packingtool/test_file/pack.json "
+        "/data/test/resource/packingtool/test_file/pack.info");
+    system("cp -f /data/test/resource/packingtool/test_file/hap/entry/pack.json "
+        "/data/test/resource/packingtool/test_file/hap/entry/pack.info");
+    system("mkdir /data/test/resource/packingtool/test_file/hap/entry/libs");
+    system("mkdir /data/test/resource/packingtool/test_file/hap/entry/libs/armeabi-v7a");
+    system("touch /data/test/resource/packingtool/test_file/hap/entry/libs/armeabi-v7a/test1.z.so");
+    system("touch /data/test/resource/packingtool/test_file/hap/entry/libs/armeabi-v7a/test2.z.so");
+    MockFastAppModuleJsonUtils::MockCheckAppAtomicServiceCompressedSizeValid(true);
+    MockFastAppModuleJsonUtils::MockGetHapVerifyInfosMapfromFileList(true);
+    EXPECT_EQ(fastAppackager.InitAllowedParam(), 0);
+    EXPECT_EQ(fastAppackager.PreProcess(), 0);
+    EXPECT_EQ(fastAppackager.Process(), 0);
+    EXPECT_EQ(fastAppackager.PostProcess(), 0);
+
+    EXPECT_TRUE(fs::exists(OUT_PATH));
+    EXPECT_FALSE(fs::exists(fs::path(REPORT_PATH)));
+    fastAppackager.ScanSoFiles();
+    EXPECT_TRUE(fs::exists(fs::path(REPORT_PATH)));
+    fs::remove_all(REPORT_PATH);
+
+    std::string cmd = {"rm -f "};
+    cmd += OUT_PATH;
     system(cmd.c_str());
 }
 
