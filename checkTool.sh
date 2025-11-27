@@ -101,7 +101,7 @@ if [ -d "$final_pack_out_path" ]
 fi
 copy_command="cp ${temp_pack_jar_path} ${final_pack_jar_path}"
 eval ${copy_command}
-if [ -f "${pack_jar_file}"]
+if [ -f "${pack_jar_file}" ]
     then
         echo "${pack_jar_file} exist"
     else
