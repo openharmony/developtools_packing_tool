@@ -75,16 +75,12 @@ public class IncrementalPack {
      */
     public static void addRawArchiveEntry(org.apache.commons.compress.archivers.zip.ZipFile prevZip,
                                           ZipArchiveOutputStream zos) throws BundleException, IOException {
-        boolean hasSoEntries = false;
-
         Enumeration<ZipArchiveEntry> entries = prevZip.getEntries();
         while (entries.hasMoreElements()) {
             ZipArchiveEntry entry = entries.nextElement();
             String entryName = entry.getName();
 
             if (entryName.startsWith("libs/")) {
-                hasSoEntries = true;
-
                 ZipArchiveEntry newEntry = new ZipArchiveEntry(entryName);
                 newEntry.setMethod(entry.getMethod());
                 newEntry.setSize(entry.getSize());
@@ -95,12 +91,6 @@ public class IncrementalPack {
                     zos.addRawArchiveEntry(newEntry, rawIn);
                 }
             }
-        }
-
-        if (!hasSoEntries) {
-            String errMsg = "The --exist-src-path is invalid or contains no libs/* entries.";
-            LOG.error(PackingToolErrMsg.INCREMENTAL_PACK_HAP_EXCEPTION.toString(errMsg));
-            throw new BundleException(errMsg);
         }
     }
 

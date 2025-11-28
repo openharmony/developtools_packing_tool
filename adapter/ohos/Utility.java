@@ -1062,7 +1062,9 @@ public class Utility {
     }
 
     public void setExistSrcPath(String existSrcPath) {
-        this.existSrcPath = existSrcPath;
+        if (!existSrcPath.startsWith(CMD_PREFIX)) {
+            this.existSrcPath = getFormattedPath(existSrcPath);
+        }
     }
 
     public String getLibPathRetain() {
