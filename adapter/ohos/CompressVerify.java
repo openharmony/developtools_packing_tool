@@ -1320,6 +1320,13 @@ public class CompressVerify {
             return false;
         }
 
+        if (!utility.getLibPathRetain().isEmpty() && !"true".equals(utility.getLibPathRetain()) &&
+                !"false".equals(utility.getLibPathRetain())) {
+            String errMsg = "--lib-path-retain parameter value must be either 'true' or 'false'.";
+            LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+
         return isOutPathValid(utility, HSP_SUFFIX);
     }
 

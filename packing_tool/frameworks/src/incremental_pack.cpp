@@ -87,27 +87,35 @@ bool IncrementalPack::CopyExistSrcFile(const std::map<std::string, std::string> 
     if (!IsIncrementalMode(parameterMap)) {
         return true;
     }
-    auto it = parameterMap.find(Constants::PARAM_EXIST_SRC_PATH);
-    if (it == parameterMap.end() || it->second.empty()) {
+    auto existSrcIt = parameterMap.find(Constants::PARAM_EXIST_SRC_PATH);
+    if (existSrcIt == parameterMap.end() || existSrcIt->second.empty()) {
         LOGI("Parse exist-src-path empty.");
         return false;
     }
-    std::string existSrcPath = it->second;
-    destExistSrcFilePath_ = existSrcPath;
-
-    it = parameterMap.find(Constants::PARAM_OUT_PATH);
-    if (it == parameterMap.end() || it->second.empty()) {
+    std::string realExistSrcPath;
+    if (!Utils::GetRealPath(existSrcIt->second, realExistSrcPath)) {
+        LOGE("Get real existSrcPath failed! existSrcPath=%s", existSrcIt->second.c_str());
+        return false;
+    }
+    destExistSrcFilePath_ = realExistSrcPath;
+    auto outPathIt = parameterMap.find(Constants::PARAM_OUT_PATH);
+    if (outPathIt == parameterMap.end() || outPathIt->second.empty()) {
         LOGI("Parse out-path empty.");
         return false;
     }
-    std::string outPath = it->second;
-
-    if (existSrcPath == outPath &&
-        !Utils::CopyFileToTempDir(existSrcPath,
-                                  Constants::TEMP_EXIST_SRC_DIR,
-                                  destExistSrcFilePath_,
-                                  destTempExistSrcDir_)) {
+    std::string realOutPath;
+    if (!Utils::GetRealPath(outPathIt->second, realOutPath)) {
+        LOGE("Get real outPath failed! outPath=%s", outPathIt->second.c_str());
         return false;
+    }
+    if (realExistSrcPath == realOutPath) {
+        if (!Utils::CopyFileToTempDir(realExistSrcPath,
+                                      Constants::TEMP_EXIST_SRC_DIR,
+                                      destExistSrcFilePath_,
+                                      destTempExistSrcDir_)) {
+            LOGI("CopyFileToTempDir failed.");
+            return false;
+        }
     }
     return true;
 }
