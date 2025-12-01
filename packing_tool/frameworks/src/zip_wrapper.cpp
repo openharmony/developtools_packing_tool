@@ -242,7 +242,7 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
 
     zip_fileinfo zfi = {};
     int openRet = zipOpenNewFileInZip2_64(destZip, entryName.c_str(), &zfi, nullptr, 0,
-        nullptr, 0, nullptr, Z_DEFLATED, 0, 1, 1);
+        nullptr, 0, nullptr, fileInfo.compression_method, 0, 1, 1);
     if (openRet != ZIP_OK) {
         LOGE("zipOpenNewFileInZip2_64 failed for [%s]", entryName.c_str());
         unzCloseCurrentFile(srcZip);
