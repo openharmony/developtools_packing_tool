@@ -195,7 +195,8 @@
                 "appEnvironments",
                 "appStartup",
                 "formWidgetModule",
-                "hnpPackages"
+                "hnpPackages",
+                "shareFiles"
               ]
             },
             "required": [
@@ -1981,6 +1982,12 @@
               }
             }
           }
+        },
+        "shareFiles": {
+          "description": "Indicates the share files profile.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
         }
       }
     }
