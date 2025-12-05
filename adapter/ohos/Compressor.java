@@ -4064,7 +4064,7 @@ public class Compressor {
         }
         if (compressResult && "true".equals(utility.getStatDuplicate())) {
             File outputFile = new File(utility.getOutPath().trim());
-            String reportPath = outputFile.getParent() + LINUX_FILE_SEPARATOR + SCAN_RESULT;
+            String reportPath = outputFile.getParent() + File.separator + SCAN_RESULT;
             Scan scan = new Scan();
             Utility utilityForScan = new Utility();
             utilityForScan.setInput(utility.getOutPath().trim());
