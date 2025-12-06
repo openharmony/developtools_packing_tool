@@ -443,12 +443,12 @@
               "isAdapted": {
                 "description": "This tag identifies whether the form is adapted UX standards for standby.",
                 "type": "boolean",
-                "default": true
+                "default": false
               },
               "isPrivacySensitive": {
                 "description": "This tag identifies whether the form contains privacy-sensitive information.",
                 "type": "boolean",
-                "default": true
+                "default": false
               }
             }
           }
