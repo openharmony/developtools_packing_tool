@@ -1958,7 +1958,8 @@
             "propertyNames": {
               "enum": [
                 "package",
-                "type"
+                "type",
+                "independentSign"
               ]
             },
             "required": [
@@ -1979,6 +1980,11 @@
                   "public",
                   "private"
                 ]
+              },
+              "independentSign": {
+                "description": "Whether the native package supports independent signing.",
+                "type": "boolean",
+                "default": false
               }
             }
           }
