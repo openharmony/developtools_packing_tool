@@ -423,6 +423,34 @@
                 "low"
               ]
             }
+          },
+          "standby": {
+            "description": "Defines standby configurations.",
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "isSupported",
+                "isAdapted",
+                "isPrivacySensitive"
+              ]
+            },
+            "properties": {
+              "isSupported": {
+                "description": "This tag identifies whether the form is supported display in standby.",
+                "type": "boolean",
+                "default": true
+              },
+              "isAdapted": {
+                "description": "This tag identifies whether the form is adapted UX standards for standby.",
+                "type": "boolean",
+                "default": true
+              },
+              "isPrivacySensitive": {
+                "description": "This tag identifies whether the form contains privacy-sensitive information.",
+                "type": "boolean",
+                "default": true
+              }
+            }
           }
         }
       }
