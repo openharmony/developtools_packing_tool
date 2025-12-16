@@ -1633,7 +1633,10 @@ public class JsonUtil {
 
         if (shortcutObj.containsKey("icon")) {
             String iconPath = parseResourceByStringID(data, getJsonString(shortcutObj, "icon"));
-            moduleShortcut.setIcon(iconPath.substring(iconPath.indexOf("resources")));
+            String iconResourcesPath = iconPath.contains("resources")
+                    ? iconPath.substring(iconPath.indexOf("resources"))
+                    : "";
+            moduleShortcut.setIcon(iconResourcesPath);
         }
         if (shortcutObj.containsKey("wants")) {
             moduleShortcut.setWants(JSON.parseArray(getJsonString(shortcutObj, "wants"), Want.class));
@@ -1779,7 +1782,7 @@ public class JsonUtil {
             int len = STRING_RESOURCE.length();
             String descriptionId = descriptionStr.substring(len);
             try {
-                int id = Integer.parseInt(descriptionId);
+                int id = Integer.parseUnsignedInt(descriptionId);
                 descriptions = ResourcesParserFactory.createParser(data).getResourceMapById(id, data);
             } catch (NumberFormatException e) {
                 LOG.error("parseFormDescriptions failed: invalid descriptionId: " + descriptionId);
@@ -1932,7 +1935,7 @@ public class JsonUtil {
             index++;
         }
         try {
-            int finalId = Integer.parseInt(id.substring(index));
+            int finalId = Integer.parseUnsignedInt(id.substring(index));
             res = ResourcesParserFactory.createParser(data).getResourceStringById(finalId, data);
         } catch (NumberFormatException e) {
             LOG.error("parseResourceByStringID failed: input invalid of " + id + ".");
