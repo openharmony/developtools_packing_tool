@@ -755,7 +755,7 @@ public class Uncompress {
                     continue;
                 }
                 if (indexEntry != null && !"".equals(indexEntry.getName()) &&
-                        indexEntry.getName().toLowerCase().equals(RESOURCE_INDEX)) {
+                        indexEntry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
                     indexInputStream = zipFile.getInputStream(indexEntry);
                     return getByte(indexInputStream);
                 }
@@ -856,7 +856,7 @@ public class Uncompress {
             int entriesNum = 0;
             while ((entry = zipIn.getNextEntry()) != null) {
                 entriesNum++;
-                if (entry.getName().equalsIgnoreCase(RESOURCE_INDEX)) {
+                if (entry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
                     hapZipInfo.setResDataBytes(getByte(zipIn));
                     continue;
                 }
@@ -1515,7 +1515,7 @@ public class Uncompress {
             bufIn = new BufferedInputStream(input);
             zipIn = new ZipInputStream(bufIn);
             while ((entry = zipIn.getNextEntry()) != null) {
-                if (entry.getName().equalsIgnoreCase(RESOURCE_INDEX)) {
+                if (entry.getName().toLowerCase().endsWith(RESOURCE_INDEX)) {
                     hapZipInfo.setResDataBytes(getByte(zipIn));
                     continue;
                 }
