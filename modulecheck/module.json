@@ -490,6 +490,7 @@
                 "startWindowIcon",
                 "startWindowBackground",
                 "removeMissionAfterTerminate",
+                "allowSelfRedirect",
                 "orientation",
                 "supportWindowMode",
                 "maxWindowRatio",
@@ -795,6 +796,11 @@
                 "description": "Specifies whether to remove the mission after the ability termination.",
                 "type": "boolean",
                 "default": false
+              },
+              "allowSelfRedirect": {
+                "description": "Specifies whether the application allows itself to be navigated through AppLinking.",
+                "type": "boolean",
+                "default": true
               },
               "orientation": {
                 "description": "Indicates the display orientation of the ability. This attribute is valid only for abilities using the Page template.",
