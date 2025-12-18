@@ -425,7 +425,7 @@
             }
           },
           "standby": {
-            "description": "Defines standby configurations.",
+            "description": "Defines standby mode configurations.",
             "type": "object",
             "propertyNames": {
               "enum": [
@@ -436,17 +436,17 @@
             },
             "properties": {
               "isSupported": {
-                "description": "This tag identifies whether the form is supported display in standby.",
+                "description": "Indicates whether the widget supports display in standby mode.",
                 "type": "boolean",
                 "default": true
               },
               "isAdapted": {
-                "description": "This tag identifies whether the form is adapted UX standards for standby.",
+                "description": "Indicates whether the widget is UX-adapted for standby mode.",
                 "type": "boolean",
                 "default": false
               },
               "isPrivacySensitive": {
-                "description": "This tag identifies whether the form contains privacy-sensitive information.",
+                "description": "Indicates whether the widget is privacy-sensitive.",
                 "type": "boolean",
                 "default": false
               }
