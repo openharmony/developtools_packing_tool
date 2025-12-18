@@ -51,7 +51,8 @@
             "resizable",
             "groupId",
             "supportDeviceTypes",
-            "supportDevicePerformanceClasses"
+            "supportDevicePerformanceClasses",
+            "standby"
           ]
         },
         "required": [
@@ -422,6 +423,34 @@
                 "medium",
                 "low"
               ]
+            }
+          },
+          "standby": {
+            "description": "Defines standby mode configurations.",
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "isSupported",
+                "isAdapted",
+                "isPrivacySensitive"
+              ]
+            },
+            "properties": {
+              "isSupported": {
+                "description": "Indicates whether the widget supports display in standby mode.",
+                "type": "boolean",
+                "default": true
+              },
+              "isAdapted": {
+                "description": "Indicates whether the widget is UX-adapted for standby mode.",
+                "type": "boolean",
+                "default": false
+              },
+              "isPrivacySensitive": {
+                "description": "Indicates whether the widget is privacy-sensitive.",
+                "type": "boolean",
+                "default": false
+              }
             }
           }
         }
