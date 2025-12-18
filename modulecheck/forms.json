@@ -51,7 +51,8 @@
             "resizable",
             "groupId",
             "supportDeviceTypes",
-            "supportDevicePerformanceClasses"
+            "supportDevicePerformanceClasses",
+            "standby"
           ]
         },
         "required": [
