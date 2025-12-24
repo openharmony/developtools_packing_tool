@@ -99,13 +99,13 @@ if [ -d "$final_pack_out_path" ]
     else 
         mkdir -p ${final_pack_out_path}
 fi
-copy_command="cp ${temp_pack_jar_path} ${final_pack_jar_path}"
-eval ${copy_command}
+copy_command="cp -f \"${temp_pack_jar_path}\" \"${final_pack_jar_path}\""
+eval "${copy_command}"
 if [ -f "${pack_jar_file}" ]
     then
         echo "${pack_jar_file} exist"
     else
-        cp ${temp_pack_jar_path} ${pack_jar_file}
+        cp -f "${temp_pack_jar_path}" "${pack_jar_file}"
 fi
 rm -rf ${temp_pack_jar_dir}
 rm -rf ${temp_dir}
