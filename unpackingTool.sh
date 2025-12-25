@@ -66,15 +66,15 @@ if [ -f "${unpack_jar_path}" ]
     then
         echo "${unpack_jar_path} exist"
     else
-        cp ${temp_unpack_jar_path} ${unpack_jar_path}
+        cp -f "${temp_unpack_jar_path}" "${unpack_jar_path}"
 fi
 # make out dir
 if [ -d "$unpack_out_path" ]
     then
         echo "$unpack_out_path exist"
     else 
-        mkdir -p $unpack_out_path
+        mkdir -p "$unpack_out_path"
 fi
-copy_command="cp ${temp_unpack_jar_path} ${unpack_out_jar_path}"
-eval ${copy_command}
+copy_command="cp -f \"${temp_unpack_jar_path}\" \"${unpack_out_jar_path}\""
+eval "${copy_command}"
 rm -rf ${temp_unpack_jart_dir}
