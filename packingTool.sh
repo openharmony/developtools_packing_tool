@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2026 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -27,11 +27,11 @@ final_path=$(pwd)
 
 jar_dir="jar"
 pack_jar_file="app_packing_tool.jar"
-fastjson_jar_file="fastjson-2.0.52.jar"
-fastjson2_jar_file="fastjson2-2.0.52.jar"
-fastjson2ext_jar_file="fastjson2-extension-2.0.52.jar"
-compress_jar_file="commons-compress-1.26.1.jar"
-io_jar_file="commons-io-2.18.0.jar"
+fastjson_jar_file="fastjson-2.0.57.jar"
+fastjson2_jar_file="fastjson2-2.0.57.jar"
+fastjson2ext_jar_file="fastjson2-extension-2.0.57.jar"
+compress_jar_file="commons-compress-1.27.1.jar"
+io_jar_file="commons-io-2.19.0.jar"
 jar_directory="${root_path}/jar"
 pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
 manifest_path="${root_path}/META-INF/packing_tool/MANIFEST.MF"

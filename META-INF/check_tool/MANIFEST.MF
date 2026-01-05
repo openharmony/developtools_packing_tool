@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Class-Path: fastjson-2.0.52.jar fastjson2-2.0.52.jar fastjson2-extension-2.0.52.jar
+Class-Path: fastjson-2.0.57.jar fastjson2-2.0.57.jar fastjson2-extension-2.0.57.jar
 Created-By: javac.py
 Main-Class: ohos.ScanEntrance

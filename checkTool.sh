@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2023-2025 Huawei Device Co., Ltd.
+# Copyright (c) 2023-2026 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -25,9 +25,9 @@ final_path=$(pwd)
 
 jar_dir="jar"
 pack_jar_file="app_check_tool.jar"
-fastjson_jar_file="fastjson-2.0.52.jar"
-fastjson2_jar_file="fastjson2-2.0.52.jar"
-fastjson2ext_jar_file="fastjson2-extension-2.0.52.jar"
+fastjson_jar_file="fastjson-2.0.57.jar"
+fastjson2_jar_file="fastjson2-2.0.57.jar"
+fastjson2ext_jar_file="fastjson2-extension-2.0.57.jar"
 jar_directory="${root_path}/jar"
 pack_jar_path="${root_path}/${jar_dir}/${pack_jar_file}"
 manifest_path="${root_path}/META-INF/check_tool/MANIFEST.MF"
