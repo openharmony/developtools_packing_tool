@@ -105,7 +105,7 @@ if [ -f "${pack_jar_file}" ]
     then
         echo "${pack_jar_file} exist"
     else
-        cp -f "${temp_pack_jar_path}" "${pack_jar_file}"
+        cp -n "${temp_pack_jar_path}" "${pack_jar_file}" || true
 fi
 rm -rf ${temp_pack_jar_dir}
 rm -rf ${temp_dir}
