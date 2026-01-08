@@ -66,7 +66,7 @@ if [ -f "${unpack_jar_path}" ]
     then
         echo "${unpack_jar_path} exist"
     else
-        cp -f "${temp_unpack_jar_path}" "${unpack_jar_path}"
+        cp -n "${temp_unpack_jar_path}" "${unpack_jar_path}" || true
 fi
 # make out dir
 if [ -d "$unpack_out_path" ]

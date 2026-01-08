@@ -69,6 +69,6 @@ if [ -f "${final_jar_path}" ]
     then
         echo "${final_jar_path} exist"
     else
-        eval "cp ${temp_jar_path} ${final_jar_path}"
+        cp -n "${temp_jar_path}" "${final_jar_path}" || true
 fi
 rm -rf ${temp_jar_dir}
