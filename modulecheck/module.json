@@ -1294,6 +1294,7 @@
                   "selection",
                   "faultLog",
                   "crypto",
+                  "partnerAgent",
                   "contentEmbed"
                 ]
               },
