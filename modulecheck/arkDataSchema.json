@@ -1,0 +1,135 @@
+{
+    "title": "ArkData schema for schema.json5",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [ "dbSchema" ],
+    "propertyNames": {
+        "enum": [
+            "dbSchema"
+        ]
+    },
+    "properties": {
+        "dbSchema": {
+            "description": "Indicates the database schemas.",
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/definitions/dbSchemaItem" }
+        }
+    },
+    "definitions": {
+        "dbSchemaItem": {
+            "description": "Indicates the details of a database schema.",
+            "type": "object",
+            "required": [ "version", "bundleName", "dbName", "tables" ],
+            "propertyNames": {
+                "enum": [
+                    "version",
+                    "bundleName",
+                    "dbName",
+                    "tables"
+                ]
+            },
+            "properties": {
+                "version": {
+                    "description": "Indicates the version of the database schema.",
+                    "type": "integer",
+                    "minnum": 1
+                },
+                "bundleName": {
+                    "description": "Indicates the bundle name of an application.",
+                    "type": "string",
+                    "minLength": 7,
+                    "maxLength": 128,
+                    "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+                },
+                "dbName": { "$ref": "#/definitions/dbName" },
+                "tables": {
+                    "description": "Indicates the details of tables.",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/definitions/table" }
+                }
+            }
+        },
+        "table": {
+            "description": "Indicates the detials of a table.",
+            "type": "object",
+            "required": [ "tableName", "fields" ],
+            "propertyNames": {
+                "enum": [
+                    "tableName",
+                    "fields",
+                    "deviceSyncFields"
+                ]
+            },
+            "properties": {
+                "tableName": { "$ref": "#/definitions/tableName" },
+                "fields": {
+                    "description": "Indicates the collection of database fields.",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/definitions/field" }
+                },
+                "deviceSyncFields": {
+                    "description": "Indicates the collection of database deviceSyncField.",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "$ref": "#/definitions/columnName" }
+                }
+            }
+        },
+        "field": {
+            "description": "Indicates the properties of a field.",
+            "type": "object",
+            "required": [ "columnName", "type" ],
+            "propertyNames": {
+                "enum": [
+                    "columnName",
+                    "type",
+                    "primaryKey",
+                    "autoIncrement",
+                    "notNull"
+                ]
+            },
+            "properties": {
+                "columnName": { "$ref": "#/definitions/columnName" },
+                "type": {
+                    "description": "Indicates the data type of a field.",
+                    "enum": [ "Text", "Integer", "Long", "Float", "Double", "Blob" ]
+                },
+                "primaryKey": {
+                    "description": "Specifies whether the field is a primary key.",
+                    "type": "boolean"
+                },
+                "autoIncrement": {
+                    "description": "Specifies whether the field increases automatically.",
+                    "type": "boolean"
+                },
+                "notNull": {
+                    "description": "Specifies whether the field cannot be empty.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "dbName": {
+            "description": "Indicates the database name.",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255,
+            "pattern": "^[0-9a-zA-Z_]{1,}$"
+        },
+        "tableName": {
+            "description": "Indicates the table name.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[0-9a-zA-Z_]{1,}$"
+        },
+        "columnName": {
+            "description": "Indicates the column name.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+        }
+    }
+}
