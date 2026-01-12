@@ -102,3 +102,8 @@ ohos_prebuilt_etc("crossAppSharedConfigSchema_json") {
   source = "crossAppSharedConfig.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("arkDataSchema_json") {
+  source = "arkDataSchema.json"
+  install_enable = false
+}
