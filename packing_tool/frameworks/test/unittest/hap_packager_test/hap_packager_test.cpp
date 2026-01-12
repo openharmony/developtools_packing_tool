@@ -21,6 +21,7 @@
 #define private public
 #define protected public
 #include "hap_packager.h"
+#include "zip_utils.h"
 #undef private
 #undef protected
 
@@ -1030,6 +1031,51 @@ HWTEST_F(HapPackagerTest, hapPackager_3000, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: hapPackager_3100
+ * @tc.desc:
+ *  ......
+ *  std::map<std::string, std::string> paramFileMap = {
+ *      ......
+ *       {Constants::PARAM_PKG_SDK_INFO_PATH, Constants::PKG_SDK_INFO_JSON}
+ *   };
+ *   for (auto& item : paramFileMap) {
+ *       if (!AddCommonFileOrDirectoryToZip(item.first, item.second)) {
+ *           return false;
+ *       }
+ *   }
+ *   ......
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapPackagerTest, hapPackager_3100, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    std::string pkgSdkInfoPath = "/data/test/" + OHOS::AppPackingTool::Constants::PKG_SDK_INFO_JSON;
+
+    // 准备文件
+    system(("touch " + pkgSdkInfoPath).c_str());
+
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_JSON_PATH] = STAGE_JSON_PATH;
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_OUT_PATH] = OUT_PATH;
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_PKG_SDK_INFO_PATH] = pkgSdkInfoPath;
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_FORCE] = "true";
+
+    OHOS::AppPackingTool::HapPackager hapPackager(paramMap, result);
+    EXPECT_EQ(hapPackager.PreProcess(), OHOS::AppPackingTool::ERR_OK);
+    EXPECT_EQ(hapPackager.Process(), OHOS::AppPackingTool::ERR_OK);
+
+    // 断言 pkgSdkInfo.json 被打进 hap
+    EXPECT_TRUE(
+        OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(
+            OUT_PATH, "pkgsdkinfo.json"));
+
+    // 清理
+    system(("rm -f " + pkgSdkInfoPath).c_str());
+    DeleteFile(OUT_PATH);
+}
+
+/*
  * @tc.name: preProcess_001
  * @tc.desc: PreProcess.
  * @tc.type: FUNC
@@ -1232,6 +1278,65 @@ HWTEST_F(HapPackagerTest, isVerifyValidInHapCommonMode_006, Function | MediumTes
 }
 
 /*
+ * @tc.name: CheckPkgSdkInfoParam_0100
+ * @tc.desc: CheckPkgSdkInfoParam()
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, CheckPkgSdkInfoParam_0100, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    std::string invalidPath = TEST_PATH + "invalid_sdk_info.txt";
+    system(("touch " + invalidPath).c_str());
+
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_PKG_SDK_INFO_PATH] = invalidPath;
+
+    OHOS::AppPackingTool::HapPackager hapPackager(paramMap, result);
+    EXPECT_FALSE(hapPackager.CheckPkgSdkInfoParam());
+
+    system(("rm -f " + invalidPath).c_str());
+}
+
+/*
+ * @tc.name: CheckPkgSdkInfoParam_0200
+ * @tc.desc: CheckPkgSdkInfoParam()
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, CheckPkgSdkInfoParam_0200, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    std::string validPath = "/data/test/" + OHOS::AppPackingTool::Constants::PKG_SDK_INFO_JSON;
+    system(("touch " + validPath).c_str());
+
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_PKG_SDK_INFO_PATH] = validPath;
+
+    OHOS::AppPackingTool::HapPackager hapPackager(paramMap, result);
+    EXPECT_TRUE(hapPackager.CheckPkgSdkInfoParam());
+
+    system(("rm -f " + validPath).c_str());
+}
+
+/*
+ * @tc.name: CheckPkgSdkInfoParam_0300
+ * @tc.desc: CheckPkgSdkInfoParam()
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapPackagerTest, CheckPkgSdkInfoParam_0300, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    OHOS::AppPackingTool::HapPackager hapPackager(paramMap, result);
+    EXPECT_TRUE(hapPackager.CheckPkgSdkInfoParam());
+}
+
+/*
  * @tc.name: isVerifyValidInHapMode_001
  * @tc.desc: IsVerifyValidInHapMode.
  * @tc.type: FUNC
@@ -1385,6 +1490,7 @@ HWTEST_F(HapPackagerTest, CompressHap_0200, Function | MediumTest | Level1)
     EXPECT_FALSE(hapPackager.CompressHap());
     system("rm -f /data/test/module.json");
 }
+
 /*
  * @tc.name: IsPluginHost_0100
  * @tc.desc: IsPluginHost

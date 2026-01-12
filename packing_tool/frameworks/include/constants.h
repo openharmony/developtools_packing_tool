@@ -106,6 +106,7 @@ const std::string PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT = "atomic-service-no
 const std::string PARAM_TOTAL_LIMIT = "total-limit";
 const std::string PARAM_BUNDLE_NAME = "bundle-name";
 const std::string PARAM_PAC_JSON_PATH = "pac-json-path";
+const std::string PARAM_PKG_SDK_INFO_PATH = "pkg-sdk-info-path";
 const std::string PARAM_EXIST_SRC_PATH = "exist-src-path";
 const std::string PARAM_LIB_PATH_RETAIN = "lib-path-retain";
 const std::string PARAM_REPLACE_PACK_INFO = "replace-pack-info";
@@ -117,6 +118,7 @@ const std::string MODULE_JSON = "module.json";
 const std::string CONFIG_JSON = "config.json";
 const std::string PATCH_JSON = "patch.json";
 const std::string PAC_JSON = "pac.json";
+const std::string PKG_SDK_INFO_JSON = "pkgSdkInfo.json";
 const std::string LIB_PATH = "libs";
 const std::string AN_PATH = "an";
 const std::string AP_PATH = "ap";
@@ -249,6 +251,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_EXIST_SRC_PATH.c_str(), required_argument, nullptr, 59},
     {PARAM_LIB_PATH_RETAIN.c_str(), required_argument, nullptr, 60},
     {PARAM_STAT_DUPLICATE.c_str(), required_argument, nullptr, 61},
+    {PARAM_PKG_SDK_INFO_PATH.c_str(), required_argument, nullptr, 62},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

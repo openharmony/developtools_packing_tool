@@ -90,7 +90,8 @@ int32_t HspPackager::PostProcess()
 bool HspPackager::IsVerifyValidInHspCommonMode()
 {
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
-    if (it == parameterMap_.end() || it->second.empty()) {
+    bool isValid = (it != parameterMap_.end() && !it->second.empty());
+    if (!isValid) {
         LOGE("HspPackager::isArgsValidInHspMode json-path is empty.");
         return false;
     }
@@ -141,6 +142,11 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
                 " must be pkgContextInfo.json file.");
             return false;
         }
+    }
+
+    if (!CheckPkgSdkInfoParam()) {
+        LOGE("CheckPkgSdkInfoParam failed!");
+        return false;
     }
     return true;
 }
@@ -452,7 +458,8 @@ bool HspPackager::CompressHspModePartSecond(const std::string &jsonPath)
         {Constants::PARAM_AN_PATH, Constants::AN_PATH},
         {Constants::PARAM_AP_PATH, Constants::AP_PATH},
         {Constants::PARAM_RPCID_PATH, Constants::RPCID_SC},
-        {Constants::PARAM_ASSETS_PATH, Constants::ASSETS_PATH}
+        {Constants::PARAM_ASSETS_PATH, Constants::ASSETS_PATH},
+        {Constants::PARAM_PKG_SDK_INFO_PATH, Constants::PKG_SDK_INFO_JSON}
     };
     for (auto& item : paramFileMap) {
         if (!AddCommonFileOrDirectoryToZip(item.first, item.second)) {
@@ -641,6 +648,18 @@ bool HspPackager::CheckLibPathRetainParam()
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.");
         return false;
+    }
+    return true;
+}
+
+bool HspPackager::CheckPkgSdkInfoParam()
+{
+    auto it = parameterMap_.find(Constants::PARAM_PKG_SDK_INFO_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (!IsFileMatch(it->second, Constants::PKG_SDK_INFO_JSON)) {
+            LOGE("pkg-sdk-info-path is invalid.");
+            return false;
+        }
     }
     return true;
 }
