@@ -1466,6 +1466,9 @@ public class Compressor {
         if (!utility.getPkgContextPath().isEmpty()) {
             pathToFile(utility, utility.getPkgContextPath(), NULL_DIR_NAME, false);
         }
+        if (!utility.getPkgSdkInfoJsonPath().isEmpty()) {
+            pathToFile(utility, utility.getPkgSdkInfoJsonPath(), NULL_DIR_NAME, false);
+        }
 
         compressHapModeMultiple(utility);
     }
@@ -3598,6 +3601,9 @@ public class Compressor {
         }
         if (!utility.getPkgContextPath().isEmpty()) {
             pathToFile(utility, utility.getPkgContextPath(), NULL_DIR_NAME, false);
+        }
+        if (!utility.getPkgSdkInfoJsonPath().isEmpty()) {
+            pathToFile(utility, utility.getPkgSdkInfoJsonPath(), NULL_DIR_NAME, false);
         }
 
         compressHapModeMultiple(utility);

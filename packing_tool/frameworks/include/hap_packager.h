@@ -56,6 +56,7 @@ public:
     bool IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj);
     bool CheckPkgContext();
     bool CheckLibPathRetainParam();
+    bool CheckPkgSdkInfoParam();
 
 protected:
     int32_t InitAllowedParam() override;

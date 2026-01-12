@@ -16,6 +16,8 @@
 package ohos;
 
 import com.alibaba.fastjson.JSONValidator;
+import ohos.validator.PackValidatorFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -130,40 +132,48 @@ public class CompressVerify {
      * @return commandPathVerify if command valid.
      */
     private static boolean commandPathVerify(Utility utility) {
-        switch (utility.getMode()) {
-            case Utility.MODE_HAP:
-                if (!utility.getBinPath().isEmpty() && utility.getJsonPath().isEmpty()) {
-                    return isOutPathValid(utility, HAP_SUFFIX);
-                } else {
-                    return isVerifyValidInHapCommonMode(utility) && isVerifyValidInHapMode(utility);
-                }
-            case Utility.MODE_HAR:
-                return isVerifyValidInHarMode(utility);
-            case Utility.MODE_APP:
-                return isVerifyValidInAppMode(utility);
-            case Utility.MODE_FAST_APP:
-                return PackageUtil.isVerifyValidInFastAppMode(utility);
-            case Utility.MODE_RES:
-                return isVerifyValidInResMode(utility);
-            case Utility.MODE_MULTI_APP:
-                return isVerifyValidInMultiAppMode(utility);
-            case Utility.MODE_HQF:
-                return isVerifyValidInHQFMode(utility);
-            case Utility.MODE_APPQF:
-                return isVerifyValidInAPPQFMode(utility);
-            case Utility.MODE_HSP:
-                return isVerifyValidInHspMode(utility);
-            case Utility.MODE_HAPADDITION:
-                return isVerifyValidInHapAdditionMode(utility);
-            case Utility.VERSION_NORMALIZE:
-                return validateVersionNormalizeMode(utility);
-            case Utility.PACKAGE_NORMALIZE:
-                return validatePackageNormalizeMode(utility);
-            case Utility.GENERAL_NORMALIZE:
-                return validateGeneralNormalizeMode(utility);
-            default:
-                LOG.error(PackingToolErrMsg.COMMAND_MODE_INVALID.toString());
-                return false;
+        try {
+            switch (utility.getMode()) {
+                case Utility.MODE_HAP:
+                    if (!utility.getBinPath().isEmpty() && utility.getJsonPath().isEmpty()) {
+                        return isOutPathValid(utility, HAP_SUFFIX);
+                    } else {
+                        return isVerifyValidInHapCommonMode(utility) &&
+                            isVerifyValidInHapMode(utility) &&
+                            PackValidatorFactory.getValidator(utility.getMode()).validate(utility);
+                    }
+                case Utility.MODE_HAR:
+                    return isVerifyValidInHarMode(utility);
+                case Utility.MODE_APP:
+                    return isVerifyValidInAppMode(utility);
+                case Utility.MODE_FAST_APP:
+                    return PackageUtil.isVerifyValidInFastAppMode(utility);
+                case Utility.MODE_RES:
+                    return isVerifyValidInResMode(utility);
+                case Utility.MODE_MULTI_APP:
+                    return isVerifyValidInMultiAppMode(utility);
+                case Utility.MODE_HQF:
+                    return isVerifyValidInHQFMode(utility);
+                case Utility.MODE_APPQF:
+                    return isVerifyValidInAPPQFMode(utility);
+                case Utility.MODE_HSP:
+                    return isVerifyValidInHspMode(utility) &&
+                        PackValidatorFactory.getValidator(utility.getMode()).validate(utility);
+                case Utility.MODE_HAPADDITION:
+                    return isVerifyValidInHapAdditionMode(utility);
+                case Utility.VERSION_NORMALIZE:
+                    return validateVersionNormalizeMode(utility);
+                case Utility.PACKAGE_NORMALIZE:
+                    return validatePackageNormalizeMode(utility);
+                case Utility.GENERAL_NORMALIZE:
+                    return validateGeneralNormalizeMode(utility);
+                default:
+                    LOG.error(PackingToolErrMsg.COMMAND_MODE_INVALID.toString());
+                    return false;
+            }
+        } catch (BundleException e) {
+            LOG.error(PackingToolErrMsg.COMMAND_VERIFY_FAILED.toString("BundleException: " + e.getMessage()));
+            return false;
         }
     }
 

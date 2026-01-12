@@ -167,6 +167,10 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
             return false;
         }
     }
+    if (!CheckPkgSdkInfoParam()) {
+        LOGE("CheckPkgSdkInfoParam failed!");
+        return false;
+    }
     return true;
 }
 
@@ -483,7 +487,8 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
         {Constants::PARAM_HNP_PATH, Constants::HNP_PATH},
         {Constants::PARAM_RPCID_PATH, Constants::RPCID_SC},
         {Constants::PARAM_ASSETS_PATH, Constants::ASSETS_PATH},
-        {Constants::PARAM_PACK_INFO_PATH, Constants::PACK_INFO}
+        {Constants::PARAM_PACK_INFO_PATH, Constants::PACK_INFO},
+        {Constants::PARAM_PKG_SDK_INFO_PATH, Constants::PKG_SDK_INFO_JSON}
     };
     for (auto& item : paramFileMap) {
         if (!AddCommonFileOrDirectoryToZip(item.first, item.second)) {
@@ -741,6 +746,18 @@ bool HapPackager::CheckLibPathRetainParam()
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.");
         return false;
+    }
+    return true;
+}
+
+bool HapPackager::CheckPkgSdkInfoParam()
+{
+    auto it = parameterMap_.find(Constants::PARAM_PKG_SDK_INFO_PATH);
+    if (it != parameterMap_.end() && !it->second.empty()) {
+        if (!IsFileMatch(it->second, Constants::PKG_SDK_INFO_JSON)) {
+            LOGE("pkg-sdk-info-path is invalid.");
+            return false;
+        }
     }
     return true;
 }
