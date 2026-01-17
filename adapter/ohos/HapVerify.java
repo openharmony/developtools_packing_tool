@@ -694,24 +694,33 @@ class HapVerify {
         return true;
     }
 
-    private static boolean checkProxyDataUriIsUnique(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
-        if (hapVerifyInfos.isEmpty()) {
-            String cause = "Hap verify infos is empty";
+    private static boolean checkProxyDataUriIsUnique(
+            List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            String cause = "Hap verify infos is empty!";
             LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString(cause));
             return false;
         }
-        Set<String> uriSet = new HashSet<>();
+        Map<String, Set<String>> usedUrisByDeviceType = new HashMap<>();
         for (HapVerifyInfo info : hapVerifyInfos) {
-            for (String uri : info.getProxyDataUris()) {
-                if (uriSet.contains(uri)) {
-                    String moduleName = info.getModuleName();
-                    String cause = "The uri(" + uri + ") in proxyData settings of Module(" + moduleName +
-                            ") is duplicated.";
-                    String solution = "Ensure that the uri in proxyData is unique across different modules.";
-                    LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(cause, solution));
-                    return false;
-                } else {
-                    uriSet.add(uri);
+            String moduleName = info.getModuleName();
+            List<String> uris = info.getProxyDataUris();
+            if (uris == null || uris.isEmpty()) {
+                continue;
+            }
+            for (String deviceType : info.getDeviceType()) {
+                Set<String> usedUris =
+                        usedUrisByDeviceType.computeIfAbsent(deviceType, k -> new HashSet<>());
+                for (String uri : uris) {
+                    if (!usedUris.add(uri)) {
+                        String cause = "The uri(" + uri + ") in proxyData settings of Module(" +
+                                moduleName + ") is duplicated for deviceType(" + deviceType + ").";
+                        String solution =
+                                "Ensure that the uri in proxyData is unique across different modules " +
+                                        "when deviceType has intersection.";
+                        LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(cause, solution));
+                        return false;
+                    }
                 }
             }
         }
