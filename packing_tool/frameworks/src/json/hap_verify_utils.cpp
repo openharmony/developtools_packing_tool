@@ -1229,18 +1229,35 @@ bool HapVerifyUtils::CheckCompileSdkIsValid(const std::list<HapVerifyInfo>& hapV
 bool HapVerifyUtils::CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("hapVerifyInfos is empty!");
+        LOGE("Hap verify infos is empty");
         return false;
     }
-    std::list<std::string> uris;
-    for (auto& hapVerifyInfo : hapVerifyInfos) {
-        for (auto& uri : hapVerifyInfo.GetProxyDataUris()) {
-            if (std::find(uris.begin(), uris.end(), uri) != uris.end()) {
-                LOGE("uri %s in proxy data is duplicated", uri.c_str());
-                LOGE("Solutions: > Check if the uri in proxyData is unique in different modules.");
-                return false;
-            } else {
-                uris.push_back(uri);
+    std::unordered_map<std::string, std::unordered_set<std::string>> usedUrisByDeviceType;
+    for (const auto& info : hapVerifyInfos) {
+        if (!CheckAndInsertUris(info, usedUrisByDeviceType)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HapVerifyUtils::CheckAndInsertUris(const HapVerifyInfo& info,
+    std::unordered_map<std::string, std::unordered_set<std::string>>& usedUrisByDeviceType)
+{
+    const auto& uris = info.GetProxyDataUris();
+    if (uris.empty()) {
+        return true;  // Skip empty URIs
+    }
+    const std::string& moduleName = info.GetModuleName();
+    for (const auto& deviceType : info.GetDeviceTypes()) {
+        auto& usedUris = usedUrisByDeviceType[deviceType];
+        for (const auto& uri : uris) {
+            if (!usedUris.insert(uri).second) {
+                LOGE("The uri(%s) in proxyData settings of Module(%s) is duplicated for deviceType(%s).",
+                     uri.c_str(), moduleName.c_str(), deviceType.c_str());
+                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
+                     "when deviceType has intersection.");
+                return false;  // Early return to stop processing
             }
         }
     }
