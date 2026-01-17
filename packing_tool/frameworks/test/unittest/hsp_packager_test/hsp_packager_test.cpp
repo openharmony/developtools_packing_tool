@@ -1403,7 +1403,6 @@ HWTEST_F(HspPackagerTest, CompressHspModePartSecond_0100, Function | MediumTest 
 
     std::string pkgSdkInfoPath = "/data/test/" + OHOS::AppPackingTool::Constants::PKG_SDK_INFO_JSON;
 
-    // 准备 pkgSdkInfo.json
     system(("touch " + pkgSdkInfoPath).c_str());
 
     paramMap[OHOS::AppPackingTool::Constants::PARAM_JSON_PATH] = JSON_PATH;
@@ -1414,7 +1413,6 @@ HWTEST_F(HspPackagerTest, CompressHspModePartSecond_0100, Function | MediumTest 
     OHOS::AppPackingTool::HspPackager hspPackager(paramMap, result);
     EXPECT_EQ(hspPackager.PreProcess(), 1);
 
-    // 清理
     system(("rm -f " + pkgSdkInfoPath).c_str());
 }
 

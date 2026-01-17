@@ -30,7 +30,7 @@ import java.io.File;
  * @since 2026-01-10
  */
 public class HspValidator extends AbstractPackValidator {
-    private static final Log LOG = new Log(HapValidator.class.toString());
+    private static final Log LOG = new Log(HspValidator.class.toString());
 
     /**
      * Verifying the packaging parameters when packaging a HSP.
