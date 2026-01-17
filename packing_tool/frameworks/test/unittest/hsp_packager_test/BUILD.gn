@@ -38,6 +38,7 @@ ohos_unittest("hsp_packager_test") {
     "../../../src/log.cpp",
     "../../../src/packager.cpp",
     "../../../src/utils.cpp",
+    "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",
     "../../../src/incremental_pack.cpp",
     "hsp_packager_test.cpp",

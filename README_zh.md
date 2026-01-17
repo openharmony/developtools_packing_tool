@@ -18,7 +18,7 @@ packing_tool子系统用于生成打包工具和拆包工具，其中打包工�
 
 
 ```
-java -jar app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true --compress-level 5 --pkg-context-path <option>
+java -jar app_packing_tool.jar --mode hap --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\srcEntrance.hap --force true --compress-level 5 --pkg-context-path <option> --pkg-sdk-info-path <option>
 ```
 
 - FA模型的打包命令示例：
@@ -30,29 +30,30 @@ java -jar app_packing_tool.jar --mode hap --json-path <option> --maple-so-path [
 
 #### 1.1.2 参数含义及规范
 
-| 指令               | 是否必选项 | 选项                   | 描述                                                        | 备注         |
-|------------------|-------|----------------------|-----------------------------------------------------------|------------|
-| --mode           | 是     | hap                  | 打包类型。                                                     | NA         |
-| --json-path      | 是     | NA                   | .json文件路径，FA模型文件名必须为config.json；stage模型文件名必须为module.json。 | NA         |
-| --profile-path   | 否     | NA                   | CAPABILITY.profile文件路径。                                   | NA         |
-| --maple-so-path  | 否     | NA                   | maple so文件输入路径，so文件路径，文件名必须以.so为后缀。如果是多个so需要用“，”分隔。       | NA         |
-| --maple-so-dir   | 否     | NA                   | maple so目录输入路径。                                           | NA         |
-| --dex-path       | 否     | NA                   | 1.dex文件路径，文件名必须以.dex为后缀。如果是多个dex需要用“，”分隔。2.dex文件路径也可以为目录。 | NA         |
-| --lib-path       | 否     | NA                   | lib库文件路径。                                                 | NA         |
-| --resources-path | 否     | NA                   | resources资源包路径。                                           | NA         |
-| --index-path     | 否     | NA                   | .index文件路径，文件名必须为resources.index。                         | NA         |
-| --pack-info-path | 否     | NA                   | pack.info文件路径，文件名必须为pack.info。                            | NA         |
-| --rpcid-path     | 否     | NA                   | rpcid.sc文件路径，文件名必须为rpcid.sc。                              | NA         |
-| --js-path        | 否     | NA                   | 存放js文件目录路径。                                               | 仅stage模型生效 |
-| --ets-path       | 否     | NA                   | 存放ets文件目录路径。                                              | 仅stage模型生效 |
-| --out-path       | 是     | NA                   | 目标文件路径，文件名必须以.hap为后缀。                                     | NA         |
-| --force          | 否     | true或者false          | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                        | NA         |
-| --an-path        | 否     | NA                   | 存放an文件的路径。                                                | 仅stage模型生效 |
-| --ap-path        | 否     | NA                   | 存放ap文件的路径。                                                | 仅stage模型生效 |
-| --dir-list       | 否     | NA                   | 可指定目标文件夹列表，将其打入hap包内。                                   | NA         |
-| --compress-level | 否     | number               | 压缩等级，默认值1，可选等级1-9。在应用配置compressNativeLibs参数为true的情况下生效，数值越大压缩率越高、压缩速度越慢。  | NA    |
-| --pkg-context-path      | 否         | NA            | 可指定语境信息表文件路径，文件名必须为pkgContextInfo.json。 | 仅stage模型生效              |
-| --hnp-path | 否 | NA | 指定native软件包文件路径，将native软件包打入hap包内。 | NA |
+| 指令                  | 是否必选项 | 选项                   | 描述                                                                       | 备注         |
+|---------------------|-------|----------------------|--------------------------------------------------------------------------|------------|
+| --mode              | 是     | hap                  | 打包类型。                                                                    | NA         |
+| --json-path         | 是     | NA                   | .json文件路径，FA模型文件名必须为config.json；stage模型文件名必须为module.json。                | NA         |
+| --profile-path      | 否     | NA                   | CAPABILITY.profile文件路径。                                                  | NA         |
+| --maple-so-path     | 否     | NA                   | maple so文件输入路径，so文件路径，文件名必须以.so为后缀。如果是多个so需要用“，”分隔。                      | NA         |
+| --maple-so-dir      | 否     | NA                   | maple so目录输入路径。                                                          | NA         |
+| --dex-path          | 否     | NA                   | 1.dex文件路径，文件名必须以.dex为后缀。如果是多个dex需要用“，”分隔。2.dex文件路径也可以为目录。                | NA         |
+| --lib-path          | 否     | NA                   | lib库文件路径。                                                                | NA         |
+| --resources-path    | 否     | NA                   | resources资源包路径。                                                          | NA         |
+| --index-path        | 否     | NA                   | .index文件路径，文件名必须为resources.index。                                        | NA         |
+| --pack-info-path    | 否     | NA                   | pack.info文件路径，文件名必须为pack.info。                                           | NA         |
+| --rpcid-path        | 否     | NA                   | rpcid.sc文件路径，文件名必须为rpcid.sc。                                             | NA         |
+| --js-path           | 否     | NA                   | 存放js文件目录路径。                                                              | 仅stage模型生效 |
+| --ets-path          | 否     | NA                   | 存放ets文件目录路径。                                                             | 仅stage模型生效 |
+| --out-path          | 是     | NA                   | 目标文件路径，文件名必须以.hap为后缀。                                                    | NA         |
+| --force             | 否     | true或者false          | 默认值为false，如果为true，表示当目标文件存在时，强制删除。                                       | NA         |
+| --an-path           | 否     | NA                   | 存放an文件的路径。                                                               | 仅stage模型生效 |
+| --ap-path           | 否     | NA                   | 存放ap文件的路径。                                                               | 仅stage模型生效 |
+| --dir-list          | 否     | NA                   | 可指定目标文件夹列表，将其打入hap包内。                                                    | NA         |
+| --compress-level    | 否     | number               | 压缩等级，默认值1，可选等级1-9。在应用配置compressNativeLibs参数为true的情况下生效，数值越大压缩率越高、压缩速度越慢。 | NA    |
+| --pkg-context-path  | 否         | NA            | 可指定语境信息表文件路径，文件名必须为pkgContextInfo.json。                                  | 仅stage模型生效              |
+| --hnp-path          | 否 | NA | 指定native软件包文件路径，将native软件包打入hap包内。                                       | NA |
+| --pkg-sdk-info-path | 否     | NA                   | pkgSdkInfo.json文件路径，文件名必须为pkgSdkInfo.json。                                     | NA         |
 
 ### 1.2 res模式打包指令
 
@@ -178,7 +179,7 @@ java -jar app_packing_tool.jar --mode appqf --hqf-list <option> --out-path <opti
 
 #### 1.7.1 示例
 ```
-java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\library.hsp --force true --compress-level 5 --pkg-context-path <option>
+java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-path <option> --ets-path <option> --index-path <option> --pack-info-path <option> --out-path path\out\library.hsp --force true --compress-level 5 --pkg-context-path <option> --pkg-sdk-info-path <option>
 ```
 
 #### 1.7.2 参数含义及规范
@@ -202,6 +203,7 @@ java -jar path\app_packing_tool.jar --mode hsp --json-path <option> --resources-
 | --dir-list       | 否     | NA                   | 可指定目标文件夹列表，将其打入hap包内                               |
 | --compress-level | 否     | number               | 压缩等级，默认值1，可选等级1-9。在应用配置compressNativeLibs参数为true的情况下生效，数值越大压缩率越高、压缩速度越慢。  |
 | --pkg-context-path      | 否         | NA            | 可指定语境信息表文件路径，文件名必须为pkgContextInfo.json。 |
+| --pkg-sdk-info-path | 否     | NA                   | pkgSdkInfo.json文件路径，文件名必须为pkgSdkInfo.json。                                     | NA         |
 
 ### 1.8 versionNormalize模式指令
 

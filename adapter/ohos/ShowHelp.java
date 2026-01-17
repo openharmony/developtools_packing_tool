@@ -88,7 +88,8 @@ public interface ShowHelp {
                 "  --signature-path               signature file path.\n" +
                 "  --certificate-path             certificate file path.\n" +
                 "  --encrypt-path                 encrypt.json file path." +
-                "  --pac-json-path                 pac.json file path.");
+                "  --pac-json-path                 pac.json file path." +
+                "  --pkg-sdk-info-path                 pkgSdkInfo.json file path.");
     }
 
     /**
