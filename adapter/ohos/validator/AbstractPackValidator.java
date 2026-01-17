@@ -43,7 +43,6 @@ public abstract class AbstractPackValidator {
      * @return {@code true} if validation passes; {@code false} otherwise
      */
     public final boolean validate(Utility utility) throws BundleException {
-        // 公共校验待添加
         return isVerifyValid(utility);
     }
 
