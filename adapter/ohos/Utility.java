@@ -71,6 +71,7 @@ public class Utility {
     private String replacePackInfo = "";
     private String encryptPath = "";
     private String pacJsonPath = "";
+    private String pkgSdkInfoJsonPath = "";
     private String binPath = "";
     private boolean isCompressNativeLibs = false;
     private String moduleName = "";
@@ -460,6 +461,14 @@ public class Utility {
 
     public void setPacJsonPath(String pacJsonPath) {
         this.pacJsonPath = pacJsonPath;
+    }
+
+    public String getPkgSdkInfoJsonPath() {
+        return pkgSdkInfoJsonPath;
+    }
+
+    public void setPkgSdkInfoJsonPath(String pkgSdkInfoJsonPath) {
+        this.pkgSdkInfoJsonPath = pkgSdkInfoJsonPath;
     }
 
     public String getJarPath() {

@@ -143,7 +143,11 @@ def compile_packing_tool(root_path, src_path, jar_output, out_path,
         'Utility.java',
         'VerifyCollection.java',
         'Version.java',
-        'IncrementalPack.java'
+        'IncrementalPack.java',
+        'validator/AbstractPackValidator.java',
+        'validator/HapValidator.java',
+        'validator/HspValidator.java',
+        'validator/PackValidatorFactory.java'
     ]
     compile_java = get_compile_str(src_path, java_sources)
 

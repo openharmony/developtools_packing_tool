@@ -67,6 +67,7 @@ public class CommandParser {
     private static final String CMD_REPLACE_PACK_INFO = "--replace-pack-info";
     private static final String CMD_ENCRYPT_PATH = "--encrypt-path";
     private static final String CMD_PAC_JSON_PATH = "--pac-json-path";
+    private static final String CMD_PKG_SDK_INFO_JSON_PATH = "--pkg-sdk-info-path";
     private static final String CMD_BIN_PATH = "--bin-path";
     private static final String CMD_JAR_PATH = "--jar-path";
     private static final String CMD_TXT_PATH = "--txt-path";
@@ -262,6 +263,10 @@ public class CommandParser {
         });
         commandFuncs.put(CMD_PAC_JSON_PATH, entry -> {
             entry.getKey().setPacJsonPath(entry.getValue());
+            return true;
+        });
+        commandFuncs.put(CMD_PKG_SDK_INFO_JSON_PATH, entry -> {
+            entry.getKey().setPkgSdkInfoJsonPath(entry.getValue());
             return true;
         });
         commandFuncs.put(CMD_BIN_PATH, entry -> {

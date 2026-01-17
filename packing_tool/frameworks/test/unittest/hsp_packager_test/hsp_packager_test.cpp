@@ -21,6 +21,7 @@
 #define private public
 #define protected public
 #include "hsp_packager.h"
+#include "zip_utils.h"
 #include "zip_wrapper.h"
 #undef private
 #undef protected
@@ -1380,6 +1381,44 @@ HWTEST_F(HspPackagerTest, CompressHspMode_1600, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: CompressHspModePartSecond_0100
+ *  ......
+ *  std::map<std::string, std::string> paramFileMap = {
+ *      ......
+ *       {Constants::PARAM_PKG_SDK_INFO_PATH, Constants::PKG_SDK_INFO_JSON}
+ *   };
+ *   for (auto& item : paramFileMap) {
+ *       if (!AddCommonFileOrDirectoryToZip(item.first, item.second)) {
+ *           return false;
+ *       }
+ *   }
+ *   ......
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressHspModePartSecond_0100, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    std::string pkgSdkInfoPath = "/data/test/" + OHOS::AppPackingTool::Constants::PKG_SDK_INFO_JSON;
+
+    // 准备 pkgSdkInfo.json
+    system(("touch " + pkgSdkInfoPath).c_str());
+
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_JSON_PATH] = JSON_PATH;
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_OUT_PATH] = OUT_PATH;
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_PKG_SDK_INFO_PATH] = pkgSdkInfoPath;
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_FORCE] = "true";
+
+    OHOS::AppPackingTool::HspPackager hspPackager(paramMap, result);
+    EXPECT_EQ(hspPackager.PreProcess(), 1);
+
+    // 清理
+    system(("rm -f " + pkgSdkInfoPath).c_str());
+}
+
+/*
  * @tc.name: PreProcess_0100
  * @tc.desc: PreProcess.
  * @tc.type: FUNC
@@ -1613,6 +1652,65 @@ HWTEST_F(HspPackagerTest, IsVerifyValidInHspCommonMode_0600, Function | MediumTe
 
     DeleteFile(JAR_FILE_PATH);
     DeleteFile(JSON_PATH);
+}
+
+/*
+ * @tc.name: CheckPkgSdkInfoParam_0100
+ * @tc.desc: CheckPkgSdkInfoParam()
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CheckPkgSdkInfoParam_0100, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    std::string invalidPath = TEST_PATH + "invalid_sdk_info.txt";
+    system(("touch " + invalidPath).c_str());
+
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_PKG_SDK_INFO_PATH] = invalidPath;
+
+    OHOS::AppPackingTool::HspPackager hspPackager(paramMap, result);
+    EXPECT_FALSE(hspPackager.CheckPkgSdkInfoParam());
+
+    system(("rm -f " + invalidPath).c_str());
+}
+
+/*
+ * @tc.name: CheckPkgSdkInfoParam_0200
+ * @tc.desc: CheckPkgSdkInfoParam()
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CheckPkgSdkInfoParam_0200, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    std::string validPath = "/data/test/" + OHOS::AppPackingTool::Constants::PKG_SDK_INFO_JSON;
+    system(("touch " + validPath).c_str());
+
+    paramMap[OHOS::AppPackingTool::Constants::PARAM_PKG_SDK_INFO_PATH] = validPath;
+
+    OHOS::AppPackingTool::HspPackager hspPackager(paramMap, result);
+    EXPECT_TRUE(hspPackager.CheckPkgSdkInfoParam());
+
+    system(("rm -f " + validPath).c_str());
+}
+
+/*
+ * @tc.name: CheckPkgSdkInfoParam_0300
+ * @tc.desc: CheckPkgSdkInfoParam()
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CheckPkgSdkInfoParam_0300, Function | MediumTest | Level1)
+{
+    std::string result;
+    std::map<std::string, std::string> paramMap;
+
+    OHOS::AppPackingTool::HspPackager hspPackager(paramMap, result);
+    EXPECT_TRUE(hspPackager.CheckPkgSdkInfoParam());
 }
 
 /*
