@@ -30,6 +30,7 @@ struct GeneralNormalizeVersion {
     int32_t originMinAPIVersion = -1;
     int32_t originTargetAPIVersion = -1;
     int32_t originVersionCode = -1;
+    std::string originBuildVersion = "";
     std::string originBundleName = "";
     std::string originVersionName = "";
     std::string originApiReleaseType = "";

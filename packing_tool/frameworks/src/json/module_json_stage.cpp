@@ -28,6 +28,7 @@ const std::string BUNDLE_TYPE = "bundleType";
 const std::string ABILITIES = "abilities";
 const std::string VERSIONCODE = "versionCode";
 const std::string VERSIONNAME = "versionName";
+const std::string BUILDVERSION = "buildVersion";
 const std::string MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
 const std::string API_VERSION = "apiVersion";
 const std::string MIN_API_VERSION = "minAPIVersion";
@@ -101,6 +102,25 @@ bool ModuleJson::SetStageVersionCode(const int32_t& versionCode)
     }
     if (appObj->SetInt(VERSIONCODE.c_str(), versionCode) != Result::SUCCESS) {
         LOGE("App node set %s failed!", VERSIONCODE.c_str());
+        return false;
+    }
+    return true;
+}
+
+
+bool ModuleJson::SetBuildVersion(const std::string& buildVersion)
+{
+    std::unique_ptr<PtJson> appObj;
+    if (!GetAppObject(appObj)) {
+        LOGE("GetAppObject failed!");
+        return false;
+    }
+    if (!appObj->Contains(BUILDVERSION.c_str())) {
+        LOGE("App node has no %s node!", BUILDVERSION.c_str());
+        return false;
+    }
+    if (appObj->SetString(BUILDVERSION.c_str(), buildVersion) != Result::SUCCESS) {
+        LOGE("App node set %s failed!", BUILDVERSION.c_str());
         return false;
     }
     return true;
@@ -340,6 +360,12 @@ bool ModuleJson::GetStageVersionByAppObj(std::unique_ptr<PtJson>& appObj, Versio
     if (appObj->GetString(VERSIONNAME.c_str(), &version.versionName) != Result::SUCCESS) {
         LOGE("App node get %s failed!", VERSIONNAME.c_str());
         return false;
+    }
+    if (appObj->Contains(BUILDVERSION.c_str())) {
+        if (appObj->GetString(BUILDVERSION.c_str(), &version.buildVersion) != Result::SUCCESS) {
+            LOGE("App node get %s failed!", BUILDVERSION.c_str());
+            return false;
+        }
     }
     if (appObj->Contains(MIN_COMPATIBLE_VERSION_CODE.c_str())) {
         if (appObj->GetInt(MIN_COMPATIBLE_VERSION_CODE.c_str(),

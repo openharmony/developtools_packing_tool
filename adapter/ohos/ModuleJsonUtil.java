@@ -33,6 +33,7 @@ class ModuleJsonUtil {
     private static final String ABILITIES = "abilities";
     private static final String VERSIONCODE = "versionCode";
     private static final String VERSIONNAME = "versionName";
+    private static final String BUILDVERSION = "buildVersion";
     private static final String MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
     private static final String API_VERSION = "apiVersion";
     private static final String MIN_API_VERSION = "minAPIVersion";
@@ -131,6 +132,9 @@ class ModuleJsonUtil {
     public static Version parseStageVersion(String jsonString) throws BundleException {
         Version version = new Version();
         JSONObject appObj = getAppObj(jsonString);
+        if (appObj.containsKey(BUILDVERSION)) {
+            version.buildVersion = appObj.getString(BUILDVERSION);
+        }
         if (appObj.containsKey(VERSIONCODE) && appObj.containsKey(VERSIONNAME)) {
             version.versionCode = appObj.getIntValue(VERSIONCODE);
             version.versionName = appObj.getString(VERSIONNAME);

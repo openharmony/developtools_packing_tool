@@ -63,6 +63,11 @@ class ModuleAppInfo {
     public int versionCode = DEFAULT_VERSION_CODE;
 
     /**
+     * Indicates the buildVersion of app AppJson.
+     */
+    public String buildVersion = "";
+
+    /**
      * Indicates the versionName of app AppJson.
      */
     public String versionName = "";

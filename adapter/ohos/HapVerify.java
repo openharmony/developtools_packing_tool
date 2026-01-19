@@ -327,6 +327,7 @@ class HapVerify {
         verifyCollection.setBundleType(baseInfo.getBundleType());
         verifyCollection.vendor = baseInfo.getVendor();
         verifyCollection.versionCode = baseInfo.getVersion().versionCode;
+        verifyCollection.buildVersion = baseInfo.getVersion().buildVersion;
         verifyCollection.versionName = baseInfo.getVersion().versionName;
         verifyCollection.compatibleApiVersion = baseInfo.getApiVersion().getCompatibleApiVersion();
         verifyCollection.releaseType = baseInfo.getApiVersion().getReleaseType();
@@ -457,6 +458,13 @@ class HapVerify {
         if (verifyCollection.versionCode != hapVerifyInfo.getVersion().versionCode) {
             String errMsg = "The versionCode parameter values are different.";
             String solution = "Check if the versionCode is the same in different modules.";
+            LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
+            return false;
+        }
+        if (verifyCollection.buildVersion != hapVerifyInfo.getVersion().buildVersion) {
+            String errMsg = "The buildVersion parameter values are different.";
+            String solution = "Module: (" + verifyCollection.getModuleName() + ") and Module: (" + 
+                hapVerifyInfo.getModuleName() + ") has different buildVersion.";
             LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
             return false;
         }

@@ -185,6 +185,7 @@ VerifyCollection HapVerifyUtils::GetVerifyCollection(const HapVerifyInfo& baseIn
     verifyCollection.bundleType = baseInfo.GetBundleType();
     verifyCollection.vendor = baseInfo.GetVendor();
     verifyCollection.versionCode = baseInfo.GetVersion().versionCode;
+    verifyCollection.buildVersion = baseInfo.GetVersion().buildVersion;
     verifyCollection.versionName = baseInfo.GetVersion().versionName;
     verifyCollection.compatibleApiVersion = baseInfo.GetApiVersion().compatibleApiVersion;
     verifyCollection.releaseType = baseInfo.GetApiVersion().releaseType;
@@ -309,6 +310,12 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
     }
     if (verifyCollection.versionCode != hapVerifyInfo.GetVersion().versionCode) {
         LOGE("input module versionCode is different.");
+        return false;
+    }
+    if (verifyCollection.buildVersion != hapVerifyInfo.GetVersion().buildVersion) {
+        LOGE("input module buildVersion is different.");
+        LOGE("Module: ( %s ) and Module: ( %s ) has different buildVersion",
+            verifyCollection.moduleName.c_str(), hapVerifyInfo.GetModuleName().c_str());
         return false;
     }
     if (verifyCollection.releaseType != hapVerifyInfo.GetApiVersion().releaseType) {

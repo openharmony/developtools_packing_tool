@@ -87,6 +87,7 @@ class ModuleAdaption {
         appInfo.setDescriptions(moduleAppInfo.getDescriptions());
         appInfo.vendor = moduleAppInfo.vendor;
         appInfo.versionCode = String.valueOf(moduleAppInfo.versionCode);
+        appInfo.buildVersion = String.valueOf(moduleAppInfo.buildVersion);
         appInfo.versionName = moduleAppInfo.versionName;
         appInfo.minCompatibleVersionCode = moduleAppInfo.minCompatibleVersionCode;
         appInfo.compatibleApiVersion = moduleAppInfo.minAPIVersion;

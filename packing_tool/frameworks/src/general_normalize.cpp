@@ -98,6 +98,15 @@ int32_t GeneralNormalize::PreProcess()
         }
     }
 
+    it = parameterMap_.find(Constants::PARAM_BUILD_VERSION);
+    std::regex buildPattern(Constants::BUILD_VERSION_PATTERN);
+    if (it != parameterMap_.end()) {
+        if (!std::regex_match(it->second, buildPattern) || it->second.size() > Constants::BUILD_VERSION_MAX_LENGTH) {
+            LOGE("--build-version is invalid.");
+            return ERR_INVALID_VALUE;
+        }
+    }
+
     it = parameterMap_.find(Constants::PARAM_DEVICE_TYPES);
     if (it != parameterMap_.end()) {
         std::list<std::string> deviceTypeList;
@@ -239,6 +248,18 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         }
         if (!moduleJson.SetVersionCode(versionCode, true)) {
             LOGE("SetVersionCode failed");
+            return false;
+        }
+    }
+
+    it = parameterMap_.find(Constants::PARAM_BUILD_VERSION);
+    if (it != parameterMap_.end()) {
+        std::string buildVersion = parameterMap_.at(Constants::PARAM_BUILD_VERSION);
+        Version version;
+        moduleJson.GetStageVersion(version);
+        generalNormalizeVersion.originBuildVersion = version.buildVersion;
+        if (!moduleJson.SetBuildVersion(buildVersion)) {
+            LOGE("SetBuildVersion failed");
             return false;
         }
     }
@@ -590,6 +611,15 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
         }
         if (!packInfo.SetVersionCode(versionCode)) {
             LOGW("SetVersionCode packInfo failed");
+            return false;
+        }
+    }
+
+    it = parameterMap_.find(Constants::PARAM_BUILD_VERSION);
+    if (it != parameterMap_.end()) {
+        std::string buildVersion = parameterMap_.at(Constants::PARAM_BUILD_VERSION);
+        if (!packInfo.SetBuildVersion(buildVersion)) {
+            LOGW("SetBuildVersion packInfo failed");
             return false;
         }
     }

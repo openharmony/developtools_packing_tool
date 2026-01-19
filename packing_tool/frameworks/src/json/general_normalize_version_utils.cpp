@@ -25,6 +25,7 @@ namespace {
 const std::string DEVICE_TYPES = "deviceTypes";
 const std::string BUNDLE_NAME = "bundleName";
 const std::string VERSION_CODE = "versionCode";
+const std::string BUILD_VERSION = "buildVersion";
 const std::string VERSION_NAME = "versionName";
 const std::string MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
 const std::string MIN_API_VERSION = "minAPIVersion";
@@ -60,7 +61,12 @@ std::string GeneralNormalizeVersionUtils::ArrayToString(const std::list<GeneralN
             if (!ptJson->Add(VERSION_CODE.c_str(), generalNormalizeVersion.originVersionCode)) {
                 return "";
             }
-        } 
+        }
+        if (generalNormalizeVersion.originBuildVersion != "") {
+            if (!ptJson->Add(BUILD_VERSION.c_str(), generalNormalizeVersion.originBuildVersion.c_str())) {
+                return "";
+            }
+        }
         if (generalNormalizeVersion.originVersionName != "") {
             if (!ptJson->Add(VERSION_NAME.c_str(), generalNormalizeVersion.originVersionName.c_str())) {
                 return "";
