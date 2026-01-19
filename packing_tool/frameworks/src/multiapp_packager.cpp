@@ -404,7 +404,7 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         return false;
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, false)) {
-        LOGE("here are somehaps with different version code or duplicated moduleName or packageName.");
+        LOGE("here are somehaps with different version code or build version or duplicated moduleName or packageName.");
         if (fs::exists(tempHapDirPath)) {
             fs::remove_all(tempHapDirPath);
         }

@@ -94,6 +94,7 @@ public class Utility {
     private String hnpPath = "";
     private String rpcidPath = "";
     private int VersionCode = -1;
+    private String buildVersion = "";
     private String VersionName = "";
     private boolean isModuleJson = false;
     private String rpcid = FALSE_STRING;
@@ -649,6 +650,14 @@ public class Utility {
 
     public void setVersionCode(int VersionCode) {
         this.VersionCode = VersionCode;
+    }
+
+    public String getBuildVersion() {
+        return buildVersion;
+    }
+
+    public void setBuildVersion(String buildVersion) {
+        this.buildVersion = buildVersion;
     }
 
     public List<String> getFormattedCpuAbiList() {

@@ -148,6 +148,7 @@ public class Compressor {
     private static final String RES_FILE_PATH = "resources/resfile";
     private static final String SUMMARY = "summary";
     private static final String VERSION_CODE = "versionCode";
+    private static final String BUILD_VERSION = "buildVersion";
     private static final String VERSION_NAME = "versionName";
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String BUNDLE_NAME = "bundleName";
@@ -165,6 +166,7 @@ public class Compressor {
     private static final String PACKAGES = "packages";
     private static final String VERSION = "version";
     private static final String CODE = "code";
+    private static final String BUILD = "build";
     private static final String VERSION_RECORD = "version_record.json";
     private static final String GENERAL_RECORD = "general_record.json";
     private static final String RES_INDEX = "resources.index";
@@ -282,6 +284,7 @@ public class Compressor {
 
     private static class GeneralNormalizeUtil {
         private int originVersionCode = INVALID_VERSION;
+        private String originBuildVersion = "";
         private String originVersionName = "";
         private String moduleName = "";
         private String originBundleName = "";
@@ -298,6 +301,10 @@ public class Compressor {
 
         public void setOriginVersionCode(int originVersionCode) {
             this.originVersionCode = originVersionCode;
+        }
+
+        public void setOriginVersionBuild(String originBuildVersion) {
+            this.originBuildVersion = originBuildVersion;
         }
 
         public void setModuleName(String name) {
@@ -4124,6 +4131,11 @@ public class Compressor {
                 appObject.put(VERSION_CODE, utility.getVersionCode());
             }
 
+            if (utility.getGeneralNormalizeList().contains(BUILD_VERSION)) {
+                util.setOriginVersionBuild(appObject.getString(BUILD_VERSION));
+                appObject.put(BUILD_VERSION, utility.getBuildVersion());
+            }
+
             if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
                 util.setOriginVersionName(appObject.getString(VERSION_NAME));
                 appObject.put(VERSION_NAME, utility.getVersionName());
@@ -4368,6 +4380,10 @@ public class Compressor {
                 versionObject.put(CODE, utility.getVersionCode());
             }
 
+            if (utility.getGeneralNormalizeList().contains(BUILD_VERSION)) {
+                versionObject.put(BUILD, utility.getBuildVersion());
+            }
+
             if (utility.getGeneralNormalizeList().contains(VERSION_NAME)) {
                 versionObject.put(NAME, utility.getVersionName());
             }
@@ -4481,6 +4497,9 @@ public class Compressor {
                 }
                 if (util.originVersionCode != INVALID_VERSION) {
                     jsonObject.put("versionCode", util.originVersionCode);
+                }
+                if (util.originBuildVersion != null && !util.originBuildVersion.isEmpty()) {
+                    jsonObject.put("buildVersion", util.originBuildVersion);
                 }
                 if (util.moduleName != null && !util.moduleName.isEmpty()) {
                     jsonObject.put("moduleName", util.moduleName);

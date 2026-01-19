@@ -239,6 +239,7 @@ public:
     bool SetInstallationFree(const bool& installationFree, const bool& isStage);
     bool SetDeliveryWithInstall(const bool& deliveryWithInstall, const bool& isStage);
     bool SetVersionCode(const int32_t& versionCode, const bool& isStage);
+    bool SetBuildVersion(const std::string& buildVersion);
     bool SetVersionName(const std::string& versionName, const bool& isStage);
     bool SetDeviceTypes(const std::list<std::string>& deviceTypes, const bool& isStage);
 
