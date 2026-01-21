@@ -865,7 +865,7 @@ public class ResourcesParserV2 implements ResourcesParser {
                 int dataOffset = buf.getInt();
                 int position = buf.position();
                 buf.position(dataOffset);
-                short dataLen = buf.getShort();
+                int dataLen = buf.getShort() & 0xFFFF;
                 byte[] tag = new byte[dataLen];
                 buf.get(tag);
                 dataItemV2.value = new String(tag, StandardCharsets.UTF_8);
