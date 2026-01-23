@@ -87,6 +87,7 @@ const std::string PARAM_HQF_LIST = "hqf-list";
 const std::string PARAM_INPUT_LIST = "input-list";
 const std::string PARAM_VERSION_CODE = "version-code";
 const std::string PARAM_VERSION_NAME = "version-name";
+const std::string PARAM_BUILD_VERSION = "build-version";
 const std::string PARAM_DEVICE_TYPES = "device-types";
 const std::string PARAM_MIN_COMPATIBLE_VERSION_CODE = "min-compatible-version-code";
 const std::string PARAM_MIN_API_VERSION = "min-api-version";
@@ -156,6 +157,7 @@ const std::string VERSION_RECORD = "version_record.json";
 const std::string GENERAL_RECORD = "general_record.json";
 const std::string TEMP_EXIST_SRC_DIR = "tempExistSrcDir";
 const std::string VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
+const std::string BUILD_VERSION_PATTERN = "^(?=.{1,18}$)(?:0|[1-9]\\d*)(?:\\.(?:0|[1-9]\\d*)){0,2}$";
 const std::string BUNDLE_NAME_PATTERN =
     "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
 const std::string API_RELEASE_TYPE_PATTERN = "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$";
@@ -179,6 +181,7 @@ const std::string APPQF_SUFFIX = ".appqf";
 const int32_t BUFFER_SIZE = 1024;
 const int32_t BUNDLE_NAME_LEN_MIN = 7;
 const int32_t BUNDLE_NAME_LEN_MAX = 128;
+const int32_t BUILD_VERSION_MAX_LENGTH = 18;
 const int32_t APP_SUFFIX_LENGTH = 4;
 const char COMMA_SPLIT = ',';
 const int32_t MAX_VERSION_NAME_LENGTH = 127;
@@ -252,6 +255,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_LIB_PATH_RETAIN.c_str(), required_argument, nullptr, 60},
     {PARAM_STAT_DUPLICATE.c_str(), required_argument, nullptr, 61},
     {PARAM_PKG_SDK_INFO_PATH.c_str(), required_argument, nullptr, 62},
+    {PARAM_BUILD_VERSION.c_str(), required_argument, nullptr, 64},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

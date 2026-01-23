@@ -32,6 +32,7 @@ const std::string BUNDLE_NAME = "bundleName";
 const std::string BUNDLE_TYPE = "bundleType";
 const std::string VERSION = "version";
 const std::string CODE = "code";
+const std::string BUILD = "build";
 const std::string NAME = "name";
 const std::string DISTRO = "distro";
 const std::string MODULE_NAME = "moduleName";
@@ -437,6 +438,12 @@ bool PackInfo::GetVersionByVersionObj(const std::unique_ptr<PtJson>& versionObj,
         LOGE("Version node get %s failed!", NAME.c_str());
         return false;
     }
+    if (versionObj->Contains(BUILD.c_str())) {
+        if (versionObj->GetString(BUILD.c_str(), &version.buildVersion) != Result::SUCCESS) {
+            LOGE("Version node get %s failed!", BUILD.c_str());
+            return false;
+        }
+    }
     return true;
 }
 
@@ -453,6 +460,27 @@ bool PackInfo::SetVersionCode(const int32_t& versionCode)
     }
     if (versionObj->SetInt(CODE.c_str(), versionCode) != Result::SUCCESS) {
         LOGE("Version node set %s failed!", CODE.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool PackInfo::SetBuildVersion(const std::string& buildVersion)
+{
+    std::unique_ptr<PtJson> versionObj;
+    if (!GetVersionObject(versionObj)) {
+        LOGE("GetVersionObject failed!");
+        return false;
+    }
+    if (!versionObj->Contains(BUILD.c_str())) {
+        if (!versionObj->Add(BUILD.c_str(), buildVersion.c_str())) {
+            LOGE("Version node add %s failed!", BUILD.c_str());
+            return false;
+        }
+        return true;
+    }
+    if (versionObj->SetString(BUILD.c_str(), buildVersion) != Result::SUCCESS) {
+        LOGE("Version node set %s failed!", BUILD.c_str());
         return false;
     }
     return true;

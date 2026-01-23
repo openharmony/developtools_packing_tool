@@ -30,6 +30,7 @@ struct VerifyCollection {
     std::string bundleName = "";
     std::string vendor = "";
     int32_t versionCode = -1;
+    std::string buildVersion = "";
     std::string versionName = "";
     int32_t minCompatibleVersionCode = -1;
     int32_t compatibleApiVersion = -1;

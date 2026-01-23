@@ -2649,4 +2649,300 @@ HWTEST_F(HapVerifyUtilsTest, CheckDependencyInFileList_0300, Function | MediumTe
 
     EXPECT_FALSE(utils.CheckDependencyInFileList(dependencyItem, hapVerifyInfos));
 }
+
+/*
+ * @tc.name: AppFieldsIsSame_0100
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("");
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0200
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundlenamefail");
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0300
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleTypefail");
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0400
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0400, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 0;
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0500
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0500, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    version.buildVersion = "0";
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 1;
+    verifyCollection.buildVersion = "1";
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0600
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0600, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    version.buildVersion = "1";
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::ModuleApiVersion moduleApiVersion;
+    moduleApiVersion.releaseType = "releaseTypefail";
+    hapVerifyInfo.SetApiVersion(moduleApiVersion);
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 1;
+    verifyCollection.buildVersion = "1";
+    verifyCollection.releaseType = "releaseType";
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0700
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0700, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    version.buildVersion = "1";
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::ModuleApiVersion moduleApiVersion;
+    moduleApiVersion.releaseType = "releaseType";
+    hapVerifyInfo.SetApiVersion(moduleApiVersion);
+
+    hapVerifyInfo.SetTargetBundleName("targetBundleNamefail");
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 1;
+    verifyCollection.buildVersion = "1";
+    verifyCollection.releaseType = "releaseType";
+    verifyCollection.targetBundleName = "targetBundleName";
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0800
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0800, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    version.buildVersion = "1";
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::ModuleApiVersion moduleApiVersion;
+    moduleApiVersion.releaseType = "releaseType";
+    hapVerifyInfo.SetApiVersion(moduleApiVersion);
+
+    hapVerifyInfo.SetTargetBundleName("targetBundleName");
+    hapVerifyInfo.SetTargetPriority(0);
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 1;
+    verifyCollection.buildVersion = "1";
+    verifyCollection.releaseType = "releaseType";
+    verifyCollection.targetBundleName = "targetBundleName";
+    verifyCollection.targetPriority = 1;
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_0900
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_0900, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    version.buildVersion = "1";
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::ModuleApiVersion moduleApiVersion;
+    moduleApiVersion.releaseType = "releaseType";
+    hapVerifyInfo.SetApiVersion(moduleApiVersion);
+
+    hapVerifyInfo.SetTargetBundleName("targetBundleName");
+    hapVerifyInfo.SetTargetPriority(1);
+    hapVerifyInfo.SetModuleType("entry");
+
+    OHOS::AppPackingTool::MultiAppMode tddMultiAppMode;
+    tddMultiAppMode.maxCount = 0;
+    tddMultiAppMode.multiAppModeType = "multiAppModeType";
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 1;
+    verifyCollection.buildVersion = "1";
+    verifyCollection.releaseType = "releaseType";
+    verifyCollection.targetBundleName = "targetBundleName";
+    verifyCollection.targetPriority = 1;
+    verifyCollection.moduleType = "entry";
+    OHOS::AppPackingTool::MultiAppMode testMultiAppMode;
+    testMultiAppMode.maxCount = 1;
+    testMultiAppMode.multiAppModeType = "multiAppModeType";
+    verifyCollection.multiAppMode = testMultiAppMode;
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
+
+/*
+ * @tc.name: AppFieldsIsSame_1000
+ * @tc.desc: AppFieldsIsSame
+ * @tc.type: FUNC
+ */
+HWTEST_F(HapVerifyUtilsTest, AppFieldsIsSame_1000, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetBundleName("bundleName");
+    hapVerifyInfo.SetBundleType("bundleType");
+
+    OHOS::AppPackingTool::Version version;
+    version.versionCode = 1;
+    version.buildVersion = "1";
+    hapVerifyInfo.SetVersion(version);
+
+    OHOS::AppPackingTool::ModuleApiVersion moduleApiVersion;
+    moduleApiVersion.releaseType = "releaseType";
+    hapVerifyInfo.SetApiVersion(moduleApiVersion);
+
+    hapVerifyInfo.SetTargetBundleName("targetBundleName");
+    hapVerifyInfo.SetTargetPriority(1);
+    hapVerifyInfo.SetModuleType("entry");
+
+    OHOS::AppPackingTool::MultiAppMode tddMultiAppMode;
+    tddMultiAppMode.maxCount = 1;
+    tddMultiAppMode.multiAppModeType = "multiAppModeType";
+
+    OHOS::AppPackingTool::VerifyCollection verifyCollection;
+    verifyCollection.bundleName = "bundleName";
+    verifyCollection.bundleType = "bundleType";
+    verifyCollection.versionCode = 1;
+    verifyCollection.buildVersion = "1";
+    verifyCollection.releaseType = "releaseType";
+    verifyCollection.targetBundleName = "targetBundleName";
+    verifyCollection.targetPriority = 1;
+    verifyCollection.moduleType = "entry";
+    OHOS::AppPackingTool::MultiAppMode testMultiAppMode;
+    testMultiAppMode.maxCount = 1;
+    testMultiAppMode.multiAppModeType = "multiAppModeType";
+    verifyCollection.multiAppMode = testMultiAppMode;
+
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.AppFieldsIsSame(verifyCollection, hapVerifyInfo));
+}
 }
