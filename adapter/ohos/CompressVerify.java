@@ -67,6 +67,7 @@ public class CompressVerify {
     private static final String FALSE = "false";
     private static final String ENTRY_CARD_DIRECTORY_NAME = "EntryCard";
     private static final String VERSION_NAME_PATTERN = "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$";
+    private static final String BUILD_VERSION_PATTERN = "^(?=.{1,18}$)(?:0|[1-9]\\d*)(?:\\.(?:0|[1-9]\\d*)){0,2}$";
     private static final String LINUX_FILE_SEPARATOR = "/";
     private static final String BUNDLE_TYPE_SHARE = "shared";
     private static final String BUNDLE_TYPE_APP = "app";
@@ -80,10 +81,12 @@ public class CompressVerify {
     private static final int BUNDLE_NAME_LEN_MIN = 7;
     private static final int BUNDLE_NAME_LEN_MAX = 128;
     private static final int MAX_LENGTH = 127;
+    private static final int BUILD_VERSION_MAX_LENGTH = 18;
     private static final int MINI_NUM = 0;
     private static final int MAXI_NUM = 2147483647;
     private static final String API_RELEASE_TYPE_PATTERN = "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$";
     private static final String VERSION_CODE = "versionCode";
+    private static final String BUILD_VERSION = "buildVersion";
     private static final String VERSION_NAME = "versionName";
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String BUNDLE_NAME = "bundleName";
@@ -311,6 +314,15 @@ public class CompressVerify {
             if (utility.getVersionCode() < MINI_NUM || utility.getVersionCode() > MAXI_NUM ||
                 (!utility.getParameterIsInvalid())) {
                 String errMsg = "--version-code is invalid.";
+                LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+        if (utility.getGeneralNormalizeList().contains(BUILD_VERSION)) {
+            Pattern versionBuildPattern = Pattern.compile(BUILD_VERSION_PATTERN);
+            Matcher versionBuildMatcher = versionBuildPattern.matcher(utility.getBuildVersion());
+            if (!versionBuildMatcher.matches() || utility.getBuildVersion().length() > BUILD_VERSION_MAX_LENGTH) {
+                String errMsg = "--build-version is invalid.";
                 LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
             }
