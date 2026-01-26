@@ -93,6 +93,7 @@ public class CommandParser {
     private static final String ATOMIC_SERVICE_ENTRY_SIZE_LIMIT = "--atomic-service-entry-size-limit";
     private static final String ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT = "--atomic-service-non-entry-size-limit";
     private static final String VERSION_CODE = "--version-code";
+    private static final String BUILD_VERSION = "--build-version";
     private static final String VERSION_NAME = "--version-name";
     private static final String INPUT_LIST = "--input-list";
     private static final String PARAM_DEVICE_TYPES = "--device-types";
@@ -104,6 +105,7 @@ public class CommandParser {
     private static final String PARAM_INSTALLATION_FREE = "--installation-free";
     private static final String PARAM_DELIVERY_WITH_INSTALL = "--delivery-with-install";
     private static final String VERSION_CODE_PARAM = "versionCode";
+    private static final String BUILD_VERSION_PARAM = "buildVersion";
     private static final String VERSION_NAME_PARAM = "versionName";
     private static final String DEVICE_TYPES_PARAM = "deviceTypes";
     private static final String BUNDLE_NAME_PARAM = "bundleName";
@@ -371,6 +373,11 @@ public class CommandParser {
                 entry.getKey().setParameterIsInvalid(false);
                 return false;
             }
+            return true;
+        });
+        commandFuncs.put(BUILD_VERSION, entry -> {
+            entry.getKey().setBuildVersion(entry.getValue());
+            entry.getKey().addGeneralNormalizeList(BUILD_VERSION_PARAM);
             return true;
         });
         commandFuncs.put(VERSION_NAME, entry -> {

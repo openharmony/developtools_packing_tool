@@ -135,7 +135,8 @@
             "configuration",
             "assetAccessGroups",
             "startMode",
-            "appPreloadPhase"
+            "appPreloadPhase",
+            "buildVersion"
           ]
         }
       },
@@ -183,7 +184,8 @@
             "cloudStructuredDataSyncEnabled",
             "configuration",
             "assetAccessGroups",
-            "startMode"
+            "startMode",
+            "buildVersion"
           ]
         }
       },
@@ -515,6 +517,12 @@
             "abilityStageCreated",
             "windowStageCreated"
           ]
+        },
+        "buildVersion": {
+          "description": "Indicates the build version of the application.",
+          "type": "string",
+          "maxLength": 18,
+          "pattern": "^(?=.{1,18}$)(?:0|[1-9]\\d*)(?:\\.(?:0|[1-9]\\d*)){0,2}$"
         }
       }
     }

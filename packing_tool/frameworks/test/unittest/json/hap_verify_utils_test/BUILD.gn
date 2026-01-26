@@ -26,6 +26,7 @@ config("hap_verify_utils_test_config") {
 
 module_output_path = "packing_tool/packing_tool"
 
+# Main test suite (part 1)
 ohos_unittest("hap_verify_utils_test") {
   module_out_path = module_output_path
   public_configs = [ ":hap_verify_utils_test_config" ]
@@ -47,7 +48,32 @@ ohos_unittest("hap_verify_utils_test") {
   ]
 }
 
+# Main test suite (part 2)
+ohos_unittest("hap_verify_utils_test_part2") {
+  module_out_path = module_output_path
+  public_configs = [ ":hap_verify_utils_test_config" ]
+  sources = [
+    "../../../../src/json/distro_filter.cpp",
+    "../../../../src/json/hap_verify_info.cpp",
+    "../../../../src/json/hap_verify_utils.cpp",
+    "../../../../src/json/pt_json.cpp",
+    "../../../../src/log.cpp",
+    "../../../../src/utils.cpp",
+    "hap_verify_utils_test_part2.cpp",
+  ]
+  external_deps = [
+    "bounds_checking_function:libsec_static",
+    "cJSON:cjson_static",
+    "hilog:libhilog",
+    "openssl:libcrypto_shared",
+    "zlib:libz",
+  ]
+}
+
 group("unittest") {
   testonly = true
-  deps = [ ":hap_verify_utils_test" ]
+  deps = [
+    ":hap_verify_utils_test",
+    ":hap_verify_utils_test_part2",
+  ]
 }
