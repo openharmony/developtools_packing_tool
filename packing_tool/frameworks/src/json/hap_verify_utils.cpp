@@ -1234,6 +1234,7 @@ bool HapVerifyUtils::CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& h
     }
     std::unordered_map<std::string, std::unordered_set<std::string>> usedUrisByDeviceType;
     for (const auto& info : hapVerifyInfos) {
+<<<<<<< HEAD
         const auto& uris = info.GetProxyDataUris();
         if (uris.empty()) {
             continue;
@@ -1251,6 +1252,32 @@ bool HapVerifyUtils::CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& h
                         "when deviceType has intersection.");
                     return false;
                 }
+=======
+        if (!CheckAndInsertUris(info, usedUrisByDeviceType)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool HapVerifyUtils::CheckAndInsertUris(const HapVerifyInfo& info,
+    std::unordered_map<std::string, std::unordered_set<std::string>>& usedUrisByDeviceType)
+{
+    const auto& uris = info.GetProxyDataUris();
+    if (uris.empty()) {
+        return true;  // Skip empty URIs
+    }
+    const std::string& moduleName = info.GetModuleName();
+    for (const auto& deviceType : info.GetDeviceTypes()) {
+        auto& usedUris = usedUrisByDeviceType[deviceType];
+        for (const auto& uri : uris) {
+            if (!usedUris.insert(uri).second) {
+                LOGE("The uri(%s) in proxyData settings of Module(%s) is duplicated for deviceType(%s).",
+                     uri.c_str(), moduleName.c_str(), deviceType.c_str());
+                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
+                     "when deviceType has intersection.");
+                return false;  // Early return to stop processing
+>>>>>>> 0e205b88bff6507f030f0d3da7925cec1c541871
             }
         }
     }
