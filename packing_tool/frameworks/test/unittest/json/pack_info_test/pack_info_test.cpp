@@ -37,7 +37,8 @@ const std::string JSON_STRING = "{"
             "\"bundleType\": \"bundleApp\","
             "\"version\": {"
                 "\"code\": 1000000,"
-                "\"name\": \"1.0.0\""
+                "\"name\": \"1.0.0\","
+                "\"build\": \"1.0.0\""
             "}"
         "},"
         "\"modules\": ["
@@ -3510,5 +3511,47 @@ HWTEST_F(PackInfoTest, SetDeviceTypes_0700, Function | MediumTest | Level1)
     OHOS::AppPackingTool::PackInfo packInfo;
     packInfo.ParseFromString(JSON_STRING);
     EXPECT_TRUE(packInfo.SetDeviceTypes(deviceTypes));
+}
+
+
+/*
+ * @tc.name: SetBuildVersion_0100
+ * @tc.desc: SetBuildVersion.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetBuildVersion_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(JSON_STRING);
+    std::string buildVersion = "2.0.0";
+    EXPECT_TRUE(packInfo.SetBuildVersion(buildVersion));
+}
+
+/*
+ * @tc.name: SetBuildVersion_0200
+ * @tc.desc: SetBuildVersion.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetBuildVersion_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    std::string buildVersion = "2.0.0";
+    EXPECT_FALSE(packInfo.SetBuildVersion(buildVersion));
+}
+
+/*
+ * @tc.name: SetBuildVersion_0300
+ * @tc.desc: SetBuildVersion.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoTest, SetBuildVersion_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::PackInfo packInfo;
+    packInfo.ParseFromString(NO_VERSION_NAME_JSON_STRING);
+    std::string versionName = "2.0.0";
+    EXPECT_TRUE(packInfo.SetBuildVersion(versionName));
 }
 } // namespace OHOS

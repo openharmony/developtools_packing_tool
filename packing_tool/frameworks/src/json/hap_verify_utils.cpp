@@ -42,6 +42,7 @@ const std::string HAR = "har";
 const std::string HAP_SUFFIX = ".hap";
 const std::string HSP_SUFFIX = ".hsp";
 const std::string APP_PLUGIN = "appPlugin";
+const std::string NULL_DEVICE_TYPE = "nullDeviceType";
 const int32_t TWO = 2;
 const long FILE_LENGTH_1KB = 1024L;
 }
@@ -185,6 +186,7 @@ VerifyCollection HapVerifyUtils::GetVerifyCollection(const HapVerifyInfo& baseIn
     verifyCollection.bundleType = baseInfo.GetBundleType();
     verifyCollection.vendor = baseInfo.GetVendor();
     verifyCollection.versionCode = baseInfo.GetVersion().versionCode;
+    verifyCollection.buildVersion = baseInfo.GetVersion().buildVersion;
     verifyCollection.versionName = baseInfo.GetVersion().versionName;
     verifyCollection.compatibleApiVersion = baseInfo.GetApiVersion().compatibleApiVersion;
     verifyCollection.releaseType = baseInfo.GetApiVersion().releaseType;
@@ -309,6 +311,12 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
     }
     if (verifyCollection.versionCode != hapVerifyInfo.GetVersion().versionCode) {
         LOGE("input module versionCode is different.");
+        return false;
+    }
+    if (verifyCollection.buildVersion != hapVerifyInfo.GetVersion().buildVersion) {
+        LOGE("input module buildVersion is different.");
+        LOGE("Module: ( %s ) and Module: ( %s ) has different buildVersion",
+            verifyCollection.moduleName.c_str(), hapVerifyInfo.GetModuleName().c_str());
         return false;
     }
     if (verifyCollection.releaseType != hapVerifyInfo.GetApiVersion().releaseType) {
@@ -1232,27 +1240,8 @@ bool HapVerifyUtils::CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& h
         LOGE("Hap verify infos is empty");
         return false;
     }
-    std::unordered_map<std::string, std::unordered_set<std::string>> usedUrisByDeviceType;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> usedUrisByDeviceType;
     for (const auto& info : hapVerifyInfos) {
-<<<<<<< HEAD
-        const auto& uris = info.GetProxyDataUris();
-        if (uris.empty()) {
-            continue;
-        }
-        const std::string& moduleName = info.GetModuleName();
-        for (const auto& deviceType : info.GetDeviceTypes()) {
-            auto& usedUris = usedUrisByDeviceType[deviceType];
-            for (const auto& uri : uris) {
-                if (!usedUris.insert(uri).second) {
-                    LOGE(
-                        "The uri(%s) in proxyData settings of Module(%s) is duplicated  for deviceType(%s).",
-                        uri.c_str(), moduleName.c_str(), deviceType.c_str());
-                    LOGE(
-                        "Solutions: Ensure that the uri in proxyData is unique across different modules "
-                        "when deviceType has intersection.");
-                    return false;
-                }
-=======
         if (!CheckAndInsertUris(info, usedUrisByDeviceType)) {
             return false;
         }
@@ -1261,27 +1250,110 @@ bool HapVerifyUtils::CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& h
 }
 
 bool HapVerifyUtils::CheckAndInsertUris(const HapVerifyInfo& info,
-    std::unordered_map<std::string, std::unordered_set<std::string>>& usedUrisByDeviceType)
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType)
 {
     const auto& uris = info.GetProxyDataUris();
     if (uris.empty()) {
-        return true;  // Skip empty URIs
+        return true;
     }
     const std::string& moduleName = info.GetModuleName();
-    for (const auto& deviceType : info.GetDeviceTypes()) {
-        auto& usedUris = usedUrisByDeviceType[deviceType];
+    const auto& deviceTypes = info.GetDeviceTypes();
+
+    // Handle empty deviceTypes
+    if (deviceTypes.empty()) {
+        // Use NULL_DEVICE_TYPE as a special key for modules without deviceType
+        auto& nullDeviceTypeUris = usedUrisByDeviceType[NULL_DEVICE_TYPE];
         for (const auto& uri : uris) {
-            if (!usedUris.insert(uri).second) {
-                LOGE("The uri(%s) in proxyData settings of Module(%s) is duplicated for deviceType(%s).",
-                     uri.c_str(), moduleName.c_str(), deviceType.c_str());
-                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
-                     "when deviceType has intersection.");
-                return false;  // Early return to stop processing
->>>>>>> 0e205b88bff6507f030f0d3da7925cec1c541871
+            // Check if uri already exists in nullDeviceType
+            auto existingIter = nullDeviceTypeUris.find(uri);
+            if (existingIter != nullDeviceTypeUris.end()) {
+                LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+                     uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), NULL_DEVICE_TYPE.c_str());
+                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                return false;
             }
+
+            // Check if uri exists in other deviceType collections
+            // (because modules without deviceType apply to all devices)
+            if (CheckUriExistsInOtherDeviceTypes(usedUrisByDeviceType, uri, moduleName)) {
+                return false;
+            }
+
+            nullDeviceTypeUris[uri] = moduleName;
+        }
+        return true;
+    }
+
+    // Normal case: deviceTypes is not empty
+    for (const auto& deviceType : deviceTypes) {
+        auto& uriToModuleMap = usedUrisByDeviceType[deviceType];
+        for (const auto& uri : uris) {
+            if (CheckUriInNullDeviceType(usedUrisByDeviceType, uri, moduleName)) {
+                return false;
+            }
+            if (CheckUriInCurrentDeviceType(uriToModuleMap, uri, moduleName, deviceType)) {
+                return false;
+            }
+            uriToModuleMap[uri] = moduleName;
         }
     }
     return true;
+}
+
+bool HapVerifyUtils::CheckUriInNullDeviceType(
+    const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType,
+    const std::string& uri,
+    const std::string& moduleName)
+{
+    auto nullDeviceTypeIter = usedUrisByDeviceType.find(NULL_DEVICE_TYPE);
+    if (nullDeviceTypeIter != usedUrisByDeviceType.end()) {
+        const auto& nullDeviceTypeUris = nullDeviceTypeIter->second;
+        auto existingIter = nullDeviceTypeUris.find(uri);
+        if (existingIter != nullDeviceTypeUris.end()) {
+            LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+                 uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), NULL_DEVICE_TYPE.c_str());
+            LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+            return true;
+        }
+    }
+    return false;
+}
+
+bool HapVerifyUtils::CheckUriInCurrentDeviceType(
+    const std::unordered_map<std::string, std::string>& uriToModuleMap,
+    const std::string& uri,
+    const std::string& moduleName,
+    const std::string& deviceType)
+{
+    auto existingIter = uriToModuleMap.find(uri);
+    if (existingIter != uriToModuleMap.end()) {
+        LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+             uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), deviceType.c_str());
+        LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
+             "when deviceType has intersection.");
+        return true;
+    }
+    return false;
+}
+
+bool HapVerifyUtils::CheckUriExistsInOtherDeviceTypes(
+    const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType,
+    const std::string& uri,
+    const std::string& moduleName)
+{
+    for (const auto& mapEntry : usedUrisByDeviceType) {
+        if (mapEntry.first != NULL_DEVICE_TYPE) {
+            const auto& uriToModuleMap = mapEntry.second;
+            auto existingIter = uriToModuleMap.find(uri);
+            if (existingIter != uriToModuleMap.end()) {
+                LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+                     uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), mapEntry.first.c_str());
+                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 bool HapVerifyUtils::CheckContinueTypeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)

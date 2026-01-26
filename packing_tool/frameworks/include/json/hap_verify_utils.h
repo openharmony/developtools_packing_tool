@@ -32,6 +32,7 @@ struct VerifyCollection {
     std::string bundleName = "";
     std::string vendor = "";
     int32_t versionCode = -1;
+    std::string buildVersion = "";
     std::string versionName = "";
     int32_t minCompatibleVersionCode = -1;
     int32_t compatibleApiVersion = -1;
@@ -137,7 +138,20 @@ private:
     static bool CheckCompileSdkIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckAndInsertUris(const HapVerifyInfo& info,
-        std::unordered_map<std::string, std::unordered_set<std::string>>& usedUrisByDeviceType);
+        std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType);
+    static bool CheckUriInNullDeviceType(
+        const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType,
+        const std::string& uri,
+        const std::string& moduleName);
+    static bool CheckUriInCurrentDeviceType(
+        const std::unordered_map<std::string, std::string>& uriToModuleMap,
+        const std::string& uri,
+        const std::string& moduleName,
+        const std::string& deviceType);
+    static bool CheckUriExistsInOtherDeviceTypes(
+        const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType,
+        const std::string& uri,
+        const std::string& moduleName);
     static bool CheckContinueTypeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2);

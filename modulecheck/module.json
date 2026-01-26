@@ -1295,7 +1295,8 @@
                   "faultLog",
                   "crypto",
                   "partnerAgent",
-                  "contentEmbed"
+                  "contentEmbed",
+                  "embeddedCashier"
                 ]
               },
               "permissions": {

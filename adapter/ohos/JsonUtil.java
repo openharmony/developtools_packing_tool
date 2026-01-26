@@ -80,6 +80,7 @@ public class JsonUtil {
     private static final String DESCRIPTION = "description";
     private static final String DESCRIPTION_ID = "descriptionId";
     private static final String VERSION_CODE = "versionCode";
+    private static final String BUILD_VERSION = "buildVersion";
     private static final String VENDOR = "vendor";
     private static final String VERSION_NAME = "versionName";
     private static final String MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
@@ -382,6 +383,7 @@ public class JsonUtil {
             JSONObject version = appJson.getJSONObject(VERSION);
             appInfo.versionName = getJsonString(version, "name");
             appInfo.versionCode = getJsonString(version, "code");
+            appInfo.buildVersion = getJsonString(version, "build");
         }
         if (appJson.containsKey("apiVersion")) {
             JSONObject apiVersion = appJson.getJSONObject("apiVersion");
@@ -444,6 +446,7 @@ public class JsonUtil {
 
         moduleAppInfo.vendor = getJsonString(appJson, VENDOR);
         moduleAppInfo.versionCode = getJsonIntValue(appJson, VERSION_CODE, DEFAULT_VERSION_CODE);
+        moduleAppInfo.buildVersion = getJsonString(appJson, BUILD_VERSION);
         moduleAppInfo.versionName = getJsonString(appJson, VERSION_NAME);
 
         if (appJson.containsKey(MIN_COMPATIBLE_VERSION_CODE)) {

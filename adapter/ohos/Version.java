@@ -26,6 +26,11 @@ class Version {
     public int versionCode = -1;
 
     /**
+     * Indicates the buildVersion of version.
+     */
+    public String buildVersion = "";
+
+    /**
      * Indicates the versionName of version.
      */
     public String versionName = "";

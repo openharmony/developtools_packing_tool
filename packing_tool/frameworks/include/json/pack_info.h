@@ -26,6 +26,7 @@ namespace AppPackingTool {
 struct PackInfoVersion {
     int32_t code = -1;
     std::string name = "";
+    std::string buildVersion = "";
 };
 
 class PackInfo {
@@ -72,6 +73,7 @@ public:
     bool GetVersion(PackInfoVersion& version);
     bool GetVersionByVersionObj(const std::unique_ptr<PtJson>& appObj, PackInfoVersion& version);
     bool SetVersionCode(const int32_t& versionCode);
+    bool SetBuildVersion(const std::string& buildVersion);
     bool SetVersionName(const std::string& versionName);
     bool GetModuleNameByDistroObj(const std::unique_ptr<PtJson>& distroObj, std::string& moduleName);
     bool GetNameByPackageObj(const std::unique_ptr<PtJson>& packageObj, std::string& name);

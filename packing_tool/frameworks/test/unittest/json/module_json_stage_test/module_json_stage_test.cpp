@@ -317,6 +317,146 @@ const std::string MODULE_JSON_VERSIONBYAPPOBJ_VERSIONCODE_TEST_STRING = "{"
     "}"
 "}";
 
+const std::string MODULE_JSON_BUILDVERSION_TEST_STRING = "{"
+    "\"app\": {"
+        "\"vendor\": \"\","
+        "\"versionCode\": \"test\","
+        "\"buildVersion\": \"test_build_version\","
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": true,"
+        "\"compileSdkVersion\": true,"
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": true,"
+        "\"debug\": \"test_bundle_name\","
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": true,"
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": \"test_multiAppMode\","
+        "\"tsanEnabled\": \"test_multiAppMode\","
+        "\"compressNativeLibs\": \"test_multiAppMode\","
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": true,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+
+        "},"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
+
 const std::string MODULE_JSON_VERSIONBYAPPOBJ_VERSIONNAME_TEST_STRING = "{"
     "\"app\": {"
         "\"bundleName\": \"test_bundle_name\","
@@ -2734,5 +2874,50 @@ HWTEST_F(ModuleJsonStageTest, SetStageDeviceTypes_0300, Function | MediumTest | 
     moduleJson.Release();
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
     EXPECT_TRUE(moduleJson.SetStageDeviceTypes(deviceTypes));
+}
+
+/*
+ * @tc.name: SetBuildVersion_0100
+ * @tc.desc: test set stage buildVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonStageTest, SetBuildVersion_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_TEST_STRING));
+    std::string buildVersion = "1.0.0";
+    EXPECT_FALSE(moduleJson.SetBuildVersion(buildVersion));
+}
+
+/*
+ * @tc.name: SetBuildVersion_0200
+ * @tc.desc: test set stage buildVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonStageTest, SetBuildVersion_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_VERSIONBYAPPOBJ_VERSIONCODE_TEST_STRING));
+    std::string buildVersion = "1.0.0";
+    EXPECT_FALSE(moduleJson.SetBuildVersion(buildVersion));
+}
+
+/*
+ * @tc.name: SetBuildVersion_0300
+ * @tc.desc: test set stage buildVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonStageTest, SetBuildVersion_0300, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    moduleJson.Release();
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_BUILDVERSION_TEST_STRING));
+    std::string buildVersion = "1.0.0";
+    EXPECT_TRUE(moduleJson.SetBuildVersion(buildVersion));
 }
 }

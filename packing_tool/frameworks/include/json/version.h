@@ -24,6 +24,7 @@ struct Version {
     int32_t versionCode = -1;
     std::string versionName = "";
     int32_t minCompatibleVersionCode = -1;
+    std::string buildVersion = "";
 };
 }  // namespace AppPackingTool
 }  // namespace OHOS

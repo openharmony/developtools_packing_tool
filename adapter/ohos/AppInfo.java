@@ -48,6 +48,11 @@ public class AppInfo {
     public String versionCode = "";
 
     /**
+     * Indicates the versionBuild of app AppInfo.
+     */
+    public String buildVersion = "";
+
+    /**
      * Indicates the target Api Version of app AppInfo.
      */
     public int targetApiVersion = 1;
