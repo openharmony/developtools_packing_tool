@@ -144,7 +144,253 @@
               "name",
               "type",
               "deviceTypes"
-            ]
+            ],
+            "properties": {
+              "extensionAbilities": {
+                "description": "Indicates all extensionAbilities in the current module.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "type": {
+                            "const": "dataShare"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "name",
+                          "srcEntry",
+                          "type",
+                          "uri"
+                        ]
+                      },
+                      "else": {
+                        "required": [
+                          "name",
+                          "srcEntry",
+                          "type"
+                        ]
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "type": {
+                            "const": "appService"
+                          }
+                        }
+                      },
+                      "then": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "extensionProcessMode",
+                            "dataGroupIds",
+                            "process",
+                            "appIdentifierAllowList"
+                          ]
+                        }
+                      },
+                      "else": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "extensionProcessMode",
+                            "dataGroupIds",
+                            "process",
+                            "isolationProcess"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "type": {
+                            "const": "embeddedUI"
+                          }
+                        }
+                      },
+                      "then": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "extensionProcessMode",
+                            "dataGroupIds",
+                            "process"
+                          ]
+                        }
+                      },
+                      "else": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "extensionProcessMode",
+                            "dataGroupIds",
+                            "appIdentifierAllowList",
+                            "isolationProcess"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "type": {
+                            "const": "sys/commonUI"
+                          }
+                        }
+                      },
+                      "then": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "extensionProcessMode",
+                            "dataGroupIds",
+                            "isolationProcess"
+                          ]
+                        }
+                      },
+                      "else": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "extensionProcessMode",
+                            "dataGroupIds",
+                            "process",
+                            "appIdentifierAllowList"
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "statusBarView"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "extensionProcessMode": {
+                        "description": "Indicates the extension support multi instance model.",
+                        "type": "string",
+                        "enum": [
+                          "instance",
+                          "type",
+                          "bundle",
+                          "runWithMainProcess"
+                        ],
+                        "default": "bundle"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "extensionProcessMode": {
+                        "description": "Indicates the extension support multi instance model.",
+                        "type": "string",
+                        "enum": [
+                          "instance",
+                          "type",
+                          "bundle"
+                        ],
+                        "default": "bundle"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         {
