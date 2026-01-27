@@ -23,10 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +42,7 @@ class HapVerify {
     private static final String REFERENCE_LINK = "FAQ";
     private static final String ATOMIC_SERVICE = "atomicService";
     private static final String TYPE_SHARED = "shared";
+    private static final String NULL_DEVICE_TYPE = "nullDeviceType";
     private static final long FILE_LENGTH_1M = 1024 * 1024L;
     private static final long FILE_LENGTH_1KB = 1024L;
     private static final double FILE_SIZE_OFFSET_DOUBLE = 0.01d;
@@ -702,28 +700,165 @@ class HapVerify {
         return true;
     }
 
-    private static boolean checkProxyDataUriIsUnique(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
-        if (hapVerifyInfos.isEmpty()) {
-            String cause = "Hap verify infos is empty";
-            LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString(cause));
+    /**
+     * Check whether the proxy data URIs are unique across all modules.
+     *
+     * @param hapVerifyInfos the list of HapVerifyInfo to check
+     * @return true if all proxy data URIs are unique, false otherwise
+     */
+    private static boolean checkProxyDataUriIsUnique(List<HapVerifyInfo> hapVerifyInfos)
+            throws BundleException {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString(
+                    "Hap verify infos is empty"));
             return false;
         }
-        Set<String> uriSet = new HashSet<>();
+        Map<String, Map<String, String>> usedUrisByDeviceType = new HashMap<>();
         for (HapVerifyInfo info : hapVerifyInfos) {
-            for (String uri : info.getProxyDataUris()) {
-                if (uriSet.contains(uri)) {
-                    String moduleName = info.getModuleName();
-                    String cause = "The uri(" + uri + ") in proxyData settings of Module(" + moduleName +
-                            ") is duplicated.";
-                    String solution = "Ensure that the uri in proxyData is unique across different modules.";
-                    LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(cause, solution));
-                    return false;
-                } else {
-                    uriSet.add(uri);
-                }
+            if (!checkAndInsertUris(info, usedUrisByDeviceType)) {
+                return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Check and insert URIs for a single HapVerifyInfo into the used URIs map.
+     * This method validates that all proxy data URIs for the module are unique
+     * across all device types.
+     *
+     * @param info the HapVerifyInfo containing proxy data URIs
+     * @param usedUrisByDeviceType the map tracking used URIs by device type with module names
+     * @return true if all URIs are unique or if the module has no proxy data URIs,
+     *         false if any duplicate URI is found
+     */
+    private static boolean checkAndInsertUris(HapVerifyInfo info,
+            Map<String, Map<String, String>> usedUrisByDeviceType) throws BundleException {
+        List<String> uris = info.getProxyDataUris();
+        if (uris == null || uris.isEmpty()) {
+            return true;
+        }
+        String moduleName = info.getModuleName();
+        List<String> deviceTypes = info.getDeviceType();
+        // Handle empty deviceTypes
+        if (deviceTypes == null || deviceTypes.isEmpty()) {
+            // Use NULL_DEVICE_TYPE as a special key for modules without deviceType
+            Map<String, String> nullDeviceTypeUris = usedUrisByDeviceType.computeIfAbsent(NULL_DEVICE_TYPE,
+                    k -> new HashMap<>());
+            for (String uri : uris) {
+                // Check if uri exists in nullDeviceType collection
+                String existingModule = nullDeviceTypeUris.get(uri);
+                if (existingModule != null) {
+                    LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(
+                            "The uri(" + uri + ") is duplicated between module(" + existingModule +
+                                    ") and module(" + moduleName + ") for deviceType(" +
+                                    NULL_DEVICE_TYPE + ").",
+                            "Ensure that the uri in proxyData is unique across different modules."));
+                    return false;
+                }
+                // Check if uri exists in other deviceType collections
+                // (because modules without deviceType apply to all devices)
+                if (checkUriExistsInOtherDeviceTypes(usedUrisByDeviceType, uri, moduleName)) {
+                    return false;
+                }
+                nullDeviceTypeUris.put(uri, moduleName);
+            }
+            return true;
+        }
+        // Normal case: deviceTypes is not empty
+        for (String deviceType : deviceTypes) {
+            Map<String, String> uriToModuleMap =
+                    usedUrisByDeviceType.computeIfAbsent(deviceType, k -> new HashMap<>());
+            for (String uri : uris) {
+                if (checkUriInNullDeviceType(usedUrisByDeviceType, uri, moduleName)) {
+                    return false;
+                }
+                if (checkUriInCurrentDeviceType(uriToModuleMap, uri, moduleName, deviceType)) {
+                    return false;
+                }
+                uriToModuleMap.put(uri, moduleName);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check if a URI exists in NULL_DEVICE_TYPE collection.
+     * This method is used for modules with deviceType to check if their URIs conflict
+     * with URIs in modules that don't have deviceType (which apply to all devices).
+     *
+     * @param usedUrisByDeviceType the map tracking used URIs by device type with module names
+     * @param uri the URI to check
+     * @param moduleName the module name for error logging
+     * @return true if the URI exists in NULL_DEVICE_TYPE collection, false otherwise
+     */
+    private static boolean checkUriInNullDeviceType(
+            Map<String, Map<String, String>> usedUrisByDeviceType, String uri, String moduleName) {
+        Map<String, String> nullDeviceTypeUris = usedUrisByDeviceType.get(NULL_DEVICE_TYPE);
+        if (nullDeviceTypeUris != null) {
+            String existingModule = nullDeviceTypeUris.get(uri);
+            if (existingModule != null) {
+                LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(
+                        "The uri(" + uri + ") is duplicated between module(" + existingModule +
+                                ") and module(" + moduleName + ") for deviceType(" +
+                                NULL_DEVICE_TYPE + ").",
+                        "Ensure that the uri in proxyData is unique across different modules."));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if a URI exists in current deviceType collection.
+     *
+     * @param uriToModuleMap the map tracking URIs for current deviceType with module names
+     * @param uri the URI to check
+     * @param moduleName the module name for error logging
+     * @param deviceType the current deviceType for error logging
+     * @return true if the URI exists in current deviceType collection, false otherwise
+     */
+    private static boolean checkUriInCurrentDeviceType(
+            Map<String, String> uriToModuleMap, String uri, String moduleName, String deviceType) {
+        String existingModule = uriToModuleMap.get(uri);
+        if (existingModule != null) {
+            LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(
+                    "The uri(" + uri + ") is duplicated between module(" + existingModule +
+                            ") and module(" + moduleName + ") for deviceType(" +
+                            deviceType + ").",
+                    "Ensure that the uri in proxyData is unique across different modules " +
+                            "when deviceType has intersection."));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if a URI exists in any deviceType collection other than NULL_DEVICE_TYPE.
+     * This method is used for modules without deviceType to ensure their URIs don't conflict
+     * with URIs in modules that have specific deviceTypes.
+     *
+     * @param usedUrisByDeviceType the map tracking used URIs by device type with module names
+     * @param uri the URI to check
+     * @param moduleName the module name for error logging
+     * @return true if the URI exists in other deviceType collections, false otherwise
+     */
+    private static boolean checkUriExistsInOtherDeviceTypes(
+            Map<String, Map<String, String>> usedUrisByDeviceType, String uri, String moduleName) {
+        for (Map.Entry<String, Map<String, String>> entry : usedUrisByDeviceType.entrySet()) {
+            if (!entry.getKey().equals(NULL_DEVICE_TYPE)) {
+                String existingModule = entry.getValue().get(uri);
+                if (existingModule != null) {
+                    LOG.error(PackingToolErrMsg.PROXY_DATA_URI_NOT_UNIQUE.toString(
+                            "The uri(" + uri + ") is duplicated between module(" + existingModule +
+                                    ") and module(" + moduleName + ") for deviceType(" +
+                                    entry.getKey() + ").",
+                            "Ensure that the uri in proxyData is unique across different modules."));
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

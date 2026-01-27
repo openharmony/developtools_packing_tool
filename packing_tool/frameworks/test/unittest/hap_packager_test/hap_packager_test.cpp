@@ -1053,7 +1053,6 @@ HWTEST_F(HapPackagerTest, hapPackager_3100, Function | MediumTest | Level1)
 
     std::string pkgSdkInfoPath = "/data/test/" + OHOS::AppPackingTool::Constants::PKG_SDK_INFO_JSON;
 
-    // 准备文件
     system(("touch " + pkgSdkInfoPath).c_str());
 
     paramMap[OHOS::AppPackingTool::Constants::PARAM_JSON_PATH] = STAGE_JSON_PATH;
@@ -1065,12 +1064,10 @@ HWTEST_F(HapPackagerTest, hapPackager_3100, Function | MediumTest | Level1)
     EXPECT_EQ(hapPackager.PreProcess(), OHOS::AppPackingTool::ERR_OK);
     EXPECT_EQ(hapPackager.Process(), OHOS::AppPackingTool::ERR_OK);
 
-    // 断言 pkgSdkInfo.json 被打进 hap
     EXPECT_TRUE(
         OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(
             OUT_PATH, "pkgsdkinfo.json"));
 
-    // 清理
     system(("rm -f " + pkgSdkInfoPath).c_str());
     DeleteFile(OUT_PATH);
 }
