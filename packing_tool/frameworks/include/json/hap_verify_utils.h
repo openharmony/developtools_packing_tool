@@ -18,6 +18,8 @@
 
 #include <list>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <string>
 
 #include "distro_filter.h"
@@ -135,6 +137,21 @@ private:
     static bool CheckTargetModuleNameIsExisted(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckCompileSdkIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& hapVerifyInfos);
+    static bool CheckAndInsertUris(const HapVerifyInfo& info,
+        std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType);
+    static bool CheckUriInNullDeviceType(
+        const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType,
+        const std::string& uri,
+        const std::string& moduleName);
+    static bool CheckUriInCurrentDeviceType(
+        const std::unordered_map<std::string, std::string>& uriToModuleMap,
+        const std::string& uri,
+        const std::string& moduleName,
+        const std::string& deviceType);
+    static bool CheckUriExistsInOtherDeviceTypes(
+        const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& usedUrisByDeviceType,
+        const std::string& uri,
+        const std::string& moduleName);
     static bool CheckContinueTypeIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo);
     static bool CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo1, const HapVerifyInfo& hapVerifyInfo2);
