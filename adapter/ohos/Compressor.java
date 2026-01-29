@@ -2873,7 +2873,8 @@ public class Compressor {
                     && !entryName.contains(RES_FILE_PATH)
                     && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(JSON_SUFFIX)
                     && !entryName.equals(Constants.FILE_ENCRYPT_JSON)
-                    && !entryName.equals(Constants.FILE_PAC_JSON)) {
+                    && !entryName.equals(Constants.FILE_PAC_JSON)
+                    && !entryName.equals(Constants.FILE_PKG_SDK_INFO_JSON)) {
                 zipEntry.setMethod(ZipEntry.STORED);
                 if (jsonSpecialProcess(utility, srcFile, zipEntry)) {
                     return;
