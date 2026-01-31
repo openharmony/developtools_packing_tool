@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2025 Huawei Device Co., Ltd.
+# Copyright (c) 2022-2026 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -208,12 +208,12 @@ def main():
     toolchain = tool_list[-1]
     toolchain += "_" + args.compileTarget
     
-    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2mid/fastjson-2.0.52.jar')
-    fastjson2_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2/fastjson2-2.0.52.jar')
-    fastjson2ext_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2ext/fastjson2-extension-2.0.52.jar')
-    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/compress/commons-compress-1.26.1.jar')
+    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2mid/fastjson-2.0.57.jar')
+    fastjson2_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2/fastjson2-2.0.57.jar')
+    fastjson2ext_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2ext/fastjson2-extension-2.0.57.jar')
+    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/compress/commons-compress-1.27.1.jar')
     io_jar = os.path.join(root_dir,
-        '../../prebuilts/packing_tool/io/commons-io-2.18.0-bin/commons-io-2.18.0/commons-io-2.18.0.jar')
+        '../../prebuilts/packing_tool/io/commons-io-2.19.0-bin/commons-io-2.19.0/commons-io-2.19.0.jar')
     print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar)
 
     # compile haptobin_tool.jar
