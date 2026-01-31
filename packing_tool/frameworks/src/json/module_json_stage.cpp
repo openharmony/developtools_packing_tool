@@ -64,6 +64,8 @@ const std::string DEPENDENCIES = "dependencies";
 const std::string EXTENSION_ABILITIES = "extensionAbilities";
 const std::string INSTALLATION_FREE = "installationFree";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
+const std::string EXTRACT_NATIVE_LIBS = "extractNativeLibs";
+const std::string EXECUTABLE_BINARY_PATHS = "executableBinaryPaths";
 const std::string ASAN_ENABLED = "asanEnabled";
 const std::string TSAN_ENABLED = "tsanEnabled";
 const std::string ATOMIC_SERVICE = "atomicService";
@@ -1003,6 +1005,67 @@ bool ModuleJson::SetStageHapVerifyInfoExtByModuleObj(std::unique_ptr<PtJson>& mo
     hapVerifyInfo.SetProxyDataUris(proxyDataUris);
     hapVerifyInfo.SetContinueTypeMap(abilityContinueTypeMap);
     return true;
+}
+
+bool ModuleJson::GetStageExtractNativeLibs(bool& extractNativeLibs)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    return GetStageExtractNativeLibsByAppObj(moduleObj, extractNativeLibs);
+}
+
+bool ModuleJson::GetStageExtractNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& extractNativeLibs)
+{
+    if (!moduleObj) {
+        LOGE("Module node is null!");
+        return false;
+    }
+    if (moduleObj->Contains(EXTRACT_NATIVE_LIBS.c_str())) {
+        if (moduleObj->GetBool(EXTRACT_NATIVE_LIBS.c_str(), &extractNativeLibs) != Result::SUCCESS) {
+            LOGE("Module node get %s failed!", EXTRACT_NATIVE_LIBS.c_str());
+            return false;
+        }
+    } else {
+        extractNativeLibs = true;  // default value is true
+    }
+    return true;
+}
+
+bool ModuleJson::HasExecutableBinaries()
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    return HasExecutableBinariesByModuleObj(moduleObj);
+}
+
+bool ModuleJson::HasExecutableBinariesByModuleObj(std::unique_ptr<PtJson>& moduleObj)
+{
+    if (!moduleObj) {
+        LOGE("Module node is null!");
+        return false;
+    }
+    if (!moduleObj->Contains(EXECUTABLE_BINARY_PATHS.c_str())) {
+        return false;
+    }
+    std::unique_ptr<PtJson> executablesObj;
+    if (moduleObj->GetArray(EXECUTABLE_BINARY_PATHS.c_str(), executablesObj) != Result::SUCCESS) {
+        LOGE("Module node get %s failed!", EXECUTABLE_BINARY_PATHS.c_str());
+        return false;
+    }
+    if (!executablesObj) {
+        return false;
+    }
+    int32_t size = 0;
+    if (executablesObj->GetArraySize(size) != Result::SUCCESS) {
+        return false;
+    }
+    return size > 0;
 }
 } // namespace AppPackingTool
 } // namespace OHOS

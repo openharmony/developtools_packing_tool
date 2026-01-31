@@ -96,6 +96,21 @@ class HapVerifyInfo {
     private boolean isInstallationFree = false;
 
     /**
+     * Indicates compressNativeLibs of module.
+     */
+    private boolean compressNativeLibs = false;
+
+    /**
+     * Indicates extractNativeLibs of module.
+     */
+    private boolean extractNativeLibs = true;
+
+    /**
+     * Indicates whether module has executableBinaryPaths (kernel permission).
+     */
+    private boolean hasExecutableBinaryPaths = false;
+
+    /**
      * Indicates dependency of module.
      */
     private List<String> dependencies = new ArrayList<>();
@@ -335,6 +350,48 @@ class HapVerifyInfo {
      */
     public void setInstallationFree(boolean isInstallationFree) {
         this.isInstallationFree = isInstallationFree;
+    }
+
+    /**
+     * get compressNativeLibs for HapVerifyInfo.
+     */
+    public boolean getCompressNativeLibs() {
+        return compressNativeLibs;
+    }
+
+    /**
+     * set compressNativeLibs for HapVerifyInfo.
+     */
+    public void setCompressNativeLibs(boolean compressNativeLibs) {
+        this.compressNativeLibs = compressNativeLibs;
+    }
+
+    /**
+     * get extractNativeLibs for HapVerifyInfo.
+     */
+    public boolean getExtractNativeLibs() {
+        return extractNativeLibs;
+    }
+
+    /**
+     * set extractNativeLibs for HapVerifyInfo.
+     */
+    public void setExtractNativeLibs(boolean extractNativeLibs) {
+        this.extractNativeLibs = extractNativeLibs;
+    }
+
+    /**
+     * get hasExecutableBinaryPaths for HapVerifyInfo.
+     */
+    public boolean getHasExecutableBinaryPaths() {
+        return hasExecutableBinaryPaths;
+    }
+
+    /**
+     * set hasExecutableBinaryPaths for HapVerifyInfo.
+     */
+    public void setHasExecutableBinaryPaths(boolean hasExecutableBinaryPaths) {
+        this.hasExecutableBinaryPaths = hasExecutableBinaryPaths;
     }
 
     /**

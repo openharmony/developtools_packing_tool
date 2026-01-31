@@ -57,6 +57,7 @@ public:
     bool CheckPkgContext();
     bool CheckLibPathRetainParam();
     bool CheckPkgSdkInfoParam();
+    bool CheckKernelPermissionCompression();
 
 protected:
     int32_t InitAllowedParam() override;

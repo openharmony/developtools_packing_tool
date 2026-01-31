@@ -230,6 +230,11 @@ bool HapPackager::IsVerifyValidInHapMode()
         forceRewrite = it->second;
     }
 
+    // Check kernel permission compression validation
+    if (!CheckKernelPermissionCompression()) {
+        return false;
+    }
+
     return IsOutPathValid(outPath, forceRewrite, Constants::HAP_SUFFIX);
 }
 
@@ -759,6 +764,58 @@ bool HapPackager::CheckPkgSdkInfoParam()
             return false;
         }
     }
+    return true;
+}
+
+bool HapPackager::CheckKernelPermissionCompression()
+{
+    // Only check for module.json files (not config.json for FA mode)
+    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
+    if (it == parameterMap_.end() || it->second.empty()) {
+        return true;  // No json path, skip validation
+    }
+
+    std::string jsonPath = it->second;
+    if (!IsPathValid(jsonPath, true, Constants::MODULE_JSON)) {
+        return true;  // Not a module.json file, skip validation
+    }
+
+    // Parse module.json to check for kernel permission
+    if (!moduleJson_.ParseFromFile(jsonPath)) {
+        LOGE("Failed to parse module.json: %s", jsonPath.c_str());
+        return false;
+    }
+
+    // Check if executableBinaries exists (has kernel permission)
+    bool hasKernelPermission = moduleJson_.HasExecutableBinaries();
+    if (!hasKernelPermission) {
+        return true;  // No kernel permission, no need to check
+    }
+
+    // Get compressNativeLibs and extractNativeLibs values
+    bool compressNativeLibs = false;
+    bool extractNativeLibs = true;
+
+    if (!moduleJson_.GetStageCompressNativeLibs(compressNativeLibs)) {
+        LOGW("Failed to get compressNativeLibs, using default value: false");
+        compressNativeLibs = false;
+    }
+
+    if (!moduleJson_.GetStageExtractNativeLibs(extractNativeLibs)) {
+        LOGW("Failed to get extractNativeLibs, using default value: true");
+        extractNativeLibs = true;
+    }
+
+    // Validate: if has kernel permission, at least one of compress/extract must be true
+    if (!compressNativeLibs && !extractNativeLibs) {
+        LOGE("Error: When executableBinaryPaths is configured in module.json, "
+              "at least one of compressNativeLibs or extractNativeLibs must be true.");
+        LOGE("Current values: compressNativeLibs=%s, extractNativeLibs=%s",
+              compressNativeLibs ? "true" : "false",
+              extractNativeLibs ? "true" : "false");
+        return false;
+    }
+
     return true;
 }
 } // namespace AppPackingTool

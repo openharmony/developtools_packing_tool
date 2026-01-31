@@ -124,6 +124,12 @@ class HapVerify {
         if (!checkContinueTypeIsValid(hapVerifyInfos)) {
             return false;
         }
+        // check kernel permission compression validation
+        if (!checkKernelPermissionCompression(hapVerifyInfos)) {
+            String errMsg = "Kernel permission compression validation failed.";
+            LOG.error(PackingToolErrMsg.CHECK_HAP_INVALID.toString(errMsg));
+            return false;
+        }
         return true;
     }
 
@@ -1909,5 +1915,46 @@ class HapVerify {
             }
         }
         return null;
+    }
+
+    /**
+     * check kernel permission compression validation.
+     * When executableBinaryPaths is configured, at least one of compressNativeLibs
+     * or extractNativeLibs must be true.
+     *
+     * @param hapVerifyInfos the collection of hap infos
+     * @return the result
+     */
+    private static boolean checkKernelPermissionCompression(List<HapVerifyInfo> hapVerifyInfos) {
+        if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {
+            return true;
+        }
+
+        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
+            // Only check HAP modules, not HSP
+            if (!hapVerifyInfo.getFileType().equals(HAP_SUFFIX)) {
+                continue;
+            }
+
+            boolean hasKernelPermission = hapVerifyInfo.getHasExecutableBinaryPaths();
+            if (!hasKernelPermission) {
+                continue;  // No kernel permission, no need to check
+            }
+
+            boolean compressNativeLibs = hapVerifyInfo.getCompressNativeLibs();
+            boolean extractNativeLibs = hapVerifyInfo.getExtractNativeLibs();
+
+            // Validate: if has kernel permission, at least one of compress/extract must be true
+            if (!compressNativeLibs && !extractNativeLibs) {
+                LOG.error("Error: When executableBinaryPaths is configured in module.json of module '{}', "
+                        + "at least one of compressNativeLibs or extractNativeLibs must be true.",
+                        hapVerifyInfo.getModuleName());
+                LOG.error("Current values: compressNativeLibs={}, extractNativeLibs={}",
+                        compressNativeLibs, extractNativeLibs);
+                return false;
+            }
+        }
+
+        return true;
     }
 }
