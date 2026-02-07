@@ -459,9 +459,9 @@ class HapVerify {
             LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
             return false;
         }
-        if (verifyCollection.buildVersion != hapVerifyInfo.getVersion().buildVersion) {
+        if (!verifyCollection.buildVersion.equals(hapVerifyInfo.getVersion().buildVersion)) {
             String errMsg = "The buildVersion parameter values are different.";
-            String solution = "Module: (" + verifyCollection.getModuleName() + ") and Module: (" + 
+            String solution = "Module: (" + verifyCollection.getModuleName() + ") and Module: (" +
                 hapVerifyInfo.getModuleName() + ") has different buildVersion.";
             LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
             return false;
