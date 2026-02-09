@@ -1789,6 +1789,8 @@ public class JsonUtil {
                 descriptions = ResourcesParserFactory.createParser(data).getResourceMapById(id, data);
             } catch (NumberFormatException e) {
                 LOG.error("parseFormDescriptions failed: invalid descriptionId: " + descriptionId);
+            } catch (BundleException e) {
+                LOG.error("ResourcesParserFactory.createParser failed: " + e.getMessage());
             }
             return descriptions;
         }
@@ -1959,7 +1961,11 @@ public class JsonUtil {
         String res = "";
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
-            res = ResourcesParserFactory.createParser(data).getResourceStringById(resId, data);
+            try {
+                res = ResourcesParserFactory.createParser(data).getResourceStringById(resId, data);
+            } catch (BundleException e) {
+                LOG.warning("parseResourceByKey  ResourcesParserFactory.createParser: " + e.getMessage());
+            }
         }
         if (res != null && !res.isEmpty()) {
             return res;
@@ -1999,7 +2005,11 @@ public class JsonUtil {
         HashMap<String, String> map = new HashMap<>();
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
-            map = ResourcesParserFactory.createParser(data).getResourceMapById(resId, data);
+            try {
+                map = ResourcesParserFactory.createParser(data).getResourceMapById(resId, data);
+            } catch (BundleException e) {
+                LOG.warning("parseResourceMapByKey  ResourcesParserFactory.createParser: " + e.getMessage());
+            }
         }
         return map;
     }
