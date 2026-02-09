@@ -24,13 +24,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -98,6 +102,8 @@ public class ScanStatSuffix {
     private static final String CLASS_TRTD_SUFFIXVALUE = "<tr class=\"suffixLayout\"><td class=\"suffixKey\">";
     private static final String CLASS_TD_SUFFIXVALUE = "</td><td class=\"suffixValue\">";
     private static final Log LOG = new Log(ScanStatSuffix.class.toString());
+
+    private static Map<String, Boolean> soCompressMap = new HashMap<>();
 
     private static class FileInfo {
         private String file;
@@ -217,6 +223,7 @@ public class ScanStatSuffix {
      */
     public String statSuffix(Utility utility, List<String> jsonList, List<String> fileList)
             throws BundleException {
+        soCompressMap.clear();
         SuffixResult suffixResult = new SuffixResult();
         suffixResult.setTaskType(SUFFIX_TYPE);
         suffixResult.setTaskDesc(SUFFIX_DESC);
@@ -225,6 +232,7 @@ public class ScanStatSuffix {
         String currentDir = System.getProperty(USER_DIR);
         String outPath = currentDir + File.separator + TMP_FOLDER_NAME;
         String packageName = utility.getInput();
+        getSoCompressionStatus(packageName);
         unpackHap(packageName, outPath);
         ArrayList<String> soList = new ArrayList<>();
         suffixResult.setPathList(getPathListData(outPath, packageName, soList));
@@ -243,6 +251,7 @@ public class ScanStatSuffix {
                 SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue,
                 SerializerFeature.WriteDateUseDateFormat});
         jsonList.add(jsonStr);
+        soCompressMap.clear();
         return htmlStr;
     }
 
@@ -280,12 +289,8 @@ public class ScanStatSuffix {
                     String soFilePath = param.getFile();
                     soFilePath = splitPath(soFilePath, UNPACK_NAME);
                     soFile.setFile(soFilePath);
-                    int index = soFilePath.indexOf(File.separator + LIBS_NAME);
-                    String hapPath = soFilePath.substring(0, index);
-                    File hapFile = new File(hapPath);
-                    long oldSize = getOldSize(soList, hapFile);
-                    long newSize = getNewSize(fileInfoList, hapFile);
-                    soFile.setCompress(oldSize < newSize ? TRUE : FALSE);
+                    Boolean compressStatus = getSoFileCompressStatus(soFilePath);
+                    soFile.setCompress(compressStatus != null && compressStatus ? TRUE : FALSE);
                     soFiles.add(soFile);
                     sum += param.getSize();
                 }
@@ -339,26 +344,80 @@ public class ScanStatSuffix {
         }
     }
 
-    private long getOldSize(List<String> soList, File hapFile) {
-        long oldSize = 0L;
-        for (String file : soList) {
-            File tmp = new File(file);
-            if (tmp.getName().equals(hapFile.getName())) {
-                oldSize = tmp.length();
-            }
-        }
-        return oldSize;
+    private void getSoCompressionStatus(String packagePath) {
+        getSoCompressionStatus(packagePath, "");
     }
 
-    private long getNewSize(List<FileInfo> fileInfoList, File hapFile) {
-        long newSize = 0L;
-        for (FileInfo fileInfo : fileInfoList) {
-            if (fileInfo.getFile().contains(hapFile.getPath())) {
-                File tmp = new File(fileInfo.getFile());
-                newSize += tmp.length();
+    private void getSoCompressionStatus(String packagePath, String prefix) {
+        try (ZipFile zipFile = new ZipFile(packagePath)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+                if (entryName.endsWith(".hap") || entryName.endsWith(".hsp")) {
+                    File tempFile = null;
+                    try (InputStream is = zipFile.getInputStream(entry)) {
+                        tempFile = File.createTempFile("nested_", ".tmp");
+                        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                            byte[] buffer = new byte[BUFFER_SIZE];
+                            int len;
+                            while ((len = is.read(buffer)) != -1) {
+                                fos.write(buffer, 0, len);
+                            }
+                        }
+                        String tempFilePath;
+                        try {
+                            tempFilePath = tempFile.getCanonicalPath();
+                        } catch (IOException e) {
+                            LOG.warning("Failed to get canonical path, using absolute path: " + e.getMessage());
+                            tempFilePath = tempFile.getAbsolutePath();
+                        }
+                        getSoCompressionStatus(tempFilePath, prefix + entryName + "/");
+                    } catch (IOException e) {
+                        LOG.error("Failed to process nested package: " + entryName + ", " + e.getMessage());
+                    } finally {
+                        if (tempFile != null) {
+                            tempFile.delete();
+                        }
+                    }
+                } else if (entryName.endsWith(".so")) {
+                    String fullPath = prefix + entryName;
+                    soCompressMap.put(fullPath, entry.getMethod() != ZipEntry.STORED);
+                    LOG.debug("SO: " + fullPath + " compressed=" + soCompressMap.get(fullPath));
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("Failed to read package: " + packagePath + ", " + e.getMessage());
+        }
+    }
+
+    private Boolean getSoFileCompressStatus(String soFilePath) {
+        if (soFilePath == null || soFilePath.isEmpty()) {
+            return null;
+        }
+        String normalizedPath = soFilePath.replace('\\', '/').replaceAll("^/+", "");
+        String[] prefixesToRemove = {"temporary/", "unpack/"};
+        for (String prefix : prefixesToRemove) {
+            if (normalizedPath.startsWith(prefix)) {
+                normalizedPath = normalizedPath.substring(prefix.length());
+                break;
             }
         }
-        return newSize;
+        LOG.debug("Looking up SO compression status for: " + soFilePath + " -> normalized: " + normalizedPath);
+        if (soCompressMap.containsKey(normalizedPath)) {
+            return soCompressMap.get(normalizedPath);
+        }
+        if (soCompressMap.containsKey("/" + normalizedPath)) {
+            return soCompressMap.get("/" + normalizedPath);
+        }
+        for (Map.Entry<String, Boolean> entry : soCompressMap.entrySet()) {
+            if (normalizedPath.endsWith(entry.getKey())) {
+                LOG.warning("Using partial match fallback: " + normalizedPath + " -> " + entry.getKey());
+                return entry.getValue();
+            }
+        }
+        LOG.debug("SO file compression status not found: " + normalizedPath);
+        return false;
     }
 
     private static HashMap<String, List<FileInfo>> accountFileType(HashMap<String, List<FileInfo>> map, String path) {
