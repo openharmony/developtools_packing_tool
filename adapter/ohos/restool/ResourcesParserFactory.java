@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
+import ohos.BundleException;
+
 /**
  * ResourcesParserFactory
  *
@@ -33,8 +35,12 @@ public class ResourcesParserFactory {
      *
      * @param data resource index data
      * @return ResourcesParser
+     * @throws BundleException if data is null
      */
-    public static ResourcesParser createParser(byte[] data) {
+    public static ResourcesParser createParser(byte[] data) throws BundleException {
+        if (data == null) {
+            throw new BundleException("ResourcesParserFactory::createParser data cannot be null");
+        }
         if (isV2Protocol(data)) {
             return new ResourcesParserV2(data);
         }
