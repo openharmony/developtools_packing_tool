@@ -404,8 +404,25 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @throws BundleException IOException.
      */
     static String readBaseItem(int resId, ConfigIndexV2 configIndex) {
+        if (configIndex == null) {
+            LOG.error("ResourcesParserV2::readBaseItem configIndex is null");
+            return "";
+        }
         Map<Integer, DataItemV2> map = dataMap.get(resId);
-        return map.get(configIndex.resCfgId).value;
+        if (map == null) {
+            LOG.error("ResourcesParserV2::readBaseItem dataMap.get(" + resId + ") returned null");
+            return "";
+        }
+        DataItemV2 item = map.get(configIndex.resCfgId);
+        if (item == null) {
+            LOG.error("ResourcesParserV2::readBaseItem map.get(" + configIndex.resCfgId + ") returned null");
+            return "";
+        }
+        if (item.value == null) {
+            LOG.error("ResourcesParserV2::readBaseItem item.value is null for resId=" + resId);
+            return "";
+        }
+        return item.value;
     }
 
     /**
@@ -457,8 +474,20 @@ public class ResourcesParserV2 implements ResourcesParser {
     static List<String> readAllItem(int resId) {
         List<String> result = new ArrayList<>();
         Map<Integer, DataItemV2> map = dataMap.get(resId);
+        if (map == null) {
+            LOG.error("ResourcesParserV2::readAllItem dataMap.get(" + resId + ") returned null");
+            return result;
+        }
         for (DataItemV2 dataItemV2 : map.values()) {
-            result.add(dataItemV2.value);
+            if (dataItemV2 == null) {
+                LOG.warning("ResourcesParserV2::readAllItem encountered null DataItemV2");
+                continue;
+            }
+            if (dataItemV2.value != null) {
+                result.add(dataItemV2.value);
+            } else {
+                LOG.warning("ResourcesParserV2::readAllItem encountered null value");
+            }
         }
         return result;
     }
@@ -612,6 +641,10 @@ public class ResourcesParserV2 implements ResourcesParser {
      *  @return the final string
      */
     static String convertConfigIndexToString(ConfigIndexV2 configIndex) {
+        if (configIndex == null) {
+            LOG.error("ResourcesParserV2::convertConfigIndexToString configIndex is null");
+            return BASE;
+        }
         if (configIndex.keyCount == 0) {
             return BASE;
         }
@@ -817,13 +850,16 @@ public class ResourcesParserV2 implements ResourcesParser {
                 buf.get(name);
                 idssItemV2.nameLen = nameLen;
                 idssItemV2.name = new String(name, StandardCharsets.UTF_8);
-                dataMap.get(idssItemV2.resId)
-                        .values()
-                        .forEach(
-                                dataItemV2 -> {
-                                    dataItemV2.type = idssItemV2.type;
-                                    dataItemV2.name = idssItemV2.name;
-                                });
+                Map<Integer, DataItemV2> dataItemMap = dataMap.get(idssItemV2.resId);
+                if (dataItemMap != null) {
+                    dataItemMap.values().forEach(
+                            dataItemV2 -> {
+                                dataItemV2.type = idssItemV2.type;
+                                dataItemV2.name = idssItemV2.name;
+                            });
+                } else {
+                    LOG.warning("ResourcesParserV2::parseIDSSZone dataMap.get(" + idssItemV2.resId + ") returned null, skipping");
+                }
                 map.put(idssItemV2.resId, idssItemV2);
             }
             idssMap.put(type, map);
