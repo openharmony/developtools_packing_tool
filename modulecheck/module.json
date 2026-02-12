@@ -55,7 +55,8 @@
                   "routerMap",
                   "appStartup",
                   "formExtensionModule",
-                  "crossAppSharedConfig"
+                  "crossAppSharedConfig",
+                  "executableBinaryPaths"
                 ]
               },
               "required": [
@@ -93,7 +94,8 @@
                   "routerMap",
                   "appStartup",
                   "formExtensionModule",
-                  "crossAppSharedConfig"
+                  "crossAppSharedConfig",
+                  "executableBinaryPaths"
                 ]
               },
               "required": [
@@ -442,7 +444,8 @@
                 "appStartup",
                 "formWidgetModule",
                 "hnpPackages",
-                "shareFiles"
+                "shareFiles",
+                "executableBinaryPaths"
               ]
             },
             "required": [
@@ -501,7 +504,8 @@
                   "appEnvironments",
                   "appStartup",
                   "formExtensionModule",
-                  "formWidgetModule"
+                  "formWidgetModule",
+                  "executableBinaryPaths"
                 ]
               },
               "required": [
@@ -548,7 +552,8 @@
                   "appEnvironments",
                   "appStartup",
                   "formExtensionModule",
-                  "formWidgetModule"
+                  "formWidgetModule",
+                  "executableBinaryPaths"
                 ]
               },
               "required": [
@@ -2249,6 +2254,27 @@
           "type": "string",
           "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
           "maxLength": 255
+        },
+        "executableBinaryPaths": {
+          "description": "Indicates the binary paths with kernel permission.",
+          "maxItems": 128,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "path"
+              ]
+            },
+            "properties": {
+              "path": {
+                "description": "Indicates the path of a binary with kernel permission.",
+                "type": "string",
+                "maxLength": 128,
+                "pattern": "^([a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/)?[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_]+)?$"
+              }
+            }
+          }
         }
       }
     }
