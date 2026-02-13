@@ -1062,7 +1062,7 @@ bool ModuleJson::HasExecutableBinariesByModuleObj(std::unique_ptr<PtJson>& modul
         return false;
     }
     int32_t size = 0;
-    if (executablesObj->GetArraySize(size) != Result::SUCCESS) {
+    if (executablesObj->GetSize(size) != Result::SUCCESS) {
         return false;
     }
     return size > 0;

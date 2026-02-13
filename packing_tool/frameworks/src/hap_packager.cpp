@@ -230,11 +230,6 @@ bool HapPackager::IsVerifyValidInHapMode()
         forceRewrite = it->second;
     }
 
-    // Check kernel permission compression validation
-    if (!CheckKernelPermissionCompression()) {
-        return false;
-    }
-
     return IsOutPathValid(outPath, forceRewrite, Constants::HAP_SUFFIX);
 }
 
@@ -355,6 +350,12 @@ bool HapPackager::CompressHap()
             LOGW("warning:Compress mode is hap, but app type is shared.");
         }
         moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
+        
+        // Check kernel permission compression validation
+        if (!CheckKernelPermissionCompression()) {
+            return false;
+        }
+        
         if (!CompressHapModeForModule(jsonPath_) || !BuildHash(buildHashFinish_, generateBuildHash_,
             parameterMap_, jsonPath_)) {
             return false;

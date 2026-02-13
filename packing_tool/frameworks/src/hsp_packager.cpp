@@ -174,11 +174,6 @@ bool HspPackager::IsVerifyValidInHspMode()
         forceRewrite = it->second;
     }
 
-    // Check kernel permission compression validation
-    if (!CheckKernelPermissionCompression()) {
-        return false;
-    }
-
     return IsOutPathValid(outPath, forceRewrite, Constants::HSP_SUFFIX);
 }
 
@@ -268,6 +263,11 @@ bool HspPackager::CompressHsp()
             return false;
         }
         moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
+        
+        // Check kernel permission compression validation
+        if (!CheckKernelPermissionCompression()) {
+            return false;
+        }
     }
     if (!CompressHspMode(jsonPath_) || !BuildHash(buildHashFinish_, generateBuildHash_, parameterMap_, jsonPath_)) {
         return false;
