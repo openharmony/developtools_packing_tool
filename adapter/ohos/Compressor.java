@@ -632,7 +632,13 @@ public class Compressor {
             // check deduplicateHar
             if (!checkDeduplicateHar(jsonString)) {
                 LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
-                        "Check the deduplicateHar in the Stage module failed."));
+                        "Check deduplicateHar in Stage module failed."));
+                throw new BundleException("Compress hsp failed.");
+            }
+            // check kernel permission compression validation
+            if (!checkKernelPermissionCompression(jsonString)) {
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString(
+                        "Check kernel permission compression validation failed."));
                 throw new BundleException("Compress hsp failed.");
             }
         }
@@ -677,6 +683,12 @@ public class Compressor {
                 }
             } else {
                 LOG.error(PackingToolErrMsg.COMPRESS_HAP_FAILED.toString("hap can not plugin."));
+                throw new BundleException("Compress hap failed.");
+            }
+            // check kernel permission compression validation
+            if (!checkKernelPermissionCompression(jsonString)) {
+                LOG.error(PackingToolErrMsg.COMPRESS_HAP_FAILED.toString(
+                        "Check kernel permission compression validation failed."));
                 throw new BundleException("Compress hap failed.");
             }
             compressHapModeForModule(utility);
@@ -4553,7 +4565,7 @@ public class Compressor {
     private void compressLibs(Utility utility) throws BundleException {
         if (IncrementalPack.isIncrementalMode(utility)) {
             try (org.apache.commons.compress.archivers.zip.ZipFile prevZip =
-                new org.apache.commons.compress.archivers.zip.ZipFile(utility.getExistSrcPath())) {
+                    new org.apache.commons.compress.archivers.zip.ZipFile(utility.getExistSrcPath())) {
                 IncrementalPack.addRawArchiveEntry(prevZip, zipOut);
             } catch (IOException e) {
                 LOG.error(PackingToolErrMsg.INCREMENTAL_PACK_HAP_EXCEPTION.toString(
@@ -4563,5 +4575,36 @@ public class Compressor {
         } else if (!utility.getLibPath().isEmpty()) {
             pathToFile(utility, utility.getLibPath(), LIBS_DIR_NAME, utility.isCompressNativeLibs());
         }
+    }
+
+    /**
+     * check kernel permission compression validation.
+     * When executableBinaryPaths is configured, at least one of compressNativeLibs
+     * or extractNativeLibs must be true.
+     *
+     * @param jsonString the module.json content
+     * @return the result
+     */
+    private static boolean checkKernelPermissionCompression(String jsonString) throws BundleException {
+        // Check if executableBinaryPaths exists (has kernel permission)
+        boolean hasKernelPermission = ModuleJsonUtil.parseHasExecutableBinaryPaths(jsonString);
+        if (!hasKernelPermission) {
+            return true;  // No kernel permission, no need to check
+        }
+
+        // Get compressNativeLibs and extractNativeLibs values
+        boolean compressNativeLibs = ModuleJsonUtil.parseStageCompressNativeLibs(jsonString);
+        boolean extractNativeLibs = ModuleJsonUtil.parseStageExtractNativeLibs(jsonString);
+
+        // Validate: if has kernel permission, at least one of compress/extract must be true
+        if (!compressNativeLibs && !extractNativeLibs) {
+            LOG.error("Error: When executableBinaryPaths is configured in module.json, "
+                    + "at least one of compressNativeLibs or extractNativeLibs must be true.");
+            LOG.error("Current values: compressNativeLibs=" + compressNativeLibs
+                    + ", extractNativeLibs=" + extractNativeLibs);
+            return false;
+        }
+
+        return true;
     }
 }
