@@ -31,7 +31,7 @@ const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 const bool DEFAULT_COMPRESS_NATIVE_LIBS = false;
-const bool DEFAULT_EXTRACT_NATIVE_LIBS = false;
+const bool DEFAULT_EXTRACT_NATIVE_LIBS = true;
 }
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
