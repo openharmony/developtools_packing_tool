@@ -30,6 +30,8 @@ const std::string NAME = "name";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PLUGIN";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
+const bool DEFAULT_COMPRESS_NATIVE_LIBS = false;
+const bool DEFAULT_EXTRACT_NATIVE_LIBS = false;
 }
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -794,26 +796,23 @@ bool HapPackager::CheckKernelPermissionCompression()
     }
 
     // Get compressNativeLibs and extractNativeLibs values
-    bool compressNativeLibs = false;
-    bool extractNativeLibs = true;
+    bool compressNativeLibs = DEFAULT_COMPRESS_NATIVE_LIBS;
+    bool extractNativeLibs = DEFAULT_EXTRACT_NATIVE_LIBS;
 
     if (!moduleJson_.GetStageCompressNativeLibs(compressNativeLibs)) {
         LOGW("Failed to get compressNativeLibs, using default value: false");
-        compressNativeLibs = false;
+        compressNativeLibs = DEFAULT_COMPRESS_NATIVE_LIBS;
     }
 
     if (!moduleJson_.GetStageExtractNativeLibs(extractNativeLibs)) {
         LOGW("Failed to get extractNativeLibs, using default value: true");
-        extractNativeLibs = true;
+        extractNativeLibs = DEFAULT_EXTRACT_NATIVE_LIBS;
     }
 
     // Validate: if has kernel permission, at least one of compress/extract must be true
     if (!compressNativeLibs && !extractNativeLibs) {
         LOGE("Error: When executableBinaryPaths is configured in module.json, "
             "at least one of compressNativeLibs or extractNativeLibs must be true.");
-        LOGE("Current values: compressNativeLibs=%s, extractNativeLibs=%s",
-            compressNativeLibs ? "true" : "false",
-            extractNativeLibs ? "true" : "false");
         return false;
     }
 
