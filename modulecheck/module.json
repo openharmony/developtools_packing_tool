@@ -1542,7 +1542,9 @@
                   "crypto",
                   "partnerAgent",
                   "contentEmbed",
-                  "embeddedCashier"
+                  "embeddedCashier",
+                  "agent",
+                  "agentUI"
                 ]
               },
               "permissions": {
