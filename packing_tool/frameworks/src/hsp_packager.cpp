@@ -34,7 +34,7 @@ const std::string EXTENSION_ABILITY_TYPE_FIELD = "type";
 const std::string EMBEDDED_UI_TYPE = "embeddedUI";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 const bool DEFAULT_COMPRESS_NATIVE_LIBS = false;
-const bool DEFAULT_EXTRACT_NATIVE_LIBS = false;
+const bool DEFAULT_EXTRACT_NATIVE_LIBS = true;
 }
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
