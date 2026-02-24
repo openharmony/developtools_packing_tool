@@ -1054,18 +1054,14 @@ bool ModuleJson::HasExecutableBinariesByModuleObj(std::unique_ptr<PtJson>& modul
         return false;
     }
     std::unique_ptr<PtJson> executablesObj;
-    if (moduleObj->GetArray(EXECUTABLE_BINARY_PATHS.c_str(), executablesObj) != Result::SUCCESS) {
+    if (moduleObj->GetArray(EXECUTABLE_BINARY_PATHS.c_str(), &executablesObj) != Result::SUCCESS) {
         LOGE("Module node get %s failed!", EXECUTABLE_BINARY_PATHS.c_str());
         return false;
     }
     if (!executablesObj) {
         return false;
     }
-    int32_t size = 0;
-    if (executablesObj->GetSize(size) != Result::SUCCESS) {
-        return false;
-    }
-    return size > 0;
+    return executablesObj->GetSize() > 0;
 }
 } // namespace AppPackingTool
 } // namespace OHOS
