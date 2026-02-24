@@ -136,57 +136,117 @@
             "assetAccessGroups",
             "startMode",
             "appPreloadPhase",
-            "buildVersion"
+            "buildVersion",
+            "profileable"
           ]
         }
       },
       "else": {
-        "propertyNames": {
-          "enum": [
-            "bundleName",
-            "debug",
-            "bundleType",
-            "icon",
-            "label",
-            "description",
-            "vendor",
-            "versionCode",
-            "versionName",
-            "minCompatibleVersionCode",
-            "minAPIVersion",
-            "targetAPIVersion",
-            "apiReleaseType",
-            "distributedNotificationEnabled",
-            "entityType",
-            "keepAlive",
-            "removable",
-            "singleton",
-            "userDataClearable",
-            "accessible",
-            "multiProjects",
-            "asanEnabled",
-            "default",
-            "tablet",
-            "tv",
-            "wearable",
-            "car",
-            "targetBundleName",
-            "targetPriority",
-            "generateBuildHash",
-            "2in1",
-            "GWPAsanEnabled",
-            "tsanEnabled",
-            "ubsanEnabled",
-            "appEnvironments",
-            "maxChildProcess",
-            "hwasanEnabled",
-            "cloudFileSyncEnabled",
-            "cloudStructuredDataSyncEnabled",
-            "configuration",
-            "assetAccessGroups",
-            "startMode",
-            "buildVersion"
-          ]
+        "if": {
+          "properties": {
+            "bundleType": {
+              "const": "atomicService"
+            }
+          }
+        },
+        "then": {
+          "propertyNames": {
+            "enum": [
+              "bundleName",
+              "debug",
+              "bundleType",
+              "icon",
+              "label",
+              "description",
+              "vendor",
+              "versionCode",
+              "versionName",
+              "minCompatibleVersionCode",
+              "minAPIVersion",
+              "targetAPIVersion",
+              "apiReleaseType",
+              "distributedNotificationEnabled",
+              "entityType",
+              "keepAlive",
+              "removable",
+              "singleton",
+              "userDataClearable",
+              "accessible",
+              "multiProjects",
+              "asanEnabled",
+              "default",
+              "tablet",
+              "tv",
+              "wearable",
+              "car",
+              "targetBundleName",
+              "targetPriority",
+              "generateBuildHash",
+              "2in1",
+              "GWPAsanEnabled",
+              "tsanEnabled",
+              "ubsanEnabled",
+              "appEnvironments",
+              "maxChildProcess",
+              "hwasanEnabled",
+              "cloudFileSyncEnabled",
+              "cloudStructuredDataSyncEnabled",
+              "configuration",
+              "assetAccessGroups",
+              "startMode",
+              "buildVersion",
+              "profileable"
+            ]
+          }
+        },
+        "else": {
+          "propertyNames": {
+            "enum": [
+              "bundleName",
+              "debug",
+              "bundleType",
+              "icon",
+              "label",
+              "description",
+              "vendor",
+              "versionCode",
+              "versionName",
+              "minCompatibleVersionCode",
+              "minAPIVersion",
+              "targetAPIVersion",
+              "apiReleaseType",
+              "distributedNotificationEnabled",
+              "entityType",
+              "keepAlive",
+              "removable",
+              "singleton",
+              "userDataClearable",
+              "accessible",
+              "multiProjects",
+              "asanEnabled",
+              "default",
+              "tablet",
+              "tv",
+              "wearable",
+              "car",
+              "targetBundleName",
+              "targetPriority",
+              "generateBuildHash",
+              "2in1",
+              "GWPAsanEnabled",
+              "tsanEnabled",
+              "ubsanEnabled",
+              "appEnvironments",
+              "maxChildProcess",
+              "hwasanEnabled",
+              "cloudFileSyncEnabled",
+              "cloudStructuredDataSyncEnabled",
+              "configuration",
+              "assetAccessGroups",
+              "startMode",
+              "buildVersion"
+            ]
+          }
         }
       },
       "properties": {
@@ -523,6 +583,11 @@
           "type": "string",
           "maxLength": 18,
           "pattern": "^(?=.{1,18}$)(?:0|[1-9]\\d*)(?:\\.(?:0|[1-9]\\d*)){0,2}$"
+        },
+        "profileable": {
+          "description": "Describes whether application allows profiling tools to analyze performance on release builds.",
+          "type": "boolean",
+          "default": false
         }
       }
     }
