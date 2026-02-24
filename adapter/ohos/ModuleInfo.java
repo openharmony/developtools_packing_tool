@@ -18,6 +18,7 @@ package ohos;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Module ModuleJson info.
@@ -174,4 +175,23 @@ class ModuleInfo {
      * Indicates whether the module.abc file is compressed.
      */
     public boolean isModuleAbcCompressed = false;
+
+    /**
+     * Indicates the requiredDeviceFeatures
+     */
+    private Map<String, List<String>> requiredDeviceFeatures = new HashMap<>();
+
+    /**
+     * Get value requiredDeviceFeatures
+     */
+    public Map<String, List<String>> getRequiredDeviceFeatures() {
+        return requiredDeviceFeatures;
+    }
+
+    /**
+     * Set value requiredDeviceFeatures
+     */
+    public void setRequiredDeviceFeatures(Map<String, List<String>> requiredDeviceFeatures) {
+        this.requiredDeviceFeatures = requiredDeviceFeatures;
+    }
 }
