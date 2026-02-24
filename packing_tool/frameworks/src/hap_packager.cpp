@@ -810,10 +810,10 @@ bool HapPackager::CheckKernelPermissionCompression()
     // Validate: if has kernel permission, at least one of compress/extract must be true
     if (!compressNativeLibs && !extractNativeLibs) {
         LOGE("Error: When executableBinaryPaths is configured in module.json, "
-              "at least one of compressNativeLibs or extractNativeLibs must be true.");
+            "at least one of compressNativeLibs or extractNativeLibs must be true.");
         LOGE("Current values: compressNativeLibs=%s, extractNativeLibs=%s",
-              compressNativeLibs ? "true" : "false",
-              extractNativeLibs ? "true" : "false");
+            compressNativeLibs ? "true" : "false",
+            extractNativeLibs ? "true" : "false");
         return false;
     }
 
