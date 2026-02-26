@@ -283,19 +283,19 @@ public class Compressor {
     }
 
     private static class GeneralNormalizeUtil {
-        private int originVersionCode = INVALID_VERSION;
+        private String originApiReleaseType = "";
+ 	    private String originBundleType = "";
         private String originBuildVersion = "";
         private String originVersionName = "";
         private String moduleName = "";
         private String originBundleName = "";
+        private String originDeviceTypes = "";
+ 	    private int originVersionCode = INVALID_VERSION;
         private int originMinCompatibleVersionCode = INVALID_VERSION;
         private int originMinAPIVersion = INVALID_VERSION;
         private int originTargetAPIVersion = INVALID_VERSION;
-        private String originApiReleaseType = "";
-        private String originBundleType = "";
         private boolean originInstallationFree = false;
         private boolean originDeliveryWithInstall = false;
-        private String originDeviceTypes = "";
         private boolean isInstallationFree = false;
         private boolean isDeliveryWithInstall = false;
 
@@ -4190,13 +4190,13 @@ public class Compressor {
             if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
                 util.setOriginInstallationFree(moduleObject.getBoolean(INSTALLATION_FREE));
                 util.setIsInstallationFree(true);
-                moduleObject.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
+                moduleObject.put(INSTALLATION_FREE, Boolean.parseBoolean(utility.getInstallationFree()));
             }
 
             if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
                 util.setOriginDeliveryWithInstall(moduleObject.getBoolean(DELIVERY_WITH_INSTALL));
                 util.setIsDeliveryWithInstall(true);
-                moduleObject.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
+                moduleObject.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
             }
             writeJson(jsonFilePath, jsonObject);
         } catch (IOException e) {
@@ -4319,13 +4319,13 @@ public class Compressor {
             if (utility.getGeneralNormalizeList().contains(INSTALLATION_FREE)) {
                 util.setOriginInstallationFree(distroObj.getBoolean(INSTALLATION_FREE));
                 util.setIsInstallationFree(true);
-                distroObj.put(INSTALLATION_FREE, utility.getDeliveryWithInstall());
+                distroObj.put(INSTALLATION_FREE, Boolean.parseBoolean(utility.getInstallationFree()));
             }
 
             if (utility.getGeneralNormalizeList().contains(DELIVERY_WITH_INSTALL)) {
                 util.setOriginDeliveryWithInstall(distroObj.getBoolean(DELIVERY_WITH_INSTALL));
                 util.setIsDeliveryWithInstall(true);
-                distroObj.put(DELIVERY_WITH_INSTALL, utility.getInstallationFree());
+                distroObj.put(DELIVERY_WITH_INSTALL, Boolean.parseBoolean(utility.getDeliveryWithInstall()));
             }
             writeJson(jsonFilePath, jsonObject);
         } catch (IOException e) {
@@ -4489,48 +4489,48 @@ public class Compressor {
             for (GeneralNormalizeUtil util : utils) {
                 JSONObject jsonObject = new JSONObject();
                 if (util.originDeviceTypes != null && !util.originDeviceTypes.isEmpty()) {
-                    jsonObject.put("deviceTypes", util.originDeviceTypes);
+                    jsonObject.put(DEVICE_TYPES, util.originDeviceTypes);
                     if (util.originDeviceTypes instanceof String) {
                         String arrayStr = (String) util.originDeviceTypes;
                         JSONArray deviceTypes = JSON.parseArray(arrayStr);
-                        jsonObject.put("deviceTypes", deviceTypes);
+                        jsonObject.put(DEVICE_TYPES, deviceTypes);
                     }
                 }
                 if (util.originVersionCode != INVALID_VERSION) {
-                    jsonObject.put("versionCode", util.originVersionCode);
+                    jsonObject.put(VERSION_CODE, util.originVersionCode);
                 }
                 if (util.originBuildVersion != null && !util.originBuildVersion.isEmpty()) {
-                    jsonObject.put("buildVersion", util.originBuildVersion);
+                    jsonObject.put(BUILD_VERSION, util.originBuildVersion);
                 }
                 if (util.moduleName != null && !util.moduleName.isEmpty()) {
-                    jsonObject.put("moduleName", util.moduleName);
+                    jsonObject.put(MODULE_NAME_NEW, util.moduleName);
                 }
                 if (util.originVersionName != null && !util.originVersionName.isEmpty()) {
-                    jsonObject.put("versionName", util.originVersionName);
+                    jsonObject.put(VERSION_NAME, util.originVersionName);
                 }
                 if (util.originMinCompatibleVersionCode != INVALID_VERSION) {
-                    jsonObject.put("minCompatibleVersionCode", util.originMinCompatibleVersionCode);
+                    jsonObject.put(MIN_COMPATIBLE_VERSION_CODE, util.originMinCompatibleVersionCode);
                 }
                 if (util.originMinAPIVersion != INVALID_VERSION) {
-                    jsonObject.put("minAPIVersion", util.originMinAPIVersion);
+                    jsonObject.put(MIN_API_VERSION, util.originMinAPIVersion);
                 }
                 if (util.originTargetAPIVersion != INVALID_VERSION) {
-                    jsonObject.put("targetAPIVersion", util.originTargetAPIVersion);
+                    jsonObject.put(TARGET_API_VERSION, util.originTargetAPIVersion);
                 }
                 if (util.originApiReleaseType!= null && !util.originApiReleaseType.isEmpty()) {
-                    jsonObject.put("apiReleaseType", util.originApiReleaseType);
+                    jsonObject.put(API_RELEASE_TYPE, util.originApiReleaseType);
                 }
                 if (util.originBundleType != null && !util.originBundleType.isEmpty()) {
-                    jsonObject.put("bundleType", util.originBundleType);
+                    jsonObject.put(BUNDLE_TYPE, util.originBundleType);
                 }
                 if (util.originBundleName != null && !util.originBundleName.isEmpty()) {
-                    jsonObject.put("bundleName", util.originBundleName);
+                    jsonObject.put(BUNDLE_NAME, util.originBundleName);
                 }
                 if (util.isInstallationFree == true) {
-                    jsonObject.put("installationFree", util.originInstallationFree);
+                    jsonObject.put(INSTALLATION_FREE, util.originInstallationFree);
                 }
                 if (util.isDeliveryWithInstall == true) {
-                    jsonObject.put("deliveryWithInstall", util.originDeliveryWithInstall);
+                    jsonObject.put(DELIVERY_WITH_INSTALL, util.originDeliveryWithInstall);
                 }
                 jsonArray.add(jsonObject);
             }
