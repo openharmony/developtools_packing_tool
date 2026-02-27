@@ -845,6 +845,16 @@ public class PackingToolErrMsg {
             .setCause("%s")
             .build();
 
+    /**
+     * CHECK_KERNEL_PERMISSION_COMPRESSION_FAILED
+     */
+    public static final ErrorMsg CHECK_KERNEL_PERMISSION_COMPRESSION_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("12")
+            .setErrCode("055")
+            .setDescription("Check kernel permission compression failed.")
+            .setCause("%s")
+            .build();
+
     // module json check error
     /**
      * PARSE_JSON_OBJECT_EXCEPTION

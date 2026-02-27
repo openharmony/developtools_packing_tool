@@ -108,6 +108,10 @@ public:
     bool GetStageApiReleaseTypeByAppObj(std::unique_ptr<PtJson>& appObj, std::string& apiReleaseType);
     bool GetStageCompressNativeLibs(bool& compressNativeLibs);
     bool GetStageCompressNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& compressNativeLibs);
+    bool GetStageExtractNativeLibs(bool& extractNativeLibs);
+    bool GetStageExtractNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& extractNativeLibs);
+    bool HasExecutableBinaries();
+    bool HasExecutableBinariesByModuleObj(std::unique_ptr<PtJson>& moduleObj);
     bool GetAbilityContinueTypeMap(std::map<std::string, std::list<std::string>>& abilityContinueTypeMap);
     bool GetAbilityContinueTypeMapByModuleObj(std::unique_ptr<PtJson>& moduleObj,
         std::map<std::string, std::list<std::string>>& abilityContinueTypeMap);

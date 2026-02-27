@@ -86,6 +86,8 @@ class ModuleJsonUtil {
     private static final String ORIGINAL_MODULE_HASH = "originalModuleHash";
     private static final String EMPTY_STRING = "";
     private static final String COMPRESS_NATIVE_LIBS = "compressNativeLibs";
+    private static final String EXTRACT_NATIVE_LIBS = "extractNativeLibs";
+    private static final String EXECUTABLE_BINARY_PATHS = "executableBinaryPaths";
     private static final String ASAN_ENABLED = "asanEnabled";
     private static final String TSAN_ENABLED = "tsanEnabled";
     private static final String GWP_ASAN_ENABLED = "GWPAsanEnabled";
@@ -119,6 +121,8 @@ class ModuleJsonUtil {
     private static final String FORMS = "forms";
     private static final String DEFAULTDIMENSION = "defaultDimension";
     private static final String SUPPORTDIMENSIONS = "supportDimensions";
+    private static final boolean DEFAULT_COMPRESS_NATIVE_LIBS = false;
+    private static final boolean DEFAULT_EXTRACT_NATIVE_LIBS = true;
 
     private static final Log LOG = new Log(ModuleJsonUtil.class.toString());
 
@@ -954,6 +958,9 @@ class ModuleJsonUtil {
         hapVerifyInfo.setModuleType(parseModuleType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseStageInstallation(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompressNativeLibs(parseStageCompressNativeLibs(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setExtractNativeLibs(parseStageExtractNativeLibs(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setHasExecutableBinaryPaths(parseHasExecutableBinaryPaths(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setBundleType(parseStageBundleType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setPreloadItems(parseAtomicServicePreloads(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetBundleName(parseTargetBundleName(hapVerifyInfo.getProfileStr()));
@@ -994,6 +1001,9 @@ class ModuleJsonUtil {
         hapVerifyInfo.setPackageName(parseFaPackageStr(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDependencyItemList(parseDependencies(hapVerifyInfo.getProfileStr(), bundleName));
         hapVerifyInfo.setInstallationFree(parseFAInstallationFree(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setCompressNativeLibs(parseFACompressNativeLibs(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setExtractNativeLibs(parseFAExtractNativeLibs(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setHasExecutableBinaryPaths(parseHasExecutableBinaryPaths(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDebug(getFADebug(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkType(getFACompileSdkType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkVersion(getFACompileSdkVersion(hapVerifyInfo.getProfileStr()));
@@ -1558,6 +1568,47 @@ class ModuleJsonUtil {
             return distroObj.getBoolean(INSTALLATION_FREE);
         }
         return false;
+    }
+
+    static boolean parseFACompressNativeLibs(String jsonString) throws BundleException {
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(COMPRESS_NATIVE_LIBS)) {
+            return moduleObj.getBoolean(COMPRESS_NATIVE_LIBS);
+        }
+        return DEFAULT_COMPRESS_NATIVE_LIBS;
+    }
+
+    static boolean parseFAExtractNativeLibs(String jsonString) throws BundleException {
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(EXTRACT_NATIVE_LIBS)) {
+            return moduleObj.getBoolean(EXTRACT_NATIVE_LIBS);
+        }
+        return DEFAULT_EXTRACT_NATIVE_LIBS;
+    }
+
+    static boolean parseStageCompressNativeLibs(String jsonString) throws BundleException {
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(COMPRESS_NATIVE_LIBS)) {
+            return moduleObj.getBoolean(COMPRESS_NATIVE_LIBS);
+        }
+        return DEFAULT_COMPRESS_NATIVE_LIBS;
+    }
+
+    static boolean parseStageExtractNativeLibs(String jsonString) throws BundleException {
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (moduleObj.containsKey(EXTRACT_NATIVE_LIBS)) {
+            return moduleObj.getBoolean(EXTRACT_NATIVE_LIBS);
+        }
+        return DEFAULT_EXTRACT_NATIVE_LIBS;
+    }
+
+    static boolean parseHasExecutableBinaryPaths(String jsonString) throws BundleException {
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (!moduleObj.containsKey(EXECUTABLE_BINARY_PATHS)) {
+            return false;
+        }
+        JSONArray executableArray = moduleObj.getJSONArray(EXECUTABLE_BINARY_PATHS);
+        return executableArray != null && executableArray.size() > 0;
     }
 
     /**

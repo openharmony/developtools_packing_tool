@@ -52,6 +52,7 @@ public:
     bool IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilitiesObj);
     bool CheckLibPathRetainParam();
     bool CheckPkgSdkInfoParam();
+    bool CheckKernelPermissionCompression();
 
 protected:
     int32_t InitAllowedParam() override;

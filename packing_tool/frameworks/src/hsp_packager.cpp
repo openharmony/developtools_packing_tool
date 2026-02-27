@@ -33,6 +33,8 @@ const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PL
 const std::string EXTENSION_ABILITY_TYPE_FIELD = "type";
 const std::string EMBEDDED_UI_TYPE = "embeddedUI";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
+const bool DEFAULT_COMPRESS_NATIVE_LIBS = false;
+const bool DEFAULT_EXTRACT_NATIVE_LIBS = true;
 }
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -263,6 +265,11 @@ bool HspPackager::CompressHsp()
             return false;
         }
         moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
+        
+        // Check kernel permission compression validation
+        if (!CheckKernelPermissionCompression()) {
+            return false;
+        }
     }
     if (!CompressHspMode(jsonPath_) || !BuildHash(buildHashFinish_, generateBuildHash_, parameterMap_, jsonPath_)) {
         return false;
@@ -661,6 +668,55 @@ bool HspPackager::CheckPkgSdkInfoParam()
             return false;
         }
     }
+    return true;
+}
+
+bool HspPackager::CheckKernelPermissionCompression()
+{
+    // Only check for module.json files
+    std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
+    if (it == parameterMap_.end() || it->second.empty()) {
+        return true;  // No json path, skip validation
+    }
+
+    std::string jsonPath = it->second;
+    if (!IsPathValid(jsonPath, true, Constants::MODULE_JSON)) {
+        return true;  // Not a module.json file, skip validation
+    }
+
+    // Parse module.json to check for kernel permission
+    if (!moduleJson_.ParseFromFile(jsonPath)) {
+        LOGE("Failed to parse module.json: %s", jsonPath.c_str());
+        return false;
+    }
+
+    // Check if executableBinaries exists (has kernel permission)
+    bool hasKernelPermission = moduleJson_.HasExecutableBinaries();
+    if (!hasKernelPermission) {
+        return true;  // No kernel permission, no need to check
+    }
+
+    // Get compressNativeLibs and extractNativeLibs values
+    bool compressNativeLibs = DEFAULT_COMPRESS_NATIVE_LIBS;
+    bool extractNativeLibs = DEFAULT_EXTRACT_NATIVE_LIBS;
+
+    if (!moduleJson_.GetStageCompressNativeLibs(compressNativeLibs)) {
+        LOGW("Failed to get compressNativeLibs, using default value: false");
+        compressNativeLibs = DEFAULT_COMPRESS_NATIVE_LIBS;
+    }
+
+    if (!moduleJson_.GetStageExtractNativeLibs(extractNativeLibs)) {
+        LOGW("Failed to get extractNativeLibs, using default value: true");
+        extractNativeLibs = DEFAULT_EXTRACT_NATIVE_LIBS;
+    }
+
+    // Validate: if has kernel permission, at least one of compress/extract must be true
+    if (!compressNativeLibs && !extractNativeLibs) {
+        LOGE("Error: When executableBinaryPaths is configured in module.json, "
+            "at least one of compressNativeLibs or extractNativeLibs must be true.");
+        return false;
+    }
+
     return true;
 }
 } // namespace AppPackingTool
