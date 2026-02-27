@@ -171,6 +171,7 @@ class ModuleAdaption {
         hapInfo.dependencies = moduleInfo.dependenies;
         hapInfo.proxyData = moduleInfo.proxyData;
         hapInfo.isModuleAbcCompressed = moduleInfo.isModuleAbcCompressed;
+        hapInfo.setRequiredDeviceFeatures(moduleInfo.getRequiredDeviceFeatures());
         return hapInfo;
     }
 

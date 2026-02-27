@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.TypeReference;
 import ohos.restool.ResourcesParserFactory;
 
 /**
@@ -165,6 +166,7 @@ public class JsonUtil {
     private static final String TARGET_PRIORITY = "targetPriority";
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_DATA_URI = "uri";
+    private static final String REQUIRED_DEVICE_FEATURES = "requiredDeviceFeatures";
 
 
     /**
@@ -723,6 +725,7 @@ public class JsonUtil {
             hapInfo.distroFilter = JSONObject.parseObject(
                     getJsonString(hapJson, "distroFilter"), DistroFilter.class);
         }
+        hapInfo.setRequiredDeviceFeatures(parseRequiredDeviceFeatures(hapJson));
         return hapInfo;
     }
 
@@ -1118,7 +1121,21 @@ public class JsonUtil {
         // parse define permission
         moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
         moduleInfo.moduleAtomicService = parseModuleAtomicService(moduleJson);
+        moduleInfo.setRequiredDeviceFeatures(parseRequiredDeviceFeatures(moduleJson));
         return moduleInfo;
+    }
+
+    private static Map<String, List<String>> parseRequiredDeviceFeatures(JSONObject jsonObject) {
+        Map<String, List<String>> requiredDeviceFeatures = new HashMap<>();
+        try {
+            if (jsonObject.containsKey(REQUIRED_DEVICE_FEATURES)) {
+                requiredDeviceFeatures = jsonObject.getJSONObject(REQUIRED_DEVICE_FEATURES)
+                        .toJavaObject(new TypeReference<Map<String, List<String>>>() {});
+            }
+        } catch (Exception ex) {
+            LOG.warning("Uncompress::parseRequiredDeviceFeatures err: " + ex.getMessage());
+        }
+        return requiredDeviceFeatures;
     }
 
     private static List<DependencyItem> parseDenpendencies(JSONObject appJson, JSONObject moduleJson)
