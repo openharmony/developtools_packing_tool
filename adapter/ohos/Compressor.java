@@ -4598,13 +4598,13 @@ public class Compressor {
 
         // Validate: if has kernel permission, at least one of compress/extract must be true
         if (!compressNativeLibs && !extractNativeLibs) {
-            LOG.error("Error: When executableBinaryPaths is configured in module.json, "
-                    + "at least one of compressNativeLibs or extractNativeLibs must be true.");
-            LOG.error("Current values: compressNativeLibs=" + compressNativeLibs
-                    + ", extractNativeLibs=" + extractNativeLibs);
+            String errMsg = "When executableBinaryPaths is configured in module.json, " +
+                    "at least one of compressNativeLibs or extractNativeLibs must be true.";
+            LOG.error(PackingToolErrMsg.CHECK_KERNEL_PERMISSION_COMPRESSION_FAILED.toString(errMsg));
             return false;
         }
 
         return true;
     }
+
 }
