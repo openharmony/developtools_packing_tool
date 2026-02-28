@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,8 @@
 #include "hap_packager.h"
 #include "hqf_packager.h"
 #include "hsp_packager.h"
-#include "json/json_utils.h"
 #include "json/general_normalize_version_utils.h"
+#include "json/json_utils.h"
 #include "json/module_json.h"
 #include "json/pack_info.h"
 #include "log.h"
