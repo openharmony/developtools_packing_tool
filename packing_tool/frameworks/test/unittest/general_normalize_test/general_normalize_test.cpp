@@ -482,10 +482,542 @@ const std::string JSON_STRING_NO_APP_VERSION = "{"
         "}"
     "]"
 "}";
+const std::string JSON_STRING_NO_BUNDLE_NAME = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleType\": \"bundleApp\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true,"
+            "\"name\": \"entry-default\""
+        "}"
+    "]"
+"}";
+const std::string JSON_STRING_NO_BUNDLE_TYPE = "{"
+    "\"summary\": {"
+        "\"app\": {"
+            "\"bundleName\": \"com.example.myapplication\","
+            "\"version\": {"
+                "\"code\": 1000000,"
+                "\"name\": \"1.0.0\""
+            "}"
+        "},"
+        "\"modules\": ["
+            "{"
+                "\"mainAbility\": \"EntryAbility\","
+                "\"deviceType\": ["
+                    "\"default\","
+                    "\"tablet\""
+                "],"
+                "\"abilities\": ["
+                    "{"
+                        "\"name\": \"EntryAbility\","
+                        "\"label\": \"$string:EntryAbility_label\""
+                    "}"
+                "],"
+                "\"distro\": {"
+                    "\"moduleType\": \"entry\","
+                    "\"installationFree\": false,"
+                    "\"deliveryWithInstall\": true,"
+                    "\"moduleName\": \"entry\""
+                "},"
+                "\"extensionAbilities\": ["
+                "],"
+                "\"apiVersion\": {"
+                    "\"compatible\": 12,"
+                    "\"releaseType\": \"Canary2\","
+                    "\"target\": 12"
+                "}"
+            "}"
+        "]"
+    "},"
+    "\"packages\":["
+        "{"
+            "\"deviceType\": ["
+                "\"default\","
+                "\"tablet\""
+            "],"
+            "\"moduleType\": \"entry\","
+            "\"deliveryWithInstall\": true,"
+            "\"name\": \"entry-default\""
+        "}"
+    "]"
+"}";
+const std::string MODULE_JSON_STRING_ONLY_VERSION = "{"
+    "\"app\": {"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "}"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\""
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
 const std::string MODULE_JSON_STRING = "{"
     "\"app\": {"
         "\"bundleName\": \"test_bundle_name\","
         "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": true,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "},"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
+const std::string MODULE_JSON_STRING_NO_APP_VERSION = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": true,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "},"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
+const std::string MODULE_JSON_STRING_NO_BUNDLE_NAME = "{"
+    "\"app\": {"
+        "\"bundleType\": \"atomicService\","
+        "\"vendor\": \"\","
+        "\"versionCode\": 1000000,"
+        "\"versionName\": \"test_version_name\","
+        "\"icon\": \"media:app_icon\","
+        "\"label\": \"string:app_name\","
+        "\"apiReleaseType\": \"Canary\","
+        "\"compileSdkVersion\": \"test_compileSdkVersion\","
+        "\"targetAPIVersion\": 10,"
+        "\"minAPIVersion\": 10,"
+        "\"compileSdkType\": \"OpenHarmony\","
+        "\"debug\": true,"
+        "\"iconId\": 16777217,"
+        "\"labelId\": 16777216,"
+        "\"version\": {"
+            "\"code\": 666,"
+            "\"name\": \"test_version\","
+            "\"minCompatibleVersionCode\": 555"
+        "},"
+        "\"apiVersion\": {"
+            "\"compileSdkType\": \"OpenHarmony\","
+            "\"compileSdkVersion\": \"test_apiVersion_compileSdkVersion\","
+            "\"releaseType\": \"test_apiVersion_release\","
+            "\"compatible\": 7,"
+            "\"target\": 10"
+        "},"
+        "\"targetBundleName\": \"test_app_targetBundleName\","
+        "\"multiAppMode\": {"
+            "\"multiAppModeType\": \"test_multiAppMode\","
+            "\"maxCount\": 9"
+        "},"
+        "\"generateBuildHash\": true,"
+        "\"minCompatibleVersionCode\": 99,"
+        "\"asanEnabled\": true,"
+        "\"tsanEnabled\": false,"
+        "\"compressNativeLibs\": true,"
+        "\"targetPriority\": 5"
+    "},"
+    "\"module\": {"
+        "\"name\": \"entry\","
+        "\"type\": \"entry\","
+        "\"description\": \"string:module_desc\","
+        "\"mainElement\": \"EntryAbility\","
+        "\"deviceTypes\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"deliveryWithInstall\": true,"
+        "\"installationFree\": true,"
+        "\"pages\": \"profile:main_pages\","
+        "\"abilities\": ["
+            "{"
+                "\"name\": \"EntryAbility\","
+                "\"moduleName\": \"test_module_name\","
+                "\"srcEntry\": \"./ets/entryability/EntryAbility.ts\","
+                "\"description\": \"string:EntryAbility_desc\","
+                "\"icon\": \"media:icon\","
+                "\"label\": \"string:EntryAbility_label\","
+                "\"startWindowIcon\": \"media:icon\","
+                "\"startWindowBackground\": \"color:start_window_background\","
+                "\"exported\": true,"
+                "\"skills\": ["
+                    "{"
+                        "\"entities\": [\"entity.system.home\"],"
+                        "\"actions\": [\"action.system.home\"]"
+                    "}"
+                "],"
+                "\"descriptionId\": 16777218,"
+                "\"iconId\": 16777222,"
+                "\"labelId\": 16777219,"
+                "\"startWindowIconId\": 16777222,"
+                "\"startWindowBackgroundId\": 16777221,"
+                "\"continueType\":[]"
+            "}"
+        "],"
+        "\"virtualMachine\": \"test_virtualMachine\","
+        "\"compileMode\": \"esmodule\","
+        "\"dependencies\": ["
+            "{"
+                "\"bundleName\": \"test_modules_dependency_1\","
+                "\"moduleName\": \"entry_1\""
+            "},"
+            "{"
+                "\"bundleName\": \"test_modules_dependency_2\","
+                "\"moduleName\": \"entry_1\""
+            "}"
+        "],"
+        "\"descriptionId\": 16777220,"
+        "\"distro\": {"
+            "\"installationFree\": false,"
+            "\"moduleType\": \"entry\","
+            "\"moduleName\": \"test_module_name\""
+        "},"
+        "\"preloads\": ["
+            "{"
+                "\"name\": \"test_name_1\","
+                "\"moduleName\": \"test_module_name_1\""
+            "}"
+        "],"
+        "\"package\": \"test_package\","
+        "\"deviceType\": ["
+            "\"default\","
+            "\"tablet\""
+        "],"
+        "\"targetModuleName\": \"test_module_targetBundleName\","
+        "\"targetPriority\": 6,"
+        "\"proxyDatas\": ["
+            "{"
+                 "\"uri\": \"test_uri1\""
+            "},"
+            "{"
+                 "\"uri\": \"test_uri2\""
+            "}"
+        "],"
+        "\"atomicService\": {"
+            "\"preloads\": ["
+                "{"
+                    "\"atomicServiceObj\": \"test_atomicService\""
+                "}"
+            "]"
+        "},"
+        "\"metadata\": ["
+            "{"
+                "\"name\": \"test_metadata\","
+                "\"value\": \"test_value\","
+                "\"resource\": \"test_resource\""
+            "}"
+        "],"
+        "\"extensionAbilities\": ["
+            "{"
+                "\"name\": \"test_extension_abilities\""
+            "}"
+        "]"
+    "},"
+    "\"deviceConfig\": {"
+        "\"default\": {\"debug\": true}"
+    "}"
+"}";
+const std::string MODULE_JSON_STRING_NO_BUNDLE_TYPE = "{"
+    "\"app\": {"
+        "\"bundleName\": \"test_bundle_name\","
         "\"vendor\": \"\","
         "\"versionCode\": 1000000,"
         "\"versionName\": \"test_version_name\","
@@ -1467,6 +1999,359 @@ HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_1300, Function | MediumTest | Le
     GeneralNormalizeVersion generalNormalizeVersion;
     EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
     system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0100
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "";
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0200
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << JSON_STRING;
+        file.close();
+    }
+    EXPECT_TRUE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0300
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, VERSION_CODE},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << JSON_STRING_NO_APP_VERSION;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0400
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_NAME, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << JSON_STRING_NO_APP_VERSION;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0500
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_NAME, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << JSON_STRING_NO_BUNDLE_NAME;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0600
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE, MIN_COMPATIBLE_VERSION_CODE},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0700
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_MIN_API_VERSION, MIN_API_VERSION},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0800
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_TARGET_API_VERSION, TARGET_API_VERSION},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_0900
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_0900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_API_RELEASE_TYPE, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_1000
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_1000, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_BUNDLE_TYPE, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_1100
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_1100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_INSTALLATION_FREE, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_1200
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_1200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_DELIVERY_WITH_INSTALL, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyPackInfo_1300
+ * @tc.desc: ModifyPackInfo
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyPackInfo_1300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_DEVICE_TYPES, ""},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    std::string packInfoPath = "/data/test/module.json";
+    system("touch /data/test/module.json");
+    system("chmod 777 /data/test/module.json");
+    std::ofstream file("/data/test/module.json");
+    if (file.is_open()) {
+        file << TEST_STRING_NOTHING;
+        file.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: CompressDirToHap_0100
+ * @tc.desc: CompressDirToHap
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, CompressDirToHap_0100, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    std::string sourceDir = "/data/test/sourcedir";
+    system("mkdir /data/test/sourcedir");
+    system("mkdir /data/test/sourcedir/ets");
+    system("mkdir /data/test/sourcedir/hnp");
+    system("mkdir /data/test/sourcedir/libs");
+    system("mkdir /data/test/sourcedir/an");
+    system("mkdir /data/test/sourcedir/ap");
+    system("mkdir /data/test/sourcedir/resources");
+    system("mkdir /data/test/sourcedir/js");
+    system("mkdir /data/test/sourcedir/assets");
+    system("mkdir /data/test/sourcedir/maple");
+    system("mkdir /data/test/sourcedir/shared_libs");
+    system("touch /data/test/sourcedir/config.json");
+    system("chmod 777 /data/test/sourcedir/config.json");
+    system("touch /data/test/sourcedir/resources.index");
+    system("chmod 777 /data/test/sourcedir/resources.index");
+    system("touch /data/test/sourcedir/pack.info");
+    system("chmod 777 /data/test/sourcedir/pack.info");
+    system("touch /data/test/sourcedir/rpcid.sc");
+    system("chmod 777 /data/test/sourcedir/rpcid.sc");
+    system("touch /data/test/sourcedir/pkgContextInfo.json");
+    system("chmod 777 /data/test/sourcedir/pkgContextInfo.json");
+    std::string zipFilePath = "/data/test/sourcedir/test.hsp";
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    EXPECT_FALSE(generalNormalize.CompressDirToHap(sourceDir, zipFilePath));
+    system("rm -rf /data/test/sourcedir");
 }
 
 /*
