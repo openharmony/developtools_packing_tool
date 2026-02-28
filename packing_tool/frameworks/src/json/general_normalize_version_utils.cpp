@@ -39,72 +39,86 @@ const std::string MODULE_NAME = "moduleName";
 
 std::string GeneralNormalizeVersionUtils::ArrayToString(const std::list<GeneralNormalizeVersion>& generalNormalizeVersions)
 {
+    LOGD("ArrayToString begin");
     std::unique_ptr<PtJson> versionsJson = PtJson::CreateArray();
     for (auto& generalNormalizeVersion : generalNormalizeVersions) {
         std::unique_ptr<PtJson> ptJson = PtJson::CreateObject();
         if (generalNormalizeVersion.moduleName != "") {
             if (!ptJson->Add(MODULE_NAME.c_str(), generalNormalizeVersion.moduleName.c_str())) {
+                LOGE("add moduleName failed");
                 return "";
             }
         }
         if (!generalNormalizeVersion.originDeviceTypes.empty()) {
             if (!ptJson->Add(DEVICE_TYPES.c_str(), generalNormalizeVersion.originDeviceTypes)) {
+                LOGE("add originDeviceTypes failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originBundleName != "") {
             if (!ptJson->Add(BUNDLE_NAME.c_str(), generalNormalizeVersion.originBundleName.c_str())) {
+                LOGE("add originBundleName failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originVersionCode != -1) {
             if (!ptJson->Add(VERSION_CODE.c_str(), generalNormalizeVersion.originVersionCode)) {
+                LOGE("add originVersionCode failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originBuildVersion != "") {
             if (!ptJson->Add(BUILD_VERSION.c_str(), generalNormalizeVersion.originBuildVersion.c_str())) {
+                LOGE("add originBuildVersion failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originVersionName != "") {
             if (!ptJson->Add(VERSION_NAME.c_str(), generalNormalizeVersion.originVersionName.c_str())) {
+                LOGE("add originVersionName failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originMinCompatibleVersionCode != -1) {
             if (!ptJson->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(),
                 generalNormalizeVersion.originMinCompatibleVersionCode)) {
+                    LOGE("add originMinCompatibleVersionCode failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originMinAPIVersion != -1) {
             if (!ptJson->Add(MIN_API_VERSION.c_str(), generalNormalizeVersion.originMinAPIVersion)) {
+                LOGE("add originMinAPIVersion failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originTargetAPIVersion != -1) {
             if (!ptJson->Add(TARGET_API_VERSION.c_str(), generalNormalizeVersion.originTargetAPIVersion)) {
+                LOGE("add originTargetAPIVersion failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originApiReleaseType != "") {
             if (!ptJson->Add(API_RELEASE_TYPE.c_str(), generalNormalizeVersion.originApiReleaseType.c_str())) {
+                LOGE("add originApiReleaseType failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.originBundleType != "") {
             if (!ptJson->Add(BUNDLE_TYPE.c_str(), generalNormalizeVersion.originBundleType.c_str())) {
+                LOGE("add originBundleType failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.modifyInstallationFree == true) {
             if (!ptJson->Add(INSTALLATION_FREE.c_str(), generalNormalizeVersion.originInstallationFree)) {
+                LOGE("add originInstallationFree failed");
                 return "";
             }
         }
         if (generalNormalizeVersion.modifyDeliveryWithInstall == true) {
             if (!ptJson->Add(DELIVERY_WITH_INSTALL.c_str(), generalNormalizeVersion.originDeliveryWithInstall)) {
+                LOGE("add originDeliveryWithInstall failed");
                 return "";
             }
         }
