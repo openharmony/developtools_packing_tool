@@ -269,6 +269,9 @@ class FileUtils {
      * @param directory dir path which will be deleted
      */
     public static void deleteDirectory(final String directory) {
+        if (directory == null || directory.trim().isEmpty()) {
+            return;
+        }
         File dir = new File(directory);
         if (!dir.exists()) {
             return;
