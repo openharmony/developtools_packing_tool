@@ -209,6 +209,17 @@
                             "process",
                             "appIdentifierAllowList"
                           ]
+                        },
+                        "properties": {
+                          "extensionProcessMode": {
+                            "description": "Indicates the extension support multi instance model.",
+                            "type": "string",
+                            "enum": [
+                              "type",
+                              "bundle"
+                            ],
+                            "default": "bundle"
+                          }
                         }
                       },
                       "else": {
