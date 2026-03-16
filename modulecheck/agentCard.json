@@ -1,0 +1,345 @@
+{
+  "title": "JSON schema for agent_config.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agentCards"
+  ],
+  "propertyNames": {
+    "enum": [
+      "agentCards",
+      "$comment"
+    ]
+  },
+  "properties": {
+    "$comment": {
+      "description": "Indicates the comment of the agent card.",
+      "type": "string",
+      "maxLength": 512
+    },
+    "agentCards": {
+      "description": "Indicates all agent card configurations.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "enum": [
+            "agentId",
+            "name",
+            "description",
+            "type",
+            "provider",
+            "version",
+            "documentationUrl",
+            "capabilities",
+            "defaultInputModes",
+            "defaultOutputModes",
+            "skills",
+            "iconUrl",
+            "category",
+            "extension",
+            "appInfo"
+          ]
+        },
+        "required": [
+          "agentId",
+          "name",
+          "description",
+          "version",
+          "defaultInputModes",
+          "defaultOutputModes",
+          "skills",
+          "category",
+          "iconUrl"
+        ],
+        "properties": {
+          "agentId": {
+            "description": "Indicates the unique identifier of the agent card.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "name": {
+            "description": "Indicates the name of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "description": {
+            "description": "Indicates the description of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "type": {
+            "description": "Indicates the type of the agent card. Supports both numeric enum values and string enum names: 0/APP for application-type, 1/LOW_CODE for low-code-type, 2/ATOMIC_SERVICE for atomic service-type.",
+            "oneOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1,
+                  2
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "APP",
+                  "LOW_CODE",
+                  "ATOMIC_SERVICE"
+                ]
+              }
+            ]
+          },
+          "provider": {
+            "description": "Indicates the provider information of the agent.",
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "organization",
+                "url"
+              ]
+            },
+            "required": [
+              "organization",
+              "url"
+            ],
+            "properties": {
+              "organization": {
+                "description": "Indicates the organization of the provider.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "url": {
+                "description": "Indicates the provider URL.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
+          },
+          "version": {
+            "description": "Indicates the version of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "documentationUrl": {
+            "description": "Indicates the documentation URL of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "capabilities": {
+            "description": "Indicates the optional capabilities supported by the agent.",
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "streaming",
+                "pushNotifications",
+                "stateTransitionHistory",
+                "extendedAgentCard",
+                "extension"
+              ]
+            },
+            "properties": {
+              "streaming": {
+                "description": "Indicates whether the agent supports streaming responses.",
+                "type": "boolean"
+              },
+              "pushNotifications": {
+                "description": "Indicates whether the agent supports push notifications.",
+                "type": "boolean"
+              },
+              "stateTransitionHistory": {
+                "description": "Indicates whether the agent supports task state transition history.",
+                "type": "boolean"
+              },
+              "extendedAgentCard": {
+                "description": "Indicates whether the agent supports an extended agent card during authentication.",
+                "type": "boolean"
+              },
+              "extension": {
+                "description": "Indicates extension capability information supported by the agent.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            }
+          },
+          "defaultInputModes": {
+            "description": "Indicates the default input MIME types supported by all skills of the agent.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "defaultOutputModes": {
+            "description": "Indicates the default output MIME types supported by all skills of the agent.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32
+            }
+          },
+          "skills": {
+            "description": "Indicates the skill set that the agent can execute.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "propertyNames": {
+                "enum": [
+                  "id",
+                  "name",
+                  "description",
+                  "tags",
+                  "examples",
+                  "inputModes",
+                  "outputModes",
+                  "extension"
+                ]
+              },
+              "required": [
+                "id",
+                "name",
+                "description",
+                "tags"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Indicates the unique identifier of the skill.",
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "name": {
+                  "description": "Indicates the readable name of the skill.",
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "description": {
+                  "description": "Indicates the description of the skill.",
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "tags": {
+                  "description": "Indicates the keywords of the skill.",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "examples": {
+                  "description": "Indicates example scenarios or prompts of the skill.",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  }
+                },
+                "inputModes": {
+                  "description": "Indicates the input MIME types supported by the skill.",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "outputModes": {
+                  "description": "Indicates the output MIME types supported by the skill.",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "extension": {
+                  "description": "Indicates the extension configuration of the skill.",
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                }
+              }
+            }
+          },
+          "iconUrl": {
+            "description": "Indicates the icon URL of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "category": {
+            "description": "Indicates the category of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "extension": {
+            "description": "Indicates the extension configuration of the agent.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5120
+          },
+          "appInfo": {
+            "description": "Indicates the app information that the agent belongs to.",
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "bundleName",
+                "moduleName",
+                "abilityName",
+                "deviceTypes",
+                "minAppVersion"
+              ]
+            },
+            "properties": {
+              "bundleName": {
+                "description": "Indicates the bundle name that the agent card belongs to.",
+                "type": "string",
+                "minLength": 1
+              },
+              "moduleName": {
+                "description": "Indicates the module name that the agent card belongs to.",
+                "type": "string",
+                "minLength": 1
+              },
+              "abilityName": {
+                "description": "Indicates the agent extension ability name that the agent card belongs to.",
+                "type": "string",
+                "minLength": 1
+              },
+              "deviceTypes": {
+                "description": "Indicates the supported device types of the agent.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                }
+              },
+              "minAppVersion": {
+                "description": "Indicates the minimum application version supported by the agent.",
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
