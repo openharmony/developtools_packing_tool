@@ -1560,7 +1560,8 @@
                   "contentEmbed",
                   "embeddedCashier",
                   "agent",
-                  "agentUI"
+                  "agentUI",
+                  "assetCache"
                 ]
               },
               "permissions": {
