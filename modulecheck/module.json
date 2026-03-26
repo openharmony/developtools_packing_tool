@@ -55,8 +55,7 @@
                   "routerMap",
                   "appStartup",
                   "formExtensionModule",
-                  "crossAppSharedConfig",
-                  "executableBinaryPaths"
+                  "crossAppSharedConfig"
                 ]
               },
               "required": [
@@ -94,8 +93,7 @@
                   "routerMap",
                   "appStartup",
                   "formExtensionModule",
-                  "crossAppSharedConfig",
-                  "executableBinaryPaths"
+                  "crossAppSharedConfig"
                 ]
               },
               "required": [
