@@ -1572,6 +1572,7 @@
                   "embeddedCashier",
                   "agent",
                   "agentUI",
+                  "modularObject",
                   "assetCache"
                 ]
               },
