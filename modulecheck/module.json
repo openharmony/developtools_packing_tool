@@ -241,7 +241,8 @@
                             "extensionProcessMode",
                             "dataGroupIds",
                             "process",
-                            "isolationProcess"
+                            "isolationProcess",
+                            "skipAbilityStageLifecycle"
                           ]
                         }
                       }
@@ -299,7 +300,8 @@
                             "extensionProcessMode",
                             "dataGroupIds",
                             "appIdentifierAllowList",
-                            "isolationProcess"
+                            "isolationProcess",
+                            "skipAbilityStageLifecycle"
                           ]
                         }
                       }
@@ -357,7 +359,69 @@
                             "extensionProcessMode",
                             "dataGroupIds",
                             "process",
-                            "appIdentifierAllowList"
+                            "appIdentifierAllowList",
+                            "skipAbilityStageLifecycle"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "type": {
+                            "const": "backup"
+                          }
+                        }
+                      },
+                      "then": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntrance",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "dataGroupIds",
+                            "extensionProcessMode",
+                            "skipAbilityStageLifecycle"
+                          ]
+                        }
+                      },
+                      "else": {
+                        "propertyNames": {
+                          "enum": [
+                            "priority",
+                            "name",
+                            "srcEntrance",
+                            "srcEntry",
+                            "icon",
+                            "label",
+                            "description",
+                            "type",
+                            "permissions",
+                            "uri",
+                            "readPermission",
+                            "writePermission",
+                            "visible",
+                            "exported",
+                            "skills",
+                            "metadata",
+                            "dataGroupIds",
+                            "extensionProcessMode",
+                            "appIdentifierAllowList",
+                            "process",
+                            "isolationProcess"
                           ]
                         }
                       }
@@ -1322,7 +1386,8 @@
                       "extensionProcessMode",
                       "dataGroupIds",
                       "process",
-                      "isolationProcess"
+                      "isolationProcess",
+                      "skipAbilityStageLifecycle"
                     ]
                   }
                 }
@@ -1382,7 +1447,8 @@
                         "extensionProcessMode",
                         "dataGroupIds",
                         "appIdentifierAllowList",
-                        "isolationProcess"
+                        "isolationProcess",
+                        "skipAbilityStageLifecycle"
                       ]
                     }
                   }
@@ -1442,11 +1508,73 @@
                         "extensionProcessMode",
                         "dataGroupIds",
                         "process",
-                        "appIdentifierAllowList"
+                        "appIdentifierAllowList",
+                        "skipAbilityStageLifecycle"
                       ]
                     }
                   }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "type": {
+                      "const": "backup"
+                    }
+                  }
+                },
+                "then": {
+                  "propertyNames": {
+                    "enum": [
+                      "priority",
+                      "name",
+                      "srcEntrance",
+                      "srcEntry",
+                      "icon",
+                      "label",
+                      "description",
+                      "type",
+                      "permissions",
+                      "uri",
+                      "readPermission",
+                      "writePermission",
+                      "visible",
+                      "exported",
+                      "skills",
+                      "metadata",
+                      "dataGroupIds",
+                      "extensionProcessMode",
+                      "skipAbilityStageLifecycle"
+                    ]
+                  }
+                },
+                "else": {
+                  "propertyNames": {
+                    "enum": [
+                      "priority",
+                      "name",
+                      "srcEntrance",
+                      "srcEntry",
+                      "icon",
+                      "label",
+                      "description",
+                      "type",
+                      "permissions",
+                      "uri",
+                      "readPermission",
+                      "writePermission",
+                      "visible",
+                      "exported",
+                      "skills",
+                      "metadata",
+                      "dataGroupIds",
+                      "extensionProcessMode",
+                      "appIdentifierAllowList",
+                      "process",
+                      "isolationProcess"
+                    ]
+                  }
                 }
+              }
             ],
             "properties": {
               "priority": {
@@ -1794,6 +1922,11 @@
               },
               "isolationProcess": {
                 "description": "Specifies whether the ability can run in an independent process",
+                "type": "boolean",
+                "default": false
+              },
+              "skipAbilityStageLifecycle": {
+                "description": "Specifies whether to skip the AbilityStage lifecycle.",
                 "type": "boolean",
                 "default": false
               }
