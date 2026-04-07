@@ -2415,6 +2415,7 @@
         "executableBinaryPaths": {
           "description": "Indicates the binary paths with kernel permission.",
           "maxItems": 128,
+          "minItems": 1,
           "type": "array",
           "items": {
             "type": "object",
@@ -2423,6 +2424,9 @@
                 "path"
               ]
             },
+            "required": [
+              "path"
+            ],
             "properties": {
               "path": {
                 "description": "Indicates the path of a binary with kernel permission.",
