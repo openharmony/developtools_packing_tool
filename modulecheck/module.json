@@ -2045,7 +2045,8 @@
               "enum": [
                 "name",
                 "reason",
-                "usedScene"
+                "usedScene",
+                "requireFeature"
               ]
             },
             "required": [
@@ -2088,6 +2089,12 @@
                     ]
                   }
                 }
+              },
+              "requireFeature": {
+                "description": "Indicates the feature required for the permission to be granted.",
+                "type": "string",
+                "maxLength": 64,
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_.]*$"
               }
             }
           }
