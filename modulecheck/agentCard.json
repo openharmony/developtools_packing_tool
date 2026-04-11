@@ -73,7 +73,7 @@
             "maxLength": 512
           },
           "type": {
-            "description": "Indicates the type of the agent card. Supports both numeric enum values and string enum names: 0/APP for application-type, 1/LOW_CODE for low-code-type, 2/ATOMIC_SERVICE for atomic service-type.",
+            "description": "Indicates the type of the agent card. Supports both numeric enum values and string enum names: 0/APP for application-type, 1/ATOMIC_SERVICE for atomic service-type, 2/LOW_CODE for low-code-type.",
             "oneOf": [
               {
                 "type": "integer",
@@ -87,8 +87,8 @@
                 "type": "string",
                 "enum": [
                   "APP",
-                  "LOW_CODE",
-                  "ATOMIC_SERVICE"
+                  "ATOMIC_SERVICE",
+                  "LOW_CODE"
                 ]
               }
             ]
