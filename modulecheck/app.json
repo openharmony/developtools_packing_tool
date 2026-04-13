@@ -200,52 +200,78 @@
           }
         },
         "else": {
-          "propertyNames": {
-            "enum": [
-              "bundleName",
-              "debug",
-              "bundleType",
-              "icon",
-              "label",
-              "description",
-              "vendor",
-              "versionCode",
-              "versionName",
-              "minCompatibleVersionCode",
-              "minAPIVersion",
-              "targetAPIVersion",
-              "apiReleaseType",
-              "distributedNotificationEnabled",
-              "entityType",
-              "keepAlive",
-              "removable",
-              "singleton",
-              "userDataClearable",
-              "accessible",
-              "multiProjects",
-              "asanEnabled",
-              "default",
-              "tablet",
-              "tv",
-              "wearable",
-              "car",
-              "targetBundleName",
-              "targetPriority",
-              "generateBuildHash",
-              "2in1",
-              "GWPAsanEnabled",
-              "tsanEnabled",
-              "ubsanEnabled",
-              "appEnvironments",
-              "maxChildProcess",
-              "hwasanEnabled",
-              "cloudFileSyncEnabled",
-              "cloudStructuredDataSyncEnabled",
-              "configuration",
-              "assetAccessGroups",
-              "startMode",
-              "buildVersion"
-            ]
+          "if": {
+            "properties": {
+              "bundleType": {
+                "const": "skill"
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "bundleName",
+                "icon",
+                "label",
+                "versionCode",
+                "versionName",
+                "bundleType",
+                "debug",
+                "description",
+                "minCompatibleVersionCode",
+                "minAPIVersion",
+                "targetAPIVersion"
+              ]
+            }
+          },
+          "else": {
+            "propertyNames": {
+              "enum": [
+                "bundleName",
+                "debug",
+                "bundleType",
+                "icon",
+                "label",
+                "description",
+                "vendor",
+                "versionCode",
+                "versionName",
+                "minCompatibleVersionCode",
+                "minAPIVersion",
+                "targetAPIVersion",
+                "apiReleaseType",
+                "distributedNotificationEnabled",
+                "entityType",
+                "keepAlive",
+                "removable",
+                "singleton",
+                "userDataClearable",
+                "accessible",
+                "multiProjects",
+                "asanEnabled",
+                "default",
+                "tablet",
+                "tv",
+                "wearable",
+                "car",
+                "targetBundleName",
+                "targetPriority",
+                "generateBuildHash",
+                "2in1",
+                "GWPAsanEnabled",
+                "tsanEnabled",
+                "ubsanEnabled",
+                "appEnvironments",
+                "maxChildProcess",
+                "hwasanEnabled",
+                "cloudFileSyncEnabled",
+                "cloudStructuredDataSyncEnabled",
+                "configuration",
+                "assetAccessGroups",
+                "startMode",
+                "buildVersion"
+              ]
+            }
           }
         }
       },
@@ -265,7 +291,8 @@
             "atomicService",
             "shared",
             "appService",
-            "appPlugin"
+            "appPlugin",
+            "skill"
           ]
         },
         "debug": {
