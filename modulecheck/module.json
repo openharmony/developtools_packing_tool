@@ -2047,7 +2047,7 @@
                 "name",
                 "reason",
                 "usedScene",
-                "requireFeature"
+                "requiredFeature"
               ]
             },
             "required": [
@@ -2091,7 +2091,7 @@
                   }
                 }
               },
-              "requireFeature": {
+              "requiredFeature": {
                 "description": "Indicates the feature required for the permission to be granted.",
                 "type": "string",
                 "maxLength": 64,
