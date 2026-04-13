@@ -37,7 +37,7 @@
           "value": {
             "description": "Indicates the value for shared configuration.",
             "type": "string",
-            "maxLength": 4096
+            "maxLength": 102400
           },
           "allowList": {
             "description": "List of applications allowed to read the shared configuration.",
