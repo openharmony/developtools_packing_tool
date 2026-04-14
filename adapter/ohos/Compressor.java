@@ -1888,16 +1888,17 @@ public class Compressor {
 
     private static void writeJsonFile(String dataJson, String targetPath) throws BundleException {
         try (FileWriter fileWriter = new FileWriter(targetPath)) {
-            Object object = JSON.parse(dataJson);
-            String jsonString = new String();
+            byte[] utf8Bytes = dataJson.getBytes(StandardCharsets.UTF_8);
+            Object object = JSON.parse(utf8Bytes);
+            String jsonString;
             if (object instanceof JSONArray) {
-                JSONArray jsonArray = JSONArray.parseArray(dataJson);
                 jsonString = JSON.toJSONString(
-                        jsonArray, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+                        object, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+            } else if (object instanceof JSONObject) {
+                jsonString = JSON.toJSONString(
+                        object, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
             } else {
-                JSONObject jsonObject = JSONObject.parseObject(dataJson);
-                jsonString = JSON.toJSONString(
-                        jsonObject, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue);
+                throw new JSONException("Unknown JSON type: " + object.getClass().getName());
             }
             fileWriter.write(jsonString);
             fileWriter.flush();
