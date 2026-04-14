@@ -15,13 +15,18 @@
 
 package ohos;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -181,7 +186,14 @@ public class BinaryTool {
             return Optional.empty();
         }
 
-        JSONObject jsonObject = JSONObject.parseObject(jsonStr.get());
+        JSONObject jsonObject;
+        try {
+            jsonObject = JSON.parseObject(
+                    new ByteArrayInputStream(jsonStr.get().getBytes(StandardCharsets.UTF_8)), JSONObject.class);
+        } catch (JSONException | IOException e) {
+            LOG.error("parse json failed: " + e.getMessage());
+            return Optional.empty();
+        }
         if (jsonObject == null) {
             return Optional.empty();
         }

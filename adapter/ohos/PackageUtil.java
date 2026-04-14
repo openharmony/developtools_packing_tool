@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -120,7 +121,8 @@ public class PackageUtil {
     public static List<String> getPackageNameFromPackInfo(String packInfoContent) {
         List<String> packages = new ArrayList<>();
         try {
-            JSONObject jsonObject = JSON.parseObject(packInfoContent, JSONObject.class);
+            JSONObject jsonObject = JSON.parseObject(
+                    new ByteArrayInputStream(packInfoContent.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
             if (jsonObject == null) {
                 LOG.warning("getPackagesFromPackInfo failed, json format invalid.");
                 return packages;
@@ -138,7 +140,7 @@ public class PackageUtil {
                 }
             }
             return packages;
-        } catch (JSONException ex) {
+        } catch (JSONException | IOException ex) {
             LOG.warning("getPackagesFromPackInfo err: " + ex.getMessage());
             return new ArrayList<>();
         }
@@ -146,7 +148,8 @@ public class PackageUtil {
 
     private static String getBundleTypeFromModuleJson(String moduleJsonContent) {
         try {
-            JSONObject jsonObject = JSON.parseObject(moduleJsonContent, JSONObject.class);
+            JSONObject jsonObject = JSON.parseObject(
+                    new ByteArrayInputStream(moduleJsonContent.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
             if (jsonObject == null) {
                 LOG.warning("getBundleTypeFromModuleJson failed, parse json is null.");
                 return "";
@@ -158,7 +161,7 @@ public class PackageUtil {
             }
             String bundleType = appObject.getString(Constants.BUNDLE_TYPE);
             return bundleType != null ? bundleType : Constants.APP;
-        } catch (JSONException ex) {
+        } catch (JSONException | IOException ex) {
             LOG.warning("getBundleTypeFromModuleJson failed: " + ex.getMessage());
         }
         return "";
