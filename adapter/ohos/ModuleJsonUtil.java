@@ -20,13 +20,38 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class ModuleJsonUtil {
+    private static JSONObject parseJsonObject(String jsonString) {
+        try {
+            return JSON.parseObject(
+                    new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
+        } catch (IOException e) {
+            throw new JSONException("Unexpected IOException from ByteArrayInputStream", e);
+        }
+    }
+
+    private static List<String> parseJsonArray(String jsonString) {
+        try {
+            JSONArray array = JSON.parseObject(
+                    new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), JSONArray.class);
+            if (array == null) {
+                return new ArrayList<>();
+            }
+            return array.toJavaList(String.class);
+        } catch (IOException e) {
+            throw new JSONException("Unexpected IOException from ByteArrayInputStream", e);
+        }
+    }
+
     private static final String APP = "app";
     private static final String BUNDLE_TYPE = "bundleType";
     private static final String ASSETACCESSGROUPS = "assetAccessGroups";
@@ -404,8 +429,8 @@ class ModuleJsonUtil {
         String desPackInfo = "";
         JSONObject finalPackObj;
         try {
-            finalPackObj = JSON.parseObject(finalPackInfo);
-            JSONObject srcPackObj = JSON.parseObject(srcPackInfo);
+            finalPackObj = parseJsonObject(finalPackInfo);
+            JSONObject srcPackObj = parseJsonObject(srcPackInfo);
             if (!verifyPackInfo(finalPackObj, srcPackObj)) {
                 String errMsg = "Verify pack.info failed.";
                 LOG.error(PackingToolErrMsg.MERGE_TWO_PACKINFO_FAILED.toString(errMsg));
@@ -578,9 +603,16 @@ class ModuleJsonUtil {
      * @param formNameList the forms name in pack.info
      * @param fullFormNameList the forms name and moduleName merged result in pack.info
      */
-    public static void parsePackInfoFormsName(String jsonString, List<String> formNameList, List<String> fullFormNameList)
-            throws BundleException {
-        JSONObject jsonObject = JSONObject.parseObject(jsonString);
+    public static void parsePackInfoFormsName(String jsonString, List<String> formNameList,
+            List<String> fullFormNameList) throws BundleException {
+        JSONObject jsonObject;
+        try {
+            jsonObject = parseJsonObject(jsonString);
+        } catch (JSONException exception) {
+            String errMsg = "Parse pack info forms name exist JSONException: " + exception.getMessage();
+            LOG.error(PackingToolErrMsg.PARSE_PACKINFO_FORMS_NAME_FAILED.toString(errMsg));
+            throw new BundleException(errMsg);
+        }
         if (jsonObject == null || !jsonObject.containsKey(SUMMARY)) {
             String errMsg = "The json object is null or does not contain 'summary'.";
             LOG.error(PackingToolErrMsg.PARSE_PACKINFO_FORMS_NAME_FAILED.toString(errMsg));
@@ -738,8 +770,8 @@ class ModuleJsonUtil {
         JSONObject finalPackObj;
         JSONObject srcPackObj;
         try {
-            finalPackObj = JSON.parseObject(finalPackInfo);
-            srcPackObj = JSON.parseObject(srcPackInfo);
+            finalPackObj = parseJsonObject(finalPackInfo);
+            srcPackObj = parseJsonObject(srcPackInfo);
         } catch (JSONException exception) {
             String errMsg = "Parse final pack.info or src pack.info exist JSONException: " + exception.getMessage();
             LOG.error(PackingToolErrMsg.MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED.toString(errMsg));
@@ -844,7 +876,7 @@ class ModuleJsonUtil {
         String configJson = FileUtils.getJsonInZips(new File(hapPath), CONFIG_JSON);
         JSONObject faObj;
         try {
-            faObj = JSONObject.parseObject(configJson);
+            faObj = parseJsonObject(configJson);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed.";
             LOG.error(errMsg);
@@ -880,7 +912,7 @@ class ModuleJsonUtil {
         String moduleJson = FileUtils.getJsonInZips(new File(hapPath), MODULE_JSON);
         JSONObject stageObj;
         try {
-            stageObj = JSONObject.parseObject(moduleJson);
+            stageObj = parseJsonObject(moduleJson);
         } catch (JSONException exception) {
             String errMsg = "parse JSONobject failed.";
             LOG.error(errMsg);
@@ -912,7 +944,7 @@ class ModuleJsonUtil {
         if (moduleObj == null) {
             return deviceTypes;
         }
-        deviceTypes = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPE), String.class);
+        deviceTypes = parseJsonArray(getJsonString(moduleObj, DEVICE_TYPE));
         return deviceTypes;
     }
 
@@ -927,7 +959,7 @@ class ModuleJsonUtil {
         if (moduleObj == null) {
             return deviceTypes;
         }
-        deviceTypes = JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
+        deviceTypes = parseJsonArray(getJsonString(moduleObj, DEVICE_TYPES));
         return deviceTypes;
     }
 
@@ -1034,12 +1066,18 @@ class ModuleJsonUtil {
             if (resource.isEmpty()) {
                 continue;
             }
-            JSONObject distroFilter = JSONObject.parseObject(resource);
-            if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
-                return JSONObject.parseObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
-            }
-            if (distroFilter.containsKey(DISTRO_FILTER)) {
-                return JSONObject.parseObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
+            try {
+                JSONObject distroFilter = parseJsonObject(resource);
+                if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                    return JSON.parseObject(new ByteArrayInputStream(getJsonString(distroFilter,
+                            DISTRIBUTION_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                }
+                if (distroFilter.containsKey(DISTRO_FILTER)) {
+                    return JSON.parseObject(new ByteArrayInputStream(getJsonString(distroFilter,
+                            DISTRO_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                }
+            } catch (JSONException | IOException exception) {
+                LOG.warning("parseStageDistroFilter failed for resource: " + resource);
             }
         }
         return new DistroFilter();
@@ -1106,15 +1144,16 @@ class ModuleJsonUtil {
         DistroFilter distroFilter = new DistroFilter();
         JSONObject jsonObj;
         try {
-            jsonObj = JSON.parseObject(jsonString);
+            jsonObj = parseJsonObject(jsonString);
             if (jsonObj.containsKey(MODULE)) {
                 JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
                 if (moduleObj.containsKey(DISTRO_FILTER)) {
-                    distroFilter = JSONObject.parseObject(getJsonString(moduleObj,
-                            DISTRO_FILTER), DistroFilter.class);
+                    distroFilter = JSON.parseObject(
+                            new ByteArrayInputStream(getJsonString(moduleObj,
+                            DISTRO_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
                 }
             }
-        } catch (JSONException exception) {
+        } catch (JSONException | IOException exception) {
             String errMsg = "Parse the metadata info exist JSONException: " + exception.getMessage();
             LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(exception.getMessage()));
             throw new BundleException(errMsg);
@@ -1131,9 +1170,9 @@ class ModuleJsonUtil {
         List<String> deviceType = new ArrayList<>();
         JSONObject moduleObj = getModuleObj(jsonString);
         if (moduleObj.containsKey(DEVICE_TYPE)) {
-            return JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPE), String.class);
+            return parseJsonArray(getJsonString(moduleObj, DEVICE_TYPE));
         } else if (moduleObj.containsKey(DEVICE_TYPES)) {
-            return JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class);
+            return parseJsonArray(getJsonString(moduleObj, DEVICE_TYPES));
         } else {
             return deviceType;
         }
@@ -1483,7 +1522,7 @@ class ModuleJsonUtil {
     static JSONObject getAppObj(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObject = parseJsonObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "Parse app object exist JSONException: ";
             LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(errMsg + exception.getMessage()));
@@ -1501,7 +1540,7 @@ class ModuleJsonUtil {
     static JSONObject getModuleObj(String jsonString) throws BundleException {
         JSONObject jsonObj;
         try {
-            jsonObj = JSON.parseObject(jsonString);
+            jsonObj = parseJsonObject(jsonString);
         } catch (JSONException exception) {
             String errMsg = "JSONException: " + exception.getMessage();
             LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString(errMsg));
@@ -1656,7 +1695,7 @@ class ModuleJsonUtil {
             hqfVerifyInfo.setType(moduleObj.getString(TYPE));
         }
         if (moduleObj.containsKey(DEVICE_TYPES)) {
-            hqfVerifyInfo.setDeviceTypes(JSONObject.parseArray(getJsonString(moduleObj, DEVICE_TYPES), String.class));
+            hqfVerifyInfo.setDeviceTypes(parseJsonArray(getJsonString(moduleObj, DEVICE_TYPES)));
         }
         if (moduleObj.containsKey(ORIGINAL_MODULE_HASH)) {
             hqfVerifyInfo.setOriginalModuleHash(moduleObj.getString(ORIGINAL_MODULE_HASH));
@@ -1867,7 +1906,7 @@ class ModuleJsonUtil {
     public static boolean getFADebug(String jsonString) throws BundleException {
         JSONObject jsonObject;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObject = parseJsonObject(jsonString);
         } catch (JSONException exception) {
             LOG.error(PackingToolErrMsg.PARSE_JSON_FAILED.toString(
                     "Parse json object failed when get debug parameter in config.json, JSONException: " +
@@ -2011,7 +2050,7 @@ class ModuleJsonUtil {
                                              String childProperty) throws BundleException {
         JSONObject jsonObject;
         try {
-            jsonObject = JSON.parseObject(jsonString);
+            jsonObject = parseJsonObject(jsonString);
         } catch (JSONException exception) {
             LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(
                     "Parse json for existence of property, exist JSONException: " + exception.getMessage()));
@@ -2249,7 +2288,7 @@ class ModuleJsonUtil {
                 throw new BundleException("Parse pack info supportDimensions failed, supportDimensions is null.");
             }
 
-            List<String> dimensionList = JSONObject.parseArray(getJsonString(formObj, SUPPORTDIMENSIONS), String.class);
+            List<String> dimensionList = parseJsonArray(getJsonString(formObj, SUPPORTDIMENSIONS));
             for(String dimension : dimensionList) {
                 String nameWithDimension = moduleName + "/" + name + "-" + dimension.replace("*", "x");
                 fullFormNameList.add(nameWithDimension);

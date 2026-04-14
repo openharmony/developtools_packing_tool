@@ -15,10 +15,13 @@
 
 package ohos;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
@@ -63,7 +66,8 @@ public class CollectBinInfo {
                 return versionCode;
             }
             String fileData = new String(fileDataByte, "UTF-8");
-            JSONObject object = JSONObject.parseObject(fileData);
+            JSONObject object = JSON.parseObject(
+                    new ByteArrayInputStream(fileData.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
             if (object == null || !object.containsKey(PROFILE_KEY)) {
                 return versionCode;
             }
