@@ -6,6 +6,34 @@
   "required": [
     "module"
   ],
+  "definitions": {
+    "skillProfileName": {
+      "description": "Indicates the name of the skill. Max 64 characters. Lowercase letters, numbers, and hyphens only. Must not start or end with a hyphen.",
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+      "maxLength": 64
+    },
+    "skillProfileSrcEntries": {
+      "description": "Indicates the ets file paths of the skill. Array of ets file paths, maximum 100 entries allowed.",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 127
+      }
+    },
+    "skillProfilePermissions": {
+      "description": "Indicates the permissions required for calling the skill.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "maxLength": 255
+      }
+    }
+  },
   "propertyNames": {
     "enum": [
       "module"
@@ -55,6 +83,7 @@
                   "routerMap",
                   "appStartup",
                   "formExtensionModule",
+                  "skillProfiles",
                   "crossAppSharedConfig"
                 ]
               },
@@ -93,6 +122,7 @@
                   "routerMap",
                   "appStartup",
                   "formExtensionModule",
+                  "skillProfiles",
                   "crossAppSharedConfig"
                 ]
               },
@@ -472,6 +502,67 @@
           "if": {
             "properties": {
               "type": {
+                "const": "skill"
+              }
+            }
+          },
+          "then": {
+            "propertyNames": {
+              "enum": [
+                "name",
+                "type",
+                "description",
+                "deviceTypes",
+                "dependencies",
+                "requestPermissions",
+                "skillProfiles"
+              ]
+            },
+            "required": [
+              "name",
+              "type",
+              "deviceTypes",
+              "skillProfiles"
+            ],
+            "properties": {
+              "skillProfiles": {
+                "description": "Indicates the skill profiles configuration in the module. For skill type module, skillProfiles items contain name, srcEntries, permissions. The name field in each agent skill must be unique within the array.",
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "propertyNames": {
+                    "enum": [
+                      "name",
+                      "srcEntries",
+                      "permissions"
+                    ]
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "properties": {
+                    "name": {
+                      "$ref": "#/definitions/skillProfileName"
+                    },
+                    "srcEntries": {
+                      "$ref": "#/definitions/skillProfileSrcEntries"
+                    },
+                    "permissions": {
+                      "$ref": "#/definitions/skillProfilePermissions"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
                 "const": "entry"
               }
             }
@@ -518,6 +609,7 @@
                 "formWidgetModule",
                 "hnpPackages",
                 "shareFiles",
+                "skillProfiles",
                 "executableBinaryPaths"
               ]
             },
@@ -578,6 +670,7 @@
                   "appStartup",
                   "formExtensionModule",
                   "formWidgetModule",
+                  "skillProfiles",
                   "executableBinaryPaths"
                 ]
               },
@@ -626,6 +719,7 @@
                   "appStartup",
                   "formExtensionModule",
                   "formWidgetModule",
+                  "skillProfiles",
                   "executableBinaryPaths"
                 ]
               },
@@ -653,7 +747,8 @@
             "entry",
             "feature",
             "har",
-            "shared"
+            "shared",
+            "skill"
           ]
         },
         "srcEntrance": {
@@ -2441,6 +2536,44 @@
                 "type": "string",
                 "maxLength": 128,
                 "pattern": "^([a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/)?[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_]+)?$"
+              }
+            }
+          }
+        },
+        "skillProfiles": {
+          "description": "Indicates the skill profiles configuration in the module. Only allowed for entry, feature, shared, and skill module types. The name field in each skill profile must be unique within the array.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "name",
+                "abilityName",
+                "srcEntries",
+                "permissions"
+              ]
+            },
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/skillProfileName"
+              },
+              "abilityName": {
+                "description": "Indicates the name of the ability associated with the skill. Must be configured as UIAbility (under abilities tag) or ServiceExtension (under extensionAbilities tag with type service).",
+                "type": "string",
+                "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+                "maxLength": 127
+              },
+              "srcEntries": {
+                "$ref": "#/definitions/skillProfileSrcEntries"
+              },
+              "permissions": {
+                "$ref": "#/definitions/skillProfilePermissions"
               }
             }
           }
