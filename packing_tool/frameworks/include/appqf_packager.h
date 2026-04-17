@@ -41,3 +41,4 @@ private:
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_APPQF_PACKAGER_H
+///hzb
