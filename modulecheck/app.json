@@ -130,14 +130,15 @@
             "maxChildProcess",
             "multiAppMode",
             "hwasanEnabled",
+            "configuration",
             "cloudFileSyncEnabled",
             "cloudStructuredDataSyncEnabled",
-            "configuration",
             "assetAccessGroups",
             "startMode",
             "appPreloadPhase",
             "buildVersion",
-            "profileable"
+            "profileable",
+            "allowListenBundleChangedEvent"
           ]
         }
       },
@@ -189,13 +190,14 @@
               "appEnvironments",
               "maxChildProcess",
               "hwasanEnabled",
+              "configuration",
               "cloudFileSyncEnabled",
               "cloudStructuredDataSyncEnabled",
-              "configuration",
               "assetAccessGroups",
               "startMode",
               "buildVersion",
-              "profileable"
+              "profileable",
+              "allowListenBundleChangedEvent"
             ]
           }
         },
@@ -264,9 +266,9 @@
                 "appEnvironments",
                 "maxChildProcess",
                 "hwasanEnabled",
+                "configuration",
                 "cloudFileSyncEnabled",
                 "cloudStructuredDataSyncEnabled",
-                "configuration",
                 "assetAccessGroups",
                 "startMode",
                 "buildVersion"
@@ -615,6 +617,17 @@
           "description": "Describes whether application allows profiling tools to analyze performance on release builds.",
           "type": "boolean",
           "default": false
+        },
+        "allowListenBundleChangedEvent": {
+          "description": "Indicates the appIdentifier of bundle that are allowed to listen bundle changed event.",
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "[0-9a-zA-Z]+$"
+          }
         }
       }
     }
