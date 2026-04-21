@@ -17,7 +17,6 @@
       "description": "Indicates the ets file paths of the skill. Array of ets file paths, maximum 100 entries allowed.",
       "type": "array",
       "uniqueItems": true,
-      "minItems": 1,
       "maxItems": 100,
       "items": {
         "type": "string",
@@ -2543,7 +2542,6 @@
         "skillProfiles": {
           "description": "Indicates the skill profiles configuration in the module. Only allowed for entry, feature, shared, and skill module types. The name field in each skill profile must be unique within the array.",
           "type": "array",
-          "minItems": 1,
           "maxItems": 100,
           "uniqueItems": true,
           "items": {
