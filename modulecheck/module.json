@@ -480,16 +480,40 @@
                     }
                   },
                   "else": {
-                    "properties": {
-                      "extensionProcessMode": {
-                        "description": "Indicates the extension support multi instance model.",
-                        "type": "string",
-                        "enum": [
-                          "instance",
-                          "type",
-                          "bundle"
-                        ],
-                        "default": "bundle"
+                    "if": {
+                      "properties": {
+                        "type": {
+                          "const": "sysPicker/mediaControl"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "extensionProcessMode": {
+                          "description": "Indicates the extension support multi instance model.",
+                          "type": "string",
+                          "enum": [
+                            "instance",
+                            "type",
+                            "bundle",
+                            "caller_instance"
+                          ],
+                          "default": "bundle"
+                        }
+                      }
+                    },
+                    "else": {
+                      "properties": {
+                        "extensionProcessMode": {
+                          "description": "Indicates the extension support multi instance model.",
+                          "type": "string",
+                          "enum": [
+                            "instance",
+                            "type",
+                            "bundle"
+                          ],
+                          "default": "bundle"
+                        }
                       }
                     }
                   }
@@ -2050,16 +2074,40 @@
               }
             },
             "else": {
-              "properties": {
-                "extensionProcessMode": {
-                  "description": "Indicates the extension support multi instance model.",
-                  "type": "string",
-                  "enum": [
-                    "instance",
-                    "type",
-                    "bundle"
-                  ],
-                  "default": "bundle"
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "sysPicker/mediaControl"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "extensionProcessMode": {
+                    "description": "Indicates the extension support multi instance model.",
+                    "type": "string",
+                    "enum": [
+                      "instance",
+                      "type",
+                      "bundle",
+                      "caller_instance"
+                    ],
+                    "default": "bundle"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "extensionProcessMode": {
+                    "description": "Indicates the extension support multi instance model.",
+                    "type": "string",
+                    "enum": [
+                      "instance",
+                      "type",
+                      "bundle"
+                    ],
+                    "default": "bundle"
+                  }
                 }
               }
             }
