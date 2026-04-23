@@ -23,6 +23,9 @@
 #include "skill_pack_helper.h"
 #include "utils.h"
 #include "incremental_pack.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -126,8 +129,11 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     jsonPath_ = it->second;
     if (!IsPathValid(it->second, true, Constants::CONFIG_JSON)
         && !IsPathValid(it->second, true, Constants::MODULE_JSON)) {
-        LOGE("HapPackager::isArgsValidInHarMode json-path must be"
-            " config.json or module.json file.");
+       // LOGE("HapPackager::isArgsValidInHarMode json-path must be"
+          //  " config.json or module.json file.");
+         LOGE("[%s] HapPackager::isArgsValidInHarMode json-path must be"
+      " config.json or module.json file.",
+      PackingToolErrMsg::HAP_MODE_ARGS_INVALID.getCode().c_str());  
         return false;
     }
     if (!IsValidRpcid() || !IsValidPackInfo()) {
