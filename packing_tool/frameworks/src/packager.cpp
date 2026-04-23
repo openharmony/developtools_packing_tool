@@ -28,6 +28,7 @@
 #include "utils.h"
 #include "zip_utils.h"
 #include "error/packing_tool_err_msg.h"
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -354,7 +355,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
     if (!fs::exists(jsonPath)) {
         //LOGE("Packager::setGenerateBuildHash failed for json file not exist");
         LOGE("[%s] Packager::setGenerateBuildHash failed for json file not exist",
-       PackingToolErrMsg::FILE_NOT_EXIST.getErrorCode().c_str());
+       PackingToolErrMsg::FILE_NOT_EXIST.getCode().c_str());
         return false;
     }
     ModuleJson moduleJson;
@@ -371,7 +372,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
     if (!fs::exists(jsonPath)) {
         //LOGE("Packager::setGenerateBuildHash failed for json file not exist");
         LOGE("[%s] Packager::setGenerateBuildHash failed for json file not exist",
-       PackingToolErrMsg::FILE_NOT_EXIST.getErrorCode().c_str());
+       PackingToolErrMsg::FILE_NOT_EXIST.getCode().c_str());
         return false;
     }
 
