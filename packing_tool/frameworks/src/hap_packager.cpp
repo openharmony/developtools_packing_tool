@@ -131,9 +131,10 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         && !IsPathValid(it->second, true, Constants::MODULE_JSON)) {
        // LOGE("HapPackager::isArgsValidInHarMode json-path must be"
           //  " config.json or module.json file.");
-         LOGE("[%s] HapPackager::isArgsValidInHarMode json-path must be"
-      " config.json or module.json file.",
-      PackingToolErrMsg::HAP_MODE_ARGS_INVALID.getCode().c_str());  
+           
+      LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
+      "HapPackager::isArgsValidInHarMode json-path must be"
+      " config.json or module.json file.").c_str());
         return false;
     }
     if (!IsValidRpcid() || !IsValidPackInfo()) {
