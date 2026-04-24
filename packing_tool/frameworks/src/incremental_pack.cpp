@@ -16,6 +16,9 @@
 #include "incremental_pack.h"
 #include "log.h"
 #include "utils.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -59,7 +62,9 @@ bool IncrementalPack::IncrementalPackProcess(const std::string &paramPath, ZipWr
 {
     unzFile srcZip = unzOpen(IncrementalPack::destExistSrcFilePath_.c_str());
     if (!srcZip) {
-        LOGE("Failed to open exist-src-path hap [%s]", IncrementalPack::destExistSrcFilePath_.c_str());
+        // LOGE("Failed to open exist-src-path hap [%s]", IncrementalPack::destExistSrcFilePath_.c_str());
+        LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
+            ("Failed to open exist-src-path hap [" + IncrementalPack::destExistSrcFilePath_ + "]").c_str()).c_str());
         return false;
     }
 
@@ -71,7 +76,9 @@ bool IncrementalPack::IncrementalPackProcess(const std::string &paramPath, ZipWr
         if (std::string(fileNameInZip).rfind("libs/", 0) == 0) {
             int ret = zipWrapper.AddRawEntryToZip(destZip, srcZip, fileNameInZip);
             if (ret != ZIP_ERR_SUCCESS) {
-                LOGE("AddRawEntryToZip failed for [%s]", fileNameInZip);
+                // LOGE("AddRawEntryToZip failed for [%s]", fileNameInZip);
+                LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
+                    ("AddRawEntryToZip failed for [" + std::string(fileNameInZip) + "]").c_str()).c_str());
                 unzClose(srcZip);
                 return false;
             }
@@ -94,7 +101,9 @@ bool IncrementalPack::CopyExistSrcFile(const std::map<std::string, std::string> 
     }
     std::string realExistSrcPath;
     if (!Utils::GetRealPath(existSrcIt->second, realExistSrcPath)) {
-        LOGE("Get real existSrcPath failed! existSrcPath=%s", existSrcIt->second.c_str());
+        // LOGE("Get real existSrcPath failed! existSrcPath=%s", existSrcIt->second.c_str());
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
+            ("Get real existSrcPath failed! existSrcPath=" + existSrcIt->second).c_str()).c_str());
         return false;
     }
     destExistSrcFilePath_ = realExistSrcPath;
@@ -105,7 +114,9 @@ bool IncrementalPack::CopyExistSrcFile(const std::map<std::string, std::string> 
     }
     std::string realOutPath;
     if (!Utils::GetRealPath(outPathIt->second, realOutPath)) {
-        LOGE("Get real outPath failed! outPath=%s", outPathIt->second.c_str());
+        // LOGE("Get real outPath failed! outPath=%s", outPathIt->second.c_str());
+        LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
+            ("Get real outPath failed! outPath=" + outPathIt->second).c_str()).c_str());
         return false;
     }
     if (realExistSrcPath == realOutPath) {
