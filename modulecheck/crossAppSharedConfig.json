@@ -47,7 +47,7 @@
             "items": {
               "type": "string",
               "maxLength": 128,
-              "pattern": "^[0-9]+$"
+              "pattern": "^([0-9]+|all)$"
             },
             "default": []
           }
