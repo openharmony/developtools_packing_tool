@@ -96,6 +96,7 @@
             "debug",
             "bundleType",
             "icon",
+            "alternateIcons",
             "label",
             "description",
             "vendor",
@@ -312,6 +313,37 @@
           "description": "Indicates the index to the application icon file, in the format of \"$media:application_icon\".This label can be left blank by default.",
           "type": "string",
           "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]$"
+        },
+        "alternateIcons": {
+          "description": "Indicates the alternate icons of the application.",
+          "type": "array",
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "name",
+                "icon"
+              ]
+            },
+            "required": [
+              "name",
+              "icon"
+            ],
+            "properties": {
+              "name": {
+                "description": "Indicates the name of an alternate icon.",
+                "type": "string",
+                "maxLength": 255
+              },
+              "icon": {
+                "description": "Indicates the index to the alternate icon file, in the format of \"$media:icon_name\".",
+                "type": "string",
+                "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]$"
+              }
+            }
+          }
         },
         "description": {
           "description": "Describes the application",
