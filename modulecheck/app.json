@@ -658,7 +658,7 @@
           "items": {
             "type": "string",
             "maxLength": 128,
-            "pattern": "[0-9a-zA-Z]+$"
+            "pattern": "^[0-9a-zA-Z]+$"
           }
         }
       }
