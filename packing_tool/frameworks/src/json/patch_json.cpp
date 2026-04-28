@@ -141,7 +141,7 @@ bool PatchJson::GetBundleName(std::string& bundleName)
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
         // LOGE("GetAppObject failed!");
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
         return false;
     }
     return GetBundleNameByAppObj(appObj, bundleName);
@@ -151,18 +151,18 @@ bool PatchJson::GetBundleNameByAppObj(const std::unique_ptr<PtJson>& appObj, std
 {
     if (!appObj) {
         // LOGE("App node is null!");
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs("App node is null!").c_str());
         return false;
     }
     if (!appObj->Contains(BUNDLE_NAME.c_str())) {
         // LOGE("App node has no %s node!", BUNDLE_NAME.c_str());
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs(
             std::string("App node has no ") + BUNDLE_NAME + " node!").c_str());
         return false;
     }
     if (appObj->GetString(BUNDLE_NAME.c_str(), &bundleName) != Result::SUCCESS) {
         // LOGE("App node get %s failed!", BUNDLE_NAME.c_str());
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs(
             std::string("App node get ") + BUNDLE_NAME + " failed!").c_str());
         return false;
     }
@@ -306,7 +306,7 @@ bool PatchJson::GetName(std::string& name)
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
         // LOGE("GetModuleObject failed!");
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
         return false;
     }
     return GetNameByModuleObj(moduleObj, name);
@@ -316,18 +316,18 @@ bool PatchJson::GetNameByModuleObj(const std::unique_ptr<PtJson>& moduleObj, std
 {
     if (!moduleObj) {
         // LOGE("Module node is null!");
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs("Module node is null!").c_str());
         return false;
     }
     if (!moduleObj->Contains(NAME.c_str())) {
         // LOGE("Module node has no %s node!", NAME.c_str());
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs(
             std::string("Module node has no ") + NAME + " node!").c_str());
         return false;
     }
     if (moduleObj->GetString(NAME.c_str(), &name) != Result::SUCCESS) {
         // LOGE("Module node get %s failed!", NAME.c_str());
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs(
             std::string("Module node get ") + NAME + " failed!").c_str());
         return false;
     }
