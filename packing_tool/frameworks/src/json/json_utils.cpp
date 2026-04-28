@@ -20,6 +20,9 @@
 
 #include "log.h"
 #include "utils.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -48,12 +51,16 @@ std::unique_ptr<PtJson> JsonUtils::JsonFromFile(const std::string& filePath)
 {
     std::string realFilePath;
     if (!Utils::GetRealPath(filePath, realFilePath)) {
-        LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        // LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+            ("get real file path failed! jsonFile=" + filePath).c_str()).c_str());
         return nullptr;
     }
     std::ifstream inFile(realFilePath, std::ios::in);
     if (!inFile.is_open()) {
-        LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
+        // LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
+        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+            ("open file failed![filePath=" + filePath + "][realfilePath=" + realFilePath + "]").c_str()).c_str());
         return nullptr;
     }
     std::string fileContent((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
@@ -73,12 +80,16 @@ bool JsonUtils::StrToFile(const std::string& str, const std::string& filePath)
 {
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
-        LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        // LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
+        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+            ("get real file path failed! jsonFile=" + filePath).c_str()).c_str());
         return false;
     }
     std::ofstream outFile(realFilePath, std::ios::out);
     if (!outFile.is_open()) {
-        LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
+        // LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
+        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+            ("open file failed![filePath=" + filePath + "][realfilePath=" + realFilePath + "]").c_str()).c_str());
         return false;
     }
     outFile << str;

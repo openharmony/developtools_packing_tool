@@ -21,6 +21,9 @@
 #include "scan_statdulpicate.h"
 #include "utils.h"
 #include "zip_utils.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -370,7 +373,9 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
     }
     ZipUtils::Unzip(inputApp, unZipPath);
     if (!fs::exists(unZipPath) || !fs::is_directory(unZipPath)) {
-        LOGE("unzip path is invalid, unZipPath = %s", unZipPath.c_str());
+        // LOGE("unzip path is invalid, unZipPath = %s", unZipPath.c_str());
+        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILE_FAILED.toStringWithArgs(
+            ("unzip path is invalid, unZipPath = " + unZipPath).c_str()).c_str());
         return fileList;
     }
     std::vector<fs::path> entryPaths;
@@ -389,7 +394,9 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
         }
         std::string targetPath = copyPath + Constants::LINUX_FILE_SEPARATOR + fileName;
         if (!Utils::CopyFile(filePath, targetPath)) {
-            LOGE("copyFile failed, filePath = %s, targetPath = %s", filePath.c_str(), targetPath.c_str());
+            // LOGE("copyFile failed, filePath = %s, targetPath = %s", filePath.c_str(), targetPath.c_str());
+            LOGE("%s", PackingToolErrMsg::SCAN_SO_FILE_FAILED.toStringWithArgs(
+                ("copyFile failed, filePath = " + filePath + ", targetPath = " + targetPath).c_str()).c_str());
             return {};
         }
         fs::remove(entryPath);
@@ -441,15 +448,21 @@ bool ScanStatDuplicate::ScanSoFiles(const std::string& outPath)
     std::string htmlPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_HTML;
     std::string cssPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_CSS;
     if (!WriteFile(jsonPath, jsonStr)) {
-        LOGE("write failed, jsonPath = %s, jsonStr = %s", jsonPath.c_str(), jsonStr.c_str());
+        // LOGE("write failed, jsonPath = %s, jsonStr = %s", jsonPath.c_str(), jsonStr.c_str());
+        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILE_FAILED.toStringWithArgs(
+            ("write failed, jsonPath = " + jsonPath).c_str()).c_str());
         return false;
     }
     if (!WriteFile(htmlPath, htmlStr)) {
-        LOGE("write failed, htmlStr = %s", htmlStr.c_str());
+        // LOGE("write failed, htmlStr = %s", htmlStr.c_str());
+        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILE_FAILED.toStringWithArgs(
+            "write failed, htmlStr.").c_str());
         return false;
     }
     if (!WriteFile(cssPath, TEMPLATE_CSS)) {
-        LOGE("write failed, htmlStr = %s", htmlStr.c_str());
+        // LOGE("write failed, htmlStr = %s", htmlStr.c_str());
+        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILE_FAILED.toStringWithArgs(
+            "write failed, css file.").c_str());
         return false;
     }
     if (fs::exists(fs::path(targetPath))) {
@@ -473,11 +486,15 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
 {
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
-        LOGE("get real file path failed! filePath = %s", filePath.c_str());
+        // LOGE("get real file path failed! filePath = %s", filePath.c_str());
+        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+            ("get real file path failed! filePath = " + filePath).c_str()).c_str());
         return false;
     }
     if (data.empty()) {
-        LOGE("data is empty");
+        // LOGE("data is empty");
+        LOGE("%s", PackingToolErrMsg::WRITE_FILE_FAILED.toStringWithArgs(
+            "data is empty").c_str());
         return false;
     }
     std::ofstream outFile(realFilePath);
@@ -485,7 +502,9 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
         outFile << data.c_str();
         outFile.close();
     } else {
-        LOGE("Failed to open file for writing");
+        // LOGE("Failed to open file for writing");
+        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+            "Failed to open file for writing").c_str());
         return false;
     }
     return true;

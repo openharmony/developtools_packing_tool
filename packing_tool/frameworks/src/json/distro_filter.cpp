@@ -21,6 +21,9 @@
 
 #include "log.h"
 #include "utils.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -42,13 +45,16 @@ bool PolicyValue::IsEmpty() const
 bool PolicyValue::ParseFromJson(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("Json root is null!");
+        // LOGE("Json root is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json root is null!").c_str());
         return false;
     }
     if (root->Contains(VALUE.c_str())) {
         std::unique_ptr<PtJson> valuesObj;
         if (root->GetArray(VALUE.c_str(), &valuesObj) != Result::SUCCESS) {
-            LOGE("apiVersion node get %s array node failed!", VALUE.c_str());
+            // LOGE("apiVersion node get %s array node failed!", VALUE.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("apiVersion node get " + VALUE + " array node failed!").c_str()).c_str());
             return false;
         }
         for (int32_t i = 0; i < valuesObj->GetSize(); i++) {
@@ -57,7 +63,9 @@ bool PolicyValue::ParseFromJson(std::unique_ptr<PtJson>& root)
     }
     if (root->Contains(POLICY.c_str())) {
         if (root->GetString(POLICY.c_str(), &policy) != Result::SUCCESS) {
-            LOGE("App node get %s failed!", POLICY.c_str());
+            // LOGE("App node get %s failed!", POLICY.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("App node get " + POLICY + " failed!").c_str()).c_str());
             return false;
         }
     }
@@ -67,13 +75,16 @@ bool PolicyValue::ParseFromJson(std::unique_ptr<PtJson>& root)
 bool PolicyValue::ParseFromJsonApiVersion(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("Json root is null!");
+        // LOGE("Json root is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json root is null!").c_str());
         return false;
     }
     if (root->Contains(VALUE.c_str())) {
         std::unique_ptr<PtJson> valuesObj;
         if (root->GetArray(VALUE.c_str(), &valuesObj) != Result::SUCCESS) {
-            LOGE("apiVersion node get %s array node failed!", VALUE.c_str());
+            // LOGE("apiVersion node get %s array node failed!", VALUE.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("apiVersion node get " + VALUE + " array node failed!").c_str()).c_str());
             return false;
         }
         for (int32_t i = 0; i < valuesObj->GetSize(); i++) {
@@ -82,7 +93,9 @@ bool PolicyValue::ParseFromJsonApiVersion(std::unique_ptr<PtJson>& root)
     }
     if (root->Contains(POLICY.c_str())) {
         if (root->GetString(POLICY.c_str(), &policy) != Result::SUCCESS) {
-            LOGE("App node get %s failed!", POLICY.c_str());
+            // LOGE("App node get %s failed!", POLICY.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("App node get " + POLICY + " failed!").c_str()).c_str());
             return false;
         }
     }
@@ -92,17 +105,21 @@ bool PolicyValue::ParseFromJsonApiVersion(std::unique_ptr<PtJson>& root)
 bool DistroFilter::ParseApiVersion(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("root node is null!");
+        // LOGE("root node is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("root node is null!").c_str());
         return false;
     }
     if (root->Contains(API_VERSION.c_str())) {
         std::unique_ptr<PtJson> apiVersionObj;
         if (root->GetObject(API_VERSION.c_str(), &apiVersionObj) != Result::SUCCESS) {
-            LOGE("Json root get %s node failed!", API_VERSION.c_str());
+            // LOGE("Json root get %s node failed!", API_VERSION.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Json root get " + API_VERSION + " node failed!").c_str()).c_str());
             return false;
         }
         if (!apiVersion.ParseFromJsonApiVersion(apiVersionObj)) {
-            LOGE("Parse apiVersionObj failed!");
+            // LOGE("Parse apiVersionObj failed!");
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse apiVersionObj failed!").c_str());
             return false;
         }
     }
@@ -112,17 +129,21 @@ bool DistroFilter::ParseApiVersion(std::unique_ptr<PtJson>& root)
 bool DistroFilter::ParseScreenShape(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("root node is null!");
+        // LOGE("root node is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("root node is null!").c_str());
         return false;
     }
     if (root->Contains(SCREEN_SHAPE.c_str())) {
         std::unique_ptr<PtJson> screenShapeObj;
         if (root->GetObject(SCREEN_SHAPE.c_str(), &screenShapeObj) != Result::SUCCESS) {
-            LOGE("Json root get %s node failed!", SCREEN_SHAPE.c_str());
+            // LOGE("Json root get %s node failed!", SCREEN_SHAPE.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Json root get " + SCREEN_SHAPE + " node failed!").c_str()).c_str());
             return false;
         }
         if (!screenShape.ParseFromJson(screenShapeObj)) {
-            LOGE("Parse screenShape failed!");
+            // LOGE("Parse screenShape failed!");
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse screenShape failed!").c_str());
             return false;
         }
     }
@@ -132,17 +153,21 @@ bool DistroFilter::ParseScreenShape(std::unique_ptr<PtJson>& root)
 bool DistroFilter::ParseScreenDensity(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("root node is null!");
+        // LOGE("root node is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("root node is null!").c_str());
         return false;
     }
     if (root->Contains(SCREEN_DENSITY.c_str())) {
         std::unique_ptr<PtJson> screenDensityObj;
         if (root->GetObject(SCREEN_DENSITY.c_str(), &screenDensityObj) != Result::SUCCESS) {
-            LOGE("Json root get %s node failed!", SCREEN_DENSITY.c_str());
+            // LOGE("Json root get %s node failed!", SCREEN_DENSITY.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Json root get " + SCREEN_DENSITY + " node failed!").c_str()).c_str());
             return false;
         }
         if (!screenDensity.ParseFromJson(screenDensityObj)) {
-            LOGE("Parse screenDensity failed!");
+            // LOGE("Parse screenDensity failed!");
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse screenDensity failed!").c_str());
             return false;
         }
     }
@@ -152,17 +177,21 @@ bool DistroFilter::ParseScreenDensity(std::unique_ptr<PtJson>& root)
 bool DistroFilter::ParseScreenWindow(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("root node is null!");
+        // LOGE("root node is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("root node is null!").c_str());
         return false;
     }
     if (root->Contains(SCREEN_WINDOW.c_str())) {
         std::unique_ptr<PtJson> screenWindowObj;
         if (root->GetObject(SCREEN_WINDOW.c_str(), &screenWindowObj) != Result::SUCCESS) {
-            LOGE("Json root get %s node failed!", SCREEN_WINDOW.c_str());
+            // LOGE("Json root get %s node failed!", SCREEN_WINDOW.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Json root get " + SCREEN_WINDOW + " node failed!").c_str()).c_str());
             return false;
         }
         if (!screenWindow.ParseFromJson(screenWindowObj)) {
-            LOGE("Parse screenWindow failed!");
+            // LOGE("Parse screenWindow failed!");
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse screenWindow failed!").c_str());
             return false;
         }
     }
@@ -172,17 +201,21 @@ bool DistroFilter::ParseScreenWindow(std::unique_ptr<PtJson>& root)
 bool DistroFilter::ParseCountryCode(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("root node is null!");
+        // LOGE("root node is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("root node is null!").c_str());
         return false;
     }
     if (root->Contains(COUNTRY_CODE.c_str())) {
         std::unique_ptr<PtJson> countryCodeObj;
         if (root->GetObject(COUNTRY_CODE.c_str(), &countryCodeObj) != Result::SUCCESS) {
-            LOGE("Json root get %s node failed!", COUNTRY_CODE.c_str());
+            // LOGE("Json root get %s node failed!", COUNTRY_CODE.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Json root get " + COUNTRY_CODE + " node failed!").c_str()).c_str());
             return false;
         }
         if (!countryCode.ParseFromJson(countryCodeObj)) {
-            LOGE("Parse countryCode failed!");
+            // LOGE("Parse countryCode failed!");
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse countryCode failed!").c_str());
             return false;
         }
     }
@@ -192,27 +225,33 @@ bool DistroFilter::ParseCountryCode(std::unique_ptr<PtJson>& root)
 bool DistroFilter::ParseFromJson(std::unique_ptr<PtJson>& root)
 {
     if (!root) {
-        LOGE("Json root is null!");
+        // LOGE("Json root is null!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json root is null!").c_str());
         return false;
     }
     if (!ParseApiVersion(root)) {
-        LOGE("ParseApiVersion failed!");
+        // LOGE("ParseApiVersion failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ParseApiVersion failed!").c_str());
         return false;
     }
     if (!ParseScreenShape(root)) {
-        LOGE("ParseScreenShape failed!");
+        // LOGE("ParseScreenShape failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ParseScreenShape failed!").c_str());
         return false;
     }
     if (!ParseScreenDensity(root)) {
-        LOGE("ParseScreenDensity failed!");
+        // LOGE("ParseScreenDensity failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ParseScreenDensity failed!").c_str());
         return false;
     }
     if (!ParseScreenWindow(root)) {
-        LOGE("ParseScreenWindow failed!");
+        // LOGE("ParseScreenWindow failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ParseScreenWindow failed!").c_str());
         return false;
     }
     if (!ParseCountryCode(root)) {
-        LOGE("ParseCountryCode failed!");
+        // LOGE("ParseCountryCode failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ParseCountryCode failed!").c_str());
         return false;
     }
     return true;
