@@ -205,6 +205,11 @@ public class HapInfo {
     }
 
     /**
+     * Indicates the skillProfiles of HapInfo.
+     */
+    public List<SkillProfileInfo> skillProfiles = new ArrayList<>();
+
+    /**
      * Indicates whether the module.abc file is compressed.
      */
     public boolean isModuleAbcCompressed = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -72,6 +72,7 @@ public class CompressVerify {
     private static final String BUNDLE_TYPE_SHARE = "shared";
     private static final String BUNDLE_TYPE_APP = "app";
     private static final String BUNDLE_TYPE_APP_SERVICE = "appService";
+    private static final String BUNDLE_TYPE_APP_PLUGIN = "appPlugin";
     private static final String SKILLS_ENTITIES = "entities";
     private static final String SKILLS_ACTIONS = "actions";
     private static final String ACTION_SYSTEM_HOME = "action.system.home";
@@ -98,7 +99,7 @@ public class CompressVerify {
     private static final String INSTALLATION_FREE = "installationFree";
     private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
     private static final List<String> bundleTypeList =
-        Arrays.asList("app", "atomicService", "shared", "appService", "appPlugin");
+        Arrays.asList("app", "atomicService", "shared", "appService", "appPlugin", "skill");
     private static final List<String> deviceTypeList =
         Arrays.asList("default", "tablet", "tv", "wearable", "car", "2in1", "phone");
     private static final Log LOG = new Log(CompressVerify.class.toString());
@@ -633,7 +634,90 @@ public class CompressVerify {
             return false;
         }
 
+        if (!validateSkillsPath(utility, PackingToolErrMsg.HAP_MODE_ARGS_INVALID)) {
+            return false;
+        }
+
+        if (!utility.getJsonPath().isEmpty()) {
+            Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+            if (optional.isPresent() && !checkHapModeSkillRestriction(optional.get())) {
+                return false;
+            }
+        }
+
         return isOutPathValid(utility, HAP_SUFFIX);
+    }
+
+    private static boolean validateSkillsPath(Utility utility, ErrorMsg errCode) {
+        String jsonString = null;
+        List<String> profileNames = new ArrayList<>();
+        if (!utility.getJsonPath().isEmpty()) {
+            try {
+                Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+                if (optional.isPresent()) {
+                    jsonString = optional.get();
+                    profileNames = PackageUtil.getOrLoadSkillProfileNames(utility, jsonString);
+                }
+            } catch (BundleException e) {
+                String errMsg = "Failed to parse module.json for skill validation: " + e.getMessage();
+                LOG.error(errCode.toString(errMsg));
+                return false;
+            }
+        }
+        if (jsonString.isEmpty()) {
+            return true;
+        }
+        if (profileNames.isEmpty()) {
+            return true;
+        }
+        try {
+            String bundleType = ModuleJsonUtil.parseStageBundleType(jsonString);
+            if (BUNDLE_TYPE_SHARE.equals(bundleType) || BUNDLE_TYPE_APP_SERVICE.equals(bundleType)
+                    || BUNDLE_TYPE_APP_PLUGIN.equals(bundleType)) {
+                String errMsg = "skillProfiles is not allowed when bundleType is " + bundleType + ".";
+                LOG.error(errCode.toString(errMsg));
+                return false;
+            }
+            if (utility.getSkillsPath().isEmpty()) {
+                String errMsg = "--skills-path is required when skillProfiles is configured in module.json.";
+                LOG.error(errCode.toString(errMsg));
+                return false;
+            }
+            File skillsDir = new File(utility.getSkillsPath());
+            if (!skillsDir.isDirectory()) {
+                String errMsg = "--skills-path is not a valid directory.";
+                LOG.error(errCode.toString(errMsg));
+                return false;
+            }
+            String errMsg = PackageUtil.validateSkillProfileDirectories(
+                    skillsDir, profileNames,
+                    "skillProfiles has '%s' but no matching skills directory found under --skills-path.");
+            if (errMsg != null) {
+                errMsg += " Checked skillProfiles declared in --json-path: " + utility.getJsonPath() + ".";
+                LOG.error(errCode.toString(errMsg));
+                return false;
+            }
+            return true;
+        } catch (BundleException e) {
+            String errMsg = "Failed to parse module.json for skill validation: " + e.getMessage();
+            LOG.error(errCode.toString(errMsg));
+            return false;
+        }
+    }
+
+    private static boolean checkHapModeSkillRestriction(String jsonString) {
+        try {
+            if (Constants.TYPE_SKILL.equals(ModuleJsonUtil.parseModuleType(jsonString))) {
+                String errMsg = "moduleType 'skill' is not allowed in HAP mode, use HSP mode instead.";
+                LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+            return true;
+        } catch (BundleException e) {
+            String errMsg = "Failed to parse module.json for HAP mode skill validation: " + e.getMessage();
+            LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
     }
 
     /**
@@ -737,7 +821,16 @@ public class CompressVerify {
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
-
+        boolean hasSkillBundleType =
+                PackageUtil.hasSkillBundleTypeHsp(utility.getFormattedHspPathList(),
+                        PackingToolErrMsg.APP_MODE_ARGS_INVALID);
+        if (!PackageUtil.checkSkillBundleConstraints(hasSkillBundleType,
+                !utility.getHapPath().isEmpty(), utility.getFormattedHspPathList(),
+                PackingToolErrMsg.APP_MODE_ARGS_INVALID, "--hap-path", "--hsp-path")) {
+            String errMsg = "Skill app constraints are invalid.";
+            LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
         if (utility.getPackInfoPath().isEmpty()) {
             String errMsg = "--pack-info-path is empty.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
@@ -834,7 +927,7 @@ public class CompressVerify {
                 }
             }
         } catch (BundleException e) {
-            return true;
+            LOG.warning("CompressVerify::checkBundleTypeConsistency " + e.getMessage());
         }
         return true;
     }
@@ -842,7 +935,14 @@ public class CompressVerify {
     private static boolean checkInputModulePath(Utility utility) {
         boolean isSharedApp = isSharedApp(utility);
         boolean isAppService = isAppService(utility);
-        if (utility.getHapPath().isEmpty() && !isSharedApp && !isAppService) {
+        List<String> tmpHspPathList = new ArrayList<>();
+        boolean hasSkillBundleType = false;
+        if (!utility.getHspPath().isEmpty()
+                && compatibleProcess(utility, utility.getHspPath(), tmpHspPathList, HSP_SUFFIX)) {
+            hasSkillBundleType = PackageUtil.hasSkillBundleTypeHsp(tmpHspPathList,
+                    PackingToolErrMsg.APP_MODE_ARGS_INVALID);
+        }
+        if (utility.getHapPath().isEmpty() && !isSharedApp && !isAppService && !hasSkillBundleType) {
             LOG.warning("CompressVerify::CheckInputModulePath hap-path is empty.");
             return false;
         }
@@ -851,6 +951,7 @@ public class CompressVerify {
             LOG.warning("CompressVerify::CheckInputModulePath hsp-path is empty.");
             return false;
         }
+
         return true;
     }
 
@@ -917,6 +1018,9 @@ public class CompressVerify {
         if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
             String errMsg = "--out-path must end with .app.";
             LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+        if (!checkSkillRulesInMultiAppMode(utility)) {
             return false;
         }
         return true;
@@ -1349,6 +1453,10 @@ public class CompressVerify {
             return false;
         }
 
+        if (!validateSkillsPath(utility, PackingToolErrMsg.HSP_MODE_ARGS_INVALID)) {
+            return false;
+        }
+
         return isOutPathValid(utility, HSP_SUFFIX);
     }
 
@@ -1496,6 +1604,42 @@ public class CompressVerify {
         } catch (BundleException e) {
             return false;
         }
+    }
+
+    private static boolean checkSkillRulesInMultiAppMode(Utility utility) {
+        List<String> formattedList = utility.getFormattedHapList();
+        List<String> hspPaths = new ArrayList<>();
+        boolean hasHapPath = false;
+        for (String path : formattedList) {
+            if (path.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                hasHapPath = true;
+                continue;
+            }
+            if (path.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
+                hspPaths.add(path);
+            }
+        }
+        if (!PackageUtil.extractAndCacheModulesFromAppList(utility,
+                PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID)) {
+            return false;
+        }
+        for (String appPath : utility.getFormattedAppList()) {
+            for (String modulePath : utility.getMultiAppExtractedModules(appPath)) {
+                if (modulePath.toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+                    hasHapPath = true;
+                } else if (modulePath.toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
+                    hspPaths.add(modulePath);
+                }
+            }
+        }
+        boolean hasSkillBundleType = PackageUtil.hasSkillBundleTypeHsp(hspPaths,
+                PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID);
+        boolean constraintsValid = PackageUtil.checkSkillBundleConstraints(hasSkillBundleType, hasHapPath, hspPaths,
+                PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID, "--hap-list", "--hsp-list");
+        if (!constraintsValid) {
+            PackageUtil.cleanupMultiAppExtractCache(utility);
+        }
+        return constraintsValid;
     }
 
     private static boolean isBundleTypeShared(Utility utility) {

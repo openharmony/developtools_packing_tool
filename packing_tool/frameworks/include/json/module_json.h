@@ -221,6 +221,8 @@ public:
     bool CheckDeduplicateHar();
     bool CheckStageOverlayCfg();
 
+    bool GetSkillProfiles(std::list<std::map<std::string, std::string>>& skillProfiles);
+
     bool GetGenerateBuildHash(bool& generateBuildHash);
     bool RemoveGenerateBuildHash();
     bool RemoveGenerateBuildHashFromAppObj();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -175,6 +175,11 @@ class ModuleInfo {
      * Indicates whether the module.abc file is compressed.
      */
     public boolean isModuleAbcCompressed = false;
+
+    /**
+     * Indicates the skillProfiles of ModuleInfo.
+     */
+    public List<SkillProfileInfo> skillProfiles = new ArrayList<>();
 
     /**
      * Indicates the requiredDeviceFeatures

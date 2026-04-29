@@ -19,8 +19,10 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * common resource.
@@ -162,6 +164,11 @@ public class Utility {
     private boolean isSuccess = true;
     private String existSrcPath = "";
     private String isLibPathRetain = "false";
+    private String skillsPath = "";
+    private List<String> skillProfileNames = new ArrayList<>();
+    private boolean skillProfileNamesLoaded = false;
+    private String multiAppExtractTempDir = "";
+    private Map<String, List<String>> multiAppExtractedModulesByApp = new HashMap<>();
 
     public void setIsParse(boolean isParse) {
         this.isParse = isParse;
@@ -188,6 +195,8 @@ public class Utility {
     public void setJsonPath(String jsonPath) {
         if (!jsonPath.startsWith(CMD_PREFIX)) {
             this.jsonPath = getFormattedPath(jsonPath);
+            this.skillProfileNames = new ArrayList<>();
+            this.skillProfileNamesLoaded = false;
         }
     }
 
@@ -745,6 +754,27 @@ public class Utility {
         return formattedEntryCardPathList;
     }
 
+    public String getMultiAppExtractTempDir() {
+        return multiAppExtractTempDir;
+    }
+
+    public void setMultiAppExtractTempDir(String multiAppExtractTempDir) {
+        this.multiAppExtractTempDir = multiAppExtractTempDir;
+    }
+
+    public List<String> getMultiAppExtractedModules(String appPath) {
+        return multiAppExtractedModulesByApp.getOrDefault(appPath, new ArrayList<>());
+    }
+
+    public void putMultiAppExtractedModules(String appPath, List<String> modulePaths) {
+        multiAppExtractedModulesByApp.put(appPath, new ArrayList<>(modulePaths));
+    }
+
+    public void clearMultiAppExtractedModulesCache() {
+        multiAppExtractTempDir = "";
+        multiAppExtractedModulesByApp.clear();
+    }
+
     /**
      * get canonical path
      *
@@ -1093,5 +1123,28 @@ public class Utility {
         if (!isLibPathRetain.startsWith(CMD_PREFIX)) {
             this.isLibPathRetain = isLibPathRetain.toLowerCase(Locale.ENGLISH);
         }
+    }
+
+    public String getSkillsPath() {
+        return skillsPath;
+    }
+
+    public void setSkillsPath(String skillsPath) {
+        if (!skillsPath.startsWith(CMD_PREFIX)) {
+            this.skillsPath = getFormattedPath(skillsPath);
+        }
+    }
+
+    public List<String> getSkillProfileNames() {
+        return skillProfileNames;
+    }
+
+    public void setSkillProfileNames(List<String> skillProfileNames) {
+        this.skillProfileNames = skillProfileNames;
+        this.skillProfileNamesLoaded = true;
+    }
+
+    public boolean isSkillProfileNamesLoaded() {
+        return skillProfileNamesLoaded;
     }
 }

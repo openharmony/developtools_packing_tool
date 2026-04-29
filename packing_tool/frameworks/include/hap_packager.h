@@ -58,6 +58,7 @@ public:
     bool CheckLibPathRetainParam();
     bool CheckPkgSdkInfoParam();
     bool CheckKernelPermissionCompression();
+    bool CompressSkillsDirectory();
 
 protected:
     int32_t InitAllowedParam() override;

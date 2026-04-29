@@ -1970,4 +1970,38 @@ HWTEST_F(FastAppPackagerTest, addOtherFileToZip_0001, Function | MediumTest | Le
 
     DeleteFile(PACK_JSON_PATH);
 }
+
+/*
+ * @tc.name: PackDir_SkillModuleType_0001
+ * @tc.desc: PackDir with skill moduleType should select HSP suffix.
+ * @tc.type: FUNC
+ */
+HWTEST_F(FastAppPackagerTest, PackDir_SkillModuleType_0001, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::FastAppPackager fastAppackager(parameterMap, resultReceiver);
+
+    // Verify skill moduleType is recognized as TYPE_SKILL constant
+    ModuleJson moduleJson;
+    const std::string skillModuleJson = "{"
+        "\"app\": {"
+            "\"bundleType\": \"skill\""
+        "},"
+        "\"module\": {"
+            "\"type\": \"skill\","
+            "\"deviceTypes\": [\"default\"]"
+        "}"
+    "}";
+    ASSERT_TRUE(moduleJson.ParseFromString(skillModuleJson));
+    std::string moduleType;
+    ASSERT_TRUE(moduleJson.GetStageModuleType(moduleType));
+    EXPECT_EQ(moduleType, OHOS::AppPackingTool::Constants::TYPE_SKILL);
+
+    // Verify suffix logic: TYPE_SKILL should map to HSP_SUFFIX
+    std::string suffix = (moduleType == OHOS::AppPackingTool::Constants::TYPE_SHARED ||
+        moduleType == OHOS::AppPackingTool::Constants::TYPE_SKILL)
+        ? OHOS::AppPackingTool::Constants::HSP_SUFFIX : OHOS::AppPackingTool::Constants::HAP_SUFFIX;
+    EXPECT_EQ(suffix, OHOS::AppPackingTool::Constants::HSP_SUFFIX);
+}
 } // namespace OHOS

@@ -43,6 +43,7 @@ ohos_unittest("general_normalize_test") {
     "../../../src/json/pt_json.cpp",
     "../../../src/log.cpp",
     "../../../src/packager.cpp",
+    "../../../src/skill_pack_helper.cpp",
     "../../../src/unzip_wrapper.cpp",
     "../../../src/utils.cpp",
     "../../../src/zip_utils.cpp",

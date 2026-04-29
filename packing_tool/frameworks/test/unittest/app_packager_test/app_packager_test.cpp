@@ -1366,4 +1366,176 @@ HWTEST_F(AppPackagerTest, SplitPath_0100, Function | MediumTest | Level1)
     std::string pathName = "pathName";
     EXPECT_EQ(scanStatDuplicate.SplitPath(filePath, pathName), filePath);
 }
+
+/*
+ * @tc.name: IsSkillApp_3200
+ * @tc.desc: IsSkillApp with hsp bundleType=skill, no hapPath.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSkillApp_3200, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SKILL);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_TRUE(appPackager.IsSkillApp(hapPath, hspPath));
+    EXPECT_TRUE(appPackager.isSkillApp_);
+}
+
+/*
+ * @tc.name: IsSkillApp_3300
+ * @tc.desc: IsSkillApp with hapPath not empty should return false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSkillApp_3300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath(HSP_PATH);
+
+    EXPECT_FALSE(appPackager.IsSkillApp(hapPath, hspPath));
+    EXPECT_FALSE(appPackager.isSkillApp_);
+}
+
+/*
+ * @tc.name: IsSkillApp_3400
+ * @tc.desc: IsSkillApp with empty hspPath should return false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSkillApp_3400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    const std::string hapPath;
+    const std::string hspPath;
+
+    EXPECT_FALSE(appPackager.IsSkillApp(hapPath, hspPath));
+    EXPECT_FALSE(appPackager.isSkillApp_);
+}
+
+/*
+ * @tc.name: IsSkillApp_3500
+ * @tc.desc: IsSkillApp with bundleType not skill should return false.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, IsSkillApp_3500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::BUNDLE_TYPE_APP_SERVICE);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, hapVerifyInfo);
+    EXPECT_FALSE(appPackager.IsSkillApp(hapPath, hspPath));
+    EXPECT_FALSE(appPackager.isSkillApp_);
+}
+
+/*
+ * @tc.name: CheckInputModulePath_SkillAppValid_3600
+ * @tc.desc: CheckInputModulePath with skill app, no hapPath, hsp moduleType=skill.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_SkillAppValid_3600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SKILL);
+    hapVerifyInfo.SetModuleType(Constants::TYPE_SKILL);
+    ResultSeries series;
+    series.emplace_back(true, hapVerifyInfo);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_TRUE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_SkillAppWithHapPath_3700
+ * @tc.desc: CheckInputModulePath with skill app but hapPath not empty should fail.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_SkillAppWithHapPath_3700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath(HAP_PATH);
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SKILL);
+    hapVerifyInfo.SetModuleType(Constants::TYPE_SKILL);
+    ResultSeries series;
+    series.emplace_back(true, hapVerifyInfo);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_SkillAppWrongModuleType_3800
+ * @tc.desc: CheckInputModulePath with skill app but hsp moduleType not skill should fail.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_SkillAppWrongModuleType_3800, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SKILL);
+    hapVerifyInfo.SetModuleType("entry");
+    ResultSeries series;
+    series.emplace_back(true, hapVerifyInfo);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+
+/*
+ * @tc.name: CheckInputModulePath_SkillAppMultipleHsp_3900
+ * @tc.desc: CheckInputModulePath with skill app but multiple HSPs should fail.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(AppPackagerTest, CheckInputModulePath_SkillAppMultipleHsp_3900, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
+    HapVerifyInfo hapVerifyInfo;
+    const std::string hapPath;
+    const std::string hspPath(HSP_PATH + "," + HSP_PATH);
+
+    hapVerifyInfo.SetBundleType(Constants::TYPE_SKILL);
+    hapVerifyInfo.SetModuleType(Constants::TYPE_SKILL);
+    // Mock 2 HSPs both with valid skill moduleType
+    ResultSeries series;
+    series.emplace_back(true, hapVerifyInfo);
+    series.emplace_back(true, hapVerifyInfo);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
+    EXPECT_FALSE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
 } // namespace OHOS

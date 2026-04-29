@@ -112,6 +112,7 @@ const std::string PARAM_EXIST_SRC_PATH = "exist-src-path";
 const std::string PARAM_LIB_PATH_RETAIN = "lib-path-retain";
 const std::string PARAM_REPLACE_PACK_INFO = "replace-pack-info";
 const std::string PARAM_STAT_DUPLICATE = "stat-duplicate";
+const std::string PARAM_SKILLS_PATH = "skills-path";
 const std::string TRUE_STRING = "true";
 const std::string FALSE_STRING = "false";
 
@@ -150,6 +151,11 @@ const std::string TEMP_HAP_DIR = "tempHapDir";
 const std::string TEMP_HSP_DIR = "tempHspDir";
 const std::string TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
 const std::string ATOMIC_SERVICE = "atomicService";
+const std::string TYPE_SKILL = "skill";
+const std::string SKILL_PROFILES = "skillProfiles";
+const std::string SKILL_MD = "SKILL.md";
+const std::string SCRIPTS_DIR = "scripts";
+const std::string SKILLS_DIR = "skills";
 const std::string NULL_DIR_NAME = "";
 const std::string DEVICE_TYPE_FITNESSWATCH = "fitnessWatch";
 const std::string DEVICE_TYPE_FITNESSWATCH_NEW = "liteWearable";
@@ -162,7 +168,9 @@ const std::string BUNDLE_NAME_PATTERN =
     "([a-zA-Z]|[a-zA-Z]+(_*[0-9a-zA-Z])+)(\\.[0-9a-zA-Z]|\\.[0-9a-zA-Z]+(_*[0-9a-zA-Z])+){2,}";
 const std::string API_RELEASE_TYPE_PATTERN = "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$";
 const std::string LIB_SO_PATTERN = ".*\\.so(?:\\.\\d+)*$";
-const std::vector<std::string> BUNDLE_TYPE_LIST = {"app", "appService", "atomicService", "shared", "appPlugin"};
+const std::vector<std::string> BUNDLE_TYPE_LIST = {
+    "app", "appService", "atomicService", "shared", "appPlugin", "skill"
+};
 
 const std::string JSON_SUFFIX = ".json";
 const std::string HAP_SUFFIX = ".hap";
@@ -256,6 +264,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_STAT_DUPLICATE.c_str(), required_argument, nullptr, 61},
     {PARAM_PKG_SDK_INFO_PATH.c_str(), required_argument, nullptr, 62},
     {PARAM_BUILD_VERSION.c_str(), required_argument, nullptr, 64},
+    {PARAM_SKILLS_PATH.c_str(), required_argument, nullptr, 65},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

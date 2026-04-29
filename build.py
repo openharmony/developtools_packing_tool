@@ -72,6 +72,7 @@ def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_versio
         'AbilityFormInfo.java', 'AbilityInfo.java', 'ApiVersion.java', 
         'AppInfo.java', 'AppModel.java', 'APPQFResult.java',
         'BundleException.java', 'CommandParser.java', 'CommonEvent.java',
+        'Constants.java',
         'CountryCode.java', 'CustomizeData.java', 'DefinePermission.java',
         'DefPermissionGroup.java', 'DefPermission.java', 'DependencyItem.java',
         'DeviceConfig.java', 'DistroFilter.java', 'Distro.java', 'ErrorMsg.java',
@@ -87,7 +88,7 @@ def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_versio
         'ResourceIndexResult.java', 'restool/ResourcesParser.java', 'restool/ResourcesParserV1.java',
         'restool/ResourcesParserV2.java', 'restool/ResourcesParserFactory.java', 'ScreenDensity.java',
         'ScreenShape.java', 'ScreenWindow.java', 'Shortcut.java',
-        'ShowHelp.java', 'SkillInfo.java', 'UncompressEntrance.java',
+        'ShowHelp.java', 'SkillInfo.java', 'SkillProfileInfo.java', 'UncompressEntrance.java',
         'Uncompress.java', 'UncompressResult.java', 'UncompressVerify.java',
         'UriInfo.java', 'UsedScene.java', 'Utility.java', 'Want.java', 'ProxyDataItem.java'
     ]
