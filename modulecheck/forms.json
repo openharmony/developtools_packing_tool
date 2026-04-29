@@ -359,7 +359,8 @@
             "propertyNames": {
               "enum": [
                 "abilityName",
-                "disabledDesktopBehaviors"
+                "disabledDesktopBehaviors",
+                "triggerTypes"
               ]
             },
             "required": [
@@ -382,6 +383,16 @@
                     "PULL_DOWN_SEARCH",
                     "LONG_CLICK",
                     "DRAG"
+                  ]
+                }
+              },
+              "triggerTypes": {
+                "description": "The trigger types of the scene animation form.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "shake"
                   ]
                 }
               }
