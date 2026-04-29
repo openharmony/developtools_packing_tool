@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,6 +27,136 @@
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+class TempDirGuard {
+public:
+    ~TempDirGuard()
+    {
+        if (!path_.empty() && fs::exists(path_)) {
+            fs::remove_all(path_);
+        }
+    }
+
+    void Reset(const fs::path &path)
+    {
+        path_ = path;
+    }
+
+    const fs::path &Get() const
+    {
+        return path_;
+    }
+
+    bool Empty() const
+    {
+        return path_.empty();
+    }
+
+private:
+    fs::path path_;
+};
+
+bool GetFirstBundleTypeFromPathList(const std::list<std::string> &pathList, std::string &bundleType)
+{
+    for (const auto &path : pathList) {
+        if (!Utils::EndsWith(fs::path(path).filename(), Constants::HSP_SUFFIX)) {
+            continue;
+        }
+        HapVerifyInfo hapVerifyInfo;
+        if (!ModuleJsonUtils::GetStageHapVerifyInfo(path, hapVerifyInfo)) {
+            LOGE("Failed to parse HSP '%s' for multiApp bundleType validation.", path.c_str());
+            return false;
+        }
+        bundleType = hapVerifyInfo.GetBundleType();
+        return true;
+    }
+    return false;
+}
+
+void CollectDirectSkillRuleInputs(const std::list<std::string> &formattedHapAndHspList, bool &hasHapPath,
+    std::list<std::string> &hspPaths)
+{
+    for (const auto &path : formattedHapAndHspList) {
+        if (Utils::EndsWith(fs::path(path).filename(), Constants::HAP_SUFFIX)) {
+            hasHapPath = true;
+            continue;
+        }
+        if (Utils::EndsWith(fs::path(path).filename(), Constants::HSP_SUFFIX)) {
+            hspPaths.push_back(path);
+        }
+    }
+}
+
+bool CollectHapAndHspFromAppForVerify(const std::string &appPath, const fs::path &tempRoot,
+    std::list<std::string> &modulePaths)
+{
+    fs::path unzipPath = tempRoot / Utils::GenerateUUID();
+    if (ZipUtils::Unzip(appPath, unzipPath.string()) != ZIP_ERR_SUCCESS) {
+        LOGE("Failed to unzip app '%s' for multiApp skill validation.", appPath.c_str());
+        if (fs::exists(unzipPath)) {
+            fs::remove_all(unzipPath);
+        }
+        return false;
+    }
+    for (const auto &entry : fs::directory_iterator(unzipPath)) {
+        if (!Utils::EndsWith(entry.path().filename().string(), Constants::HAP_SUFFIX) &&
+            !Utils::EndsWith(entry.path().filename().string(), Constants::HSP_SUFFIX)) {
+            continue;
+        }
+        modulePaths.push_back(entry.path().string());
+    }
+    return true;
+}
+
+bool CollectAppSkillRuleInputs(const std::list<std::string> &formattedAppList, TempDirGuard &tempDirGuard,
+    bool &hasHapPath, std::list<std::string> &hspPaths)
+{
+    if (formattedAppList.empty()) {
+        return true;
+    }
+    fs::path tempDir = fs::temp_directory_path() / (Constants::COMPRESSOR_MULTIAPP_TEMP_DIR + Utils::GenerateUUID());
+    fs::create_directories(tempDir);
+    tempDirGuard.Reset(tempDir);
+    for (const auto &appPath : formattedAppList) {
+        std::list<std::string> appModulePaths;
+        if (!CollectHapAndHspFromAppForVerify(appPath, tempDirGuard.Get(), appModulePaths)) {
+            return false;
+        }
+        for (const auto &modulePath : appModulePaths) {
+            if (Utils::EndsWith(fs::path(modulePath).filename(), Constants::HAP_SUFFIX)) {
+                hasHapPath = true;
+            } else if (Utils::EndsWith(fs::path(modulePath).filename(), Constants::HSP_SUFFIX)) {
+                hspPaths.push_back(modulePath);
+            }
+        }
+    }
+    return true;
+}
+
+bool CheckSkillHspModuleTypes(const std::list<std::string> &hspPaths)
+{
+    int hspCount = 0;
+    for (const auto &path : hspPaths) {
+        hspCount++;
+        HapVerifyInfo hapVerifyInfo;
+        if (!ModuleJsonUtils::GetStageHapVerifyInfo(path, hapVerifyInfo)) {
+            LOGE("Failed to parse HSP '%s' for multiApp skill moduleType validation.", path.c_str());
+            return false;
+        }
+        if (hapVerifyInfo.GetModuleType() != Constants::TYPE_SKILL) {
+            LOGE("HSP moduleType must be skill when bundleType is skill, but got '%s' in %s.",
+                hapVerifyInfo.GetModuleType().c_str(), path.c_str());
+            return false;
+        }
+    }
+    if (hspCount > 1) {
+        LOGE("--hsp-list must contain only 1 HSP when bundleType is skill, but got %d.", hspCount);
+        return false;
+    }
+    return true;
+}
+}
+
 MultiAppPackager::MultiAppPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
@@ -174,7 +304,49 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
         }
     }
 
+    if (!CheckSkillRules()) {
+        return false;
+    }
+
     return IsOutPathValid(outPath, force, Constants::MODE_MULTIAPP);
+}
+
+bool MultiAppPackager::IsSkillApp()
+{
+    std::string bundleType;
+    if (GetFirstBundleTypeFromPathList(formattedHapAndHspList_, bundleType) &&
+        bundleType == Constants::TYPE_SKILL) {
+        isSkillApp_ = true;
+        return true;
+    }
+    return false;
+}
+
+bool MultiAppPackager::CheckSkillRules()
+{
+    TempDirGuard tempDirGuard;
+    std::list<std::string> hspPaths;
+    bool hasHapPath = false;
+    CollectDirectSkillRuleInputs(formattedHapAndHspList_, hasHapPath, hspPaths);
+    if (!CollectAppSkillRuleInputs(formattedAppList_, tempDirGuard, hasHapPath, hspPaths)) {
+        return false;
+    }
+    std::string bundleType;
+    bool hasBundleType = GetFirstBundleTypeFromPathList(hspPaths, bundleType);
+    if (!hasBundleType) {
+        return true;
+    }
+    if (bundleType.empty()) {
+        return false;
+    }
+    if (bundleType != Constants::TYPE_SKILL) {
+        return true;
+    }
+    if (hasHapPath) {
+        LOGE("--hap-list must be empty when bundleType is skill.");
+        return false;
+    }
+    return CheckSkillHspModuleTypes(hspPaths);
 }
 
 bool MultiAppPackager::CopyHapAndHspFromApp(const std::string &appPath, std::list<std::string> &selectedHapsInApp,

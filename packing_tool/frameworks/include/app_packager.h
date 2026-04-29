@@ -35,6 +35,7 @@ public:
     bool IsSharedApp(const std::string &hapPath, const std::string &hspPath);
     bool VerifyIsAppService(const std::list<std::string> &modulePathList);
     bool IsAppService(const std::string &hapPath, const std::string &hspPath);
+    bool IsSkillApp(const std::string &hapPath, const std::string &hspPath);
     bool CheckInputModulePath(const std::string &hapPath, const std::string &hspPath);
     bool IsVerifyValidInAppMode();
     bool PrepareDirectoriesAndFiles(const std::string outPath);
@@ -65,6 +66,7 @@ private:
     std::list<std::string> formattedEntryCardPathList_;
     bool isSharedApp_ = false;
     bool isAppService_ = false;
+    bool isSkillApp_ = false;
     bool isReplacePackInfo_ = true;
     std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
 };

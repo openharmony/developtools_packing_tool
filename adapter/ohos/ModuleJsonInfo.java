@@ -15,6 +15,9 @@
 
 package ohos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ModuleJsonInfo
  *
@@ -25,6 +28,7 @@ public class ModuleJsonInfo {
     private String moduleName = "";
     private boolean compressNativeLibs = false;
     private boolean generateBuildHash = false;
+    private List<String> skillProfileNames = new ArrayList<>();
 
     public String getModuleType() {
         return moduleType;
@@ -65,5 +69,13 @@ public class ModuleJsonInfo {
      */
     public boolean isShared() {
         return moduleType != null && moduleType.equals(Constants.TYPE_SHARED);
+    }
+
+    public List<String> getSkillProfileNames() {
+        return skillProfileNames;
+    }
+
+    public void setSkillProfileNames(List<String> skillProfileNames) {
+        this.skillProfileNames = skillProfileNames;
     }
 }

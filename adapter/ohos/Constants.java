@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -87,6 +87,11 @@ public class Constants {
     public static final String BUNDLE_TYPE_APP_SERVICE = "appService";
 
     /**
+     * Indicates the bundleType: appPlugin
+     */
+    public static final String BUNDLE_TYPE_APP_PLUGIN = "appPlugin";
+
+    /**
      * Indicates the json key: summary
      */
     public static final String SUMMARY = "summary";
@@ -130,6 +135,36 @@ public class Constants {
      * Indicates the module type: feature
      */
     public static final String TYPE_FEATURE = "feature";
+
+    /**
+     * Indicates the bundleType: skill
+     */
+    public static final String BUNDLE_TYPE_SKILL = "skill";
+
+    /**
+     * Indicates the module type: skill
+     */
+    public static final String TYPE_SKILL = "skill";
+
+    /**
+     * Indicates the json key: skillProfiles
+     */
+    public static final String SKILL_PROFILES = "skillProfiles";
+
+    /**
+     * Indicates the file name: SKILL.md
+     */
+    public static final String SKILL_MD = "SKILL.md";
+
+    /**
+     * Indicates the directory name: skills
+     */
+    public static final String SKILLS_DIR = "skills";
+
+    /**
+     * Indicates the directory name: scripts
+     */
+    public static final String SCRIPTS_DIR = "scripts";
 
     /**
      * Indicates the json key: generateBuildHash

@@ -38,6 +38,7 @@ ohos_unittest("hap_packager_test") {
     "../../../src/json/pt_json.cpp",
     "../../../src/log.cpp",
     "../../../src/packager.cpp",
+    "../../../src/skill_pack_helper.cpp",
     "../../../src/utils.cpp",
     "../../../src/zip_utils.cpp",
     "../../../src/zip_wrapper.cpp",

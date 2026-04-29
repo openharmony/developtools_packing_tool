@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@
 #include "constants.h"
 #include "json/json_utils.h"
 #include "log.h"
+#include "skill_pack_helper.h"
 #include "utils.h"
 #include "incremental_pack.h"
 
@@ -35,6 +36,7 @@ const std::string EMBEDDED_UI_TYPE = "embeddedUI";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 const bool DEFAULT_COMPRESS_NATIVE_LIBS = false;
 const bool DEFAULT_EXTRACT_NATIVE_LIBS = true;
+
 }
 HspPackager::HspPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -256,8 +258,8 @@ bool HspPackager::CompressHsp()
         if (!moduleJson_.GetStageModuleType(moduleType)) {
             LOGW("GetStageModuleType failed.");
         }
-        if (moduleType != Constants::TYPE_SHARED) {
-            LOGE("module type must be shared.");
+        if (moduleType != Constants::TYPE_SHARED && moduleType != Constants::TYPE_SKILL) {
+            LOGE("module type must be shared or skill.");
             return false;
         }
         if (!moduleJson_.CheckDeduplicateHar()) {
@@ -490,7 +492,8 @@ bool HspPackager::CompressHspModePartSecond(const std::string &jsonPath)
 
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end() && !it->second.empty() && JsonUtils::IsModuleJson(jsonPath)) {
-        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(
+            it->second, Constants::RESOURCES_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("HspPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
@@ -530,6 +533,9 @@ bool HspPackager::CompressHspModePartThird(const std::string &jsonPath)
             LOGE("HspPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             return false;
         }
+    }
+    if (!CompressSkillsDirectory()) {
+        return false;
     }
     return CompressHspModePartFourth();
 }
@@ -718,6 +724,26 @@ bool HspPackager::CheckKernelPermissionCompression()
     }
 
     return true;
+}
+
+bool HspPackager::CompressSkillsDirectory()
+{
+    std::string skillsPath;
+    SkillPackHelper::GetSkillsPathFromParam(parameterMap_, skillsPath);
+    if (skillsPath.empty()) {
+        return true;
+    }
+    std::list<std::map<std::string, std::string>> skillProfiles;
+    if (!moduleJson_.GetSkillProfiles(skillProfiles)) {
+        LOGE("Failed to get skillProfiles from module.json.");
+        return false;
+    }
+    std::string bundleType;
+    moduleJson_.GetStageBundleType(bundleType);
+    return SkillPackHelper::CompressSkillFiles(skillProfiles, parameterMap_, bundleType, jsonPath_,
+        [this](const std::string &sourcePath, const std::string &zipPath) {
+            return zipWrapper_.AddFileOrDirectoryToZip(sourcePath, zipPath) == ZipErrCode::ZIP_ERR_SUCCESS;
+        });
 }
 } // namespace AppPackingTool
 } // namespace OHOS

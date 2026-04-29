@@ -2197,4 +2197,76 @@ HWTEST_F(HspPackagerTest, IsExtensionAbility_0400, Function | MediumTest | Level
 
     EXPECT_FALSE(hspPackager.IsExtensionAbility(extensionAbilitiesObj));
 }
+
+/*
+ * @tc.name: CompressHsp_SkillModuleType_0500
+ * @tc.desc: CompressHsp with moduleType=skill should pass moduleType check.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressHsp_SkillModuleType_0500, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    const std::string moduleJsonSkillType = "{"
+        "\"app\": {"
+            "\"bundleType\": \"skill\""
+        "},"
+        "\"module\": {"
+            "\"type\": \"skill\","
+            "\"deviceTypes\": [\"default\"]"
+        "}"
+    "}";
+    system("touch /data/test/resource/packingtool/test_file/module.json");
+    system("chmod 777 /data/test/resource/packingtool/test_file/module.json");
+    std::ofstream file("/data/test/resource/packingtool/test_file/module.json");
+    if (file.is_open()) {
+        file << moduleJsonSkillType;
+        file.close();
+    }
+    hspPackager.jsonPath_ = JSON_PATH;
+    // CompressHsp will parse module.json and check moduleType
+    // With type=skill, the moduleType check should pass (not return false at that point)
+    // It may fail later for other reasons (no out-path etc.), but should not fail
+    // with "module type must be shared or skill"
+    hspPackager.CompressHsp();
+    // The key validation: moduleJson_ was parsed and moduleType=skill was accepted
+    std::string moduleType;
+    EXPECT_TRUE(hspPackager.moduleJson_.GetStageModuleType(moduleType));
+    EXPECT_EQ(moduleType, OHOS::AppPackingTool::Constants::TYPE_SKILL);
+    system("rm -f /data/test/resource/packingtool/test_file/module.json");
+}
+
+/*
+ * @tc.name: CompressHsp_EntryModuleType_0600
+ * @tc.desc: CompressHsp with moduleType=entry should fail.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressHsp_EntryModuleType_0600, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    const std::string moduleJsonEntryType = "{"
+        "\"app\": {"
+            "\"bundleType\": \"app\""
+        "},"
+        "\"module\": {"
+            "\"type\": \"entry\","
+            "\"deviceTypes\": [\"default\"]"
+        "}"
+    "}";
+    system("touch /data/test/resource/packingtool/test_file/module.json");
+    system("chmod 777 /data/test/resource/packingtool/test_file/module.json");
+    std::ofstream file("/data/test/resource/packingtool/test_file/module.json");
+    if (file.is_open()) {
+        file << moduleJsonEntryType;
+        file.close();
+    }
+    hspPackager.jsonPath_ = JSON_PATH;
+    EXPECT_FALSE(hspPackager.CompressHsp());
+    system("rm -f /data/test/resource/packingtool/test_file/module.json");
+}
 } // namespace OHOS

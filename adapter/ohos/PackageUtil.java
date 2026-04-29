@@ -48,6 +48,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -194,11 +195,96 @@ public class PackageUtil {
             moduleJsonInfo.setModuleType(moduleType != null ? moduleType : "");
             String moduleName = moduleObject.getString(Constants.MODULE_NAME);
             moduleJsonInfo.setModuleName(moduleName != null ? moduleName : "");
+            // Parse skillProfiles names
+            List<String> profileNames = new ArrayList<>();
+            JSONArray profileArray = moduleObject.getJSONArray(Constants.SKILL_PROFILES);
+            if (profileArray != null) {
+                for (int i = 0; i < profileArray.size(); i++) {
+                    Object item = profileArray.get(i);
+                    if (item instanceof JSONObject) {
+                        String name = ((JSONObject) item).getString(Constants.MODULE_NAME);
+                        if (name != null) {
+                            profileNames.add(name);
+                        }
+                    }
+                }
+            }
+            moduleJsonInfo.setSkillProfileNames(profileNames);
             return moduleJsonInfo;
         } catch (IOException ex) {
             LOG.warning("parseModuleJsonInfo err: " + ex.getMessage());
         }
         return moduleJsonInfo;
+    }
+
+    static List<String> getOrLoadSkillProfileNames(Utility utility) throws BundleException {
+        if (utility.isSkillProfileNamesLoaded()) {
+            return utility.getSkillProfileNames();
+        }
+        if (utility.getJsonPath().isEmpty()) {
+            utility.setSkillProfileNames(new ArrayList<>());
+            return utility.getSkillProfileNames();
+        }
+        Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
+        return getOrLoadSkillProfileNames(utility, optional.orElse(""));
+    }
+
+    static List<String> getOrLoadSkillProfileNames(Utility utility, String jsonString) throws BundleException {
+        if (utility.isSkillProfileNamesLoaded()) {
+            return utility.getSkillProfileNames();
+        }
+        List<String> profileNames = ModuleJsonUtil.parseSkillProfileNames(jsonString);
+        utility.setSkillProfileNames(profileNames);
+        return profileNames;
+    }
+
+    static String validateSkillProfileDirectories(File skillsDir, List<String> profileNames, String missingDirFormat) {
+        for (String profileName : profileNames) {
+            if (profileName.contains("/") || profileName.contains("\\")
+                    || "..".equals(profileName) || ".".equals(profileName)) {
+                return "skillProfiles name '" + profileName + "' contains invalid path characters.";
+            }
+            File skillDir = new File(skillsDir, profileName);
+            if (!skillDir.isDirectory()) {
+                return String.format(missingDirFormat, profileName);
+            }
+            if (!hasSkillMarkdown(skillDir)) {
+                return "skills/" + profileName + "/ must contain SKILL.md file (case-sensitive).";
+            }
+        }
+        return null;
+    }
+
+    private static String validateSkillProfilesInArchive(Path archivePath, List<String> profileNames,
+                                                         String missingDirFormat) {
+        for (String profileName : profileNames) {
+            if (profileName.contains("/") || profileName.contains("\\")
+                    || "..".equals(profileName) || ".".equals(profileName)) {
+                return "skillProfiles name '" + profileName + "' contains invalid path characters.";
+            }
+            String skillDirPrefix = Constants.SKILLS_DIR + Constants.SLASH + profileName + Constants.SLASH;
+            if (!hasZipEntryPrefix(archivePath, skillDirPrefix)) {
+                return String.format(missingDirFormat, profileName);
+            }
+            String skillMarkdown = skillDirPrefix + Constants.SKILL_MD;
+            if (!hasZipEntry(archivePath, skillMarkdown)) {
+                return "skills/" + profileName + "/ must contain SKILL.md file (case-sensitive).";
+            }
+        }
+        return null;
+    }
+
+    private static boolean hasSkillMarkdown(File skillDir) {
+        File[] skillFiles = skillDir.listFiles();
+        if (skillFiles == null) {
+            return false;
+        }
+        for (File file : skillFiles) {
+            if (Constants.SKILL_MD.equals(file.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static String getPackInfoContentFromPath(Path path) {
@@ -252,6 +338,37 @@ public class PackageUtil {
             LOG.warning("getZipEntryContent err: " + ex.getMessage());
         }
         return null;
+    }
+
+    private static boolean hasZipEntry(Path zipPath, String entryName) {
+        if (!Files.isRegularFile(zipPath)) {
+            return false;
+        }
+        try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+            return zipFile.getEntry(entryName) != null;
+        } catch (IOException ex) {
+            LOG.warning("hasZipEntry err: " + ex.getMessage());
+        }
+        return false;
+    }
+
+    private static boolean hasZipEntryPrefix(Path zipPath, String entryPrefix) {
+        if (!Files.isRegularFile(zipPath)) {
+            return false;
+        }
+        try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+            while (entries.hasMoreElements()) {
+                ZipArchiveEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+                if (!entry.isDirectory() && entryName != null && entryName.startsWith(entryPrefix)) {
+                    return true;
+                }
+            }
+        } catch (IOException ex) {
+            LOG.warning("hasZipEntryPrefix err: " + ex.getMessage());
+        }
+        return false;
     }
 
     /**
@@ -384,7 +501,9 @@ public class PackageUtil {
         }
         ModuleJsonInfo moduleJsonInfo = parseModuleJsonInfo(inputPath.resolve(Constants.FILE_MODULE_JSON));
         String pkgName = packageNames.get(0);
-        String suffix = moduleJsonInfo.isShared() ? Constants.HSP_SUFFIX : Constants.HAP_SUFFIX;
+        String suffix = (moduleJsonInfo.isShared()
+                || Constants.TYPE_SKILL.equals(moduleJsonInfo.getModuleType()))
+                ? Constants.HSP_SUFFIX : Constants.HAP_SUFFIX;
         Path outHap = Files.createFile(outPath.resolve(pkgName + suffix));
 
         if (moduleJsonInfo.isCompressNativeLibs()) {
@@ -410,7 +529,7 @@ public class PackageUtil {
             }
             // others
             filesToZipEntry(files, zipOut, moduleJsonInfo.isGenerateBuildHash(),
-                    moduleJsonInfo.isCompressNativeLibs());
+                    moduleJsonInfo.isCompressNativeLibs(), moduleJsonInfo.getSkillProfileNames());
         }
         return outHap;
     }
@@ -436,7 +555,7 @@ public class PackageUtil {
             }
             // others
             filesToZipEntry(files, zipCreator, moduleJsonInfo.isGenerateBuildHash(),
-                    moduleJsonInfo.isCompressNativeLibs());
+                    moduleJsonInfo.isCompressNativeLibs(), moduleJsonInfo.getSkillProfileNames());
             // write to zip
             zipCreator.writeTo(zipOut);
         } catch (InterruptedException | ExecutionException e) {
@@ -448,7 +567,8 @@ public class PackageUtil {
     }
 
     private static void filesToZipEntry(File[] files, ParallelScatterZipCreator zipCreator,
-                                        boolean genHash, boolean compress) throws BundleException {
+                                        boolean genHash, boolean compress,
+                                        List<String> skillProfileNames) throws BundleException {
         for (File file : files) {
             if (file.isFile() && !file.getName().equals(Constants.FILE_PACK_INFO)) {
                 if (genHash && file.getName().equals(Constants.FILE_MODULE_JSON)) {
@@ -456,7 +576,9 @@ public class PackageUtil {
                 }
                 pathToZipEntry(file.toPath(), Constants.NULL_DIR, zipCreator, false);
             } else if (file.isDirectory()) {
-                if (file.getName().equals(Constants.LIBS_DIR)) {
+                if (file.getName().equals(Constants.SKILLS_DIR)) {
+                    addSkillsDirToZip(file, zipCreator, compress, skillProfileNames);
+                } else if (file.getName().equals(Constants.LIBS_DIR)) {
                     pathToZipEntry(file.toPath(), Constants.LIBS_DIR + Constants.SLASH, zipCreator, compress);
                 } else {
                     pathToZipEntry(file.toPath(), file.getName() + Constants.SLASH, zipCreator, false);
@@ -579,7 +701,8 @@ public class PackageUtil {
         return Files.newInputStream(file.toPath());
     }
 
-    private static void filesToZipEntry(File[] files, ZipOutputStream zipOut, boolean genHash, boolean compress)
+    private static void filesToZipEntry(File[] files, ZipOutputStream zipOut, boolean genHash,
+                                        boolean compress, List<String> skillProfileNames)
             throws BundleException {
         for (File file : files) {
             if (file.isFile() && !file.getName().equals(Constants.FILE_PACK_INFO)) {
@@ -588,11 +711,70 @@ public class PackageUtil {
                 }
                 pathToZipEntry(file.toPath(), Constants.NULL_DIR, zipOut, false);
             } else if (file.isDirectory()) {
-                if (file.getName().equals(Constants.LIBS_DIR)) {
+                if (file.getName().equals(Constants.SKILLS_DIR)) {
+                    addSkillsDirToZip(file, zipOut, compress, skillProfileNames);
+                } else if (file.getName().equals(Constants.LIBS_DIR)) {
                     pathToZipEntry(file.toPath(), Constants.LIBS_DIR + Constants.SLASH, zipOut, compress);
                 } else {
                     pathToZipEntry(file.toPath(), file.getName() + Constants.SLASH, zipOut, false);
                 }
+            }
+        }
+    }
+
+    private static void addSkillsDirToZip(File skillsDir, ZipOutputStream zipOut, boolean compress,
+                                          List<String> skillProfileNames)
+            throws BundleException {
+        if (skillProfileNames == null || skillProfileNames.isEmpty()) {
+            return; // no skillProfiles → skip skills/ entirely
+        }
+        try {
+            for (String profileName : skillProfileNames) {
+                File skillDir = new File(skillsDir, profileName);
+                if (!skillDir.isDirectory()) {
+                    continue;
+                }
+                File[] children = skillDir.listFiles();
+                if (children == null) {
+                    continue;
+                }
+                for (File child : children) {
+                    if (child.isDirectory() && Constants.SCRIPTS_DIR.equals(child.getName())) {
+                        continue; // skip scripts/
+                    }
+                    addArchiveEntry(child,
+                            Constants.SKILLS_DIR + Constants.SLASH + profileName + "/", zipOut, compress);
+                }
+            }
+        } catch (IOException e) {
+            String errMsg = "addSkillsDirToZip failed: " + e.getMessage();
+            LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(errMsg));
+            throw new BundleException(errMsg);
+        }
+    }
+
+    private static void addSkillsDirToZip(File skillsDir, ParallelScatterZipCreator zipCreator,
+                                          boolean compress, List<String> skillProfileNames)
+            throws BundleException {
+        if (skillProfileNames == null || skillProfileNames.isEmpty()) {
+            return; // no skillProfiles → skip skills/ entirely
+        }
+        for (String profileName : skillProfileNames) {
+            File skillDir = new File(skillsDir, profileName);
+            if (!skillDir.isDirectory()) {
+                continue;
+            }
+            File[] children = skillDir.listFiles();
+            if (children == null) {
+                continue;
+            }
+            for (File child : children) {
+                if (child.isDirectory() && Constants.SCRIPTS_DIR.equals(child.getName())) {
+                    continue; // skip scripts/
+                }
+                pathToZipEntry(child.toPath(),
+                        Constants.SKILLS_DIR + Constants.SLASH + profileName + Constants.SLASH,
+                        zipCreator, compress);
             }
         }
     }
@@ -697,6 +879,216 @@ public class PackageUtil {
                 IOUtils.copy(input, zipOut, Constants.BUFFER_SIZE);
             }
             zipOut.closeEntry();
+        }
+    }
+
+    private static boolean checkSkillRulesInFastAppMode(List<String> hapPathList, List<String> hspPathList) {
+        for (String hapPath : hapPathList) {
+            if (!checkSkillRulesForFastAppPath(Paths.get(hapPath), true)) {
+                return false;
+            }
+        }
+        for (String hspPath : hspPathList) {
+            if (!checkSkillRulesForFastAppPath(Paths.get(hspPath), false)) {
+                return false;
+            }
+        }
+
+        boolean hasSkillBundleType = hasSkillBundleTypeHsp(hspPathList, PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID);
+        return checkSkillBundleConstraints(hasSkillBundleType, !hapPathList.isEmpty(), hspPathList,
+                PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID, "--hap-path", "--hsp-path");
+    }
+
+    static boolean hasSkillBundleTypeHsp(List<String> hspPathList, ErrorMsg errType) {
+        if (hspPathList.isEmpty()) {
+            return false;
+        }
+        try {
+            HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPathList.get(0));
+            return Constants.BUNDLE_TYPE_SKILL.equals(hapVerifyInfo.getBundleType());
+        } catch (BundleException e) {
+            String errMsg = "Failed to parse HSP for skill app bundleType validation: " + e.getMessage();
+            LOG.error(errType.toString(errMsg));
+            return false;
+        }
+    }
+
+    static boolean checkSkillBundleConstraints(boolean hasSkillBundleType, boolean hasHapPath,
+            List<String> hspPathList, ErrorMsg errType, String hapArgName, String hspArgName) {
+        if (!hasSkillBundleType) {
+            return true;
+        }
+        if (hasHapPath) {
+            String errMsg = hapArgName + " must be empty when bundleType is skill.";
+            LOG.error(errType.toString(errMsg));
+            return false;
+        }
+        if (hspPathList.size() > 1) {
+            String errMsg = hspArgName + " must contain only 1 HSP when bundleType is skill, but got "
+                    + hspPathList.size() + ".";
+            LOG.error(errType.toString(errMsg));
+            return false;
+        }
+        try {
+            HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPathList.get(0));
+            if (!Constants.TYPE_SKILL.equals(hapVerifyInfo.getModuleType())) {
+                String errMsg = "HSP moduleType must be skill when bundleType is skill, but got '"
+                        + hapVerifyInfo.getModuleType() + "' in " + hspPathList.get(0) + ".";
+                LOG.error(errType.toString(errMsg));
+                return false;
+            }
+        } catch (BundleException e) {
+            String errMsg = "Failed to parse HSP for skill app validation: " + e.getMessage();
+            LOG.error(errType.toString(errMsg));
+            return false;
+        }
+        return true;
+    }
+
+    static boolean collectModulePathsFromApp(String appPath, Path tempDir, List<String> modulePaths,
+            ErrorMsg errType) {
+        try (ZipFile zipFile = new ZipFile(new File(appPath))) {
+            Path appTempDir = Files.createTempDirectory(tempDir, "app_");
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+            while (entries.hasMoreElements()) {
+                ZipArchiveEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+                if (!entryName.endsWith(Constants.HAP_SUFFIX) && !entryName.endsWith(Constants.HSP_SUFFIX)) {
+                    continue;
+                }
+                String fileName = Paths.get(entryName).getFileName().toString();
+                Path outputPath = appTempDir.resolve(fileName);
+                try (InputStream input = zipFile.getInputStream(entry)) {
+                    Files.copy(input, outputPath);
+                }
+                modulePaths.add(outputPath.toString());
+            }
+            return true;
+        } catch (IOException e) {
+            String errMsg = "Failed to extract HAP/HSP from app for skill validation: " + e.getMessage();
+            LOG.error(errType.toString(errMsg));
+            return false;
+        }
+    }
+
+    static boolean extractAndCacheModulesFromAppList(Utility utility, ErrorMsg errType) {
+        if (utility.getFormattedAppList().isEmpty()) {
+            return true;
+        }
+        if (!utility.getMultiAppExtractTempDir().isEmpty()) {
+            return true;
+        }
+        Path tempDir = null;
+        try {
+            tempDir = Files.createTempDirectory("multiapp_skill_verify_");
+            utility.setMultiAppExtractTempDir(tempDir.toString());
+            for (String appPath : utility.getFormattedAppList()) {
+                List<String> modulePaths = new ArrayList<>();
+                if (!collectModulePathsFromApp(appPath, tempDir, modulePaths, errType)) {
+                    cleanupMultiAppExtractCache(utility);
+                    return false;
+                }
+                utility.putMultiAppExtractedModules(appPath, modulePaths);
+            }
+            return true;
+        } catch (IOException e) {
+            String errMsg = "Failed to create temp directory for multiApp skill validation: " + e.getMessage();
+            LOG.error(errType.toString(errMsg));
+            if (tempDir != null) {
+                utility.setMultiAppExtractTempDir(tempDir.toString());
+            }
+            cleanupMultiAppExtractCache(utility);
+            return false;
+        }
+    }
+
+    static void cleanupMultiAppExtractCache(Utility utility) {
+        String tempDirString = utility.getMultiAppExtractTempDir();
+        if (!tempDirString.isEmpty()) {
+            Path tempDir = Paths.get(tempDirString);
+            if (Files.exists(tempDir)) {
+                Path normalizedTempDir = tempDir.normalize();
+                try (Stream<Path> walk = Files.walk(tempDir)) {
+                    walk.sorted((a, b) -> b.compareTo(a)).forEach(path -> {
+                        try {
+                            Path normalizedPath = path.normalize();
+                            if (normalizedPath.startsWith(normalizedTempDir)) {
+                                Files.deleteIfExists(path);
+                            }
+                        } catch (IOException ex) {
+                            LOG.warning("cleanupMultiAppExtractCache delete path failed: " + path + ", "
+                                    + ex.getMessage());
+                        }
+                    });
+                } catch (IOException ex) {
+                    LOG.warning("cleanupMultiAppExtractCache walk temp dir failed: " + tempDir + ", "
+                            + ex.getMessage());
+                }
+            }
+        }
+        utility.clearMultiAppExtractedModulesCache();
+    }
+
+    private static boolean checkSkillRulesForFastAppPath(Path path, boolean rejectSkillModuleType) {
+        if (!Files.isDirectory(path) && !Files.isRegularFile(path)) {
+            return true;
+        }
+        String content = getModuleJsonContentFromPath(path);
+        if (content == null) {
+            return true;
+        }
+        try {
+            JSONObject jsonObject = JSON.parseObject(
+                    new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
+            if (jsonObject == null) {
+                return true;
+            }
+            JSONObject moduleObj = jsonObject.getJSONObject(Constants.MODULE);
+            if (moduleObj == null) {
+                return true;
+            }
+            String moduleType = moduleObj.getString(Constants.MODULE_TYPE);
+            if (rejectSkillModuleType && Constants.TYPE_SKILL.equals(moduleType)) {
+                String errMsg = "moduleType 'skill' is not allowed in --hap-path, use --hsp-path instead.";
+                LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+            JSONObject appObj = jsonObject.getJSONObject(Constants.APP);
+            String bundleType = appObj != null ? appObj.getString(Constants.BUNDLE_TYPE) : "";
+            List<String> profileNames = ModuleJsonUtil.parseSkillProfileNames(content);
+            if (profileNames.isEmpty()) {
+                return true;
+            }
+            if (Constants.BUNDLE_TYPE_SHARED.equals(bundleType)
+                    || Constants.BUNDLE_TYPE_APP_SERVICE.equals(bundleType)
+                    || Constants.BUNDLE_TYPE_APP_PLUGIN.equals(bundleType)) {
+                String errMsg = "bundleType '" + bundleType + "' does not support skills in fastApp mode.";
+                LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+            String errMsg;
+            if (Files.isDirectory(path)) {
+                File skillsDir = path.resolve(Constants.SKILLS_DIR).toFile();
+                if (!skillsDir.isDirectory()) {
+                    errMsg = "skillProfiles is configured but skills/ directory not found.";
+                    LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString(errMsg));
+                    return false;
+                }
+                errMsg = validateSkillProfileDirectories(
+                        skillsDir, profileNames, "skillProfiles has '%s' but no matching skills directory found.");
+            } else {
+                errMsg = validateSkillProfilesInArchive(
+                        path, profileNames, "skillProfiles has '%s' but no matching skills directory found.");
+            }
+            if (errMsg != null) {
+                LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+            return true;
+        } catch (BundleException | JSONException | IOException e) {
+            String errMsg = "Failed to parse module.json for fastApp skill validation: " + e.getMessage();
+            LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
         }
     }
 
@@ -808,6 +1200,10 @@ public class PackageUtil {
         if (!checkBundleTypeConsistency(
                 utility.getFormattedHapPathList(), utility.getFormattedHspPathList(), utility)) {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("The bundleType is inconsistent."));
+            return false;
+        }
+        if (!checkSkillRulesInFastAppMode(utility.getFormattedHapPathList(),
+                utility.getFormattedHspPathList())) {
             return false;
         }
         if (!isPackInfoValid(Paths.get(utility.getPackInfoPath()),
@@ -973,7 +1369,8 @@ public class PackageUtil {
             packages.add(packageName);
         }
         if (!allPackageSet.equals(packages)) {
-            LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("Package name is not same between module "
+            LOG.error(PackingToolErrMsg.PACK_INFO_INVALID.toString("" +
+                    "Package name is not same between module "
                     + "and app pack.info."));
             return false;
         }
