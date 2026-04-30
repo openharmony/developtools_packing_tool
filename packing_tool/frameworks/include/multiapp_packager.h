@@ -45,6 +45,8 @@ public:
     void WritePackInfo(const std::string &filePath, const std::string &packInfoStr);
     bool GetAndCheckOutPath(std::string &outPath);
     bool GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr, std::string &hspListStr, std::string &appListStr);
+    bool IsSkillApp();
+    bool CheckSkillRules();
 
 protected:
     int32_t InitAllowedParam() override;
@@ -57,6 +59,7 @@ private:
     std::list<std::string> formattedAppList_;
     std::list<std::string> formattedHapAndHspList_;
     std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
+    bool isSkillApp_ = false;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -876,12 +876,15 @@ class HapVerify {
                 entryHapVerifyInfos.add(hapVerifyInfo);
             } else if (FEATURE.equals(hapVerifyInfo.getModuleType())) {
                 featureHapVerifyInfos.add(hapVerifyInfo);
-            } else if (!SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())) {
+            } else if (!SHARED_LIBRARY.equals(hapVerifyInfo.getModuleType())
+                    && !Constants.TYPE_SKILL.equals(hapVerifyInfo.getModuleType())) {
                 LOG.warning("Input wrong type module.");
             }
         }
         if (hapVerifyInfos.isEmpty()
-                || (entryHapVerifyInfos.isEmpty() && (!SHARED_LIBRARY.equals(hapVerifyInfos.get(0).getBundleType())))) {
+                || (entryHapVerifyInfos.isEmpty()
+                && (!SHARED_LIBRARY.equals(hapVerifyInfos.get(0).getBundleType()))
+                && (!Constants.BUNDLE_TYPE_SKILL.equals(hapVerifyInfos.get(0).getBundleType())))) {
             LOG.warning("Warning: has no entry module.");
         }
 

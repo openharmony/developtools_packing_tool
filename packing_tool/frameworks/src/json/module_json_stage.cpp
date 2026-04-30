@@ -89,6 +89,10 @@ const std::string MULTI_APP_MODE_TYPE = "multiAppModeType";
 const std::string MULTI_APP_MODE_NUMBER = "maxCount";
 const std::string GENERATE_BUILD_HASH = "generateBuildHash";
 const std::string BUILD_HASH = "buildHash";
+const std::string SKILL_PROFILES = "skillProfiles";
+const std::string SKILL_NAME = "name";
+const std::string SKILL_ABILITY_NAME = "abilityName";
+const std::string TYPE_SKILL = "skill";
 }
 
 bool ModuleJson::SetStageVersionCode(const int32_t& versionCode)
@@ -1063,5 +1067,49 @@ bool ModuleJson::HasExecutableBinariesByModuleObj(std::unique_ptr<PtJson>& modul
     }
     return executablesObj->GetSize() > 0;
 }
+
+bool ModuleJson::GetSkillProfiles(std::list<std::map<std::string, std::string>>& skillProfiles)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("GetModuleObject failed!");
+        return false;
+    }
+    if (!moduleObj->Contains(SKILL_PROFILES.c_str())) {
+        return true;
+    }
+    std::unique_ptr<PtJson> skillProfilesObj;
+    if (moduleObj->GetArray(SKILL_PROFILES.c_str(), &skillProfilesObj) != Result::SUCCESS) {
+        LOGE("Get skillProfiles array failed!");
+        return false;
+    }
+    if (!skillProfilesObj) {
+        return true;
+    }
+    for (int32_t i = 0; i < skillProfilesObj->GetSize(); ++i) {
+        std::unique_ptr<PtJson> profileObj = skillProfilesObj->Get(i);
+        if (!profileObj) {
+            LOGE("Get skillProfile[%d] failed!", i);
+            return false;
+        }
+        std::map<std::string, std::string> profileMap;
+        if (profileObj->Contains(SKILL_NAME.c_str())) {
+            std::string name;
+            if (profileObj->GetString(SKILL_NAME.c_str(), &name) == Result::SUCCESS) {
+                profileMap[SKILL_NAME] = name;
+            }
+        }
+        if (profileObj->Contains(SKILL_ABILITY_NAME.c_str())) {
+            std::string abilityName;
+            if (profileObj->GetString(SKILL_ABILITY_NAME.c_str(), &abilityName) == Result::SUCCESS) {
+                profileMap[SKILL_ABILITY_NAME] = abilityName;
+            }
+        }
+        skillProfiles.push_back(profileMap);
+    }
+    return true;
+}
+
+
 } // namespace AppPackingTool
 } // namespace OHOS

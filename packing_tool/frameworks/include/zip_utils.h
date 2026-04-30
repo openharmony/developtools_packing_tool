@@ -39,6 +39,7 @@ public:
 
     static bool IsFileExistsInZip(const std::string& zipFilePath, const std::string& filename);
     static bool IsFileNameExistsInZip(const std::string& zipFilePath, const std::string& filename);
+    static bool IsPathPrefixExistsInZip(const std::string& zipFilePath, const std::string& pathPrefix);
 
     static bool GetFileContentFromZip(const std::string& zipFilePath, const std::string& filename,
         std::string& fileContent);

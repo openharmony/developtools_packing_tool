@@ -196,6 +196,8 @@ public class JsonUtil {
     private static final String PROXY_DATA = "proxyData";
     private static final String PROXY_DATA_URI = "uri";
     private static final String REQUIRED_DEVICE_FEATURES = "requiredDeviceFeatures";
+    private static final String ABILITY_NAME = "abilityName";
+    private static final String SRC_ENTRIES = "srcEntries";
 
 
     /**
@@ -1156,7 +1158,39 @@ public class JsonUtil {
         moduleInfo.definePermissions = parseDefinePermissions(moduleJson, data);
         moduleInfo.moduleAtomicService = parseModuleAtomicService(moduleJson);
         moduleInfo.setRequiredDeviceFeatures(parseRequiredDeviceFeatures(moduleJson));
+        moduleInfo.skillProfiles = parseSkillProfiles(moduleJson);
         return moduleInfo;
+    }
+
+    private static List<SkillProfileInfo> parseSkillProfiles(JSONObject moduleJson) {
+        List<SkillProfileInfo> skillProfiles = new ArrayList<>();
+        if (!moduleJson.containsKey(Constants.SKILL_PROFILES)) {
+            return skillProfiles;
+        }
+        JSONArray profileArray = moduleJson.getJSONArray(Constants.SKILL_PROFILES);
+        if (profileArray == null) {
+            return skillProfiles;
+        }
+        for (int i = 0; i < profileArray.size(); i++) {
+            JSONObject profileObj = profileArray.getJSONObject(i);
+            if (profileObj == null) {
+                continue;
+            }
+            SkillProfileInfo profileInfo = new SkillProfileInfo();
+            profileInfo.name = getJsonString(profileObj, NAME, profileInfo.name);
+            profileInfo.abilityName = getJsonString(profileObj, ABILITY_NAME, profileInfo.abilityName);
+            profileInfo.srcEntries = parseStringArrayField(profileObj, SRC_ENTRIES);
+            profileInfo.permissions = parseStringArrayField(profileObj, PERMISSIONS);
+            skillProfiles.add(profileInfo);
+        }
+        return skillProfiles;
+    }
+
+    private static List<String> parseStringArrayField(JSONObject jsonObject, String key) {
+        if (jsonObject == null || !jsonObject.containsKey(key)) {
+            return new ArrayList<>();
+        }
+        return parseJsonArray(getJsonString(jsonObject, key), String.class);
     }
 
     private static Map<String, List<String>> parseRequiredDeviceFeatures(JSONObject jsonObject) {

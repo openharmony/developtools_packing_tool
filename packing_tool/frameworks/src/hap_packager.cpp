@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@
 #include "constants.h"
 #include "json/json_utils.h"
 #include "log.h"
+#include "skill_pack_helper.h"
 #include "utils.h"
 #include "incremental_pack.h"
 
@@ -32,6 +33,7 @@ const std::string PERMISSION_SUPPORT_PLUGIN = "ohos.permission.kernel.SUPPORT_PL
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 const bool DEFAULT_COMPRESS_NATIVE_LIBS = false;
 const bool DEFAULT_EXTRACT_NATIVE_LIBS = true;
+
 }
 HapPackager::HapPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
@@ -304,6 +306,10 @@ bool HapPackager::IsHapPathValid()
         LOGE("HapPackager::isArgsValidInHapMode an-path is invalid.");
         return false;
     }
+    if (IsHapPathValid(Constants::PARAM_SKILLS_PATH)) {
+        LOGE("HapPackager::isArgsValidInHapMode skills-path is invalid.");
+        return false;
+    }
     return true;
 }
 
@@ -339,6 +345,10 @@ bool HapPackager::CompressHap()
         std::string moduleType;
         if (!moduleJson_.GetStageModuleType(moduleType)) {
             LOGW("GetStageModuleType failed");
+        }
+        if (moduleType == Constants::TYPE_SKILL) {
+            LOGE("moduleType 'skill' is not allowed in HAP mode, use HSP mode.");
+            return false;
         }
         if (Constants::TYPE_SHARED == moduleType) {
             LOGW("Compress mode is hap, but module type is shared.");
@@ -504,6 +514,9 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
         }
     }
     IncrementalPack::DeleteExistSrcTempDir();
+    if (!CompressSkillsDirectory()) {
+        return false;
+    }
     if (!AddParamFileToZip() || !AddResFileAndDirLsitToZip() || !AddPkgAndBinFileToZipForStageMaode()) {
         return false;
     }
@@ -817,6 +830,21 @@ bool HapPackager::CheckKernelPermissionCompression()
     }
 
     return true;
+}
+
+bool HapPackager::CompressSkillsDirectory()
+{
+    std::list<std::map<std::string, std::string>> skillProfiles;
+    if (!moduleJson_.GetSkillProfiles(skillProfiles)) {
+        LOGE("Failed to get skillProfiles from module.json.");
+        return false;
+    }
+    std::string bundleType;
+    moduleJson_.GetStageBundleType(bundleType);
+    return SkillPackHelper::CompressSkillFiles(skillProfiles, parameterMap_, bundleType, jsonPath_,
+        [this](const std::string &sourcePath, const std::string &zipPath) {
+            return zipWrapper_.AddFileOrDirectoryToZip(sourcePath, zipPath) == ZipErrCode::ZIP_ERR_SUCCESS;
+        });
 }
 } // namespace AppPackingTool
 } // namespace OHOS

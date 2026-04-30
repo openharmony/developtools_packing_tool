@@ -30,6 +30,22 @@ import java.util.List;
 import java.util.Map;
 
 class ModuleJsonUtil {
+    private static void checkSkillBundleTypePair(String moduleName, String moduleType, String bundleType)
+            throws BundleException {
+        boolean hasSkillModuleType = Constants.TYPE_SKILL.equals(moduleType);
+        boolean hasSkillBundleType = Constants.BUNDLE_TYPE_SKILL.equals(bundleType);
+        if (hasSkillModuleType == hasSkillBundleType) {
+            return;
+        }
+        String errMsg = "Invalid skill configuration in module '" + moduleName + "': "
+                + "'moduleType' and 'bundleType' must both be 'skill' when using skill. "
+                + "If this is a skill module, package it in HSP mode instead of HAP mode.";
+        String solution = "Set both 'module.moduleType' and 'app.bundleType' to 'skill', or remove 'skill' from both. "
+                + "Use HSP mode for skill modules.";
+        LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
+        throw new BundleException(errMsg);
+    }
+
     private static JSONObject parseJsonObject(String jsonString) {
         try {
             return JSON.parseObject(
@@ -1413,6 +1429,7 @@ class ModuleJsonUtil {
             return APP;
         } else {
             String bundleType = getJsonString(appObj, BUNDLE_TYPE);
+            checkSkillBundleTypePair(moduleName, type, bundleType);
             if (bundleType.equals(APP)) {
                 if (installationFree) {
                     String errMsg =
@@ -1449,10 +1466,12 @@ class ModuleJsonUtil {
                     throw new BundleException(errMsg);
                 }
                 return APP_PLUGIN;
+            } else if (Constants.BUNDLE_TYPE_SKILL.equals(bundleType)) {
+                return Constants.BUNDLE_TYPE_SKILL;
             } else {
                 String errMsg = "'bundleType' is invalid in app.json.";
                 String solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one of" +
-                        "the valid types: 'app', 'atomicService', 'shared', or 'appService'.";
+                        "the valid types: 'app', 'atomicService', 'shared', 'appService', or 'skill'.";
                 LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                 throw new BundleException(errMsg);
             }
@@ -2194,10 +2213,12 @@ class ModuleJsonUtil {
                 LOG.error("installationFree must be false when bundleType is appPlugin.");
                 return false;
             }
+        } else if (Constants.BUNDLE_TYPE_SKILL.equals(bundleType)) {
+            return true;
         } else {
             String errMsg = "'bundleType' is invalid in the app.json.";
             String solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one of " +
-                    "the valid types: 'app', 'atomicService', 'shared', or 'appService'.";
+                    "the valid types: 'app', 'atomicService', 'shared', 'appService', 'appPlugin', or 'skill'.";
             LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
             return false;
         }
@@ -2295,4 +2316,49 @@ class ModuleJsonUtil {
             }
         }
     }
+
+    /**
+     * parse skillProfiles from module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return list of skillProfile JSONObjects
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static List<JSONObject> parseSkillProfiles(String jsonString) throws BundleException {
+        List<JSONObject> profiles = new ArrayList<>();
+        if (jsonString == null || jsonString.isEmpty()) {
+            return profiles;
+        }
+        JSONObject moduleObj = getModuleObj(jsonString);
+        if (!moduleObj.containsKey(Constants.SKILL_PROFILES)) {
+            return profiles;
+        }
+        JSONArray profileArray = moduleObj.getJSONArray(Constants.SKILL_PROFILES);
+        if (profileArray == null) {
+            return profiles;
+        }
+        for (int i = 0; i < profileArray.size(); ++i) {
+            profiles.add(profileArray.getJSONObject(i));
+        }
+        return profiles;
+    }
+
+    /**
+     * parse skillProfiles names from module.json
+     *
+     * @param jsonString is the file content of module.json
+     * @return list of skill profile names
+     * @throws BundleException Throws this exception if the json is not standard.
+     */
+    public static List<String> parseSkillProfileNames(String jsonString) throws BundleException {
+        List<String> profileNames = new ArrayList<>();
+        for (JSONObject profile : parseSkillProfiles(jsonString)) {
+            String name = profile.getString(Constants.MODULE_NAME);
+            if (name != null) {
+                profileNames.add(name);
+            }
+        }
+        return profileNames;
+    }
+
 }
