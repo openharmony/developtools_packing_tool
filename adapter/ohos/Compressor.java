@@ -124,6 +124,8 @@ public class Compressor {
     private static final String JS_PATH = "js/";
     private static final String ETS_PATH = "ets/";
     private static final String HNP_PATH = "hnp/";
+    private static final String SKILLS_DIR_NAME = "skills/";
+    private static final String SCRIPTS_DIR_NAME = "scripts";
     private static final String TEMP_HAP_DIR = "tempHapDir";
     private static final String TEMP_HSP_DIR = "tempHspDir";
     private static final String TEMP_SELECTED_HAP_DIR = "tempSelectedHapDir";
@@ -531,6 +533,7 @@ public class Compressor {
             Utility.closeStream(checkedOut);
             Utility.closeStream(fileOut);
             IncrementalPack.deleteExistSrcFile(existSrcCopiedDir);
+            PackageUtil.cleanupMultiAppExtractCache(utility);
         }
 
         if (compressResult && !checkAppAtomicServiceCompressedSizeValid(utility)) {
@@ -625,8 +628,8 @@ public class Compressor {
                 throw new BundleException("Compress hsp failed.");
             }
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
-            if (!TYPE_SHARED.equals(moduleType)) {
-                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Module type must be shared."));
+            if (!TYPE_SHARED.equals(moduleType) && !Constants.TYPE_SKILL.equals(moduleType)) {
+                LOG.error(PackingToolErrMsg.COMPRESS_HSP_FAILED.toString("Module type must be shared or skill."));
                 throw new BundleException("Compress hsp failed.");
             }
             // check deduplicateHar
@@ -1453,6 +1456,8 @@ public class Compressor {
             pathToFile(utility, utility.getEtsPath(), etsPath, false);
         }
 
+        compressSkillsDirectory(utility);
+
         if (!utility.getHnpPath().isEmpty() && isModuleJSON(utility.getJsonPath())) {
             String hnpPath = HNP_PATH;
             pathToFile(utility, utility.getHnpPath(), hnpPath, false);
@@ -2025,7 +2030,7 @@ public class Compressor {
         try {
             for (String appPath : utility.getFormattedAppList()) {
                 // select hap in app
-                finalAppPackInfo = selectHapInApp(appPath, seletedHaps, tempDir, finalAppPackInfo);
+                finalAppPackInfo = selectHapInApp(utility, appPath, seletedHaps, tempDir, finalAppPackInfo);
             }
         } catch (BundleException | IOException e) {
             String errMsg = "Dispose app exist Exception (BundleException | IOException): " + e.getMessage();
@@ -2042,11 +2047,11 @@ public class Compressor {
      * @param selectedHaps is list of packInfos
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static String selectHapInApp(String appPath, List<String> selectedHaps, String tempDir,
+    private static String selectHapInApp(Utility utility, String appPath, List<String> selectedHaps, String tempDir,
                                          String finalAppPackInfo) throws BundleException, IOException {
         List<String> selectedHapsInApp = new ArrayList<>();
         // classify hap in app
-        copyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
+        copyHapAndHspFromApp(utility, appPath, selectedHapsInApp, selectedHaps, tempDir);
         // rebuild pack.info
         String packInfoStr = FileUtils.getJsonInZips(new File(appPath), PACKINFO_NAME);
         if (packInfoStr.isEmpty()) {
@@ -2074,8 +2079,14 @@ public class Compressor {
      * @param selectedHaps is the list of haps and hsps selected in input
      * @throws BundleException FileNotFoundException|IOException.
      */
-    private static void copyHapAndHspFromApp(String appPath, List<String> selectedHapsInApp, List<String> selectedHaps,
+    private static void copyHapAndHspFromApp(Utility utility, String appPath, List<String> selectedHapsInApp,
+                                             List<String> selectedHaps,
                                              String tempDir) throws BundleException {
+        List<String> extractedModulePaths = utility.getMultiAppExtractedModules(appPath);
+        if (!extractedModulePaths.isEmpty()) {
+            copyExtractedModulesFromApp(extractedModulePaths, selectedHapsInApp, selectedHaps, tempDir);
+            return;
+        }
         ZipInputStream zipInput = null;
         ZipFile zipFile = null;
         OutputStream outputStream = null;
@@ -2120,6 +2131,29 @@ public class Compressor {
             Utility.closeStream(zipFile);
             Utility.closeStream(outputStream);
             Utility.closeStream(inputStream);
+        }
+    }
+
+    private static void copyExtractedModulesFromApp(List<String> extractedModulePaths, List<String> selectedHapsInApp,
+                                                    List<String> selectedHaps, String tempDir) throws BundleException {
+        for (String modulePath : extractedModulePaths) {
+            File moduleFile = new File(modulePath);
+            String fileName = moduleFile.getName();
+            if (selectedHaps.contains(fileName)) {
+                LOG.error(PackingToolErrMsg.COMPRESS_FILE_DUPLICATE.toString("Copy hap from app file exist hap " +
+                        "with duplicate file names. file is " + fileName + "."));
+                throw new BundleException("Compressor::copyHapFromApp file duplicated, file is " + fileName + ".");
+            }
+            File outputFile = new File(tempDir + File.separator + fileName);
+            try {
+                FileUtils.copyFile(moduleFile, outputFile);
+            } catch (IOException e) {
+                String errMsg = "Copy hap and hsp from app exist IOException: " + e.getMessage();
+                LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(errMsg));
+                throw new BundleException(errMsg);
+            }
+            selectedHaps.add(outputFile.getName());
+            selectedHapsInApp.add(outputFile.getName());
         }
     }
 
@@ -3596,6 +3630,8 @@ public class Compressor {
             pathToFile(utility, utility.getEtsPath(), etsPath, false);
         }
 
+        compressSkillsDirectory(utility);
+
         if (!utility.getRpcidPath().isEmpty()) {
             String rpcidPath = NULL_DIR_NAME;
             pathToFile(utility, utility.getRpcidPath(), rpcidPath, false);
@@ -4606,6 +4642,42 @@ public class Compressor {
         }
 
         return true;
+    }
+
+    private void compressSkillsDirectory(Utility utility) throws BundleException {
+        if (utility.getSkillsPath().isEmpty()) {
+            return;
+        }
+        File skillsDir = new File(utility.getSkillsPath());
+        if (!skillsDir.isDirectory()) {
+            return;
+        }
+        List<String> profileNames = PackageUtil.getOrLoadSkillProfileNames(utility);
+        if (profileNames.isEmpty()) {
+            return;
+        }
+        for (String profileName : profileNames) {
+            File skillDir = new File(skillsDir, profileName);
+            String skillZipBase = SKILLS_DIR_NAME + profileName + "/";
+            compressSkillDirFiltered(utility, skillDir, skillZipBase);
+        }
+    }
+
+    private void compressSkillDirFiltered(Utility utility, File skillDir, String zipBase) throws BundleException {
+        File[] children = skillDir.listFiles();
+        if (children == null) {
+            return;
+        }
+        for (File child : children) {
+            if (child.isDirectory() && SCRIPTS_DIR_NAME.equals(child.getName())) {
+                continue; // skip scripts/ directory
+            }
+            if (child.isDirectory()) {
+                compressDirectory(utility, child, zipBase, false);
+            } else {
+                pathToFile(utility, child.getAbsolutePath(), zipBase, false);
+            }
+        }
     }
 
 }

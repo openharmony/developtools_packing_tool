@@ -164,6 +164,52 @@ bool ZipUtils::IsFileNameExistsInZip(const std::string& zipFilePath, const std::
     return isExist;
 }
 
+bool ZipUtils::IsPathPrefixExistsInZip(const std::string& zipFilePath, const std::string& pathPrefix)
+{
+    fs::path fsZipFilePath(zipFilePath);
+    if (!fs::is_regular_file(fsZipFilePath)) {
+        LOGE("Zip file is not a regular file!");
+        return false;
+    }
+    unzFile unzipFile = unzOpen64(zipFilePath.c_str());
+    if (unzipFile == nullptr) {
+        LOGE("Open zip file failed! zipFilePath=%s", zipFilePath.c_str());
+        return false;
+    }
+    unz_global_info64 unzGlobalInfo;
+    if (unzGetGlobalInfo64(unzipFile, &unzGlobalInfo) != UNZ_OK) {
+        LOGE("Get zip global info! zipFilePath=%s", zipFilePath.c_str());
+        unzClose(unzipFile);
+        return false;
+    }
+    char filePathInZip[MAX_ZIP_BUFFER_SIZE] = {0};
+    unz_file_info64 fileInfo;
+    int ret = 0;
+    bool isExist = false;
+    for (size_t i = 0; i < unzGlobalInfo.number_entry; ++i) {
+        if (unzGetCurrentFileInfo64(unzipFile, &fileInfo, filePathInZip, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) !=
+            UNZ_OK) {
+            LOGE("Get current file info in zip failed!");
+            break;
+        }
+        std::string strFilePathInZip(filePathInZip);
+        if (fileInfo.external_fa != ZIP_FILE_ATTR_DIRECTORY &&
+            strFilePathInZip.rfind(pathPrefix, 0) == 0) {
+            isExist = true;
+            break;
+        }
+        ret = unzGoToNextFile(unzipFile);
+        if (ret == UNZ_END_OF_LIST_OF_FILE) {
+            break;
+        } else if (ret != UNZ_OK) {
+            LOGE("Go to next file in zip failed!");
+            break;
+        }
+    }
+    unzClose(unzipFile);
+    return isExist;
+}
+
 bool ZipUtils::GetFileContentFromZip(const std::string& zipFilePath, const std::string& filename,
     std::string& fileContent)
 {

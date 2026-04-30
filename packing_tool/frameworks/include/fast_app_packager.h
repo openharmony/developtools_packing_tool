@@ -64,6 +64,12 @@ public:
     std::string GetBundleTypeFromPath(const std::string &filePath);
     std::string GetModuleJsonContentFromPath(const fs::path &path);
     std::string ReadFileToString(const fs::path &path);
+    bool CheckSkillRules(const std::list<std::string> &hapPathList,
+        const std::list<std::string> &hspPathList);
+    bool CheckSkillRulesForPath(const std::string &pathValue, bool isHapPath);
+    bool CheckSkillBundleTypeConstraints(const std::list<std::string> &hapPathList,
+        const std::list<std::string> &hspPathList, bool hasSkillBundleType);
+    bool IsSkillHspModule(const std::string &pathValue);
     std::string GetBundleTypeFromModuleJson(const std::string &moduleJsonContent);
     std::string GetPackInfoContentFromPath(const fs::path &path);
     std::string UzipHspAndRemovePackInfo(const std::string& hspPath, const std::string& unzipPathString);
@@ -78,6 +84,7 @@ private:
     bool isSharedApp_ = false;
     bool compressNativeLibs_ = false;
     bool isGenerateBuildHash_ = false;
+    std::set<std::string> skillProfileNames_;
     std::string packInfoPath_;
     std::list<std::string> formattedEntryCardPathList_;
     std::list<std::string> formattedHapPathList_;

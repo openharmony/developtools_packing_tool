@@ -72,6 +72,7 @@ ohos_executable("ohos_packing_tool") {
     "src/res_packager.cpp",
     "src/scan_statdulpicate.cpp",
     "src/shell_command.cpp",
+    "src/skill_pack_helper.cpp",
     "src/unzip_wrapper.cpp",
     "src/utils.cpp",
     "src/version_normalize.cpp",

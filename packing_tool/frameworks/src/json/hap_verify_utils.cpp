@@ -19,6 +19,7 @@
 #include <optional>
 #include <set>
 
+#include "constants.h"
 #include "hap_verify_info.h"
 #include "log.h"
 #include "utils.h"
@@ -498,12 +499,14 @@ bool HapVerifyUtils::CheckEntryIsValid(const std::list<HapVerifyInfo>& hapVerify
             entryHapVerifyInfos.push_back(hapVerifyInfo);
         } else if (hapVerifyInfo.GetModuleType() == FEATURE) {
             featureHapVerifyInfos.push_back(hapVerifyInfo);
-        } else if (hapVerifyInfo.GetModuleType() != SHARED_LIBRARY) {
+        } else if (hapVerifyInfo.GetModuleType() != SHARED_LIBRARY &&
+            hapVerifyInfo.GetModuleType() != Constants::TYPE_SKILL) {
             LOGW("Input wrong type module.");
         }
     }
     if (hapVerifyInfos.empty() ||
-        (entryHapVerifyInfos.empty() && (*hapVerifyInfos.begin()).GetBundleType() != SHARED_LIBRARY)) {
+        (entryHapVerifyInfos.empty() && (*hapVerifyInfos.begin()).GetBundleType() != SHARED_LIBRARY &&
+            (*hapVerifyInfos.begin()).GetBundleType() != Constants::TYPE_SKILL)) {
         LOGW("has no entry module.");
     }
     for (auto iter1 = entryHapVerifyInfos.begin(); iter1 != entryHapVerifyInfos.end(); iter1++) {

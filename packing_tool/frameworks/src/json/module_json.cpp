@@ -75,6 +75,7 @@ const std::string PRELOADS = "preloads";
 const std::string SHARED = "shared";
 const std::string APP_SERVICE = "appService";
 const std::string APP_PLUGIN = "appPlugin";
+const std::string TYPE_SKILL = "skill";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
 const std::string TARGET_MODULE_NAME = "targetModuleName";
 const std::string TARGET_PRIORITY = "targetPriority";
@@ -871,6 +872,14 @@ bool ModuleJson::GetDependencyItemsByModuleObj(std::unique_ptr<PtJson>& moduleOb
 bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::string& moduleType,
     const std::string& bundleType, const bool& installationFree)
 {
+    const bool hasSkillType = moduleType.compare(TYPE_SKILL) == 0;
+    const bool hasSkillBundleType = bundleType.compare(TYPE_SKILL) == 0;
+    if (hasSkillType != hasSkillBundleType) {
+        LOGE("Invalid skill configuration: moduleType and bundleType must both be 'skill' when using skill. "
+            "If this is a skill module, package it in HSP mode instead of HAP mode. "
+            "[bundleType=%s][moduleType=%s]", bundleType.c_str(), moduleType.c_str());
+        return false;
+    }
     if (bundleType.compare(APP) == 0) {
         if (installationFree) {
             LOGE("installationFree must be false in module %s when bundleType is app", moduleName.c_str());
@@ -899,6 +908,8 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
                 bundleType.c_str(), moduleType.c_str());
             return false;
         }
+        return true;
+    } else if (bundleType.compare(TYPE_SKILL) == 0) {
         return true;
     }
     return false;
@@ -1201,6 +1212,8 @@ bool ModuleJson::CheckAtomicServiceInstallationFree()
             LOGE("installationfree must be true in module %s when bundleType is atomicService", moduleName.c_str());
             return false;
         }
+    } else if (bundleType.compare(TYPE_SKILL) == 0) {
+        return true;
     } else {
         LOGE("bundleType is not app/shared/appService/atomicService/appPlugin");
         return false;

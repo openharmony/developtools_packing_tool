@@ -44,6 +44,7 @@ group("unittest") {
     "packager_test:unittest",
     "res_packager_test:unittest",
     "shell_command_test:unittest",
+    "skill_test:unittest",
     "unzip_wrapper_test:unittest",
     "utils_Test:unittest",
     "version_normalize_test:unittest",

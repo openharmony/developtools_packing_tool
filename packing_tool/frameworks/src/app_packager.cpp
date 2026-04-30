@@ -24,6 +24,82 @@
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+bool GetFirstBundleTypeFromPathList(const std::list<std::string> &pathList, std::string &bundleType)
+{
+    for (const auto &path : pathList) {
+        HapVerifyInfo hapVerifyInfo;
+        if (!ModuleJsonUtils::GetStageHapVerifyInfo(path, hapVerifyInfo)) {
+            LOGE("Failed to parse package '%s' for bundleType validation.", path.c_str());
+            return false;
+        }
+        bundleType = hapVerifyInfo.GetBundleType();
+        return true;
+    }
+    return false;
+}
+
+bool CheckSkillModuleTypes(const std::list<std::string> &hspPathList)
+{
+    for (const auto &hsp : hspPathList) {
+        HapVerifyInfo hapVerifyInfo;
+        if (!ModuleJsonUtils::GetStageHapVerifyInfo(hsp, hapVerifyInfo)) {
+            LOGE("Failed to parse HSP '%s' for skill app moduleType validation.", hsp.c_str());
+            return false;
+        }
+        if (hapVerifyInfo.GetModuleType() == Constants::TYPE_SKILL) {
+            continue;
+        }
+        LOGE("HSP moduleType must be skill when bundleType is skill, but got '%s' in %s.",
+            hapVerifyInfo.GetModuleType().c_str(), hsp.c_str());
+        return false;
+    }
+    return true;
+}
+
+size_t CountInputPathItems(const std::string &pathList)
+{
+    if (pathList.empty()) {
+        return 0;
+    }
+    size_t count = 0;
+    std::string pathItem;
+    std::istringstream pathStream(pathList);
+    while (std::getline(pathStream, pathItem, Constants::COMMA_SPLIT)) {
+        if (!pathItem.empty()) {
+            count++;
+        }
+    }
+    return count;
+}
+
+bool CheckSkillAppConstraints(const std::string &hapPath, const std::string &hspPath,
+    const std::list<std::string> &hspPathList)
+{
+    if (hspPathList.empty()) {
+        return true;
+    }
+    std::string bundleType;
+    if (!GetFirstBundleTypeFromPathList(hspPathList, bundleType)) {
+        return false;
+    }
+    if (bundleType != Constants::TYPE_SKILL) {
+        return true;
+    }
+    if (!hapPath.empty()) {
+        LOGE("--hap-path must be empty when bundleType is skill.");
+        return false;
+    }
+    if (CountInputPathItems(hspPath) > 1) {
+        LOGE("--hsp-path must contain only 1 HSP when bundleType is skill, but got %zu.",
+            CountInputPathItems(hspPath));
+        return false;
+    }
+    return CheckSkillModuleTypes(hspPathList);
+}
+
+}
+
 AppPackager::AppPackager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
     : Packager(parameterMap, resultReceiver)
 {}
@@ -81,8 +157,8 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
     std::string bundleType;
     std::list<std::string> tmpHapPathList;
     std::list<std::string> tmpHspPathList;
-    Packager::CompatibleProcess(hapPath, tmpHapPathList, Constants::HAP_SUFFIX);
-    Packager::CompatibleProcess(hspPath, tmpHspPathList, Constants::HSP_SUFFIX);
+    CompatibleProcess(hapPath, tmpHapPathList, Constants::HAP_SUFFIX);
+    CompatibleProcess(hspPath, tmpHspPathList, Constants::HSP_SUFFIX);
     if ((!tmpHapPathList.empty() && !ModuleJsonUtils::IsModuleHap(tmpHapPathList.front())) ||
         (!tmpHspPathList.empty() && !ModuleJsonUtils::IsModuleHap(tmpHspPathList.front()))) {
         LOGD("Module is FA");
@@ -203,11 +279,45 @@ bool AppPackager::IsAppService(const std::string &hapPath, const std::string &hs
     return false;
 }
 
+bool AppPackager::IsSkillApp(const std::string &hapPath, const std::string &hspPath)
+{
+    if (!hapPath.empty() || hspPath.empty()) {
+        return false;
+    }
+    std::list<std::string> tmpHspPathList;
+    if (!CompatibleProcess(hspPath, tmpHspPathList, Constants::HSP_SUFFIX)) {
+        return false;
+    }
+    std::string bundleType;
+    if (!GetFirstBundleTypeFromPathList(tmpHspPathList, bundleType)) {
+        return false;
+    }
+    if (bundleType == Constants::TYPE_SKILL) {
+        isSkillApp_ = true;
+        return true;
+    }
+    return false;
+}
+
 bool AppPackager::CheckInputModulePath(const std::string &hapPath, const std::string &hspPath)
 {
     bool isSharedApp = IsSharedApp(hapPath, hspPath);
     bool isAppService = IsAppService(hapPath, hspPath);
-    if (hapPath.empty() && !isSharedApp && !isAppService) {
+    std::list<std::string> tmpHspPathList;
+    bool hasSkillBundleTypeHsp = false;
+    if (!hspPath.empty() && CompatibleProcess(hspPath, tmpHspPathList, Constants::HSP_SUFFIX) &&
+        !tmpHspPathList.empty()) {
+        std::string bundleType;
+        if (!GetFirstBundleTypeFromPathList(tmpHspPathList, bundleType)) {
+            return false;
+        }
+        hasSkillBundleTypeHsp = bundleType == Constants::TYPE_SKILL;
+    }
+    if (!CheckSkillAppConstraints(hapPath, hspPath, tmpHspPathList)) {
+        return false;
+    }
+    bool isSkillAppResult = hasSkillBundleTypeHsp && hapPath.empty();
+    if (hapPath.empty() && !isSharedApp && !isAppService && !isSkillAppResult) {
         LOGW("CheckInputModulePath hap-path is empty.");
         return false;
     }

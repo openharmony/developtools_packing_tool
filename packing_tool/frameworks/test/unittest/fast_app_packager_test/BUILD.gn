@@ -42,6 +42,7 @@ ohos_unittest("fast_app_packager_test") {
     "../../../src/log.cpp",
     "../../../src/packager.cpp",
     "../../../src/scan_statdulpicate.cpp",
+    "../../../src/skill_pack_helper.cpp",
     "../../../src/unzip_wrapper.cpp",
     "../../../src/utils.cpp",
     "../../../src/zip_utils.cpp",
