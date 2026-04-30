@@ -56,15 +56,13 @@ std::string Utils::GetFileContent(const std::string filePath)
 {
     std::string realFilePath;
     if (!Utils::GetRealPath(filePath, realFilePath)) {
-        // LOGE("get real file path failed! filePath=%s", filePath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real file path failed! filePath=" + filePath).c_str()).c_str());
         return nullptr;
     }
     std::ifstream inFile(realFilePath, std::ios::in);
     if (!inFile.is_open()) {
-        // LOGE("open file path failed![filePath=%s][realFilePath=%s]", filePath.c_str(), realFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("open file path failed![filePath=" + filePath + "][realFilePath=" + realFilePath + "]").c_str()).c_str());
         return nullptr;
     }
@@ -103,8 +101,7 @@ int64_t Utils::GetFileLength(const std::string filePath)
 {
     struct stat statbuf = { 0 };
     if (stat(filePath.c_str(), &statbuf) != 0) {
-        // LOGE("file stat failed! filePath=%s", filePath.c_str());
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::GET_FILE_SIZE_FAILED.toStringWithArgs(
             ("file stat failed! filePath=" + filePath).c_str()).c_str());
         return -1;
     }
@@ -183,8 +180,7 @@ std::string Utils::GetSha256File(const std::string &filePath)
 {
     std::string realFilePath;
     if (!GetRealPath(filePath, realFilePath)) {
-        // LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real file path failed! jsonFile=" + filePath).c_str()).c_str());
         return "";
     }
@@ -218,9 +214,8 @@ std::string Utils::GetSha256Folder(const std::string &filePath)
         if (fs::is_regular_file(entry)) {
             std::ifstream file(entry, std::ios::binary);
             if (!file.is_open()) {
-                // LOGE("file open failed! filePath=%s", entry.path().string().c_str());
-                LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
-                    ("file open failed! filePath=" + entry.path().string()).c_str()).c_str());
+                LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
+                ("file open failed! filePath=" + entry.path().string()).c_str()).c_str());
                 return "";
             }
             std::vector<char> buffer((std::istreambuf_iterator<char>(file)),
@@ -355,7 +350,7 @@ bool Utils::IsPositiveInteger(const std::string& str, int min, int max)
         return number >= min && number <= max;
     } catch (const std::out_of_range& e) {
         // LOGE("Number %s is Out of Range!", str.c_str());
-        LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
             ("Number " + str + " is Out of Range!").c_str()).c_str());
         return false;
     }
@@ -428,8 +423,7 @@ bool Utils::CopyFile(const std::string& srcPath, const std::string& dstPath)
     std::string realSrcPath;
     std::string realDstPath;
     if (!GetRealPath(srcPath, realSrcPath)) {
-        // LOGE("get real src path failed! srcPath=%s", srcPath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real src path failed! srcPath=" + srcPath).c_str()).c_str());
         return false;
     }
@@ -437,8 +431,7 @@ bool Utils::CopyFile(const std::string& srcPath, const std::string& dstPath)
     std::string parentOfDstPath = fsDstPath.parent_path().string();
     std::string dstFileName = fsDstPath.filename();
     if (!GetRealPathOfNoneExistFile(parentOfDstPath, realDstPath)) {
-        // LOGE("get real dst path failed! dstPath=%s", dstPath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real dst path failed! dstPath=" + dstPath).c_str()).c_str());
         return false;
     }
@@ -446,14 +439,12 @@ bool Utils::CopyFile(const std::string& srcPath, const std::string& dstPath)
     std::ifstream srcFile(realSrcPath, std::ios::binary);
     std::ofstream dstFile(realDstPath, std::ios::binary);
     if (!srcFile.is_open()) {
-        // LOGE("Open srcPath failed![srcPath=%s][realSrcPath=%s]", srcPath.c_str(), realSrcPath.c_str());
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("Open srcPath failed![srcPath=" + srcPath + "][realSrcPath=" + realSrcPath + "]").c_str()).c_str());
         return false;
     }
     if (!dstFile.is_open()) {
-        // LOGE("Open dstPath failed![dstPath=%s][realDstPath=%s]", dstPath.c_str(), realDstPath.c_str());
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("Open dstPath failed![dstPath=" + dstPath + "][realDstPath=" + realDstPath + "]").c_str()).c_str());
         return false;
     }
@@ -482,16 +473,15 @@ bool Utils::CopyFileToTempDir(const std::string& srcPath,
     fs::create_directories(tempDir, ec);
     if (ec) {
         // LOGE("Failed to create temp directory: %s - %s", tempDir.string().c_str(), ec.message().c_str());
-        LOGE("%s", PackingToolErrMsg::CREATE_DIRECTORY_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
             ("Failed to create temp directory: " + tempDir.string() + " - " + ec.message()).c_str()).c_str());
         return false;
     }
     fs::path destFile = tempDir.string() + Constants::LINUX_FILE_SEPARATOR + src.filename().string();
     fs::copy_file(src, destFile, fs::copy_options::overwrite_existing, ec);
     if (ec) {
-        // LOGE("Failed to copy file to temp directory: %s", ec.message().c_str());
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
-            ("Failed to copy file to temp directory: " + std::string(ec.message())).c_str()).c_str());
+        LOGE("%s", PackingToolErrMsg::COPY_FILE_FAILED.toStringWithArgs(
+            ("Failed to copy file to temp directory: " + ec.message()).c_str()).c_str());
         return false;
     }
     destFilePath = destFile.string();
@@ -507,8 +497,7 @@ bool Utils::GetFormattedPath(const std::string& path, std::string& formattedPath
     try {
         formattedPath = fs::canonical(path).string();
     } catch (const fs::filesystem_error& err) {
-        // LOGE("GetFormattedPath exception: ", err.what());
-        LOGE("%s", PackingToolErrMsg::PATH_FORMAT_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("GetFormattedPath exception: " + std::string(err.what())).c_str()).c_str());
         return false;
     }

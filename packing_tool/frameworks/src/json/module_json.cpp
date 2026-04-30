@@ -117,14 +117,14 @@ bool ModuleJson::ParseFromFile(const std::string& jsonFile)
     std::string realJsonFile;
     if (!Utils::GetRealPath(jsonFile, realJsonFile)) {
         // LOGE("get real json file failed! jsonFile=%s", jsonFile.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real json file failed! jsonFile=" + jsonFile).c_str()).c_str());
         return false;
     }
     std::ifstream inFile(realJsonFile, std::ios::in);
     if (!inFile.is_open()) {
         // LOGE("Open json file failed! jsonFile=%s, realJsonFile=%s", jsonFile.c_str(), realJsonFile.c_str());
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("Open json file failed! jsonFile=" + jsonFile + ", realJsonFile=" + realJsonFile).c_str()).c_str());
         return false;
     }

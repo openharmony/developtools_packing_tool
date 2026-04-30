@@ -218,21 +218,21 @@ bool MultiAppPackager::GetAndCheckOutPath(std::string &outPath)
 {
     if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
         // LOGE("input out-path are null.");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "input out-path are null.").c_str());
         return false;
     }
     outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     if (outPath.empty()) {
         // LOGE("input out-path are empty.");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "input out-path are empty.").c_str());
         return false;
     }
     if (outPath.find('.') == std::string::npos ||
         outPath.substr(outPath.size() - Constants::APP_SUFFIX_LENGTH) != Constants::APP_SUFFIX) {
         // LOGE("out-path must end with .app.");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "out-path must end with .app.").c_str());
         return false;
     }
@@ -246,7 +246,7 @@ bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr
         parameterMap_.find(Constants::PARAM_HSP_LIST) == parameterMap_.end() &&
         parameterMap_.find(Constants::PARAM_APP_LIST) == parameterMap_.end()) {
         // LOGE("input hap-list, hsp-list and app-list are all null.");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "input hap-list, hsp-list and app-list are all null.").c_str());
         return false;
     }
@@ -261,14 +261,14 @@ bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr
     }
     if (hapListStr.empty() && hspListStr.empty() && appListStr.empty()) {
         // LOGE("input hap-list, hsp-list and app-list are all empty.");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "input hap-list, hsp-list and app-list are all empty.").c_str());
         return false;
     }
     if (!hapListStr.empty()) {
         if (!CompatibleProcess(hapListStr, formattedHapAndHspList_, Constants::HAP_SUFFIX)) {
             // LOGE("hap-list is invalid.");
-            LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
                 "hap-list is invalid.").c_str());
             return false;
         }
@@ -276,7 +276,7 @@ bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr
     if (!hspListStr.empty()) {
         if (!CompatibleProcess(hspListStr, formattedHapAndHspList_, Constants::HSP_SUFFIX)) {
             // LOGE("hsp-list is invalid.");
-            LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
                 "hsp-list is invalid.").c_str());
             return false;
         }
@@ -284,7 +284,7 @@ bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr
     if (!appListStr.empty()) {
         if (!CompatibleProcess(appListStr, formattedAppList_, Constants::APP_SUFFIX)) {
             // LOGE("app-list is invalid.");
-            LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
                 "app-list is invalid.").c_str());
             return false;
         }
@@ -299,7 +299,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     std::string appListStr;
     if (!GetAndCheckHapAndHspAndAppListStr(hapListStr, hspListStr, appListStr)) {
         // LOGE("GetAndCheckHapAndHspAndAppListStr failed!");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "GetAndCheckHapAndHspAndAppListStr failed!").c_str());
         return false;
     }
@@ -308,7 +308,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     if (it != parameterMap_.end() && !it->second.empty() &&
         !IsFileMatch(it->second, Constants::PAC_JSON)) {
         // LOGE("MultiAppPackager::IsVerifyValidInMultiAppMode pac-json-path is invalid.");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "MultiAppPackager::IsVerifyValidInMultiAppMode pac-json-path is invalid.").c_str());
         return false;
     }
@@ -316,7 +316,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     std::string outPath;
     if (!GetAndCheckOutPath(outPath)) {
         // LOGE("GetAndCheckOutPath failed!");
-        LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
             "GetAndCheckOutPath failed!").c_str());
         return false;
     }
@@ -327,7 +327,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
         force = it->second;
         if (Utils::IsFileExists(outPath) && force == "false") {
             // LOGE("out-path file already existed.");
-            LOGE("%s", PackingToolErrMsg::OUT_FILE_ALREADY_EXIST.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
                 "out-path file already existed.").c_str());
             return false;
         }
@@ -399,7 +399,7 @@ bool MultiAppPackager::CopyHapAndHspFromApp(const std::string &appPath, std::lis
         }
         if (std::find(selectedHaps.begin(), selectedHaps.end(), entry.path().filename()) != selectedHaps.end()) {
             // LOGE("CopyHapAndHspFromApp file duplicated, file is %s ", entry.path().filename().c_str());
-            LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
                 ("CopyHapAndHspFromApp file duplicated, file is " + entry.path().filename().string()).c_str()).c_str());
             if (fs::exists(tempPath)) {
                 fs::remove_all(tempPath);
@@ -478,7 +478,7 @@ std::string MultiAppPackager::SelectHapInApp(const std::string &appPath, std::li
     std::string packInfoJsonStr;
     if (!PackInfoUtils::MergeTwoPackInfosByPackagePair(finalAppPackInfo, packInfoStr, packagePair, packInfoJsonStr)) {
         // LOGE("PackInfoUtils::MergeTwoPackInfosByPackagePair failed.");
-        LOGE("%s", PackingToolErrMsg::MERGE_PACK_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MERGE_PACKINFO_OBJ_FAILED.toStringWithArgs(
             "PackInfoUtils::MergeTwoPackInfosByPackagePair failed.").c_str());
     }
     return packInfoJsonStr;
@@ -506,7 +506,7 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
         fs::path hapPathFile(hapPath);
         if (std::find(selectedHaps.begin(), selectedHaps.end(), hapPathFile.filename()) != selectedHaps.end()) {
             // LOGE("file duplicated, file is %s", hapPathFile.filename().c_str());
-            LOGE("%s", PackingToolErrMsg::MULTIAPP_MODE_ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
                 ("file duplicated, file is " + hapPathFile.filename().string()).c_str()).c_str());
         }
         fs::path hapFile(hapPath);
@@ -523,7 +523,7 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
             std::string packInfoJsonStr;
             if (!PackInfoUtils::MergeTwoPackInfos(finalPackInfoStr, packInfo, packInfoJsonStr)) {
                 // LOGE("PackInfoUtils::MergeTwoPackInfos failed.");
-                LOGE("%s", PackingToolErrMsg::MERGE_PACK_INFO_FAILED.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::MERGE_PACKINFO_OBJ_FAILED.toStringWithArgs(
                     "PackInfoUtils::MergeTwoPackInfos failed.").c_str());
             }
             finalPackInfoStr = packInfoJsonStr;
@@ -536,22 +536,19 @@ void MultiAppPackager::WritePackInfo(const std::string &filePath, const std::str
 {
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
-        // LOGE("get real pack info path failed! packInfoPath=%s", filePath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real pack info path failed! packInfoPath=" + filePath).c_str()).c_str());
         return;
     }
     std::ofstream fwriter(realFilePath);
     if (!fwriter) {
-        // LOGE("open file failed![filePath=%s][realFilePath=%s]", filePath.c_str(), realFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("open file failed![filePath=" + filePath + "][realFilePath=" + realFilePath + "]").c_str()).c_str());
         return;
     }
     fwriter << packInfoStr;
     if (fwriter.fail()) {
-        // LOGE("write pack info failed. Error writing to file: %s", filePath.c_str());
-        LOGE("%s", PackingToolErrMsg::WRITE_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
             ("write pack info failed. Error writing to file: " + filePath).c_str()).c_str());
         return;
     }
@@ -572,8 +569,7 @@ bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileLi
 
     char path[PATH_MAX] = {0};
     if (outPath.length() >= PATH_MAX || realpath(outPath.c_str(), path) == nullptr) {
-        // LOGE("get realpath failed");
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             "get realpath failed").c_str());
         return false;
     }

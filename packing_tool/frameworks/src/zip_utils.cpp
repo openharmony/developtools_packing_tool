@@ -65,15 +65,14 @@ int32_t ZipUtils::Unzip(const std::string& zipPath, const std::string& filePath)
 {
     UnzipWrapper unzipWrapper(zipPath);
     if (unzipWrapper.Open() != ZIP_ERR_SUCCESS) {
-        // LOGE("UnzipWrapper Open failed!");
-        LOGE("%s", PackingToolErrMsg::UNZIP_FILE_OPEN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "UnzipWrapper Open failed!").c_str());
         return ZIP_ERR_FAILURE;
     }
     int32_t ret = unzipWrapper.UnzipFile(filePath);
     if (ret != ZIP_ERR_SUCCESS) {
         // LOGE("UnzipWrapper UnzipFile failed!");
-        LOGE("%s", PackingToolErrMsg::UNZIP_EXTRACT_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "UnzipWrapper UnzipFile failed!").c_str());
     }
     unzipWrapper.Close();
@@ -84,22 +83,20 @@ bool ZipUtils::IsFileExistsInZip(const std::string& zipFilePath, const std::stri
 {
     fs::path fsZipFilePath(zipFilePath);
     if (!fs::is_regular_file(fsZipFilePath)) {
-        // LOGE("Zip file is not a regular file!");
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
             "Zip file is not a regular file!").c_str());
         return false;
     }
     unzFile unzipFile = unzOpen64(zipFilePath.c_str());
     if (unzipFile == nullptr) {
-        // LOGE("Open zip file failed! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_FILE_OPEN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Open zip file failed! zipFilePath=" + zipFilePath).c_str()).c_str());
         return false;
     }
     unz_global_info64 unzGlobalInfo;
     if (unzGetGlobalInfo64(unzipFile, &unzGlobalInfo) != UNZ_OK) {
         // LOGE("Get zip global info! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_GLOBAL_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Get zip global info! zipFilePath=" + zipFilePath).c_str()).c_str());
         unzClose(unzipFile);
         return false;
@@ -112,7 +109,7 @@ bool ZipUtils::IsFileExistsInZip(const std::string& zipFilePath, const std::stri
         if (unzGetCurrentFileInfo64(unzipFile, &fileInfo, filePathInZip, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) !=
             UNZ_OK) {
             // LOGE("Get current file info in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Get current file info in zip failed!").c_str());
             break;
         }
@@ -129,7 +126,7 @@ bool ZipUtils::IsFileExistsInZip(const std::string& zipFilePath, const std::stri
             break;
         } else if (ret != UNZ_OK) {
             // LOGE("Go to next file in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_GOTO_NEXT_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Go to next file in zip failed!").c_str());
             break;
         }
@@ -142,22 +139,20 @@ bool ZipUtils::IsFileNameExistsInZip(const std::string& zipFilePath, const std::
 {
     fs::path fsZipFilePath(zipFilePath);
     if (!fs::is_regular_file(fsZipFilePath)) {
-        // LOGE("Zip file is not a regular file!");
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
             "Zip file is not a regular file!").c_str());
         return false;
     }
     unzFile unzipFile = unzOpen64(zipFilePath.c_str());
     if (unzipFile == nullptr) {
-        // LOGE("Open zip file failed! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_FILE_OPEN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Open zip file failed! zipFilePath=" + zipFilePath).c_str()).c_str());
         return false;
     }
     unz_global_info64 unzGlobalInfo;
     if (unzGetGlobalInfo64(unzipFile, &unzGlobalInfo) != UNZ_OK) {
         // LOGE("Get zip global info! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_GLOBAL_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Get zip global info! zipFilePath=" + zipFilePath).c_str()).c_str());
         unzClose(unzipFile);
         return false;
@@ -170,7 +165,7 @@ bool ZipUtils::IsFileNameExistsInZip(const std::string& zipFilePath, const std::
         if (unzGetCurrentFileInfo64(unzipFile, &fileInfo, filePathInZip, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) !=
             UNZ_OK) {
             // LOGE("Get current file info in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Get current file info in zip failed!").c_str());
             break;
         }
@@ -186,7 +181,7 @@ bool ZipUtils::IsFileNameExistsInZip(const std::string& zipFilePath, const std::
             break;
         } else if (ret != UNZ_OK) {
             // LOGE("Go to next file in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_GOTO_NEXT_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Go to next file in zip failed!").c_str());
             break;
         }
@@ -246,21 +241,19 @@ bool ZipUtils::GetFileContentFromZip(const std::string& zipFilePath, const std::
 {
     fs::path fsZipFilePath(zipFilePath);
     if (!fs::is_regular_file(fsZipFilePath)) {
-        // LOGE("Zip file is not a regular file!");
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
             "Zip file is not a regular file!").c_str());
         return false;
     }
     unzFile unzipFile = unzOpen64(zipFilePath.c_str());
     if (unzipFile == nullptr) {
-        // LOGE("Open zip file failed! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_FILE_OPEN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Open zip file failed! zipFilePath=" + zipFilePath).c_str()).c_str());
         return false;
     }
     if (unzLocateFile(unzipFile, filename.c_str(), 0) != UNZ_OK) {
         // LOGE("Locate file failed! filename=%s", filename.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Locate file failed! filename=" + filename).c_str()).c_str());
         unzClose(unzipFile);
         return false;
@@ -270,14 +263,14 @@ bool ZipUtils::GetFileContentFromZip(const std::string& zipFilePath, const std::
     if (unzGetCurrentFileInfo64(unzipFile, &fileInfo, filePathInZip, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) !=
         UNZ_OK) {
         // LOGE("Get current file info in zip failed! filename=%s", filename.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Get current file info in zip failed! filename=" + filename).c_str()).c_str());
         unzClose(unzipFile);
         return false;
     }
     if (unzOpenCurrentFile(unzipFile) != UNZ_OK) {
         // LOGE("Open current file in zip failed! filename=%s", filename.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Open current file in zip failed! filename=" + filename).c_str()).c_str());
         unzClose(unzipFile);
         return false;
@@ -290,7 +283,7 @@ bool ZipUtils::GetFileContentFromZip(const std::string& zipFilePath, const std::
         readLen = unzReadCurrentFile(unzipFile, buffer, MAX_ZIP_BUFFER_SIZE);
         if (readLen < 0) {
             // LOGE("Read current file in zip failed! filename=%s", filename.c_str());
-            LOGE("%s", PackingToolErrMsg::UNZIP_READ_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 ("Read current file in zip failed! filename=" + filename).c_str()).c_str());
             unzCloseCurrentFile(unzipFile);
             unzClose(unzipFile);
@@ -312,7 +305,7 @@ bool ZipUtils::GetUnzipCurrentFileContent(unzFile& unzipFile, std::string& fileC
     }
     if (unzOpenCurrentFile(unzipFile) != UNZ_OK) {
         // LOGE("Open current file in zip failed!");
-        LOGE("%s", PackingToolErrMsg::UNZIP_OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "Open current file in zip failed!").c_str());
         return false;
     }
@@ -324,7 +317,7 @@ bool ZipUtils::GetUnzipCurrentFileContent(unzFile& unzipFile, std::string& fileC
         readLen = unzReadCurrentFile(unzipFile, buffer, MAX_ZIP_BUFFER_SIZE);
         if (readLen < 0) {
             // LOGE("Read current file in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_READ_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Read current file in zip failed!").c_str());
             unzCloseCurrentFile(unzipFile);
             return false;
@@ -341,8 +334,7 @@ bool ZipUtils::AddToResourceMap(unzFile& unzipFile, const std::string& filePathI
     std::map<std::string, std::string>& resourceMap)
 {
     if (unzipFile == nullptr) {
-        // LOGE("zip file not open!");
-        LOGE("%s", PackingToolErrMsg::UNZIP_FILE_OPEN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "zip file not open!").c_str());
         return false;
     }
@@ -351,7 +343,7 @@ bool ZipUtils::AddToResourceMap(unzFile& unzipFile, const std::string& filePathI
         std::string fileContent;
         if (!GetUnzipCurrentFileContent(unzipFile, fileContent)) {
             // LOGE("Get current file content failed! filename=%s", filePathInZip.c_str());
-            LOGE("%s", PackingToolErrMsg::UNZIP_READ_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 ("Get current file content failed! filename=" + filePathInZip).c_str()).c_str());
             return false;
         } else {
@@ -365,22 +357,20 @@ bool ZipUtils::GetResourceMapFromZip(const std::string& zipFilePath, std::map<st
 {
     fs::path fsZipFilePath(zipFilePath);
     if (!fs::is_regular_file(fsZipFilePath)) {
-        // LOGE("Zip file is not a regular file!");
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
             "Zip file is not a regular file!").c_str());
         return false;
     }
     unzFile unzipFile = unzOpen64(zipFilePath.c_str());
     if (unzipFile == nullptr) {
-        // LOGE("Open zip file failed! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_FILE_OPEN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Open zip file failed! zipFilePath=" + zipFilePath).c_str()).c_str());
         return false;
     }
     unz_global_info64 unzGlobalInfo;
     if (unzGetGlobalInfo64(unzipFile, &unzGlobalInfo) != UNZ_OK) {
         // LOGE("Get zip global info! zipFilePath=%s", zipFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_GLOBAL_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Get zip global info! zipFilePath=" + zipFilePath).c_str()).c_str());
         unzClose(unzipFile);
         return false;
@@ -392,7 +382,7 @@ bool ZipUtils::GetResourceMapFromZip(const std::string& zipFilePath, std::map<st
         if (unzGetCurrentFileInfo64(unzipFile, &fileInfo, filePathInZip, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) !=
             UNZ_OK) {
             // LOGE("Get current file info in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Get current file info in zip failed!").c_str());
             break;
         }
@@ -405,7 +395,7 @@ bool ZipUtils::GetResourceMapFromZip(const std::string& zipFilePath, std::map<st
             break;
         } else if (ret != UNZ_OK) {
             // LOGE("Go to next file in zip failed!");
-            LOGE("%s", PackingToolErrMsg::UNZIP_GOTO_NEXT_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Go to next file in zip failed!").c_str());
             break;
         }

@@ -121,19 +121,19 @@ bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
         // LOGE("Update packInfo failed, parse json is null.");
-        LOGE("%s", PackingToolErrMsg::UPDATE_PACK_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::UPDATE_PACKINFO_FAILED.toStringWithArgs(
             "Update packInfo failed, parse json is null.").c_str());
         return false;
     }
     if (!packInfo.SetBundleName(newBundleName)) {
         // LOGE("Parse and modify packInfo failed, json file not valid.");
-        LOGE("%s", PackingToolErrMsg::UPDATE_PACK_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::UPDATE_PACKINFO_FAILED.toStringWithArgs(
             "Parse and modify packInfo failed, json file not valid.").c_str());
         return false;
     }
     if (!packInfo.SetVersionCode(newVersionCode)) {
         // LOGE("Parse and modify packInfo failed, json file not valid.");
-        LOGE("%s", PackingToolErrMsg::UPDATE_PACK_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::UPDATE_PACKINFO_FAILED.toStringWithArgs(
             "Parse and modify packInfo failed, json file not valid.").c_str());
         return false;
     }

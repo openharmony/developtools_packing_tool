@@ -276,17 +276,17 @@ bool HspPackager::CompressHsp()
     if (JsonUtils::IsModuleJson(jsonPath_)) {
         if (!moduleJson_.CheckStageAsanTsanEnabledValid()) {
             // LOGE("CheckStageAsanTsanEnabledValid failed.");
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HSP_FAILED.toStringWithArgs("CheckStageAsanTsanEnabledValid failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_AS_TSAN_ENABLED.toStringWithArgs("CheckStageAsanTsanEnabledValid failed.").c_str());
             return false;
         }
         if (!moduleJson_.CheckStageAtomicService()) {
             // LOGE("CheckStageAtomicService failed.");
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HSP_FAILED.toStringWithArgs("CheckStageAtomicService failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs("CheckStageAtomicService failed.").c_str());
             return false;
         }
         if (!moduleJson_.CheckStageOverlayCfg()) {
             // LOGE("checkStageOverlayCfg failed.");
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HSP_FAILED.toStringWithArgs("checkStageOverlayCfg failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs("checkStageOverlayCfg failed.").c_str());
             return false;
         }
         std::string moduleType;
@@ -294,12 +294,12 @@ bool HspPackager::CompressHsp()
             LOGW("GetStageModuleType failed.");
         }
         if (moduleType != Constants::TYPE_SHARED && moduleType != Constants::TYPE_SKILL) {
-            LOGE("module type must be shared or skill.");
+            LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_SHARED_INVALID.toStringWithArgs("module type must be shared.").c_str());
             return false;
         }
         if (!moduleJson_.CheckDeduplicateHar()) {
             // LOGE("CheckDeduplicateHar failed.");
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HSP_FAILED.toStringWithArgs("CheckDeduplicateHar failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_DEDUPLICATE_HAR_FAILED.toStringWithArgs("CheckDeduplicateHar failed.").c_str());
             return false;
         }
         moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
@@ -811,7 +811,7 @@ bool HspPackager::CheckKernelPermissionCompression()
     if (!compressNativeLibs && !extractNativeLibs) {
         // LOGE("Error: When executableBinaryPaths is configured in module.json, "
         //     "at least one of compressNativeLibs or extractNativeLibs must be true.");
-        LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HSP_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_KERNEL_PERMISSION_COMPRESSION_FAILED.toStringWithArgs(
             "Error: When executableBinaryPaths is configured in module.json, "
             "at least one of compressNativeLibs or extractNativeLibs must be true.").c_str());
         return false;

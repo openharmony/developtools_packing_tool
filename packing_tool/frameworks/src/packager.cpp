@@ -53,28 +53,28 @@ int32_t Packager::MakePackage()
     int32_t ret = ERR_OK;
     ret = InitAllowedParam();
     if (ret != ERR_OK) {
-        // LOGE("InitAllowedParam err");
-        LOGE("%s", PackingToolErrMsg::COMPRESS_COMMON_FAILED.toStringWithArgs("InitAllowedParam err").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+            "InitAllowedParam err").c_str());
         return ret;
     }
 
     ret = PreProcess();
     if (ret != ERR_OK) {
-        // LOGE("PreProcess err");
-        LOGE("%s", PackingToolErrMsg::COMPRESS_COMMON_FAILED.toStringWithArgs("PreProcess err").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+            "PreProcess err").c_str());
         return ret;
     }
     ret = Process();
     if (ret != ERR_OK) {
-        // LOGE("Process err");
-        LOGE("%s", PackingToolErrMsg::COMPRESS_COMMON_FAILED.toStringWithArgs("Process err").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+            "Process err").c_str());
         return ret;
     }
 
     ret = PostProcess();
     if (ret != ERR_OK) {
-        // LOGE("PostProcess err");
-        LOGE("%s", PackingToolErrMsg::COMPRESS_COMMON_FAILED.toStringWithArgs("PostProcess err").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+            "PostProcess err").c_str());
         return ret;
     }
 
@@ -104,9 +104,9 @@ bool Packager::CheckForceFlag()
 {
     auto it = parameterMap_.find(Constants::PARAM_FORCE);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
-        // LOGE("Packager::commandVerify forceRewrite is invalid.");
-        LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
-            "Packager::commandVerify forceRewrite is invalid.").c_str());
+       // LOGE("Packager::commandVerify forceRewrite is invalid.");
+        LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
+              "If the --force parameter is configured, the value must be either 'true' or 'false'.").c_str());
         return false;
     }
     return true;
@@ -117,7 +117,7 @@ bool Packager::CheckStatDuplicateFlag()
     auto it = parameterMap_.find(Constants::PARAM_STAT_DUPLICATE);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         // LOGE("Packager::commandVerify statDuplicate is invalid.");
-        LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
             "Packager::commandVerify statDuplicate is invalid.").c_str());
         return false;
     }
@@ -163,7 +163,7 @@ bool Packager::IsCompressLevelValid()
                                      [](unsigned char c) { return std::isdigit(c); });
         if (!allDigits) {
             // LOGE("Param parse compress-level [%s] invalid: contains non-digit characters.", levelStr.c_str());
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 ("Param parse compress-level [" + levelStr + "] invalid: contains non-digit characters.").c_str()).c_str());
             return false;
         }
@@ -171,13 +171,13 @@ bool Packager::IsCompressLevelValid()
             int level = std::stoi(levelStr);
             if (level < Constants::MIN_COMPRESS_LEVEL || level > Constants::MAX_COMPRESS_LEVEL) {
                 // LOGE("Param parse compress-level [%s] invalid: must be between 1 and 9.", levelStr.c_str());
-                LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                     ("Param parse compress-level [" + levelStr + "] invalid: must be between 1 and 9.").c_str()).c_str());
                 return false;
             }
         } catch (const std::exception& e) {
             // LOGE("Param parse compress-level [%s] invalid: conversion failed.", levelStr.c_str());
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 ("Param parse compress-level [" + levelStr + "] invalid: conversion failed.").c_str()).c_str());
             return false;
         }
@@ -193,8 +193,7 @@ bool Packager::IsFileMatch(const std::string &path, const std::string &matchFile
             return name == matchFileName;
         }
     } catch (const fs::filesystem_error& e) {
-        // LOGE("Packager::commandVerify fileMatch has error : %s", e.code().message().c_str());
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
             ("Packager::commandVerify fileMatch has error : " + std::string(e.code().message())).c_str()).c_str());
     }
     return false;
@@ -207,8 +206,7 @@ bool Packager::SplitDirList(const std::string &dirList, std::list<std::string> &
     for (const std::string &pathItem : pathList) {
         std::string formattedPathItem;
         if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
-            // LOGE("GetFormattedPath failed for %s", pathItem.c_str());
-            LOGE("%s", PackingToolErrMsg::PATH_FORMAT_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
                 ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
             return false;
         };
@@ -251,9 +249,8 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
         RemoveDuplicatePath(inputPath, pathList);
         for (std::string pathItem : pathList) {
             if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
-                // LOGE("GetFormattedPath failed for %s", pathItem.c_str());
-                LOGE("%s", PackingToolErrMsg::PATH_FORMAT_FAILED.toStringWithArgs(
-                    ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
+                LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
+                ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
                 return false;
             };
             if (!IsPathValid(formattedPathItem, true, suffix)) {
@@ -285,9 +282,8 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
         RemoveDuplicatePath(inputPath, pathList);
         for (std::string pathItem : pathList) {
             if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
-                // LOGE("GetFormattedPath failed for %s", pathItem.c_str());
-                LOGE("%s", PackingToolErrMsg::PATH_FORMAT_FAILED.toStringWithArgs(
-                    ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
+                LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
+                ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
                 return false;
             };
             if (!IsPathValid(formattedPathItem, true, suffix) &&
@@ -308,7 +304,7 @@ bool Packager::EnsureParentDirectoryExists(const std::filesystem::path& filePath
             std::error_code ec;
             if (!std::filesystem::create_directories(parentPath, ec)) {
                 // LOGE("Packager::Failed to create directory: [%s]", ec.message().c_str());
-                LOGE("%s", PackingToolErrMsg::CREATE_DIRECTORY_FAILED.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
                     ("Packager::Failed to create directory: [" + std::string(ec.message()) + "]").c_str()).c_str());
                 return false;
             }
@@ -316,7 +312,7 @@ bool Packager::EnsureParentDirectoryExists(const std::filesystem::path& filePath
         return true;
     } catch (const std::filesystem::filesystem_error& e) {
         // LOGE("Packager::Directory creation error: [%s]", e.what());
-        LOGE("%s", PackingToolErrMsg::CREATE_DIRECTORY_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
             ("Packager::Directory creation error: [" + std::string(e.what()) + "]").c_str()).c_str());
         return false;
     }
@@ -328,7 +324,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
 
     if ("false" == forceRewrite && fs::exists(filePath)) {
         // LOGE("Packager::isOutPathValid out file already existed.");
-        LOGE("%s", PackingToolErrMsg::OUT_FILE_ALREADY_EXIST.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
             "Packager::isOutPathValid out file already existed.").c_str());
         return false;
     }
@@ -440,8 +436,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
 
     std::string realJsonPath;
     if (!Utils::GetRealPath(jsonPath, realJsonPath)) {
-        // LOGE("get real json Path failed! jsonPath=%s", jsonPath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real json Path failed! jsonPath=" + jsonPath).c_str()).c_str());
         return false;
     }
@@ -450,8 +445,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
         outFile << prettyJsonString.c_str();
         outFile.close();
     } else {
-        // LOGE("Failed to open file for writing");
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             "Failed to open file for writing").c_str());
         return false;
     }
@@ -517,8 +511,7 @@ bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash
 
     std::string realJsonPath;
     if (!Utils::GetRealPath(jsonPath, realJsonPath)) {
-        // LOGE("get real json path failed! jsonFile=%s", jsonPath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real json path failed! jsonFile=" + jsonPath).c_str()).c_str());
         return false;
     }
@@ -527,8 +520,7 @@ bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash
         outFile << prettyJsonString.c_str();
         outFile.close();
     } else {
-        // LOGE("Failed to open file for writing");
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             "Failed to open file for writing").c_str());
         return false;
     }
@@ -563,16 +555,14 @@ void Packager::CompressPackinfoIntoHap(const std::string& hapPathItem, const std
 
     std::string realPackInfoPath;
     if (!Utils::GetRealPath(packInfoPath, realPackInfoPath)) {
-        // LOGE("get real pack info path failed! packInfoPath=%s", packInfoPath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real pack info path failed! packInfoPath=" + packInfoPath).c_str()).c_str());
         return;
     }
     std::string destFilePath = unzipPathString + fs::path::preferred_separator + Constants::PACK_INFO;
     std::string realDestFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(destFilePath, realDestFilePath)) {
-        // LOGE("get real dest file path failed! destFilePath=%s", destFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real dest file path failed! destFilePath=" + destFilePath).c_str()).c_str());
         return;
     }
@@ -622,17 +612,17 @@ bool Packager::ParseAtomicServiceEntrySizeLimitParameter()
             // LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
             //     "input --atomic-service-entry-size-limit value invalid.");
             // LOGE("Exception: %s", e.what());
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 "ParseAtomicServiceEntrySizeLimitParameter failed, "
                 "input --atomic-service-entry-size-limit value invalid.").c_str());
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 ("Exception: " + std::string(e.what())).c_str()).c_str());
             return false;
         }
         if (entrySizeLimit < 0 || entrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
             // LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
             //     "input --atomic-service-entry-size-limit value out of range [0,4194304].");
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 "ParseAtomicServiceEntrySizeLimitParameter failed, "
                 "input --atomic-service-entry-size-limit value out of range [0,4194304].").c_str());
             return false;
@@ -653,17 +643,17 @@ bool Packager::ParseAtomicServiceNonEntrySizeLimitParameter()
             // LOGE("ParseAtomicServiceEntrySizeLimitParameter failed, "
             //     "input --atomic-service-non-entry-size-limit value invalid.");
             // LOGE("Exception: %s", e.what());
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 "ParseAtomicServiceEntrySizeLimitParameter failed, "
                 "input --atomic-service-non-entry-size-limit value invalid.").c_str());
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 ("Exception: " + std::string(e.what())).c_str()).c_str());
             return false;
         }
         if (nonEntrySizeLimit < 0 || nonEntrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
             // LOGE("ParseAtomicServiceNonEntrySizeLimitParameter failed, "
             //     "input --atomic-service-non-entry-size-limit value out of range [0,4194304].");
-            LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 "ParseAtomicServiceNonEntrySizeLimitParameter failed, "
                 "input --atomic-service-non-entry-size-limit value out of range [0,4194304].").c_str());
             return false;
@@ -703,7 +693,7 @@ void Packager::ScanSoFiles()
     if (parameterMap_.find(Constants::PARAM_MODE) == parameterMap_.end() ||
         parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
         // LOGE("No mode parameters or no output path!");
-        LOGE("%s", PackingToolErrMsg::ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
             "No mode parameters or no output path!").c_str());
         return;
     }
@@ -721,15 +711,14 @@ void Packager::ScanSoFiles()
         std::string reportPath = filePath.parent_path().string() + Constants::LINUX_FILE_SEPARATOR + SCAN_RESULT;
         if (!scanStatDuplicate.ScanSoFiles(outPath)) {
             // LOGE("make scan report failed! App path = %s", outPath.c_str());
-            LOGE("%s", PackingToolErrMsg::SCAN_SO_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
                 ("make scan report failed! App path = " + outPath).c_str()).c_str());
             fs::remove_all(reportPath);
         } else {
             std::string realFilePath;
             if (!Utils::GetRealPath(reportPath, realFilePath)) {
-                // LOGE("get real report path failed! Report path = %s", reportPath.c_str());
-                LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
-                    ("get real report path failed! Report path = " + reportPath).c_str()).c_str());
+                LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
+                ("get real report path failed! Report path = " + reportPath).c_str()).c_str());
             } else {
                 LOGW("Scanning for duplicate SO files has completed successfully. The scan report is located at = %s",
                     realFilePath.c_str());

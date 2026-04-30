@@ -188,22 +188,19 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
         return ZIP_ERR_FAILURE;
     }
     if (!fs::is_regular_file(fsFilePath)) {
-        // LOGE("filePath is not regular file![filePath=%s]", fsFilePath.string().c_str());
-        LOGE("%s", PackingToolErrMsg::FILE_OPERATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
             ("filePath is not regular file![filePath=" + fsFilePath.string() + "]").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
     std::string realFilePath;
     if (!Utils::GetRealPath(fsFilePath.string(), realFilePath)) {
-        // LOGE("get real file path failed![filePath=%s]", fsFilePath.string().c_str());
-        LOGE("%s", PackingToolErrMsg::GET_REAL_PATH_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real file path failed![filePath=" + fsFilePath.string() + "]").c_str()).c_str());
         return false;
     }
     std::ifstream file(realFilePath, std::ios::binary);
     if (!file.is_open()) {
-        // LOGE("open file failed![filePath=%s][realFilePath=%s]", fsFilePath.string().c_str(), realFilePath.c_str());
-        LOGE("%s", PackingToolErrMsg::OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("open file failed![filePath=" + fsFilePath.string() + "][realFilePath=" + realFilePath + "]").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
@@ -263,7 +260,7 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
 {
     if (unzLocateFile(srcZip, entryName.c_str(), 0) != UNZ_OK) {
         // LOGE("Entry [%s] not found in source zip!", entryName.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Entry [" + entryName + "] not found in source zip!").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
@@ -271,14 +268,14 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
     unz_file_info64 fileInfo;
     if (unzGetCurrentFileInfo64(srcZip, &fileInfo, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
         // LOGE("Get file info failed for [%s]", entryName.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_GET_FILE_INFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Get file info failed for [" + entryName + "]").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
 
     if (unzOpenCurrentFile2(srcZip, nullptr, nullptr, 1) != UNZ_OK) {
         // LOGE("Cannot open entry [%s] in source zip!", entryName.c_str());
-        LOGE("%s", PackingToolErrMsg::UNZIP_OPEN_FILE_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Cannot open entry [" + entryName + "] in source zip!").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
@@ -301,7 +298,7 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
         bytesRead = unzReadCurrentFile(srcZip, buffer.data(), buffer.size());
         if (bytesRead < 0) {
             // LOGE("read raw data error for [%s]", entryName.c_str());
-            LOGE("%s", PackingToolErrMsg::UNZIP_READ_FILE_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 ("read raw data error for [" + entryName + "]").c_str()).c_str());
             break;
         }

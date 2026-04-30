@@ -56,7 +56,7 @@ int32_t ResPackager::Process()
             fs::remove_all(outPath_);
         }
         // LOGE("ResPackager::Process failed.");
-        LOGE("%s", PackingToolErrMsg::COMPRESS_RES_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED.toStringWithArgs(
             "ResPackager::Process failed.").c_str());
         return ERR_INVALID_VALUE;
     }
@@ -130,7 +130,7 @@ bool ResPackager::CompressPackResMode()
     zipWrapper_.Open(outPath_);
     if (!zipWrapper_.IsOpen()) {
         // LOGE("ResPackager::Process: zipWrapper Open failed!");
-        LOGE("%s", PackingToolErrMsg::COMPRESS_RES_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED.toStringWithArgs(
             "ResPackager::Process: zipWrapper Open failed!").c_str());
         return false;
     }

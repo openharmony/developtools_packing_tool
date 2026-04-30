@@ -1137,25 +1137,31 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
         if (hapVerifyInfo.GetModuleType() == ENTRY &&
             entryLimit != 0 &&
             (hapVerifyInfo.GetFileLength() >= entryLimit * FILE_LENGTH_1KB)) {
-            LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
-                hapVerifyInfo.GetModuleName().c_str(),
-                Utils::GetCeilFileSize(hapVerifyInfo.GetFileLength(), entryLimit), entryLimit);
+            // LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
+            //     hapVerifyInfo.GetModuleName().c_str(),
+            //     Utils::GetCeilFileSize(hapVerifyInfo.GetFileLength(), entryLimit), entryLimit);
+            LOGE("%s", PackingToolErrMsg::CHECK_FILE_SIZE_INVALID.toStringWithArgs(
+                ("module " + hapVerifyInfo.GetModuleName() + "'s size is overlarge").c_str()).c_str());
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != ENTRY &&
             notEntryLimit != 0 &&
             (hapVerifyInfo.GetFileLength() >= notEntryLimit * FILE_LENGTH_1KB)) {
-            LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
-                hapVerifyInfo.GetModuleName().c_str(),
-                Utils::GetCeilFileSize(hapVerifyInfo.GetFileLength(), notEntryLimit),
-                notEntryLimit);
+            // LOGE("module %s's size is %.2f KB, which is overlarge than %d KB.",
+            //     hapVerifyInfo.GetModuleName().c_str(),
+            //     Utils::GetCeilFileSize(hapVerifyInfo.GetFileLength(), notEntryLimit),
+            //     notEntryLimit);
+            LOGE("%s", PackingToolErrMsg::CHECK_FILE_SIZE_INVALID.toStringWithArgs(
+                ("module " + hapVerifyInfo.GetModuleName() + "'s size is overlarge").c_str()).c_str());
             return false;
         }
     }
 
     std::map<std::string, std::list<HapVerifyInfo>> deviceInfosMap;
     if (!GetDeviceHapVerifyInfoMap(hapVerifyInfos, deviceInfosMap)) {
-        LOGE("HapVerifyUtils::CheckFileSizeIsValid GetDeviceHapVerifyInfoMap failed!");
+        // LOGE("HapVerifyUtils::CheckFileSizeIsValid GetDeviceHapVerifyInfoMap failed!");
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+            "HapVerifyUtils::CheckFileSizeIsValid GetDeviceHapVerifyInfoMap failed!").c_str());
         return false;
     }
     std::map<std::string, std::list<HapVerifyInfo>>::iterator iter;
@@ -1163,7 +1169,9 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
         const std::string& deviceType = iter->first;
         const std::list<HapVerifyInfo>& deviceInfos = iter->second;
         if (!CheckAtomicServiceModuleSize(deviceInfos)) {
-            LOGE("checkAtomicServiceModuleSize failed on device %s.", deviceType.c_str());
+            // LOGE("checkAtomicServiceModuleSize failed on device %s.", deviceType.c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_MODULE_SIZE.toStringWithArgs(
+                ("checkAtomicServiceModuleSize failed on device " + deviceType).c_str()).c_str());
             return false;
         }
     }
@@ -1173,7 +1181,9 @@ bool HapVerifyUtils::CheckFileSizeIsValid(const std::list<HapVerifyInfo>& hapVer
 bool HapVerifyUtils::CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("hapVerifyInfos is empty!");
+        // LOGE("hapVerifyInfos is empty!");
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "hapVerifyInfos is empty!").c_str());
         return false;
     }
     int32_t entryLimit = hapVerifyInfos.begin()->GetEntrySizeLimit();
@@ -1195,19 +1205,23 @@ bool HapVerifyUtils::CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>
         if (hapVerifyInfo.GetModuleType() == ENTRY &&
             entryLimit != 0 &&
             (fileSize >= entryLimit * FILE_LENGTH_1KB)) {
-            LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
-                hapVerifyInfo.GetModuleName().c_str(),
-                Utils::GetCeilFileSize(fileSize, entryLimit),
-                entryLimit);
+            // LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
+            //     hapVerifyInfo.GetModuleName().c_str(),
+            //     Utils::GetCeilFileSize(fileSize, entryLimit),
+            //     entryLimit);
+            LOGE("%s", PackingToolErrMsg::CHECK_FILE_SIZE_INVALID.toStringWithArgs(
+                ("module " + hapVerifyInfo.GetModuleName() + " and it's dependencies size is overlarge").c_str()).c_str());
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != ENTRY &&
             notEntryLimit != 0 &&
             (fileSize >= notEntryLimit * FILE_LENGTH_1KB)) {
-            LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
-                hapVerifyInfo.GetModuleName().c_str(),
-                Utils::GetCeilFileSize(fileSize, notEntryLimit),
-                notEntryLimit);
+            // LOGE("module %s and it's dependencies size is %.2f KB, which is overlarge than %d KB.",
+            //     hapVerifyInfo.GetModuleName().c_str(),
+            //     Utils::GetCeilFileSize(fileSize, notEntryLimit),
+            //     notEntryLimit);
+            LOGE("%s", PackingToolErrMsg::CHECK_FILE_SIZE_INVALID.toStringWithArgs(
+                ("module " + hapVerifyInfo.GetModuleName() + " and it's dependencies size is overlarge").c_str()).c_str());
             return false;
         }
     }
@@ -1308,11 +1322,15 @@ bool HapVerifyUtils::CheckTargetModuleNameIsExisted(const std::list<HapVerifyInf
         return true;
     }
     if (nonOverlayHaps.empty()) {
-        LOGE("target modules are needed to pack with overlay module.");
+        // LOGE("target modules are needed to pack with overlay module.");
+        LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
+            "target modules are needed to pack with overlay module.").c_str());
         return false;
     }
     if (!Utils::CheckContainsAll(modules, targetModules)) {
-        LOGE("target modules are needed to pack with overlay module.");
+        // LOGE("target modules are needed to pack with overlay module.");
+        LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
+            "target modules are needed to pack with overlay module.").c_str());
         return false;
     }
     return true;
@@ -1321,18 +1339,24 @@ bool HapVerifyUtils::CheckTargetModuleNameIsExisted(const std::list<HapVerifyInf
 bool HapVerifyUtils::CheckCompileSdkIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("hapVerifyInfos is empty!");
+        // LOGE("hapVerifyInfos is empty!");
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "hapVerifyInfos is empty!").c_str());
         return false;
     }
     std::string compileSdkVersion = hapVerifyInfos.begin()->GetCompileSdkVersion();
     std::string compileSdkType = hapVerifyInfos.begin()->GetCompileSdkType();
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetCompileSdkType() != compileSdkType) {
-            LOGE("compile sdk type is not same.");
+            // LOGE("compile sdk type is not same.");
+            LOGE("%s", PackingToolErrMsg::COMPILE_SDK_TYPE_DIFFERENT.toStringWithArgs(
+                "compile sdk type is not same.").c_str());
             return false;
         }
         if (hapVerifyInfo.GetCompileSdkVersion() != compileSdkVersion) {
-            LOGE("compile sdk version is not same.");
+            // LOGE("compile sdk version is not same.");
+            LOGE("%s", PackingToolErrMsg::COMPILE_SDK_TYPE_DIFFERENT.toStringWithArgs(
+                "compile sdk version is not same.").c_str());
             return false;
         }
     }
@@ -1342,7 +1366,9 @@ bool HapVerifyUtils::CheckCompileSdkIsValid(const std::list<HapVerifyInfo>& hapV
 bool HapVerifyUtils::CheckProxyDataUriIsUnique(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("Hap verify infos is empty");
+        // LOGE("Hap verify infos is empty");
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "Hap verify infos is empty").c_str());
         return false;
     }
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> usedUrisByDeviceType;
@@ -1372,9 +1398,11 @@ bool HapVerifyUtils::CheckAndInsertUris(const HapVerifyInfo& info,
             // Check if uri already exists in nullDeviceType
             auto existingIter = nullDeviceTypeUris.find(uri);
             if (existingIter != nullDeviceTypeUris.end()) {
-                LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
-                     uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), NULL_DEVICE_TYPE.c_str());
-                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                // LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+                //      uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), NULL_DEVICE_TYPE.c_str());
+                // LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
+                    ("The uri(" + uri + ") is duplicated between modules for deviceType(" + NULL_DEVICE_TYPE + ")").c_str()).c_str());
                 return false;
             }
 
@@ -1415,9 +1443,11 @@ bool HapVerifyUtils::CheckUriInNullDeviceType(
         const auto& nullDeviceTypeUris = nullDeviceTypeIter->second;
         auto existingIter = nullDeviceTypeUris.find(uri);
         if (existingIter != nullDeviceTypeUris.end()) {
-            LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
-                 uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), NULL_DEVICE_TYPE.c_str());
-            LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+            // LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+            //      uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), NULL_DEVICE_TYPE.c_str());
+            // LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+            LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
+                ("The uri(" + uri + ") is duplicated between modules for deviceType(" + NULL_DEVICE_TYPE + ")").c_str()).c_str());
             return true;
         }
     }
@@ -1432,10 +1462,12 @@ bool HapVerifyUtils::CheckUriInCurrentDeviceType(
 {
     auto existingIter = uriToModuleMap.find(uri);
     if (existingIter != uriToModuleMap.end()) {
-        LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
-             uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), deviceType.c_str());
-        LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
-             "when deviceType has intersection.");
+        // LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+        //      uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), deviceType.c_str());
+        // LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
+        //      "when deviceType has intersection.");
+        LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
+            ("The uri(" + uri + ") is duplicated between modules for deviceType(" + deviceType + ")").c_str()).c_str());
         return true;
     }
     return false;
@@ -1451,9 +1483,11 @@ bool HapVerifyUtils::CheckUriExistsInOtherDeviceTypes(
             const auto& uriToModuleMap = mapEntry.second;
             auto existingIter = uriToModuleMap.find(uri);
             if (existingIter != uriToModuleMap.end()) {
-                LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
-                     uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), mapEntry.first.c_str());
-                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                // LOGE("The uri(%s) is duplicated between module(%s) and module(%s) for deviceType(%s).",
+                //      uri.c_str(), existingIter->second.c_str(), moduleName.c_str(), mapEntry.first.c_str());
+                // LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
+                    ("The uri(" + uri + ") is duplicated between modules for deviceType(" + mapEntry.first + ")").c_str()).c_str());
                 return true;
             }
         }
@@ -1465,14 +1499,18 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const std::list<HapVerifyInfo>& ha
 {
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         if (!CheckContinueTypeIsValid(hapVerifyInfo)) {
-            LOGE("CheckContinueTypeIsValid failed!");
+            // LOGE("CheckContinueTypeIsValid failed!");
+            LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+                "CheckContinueTypeIsValid failed!").c_str());
             return false;
         }
     }
     for (auto iter1 = hapVerifyInfos.begin(); iter1 != hapVerifyInfos.end(); iter1++) {
         for (auto iter2 = std::next(iter1); iter2 != hapVerifyInfos.end(); iter2++) {
             if (!CheckContinueTypeIsValid(*iter1, *iter2)) {
-                LOGE("CheckContinueTypeIsValid failed!");
+                // LOGE("CheckContinueTypeIsValid failed!");
+                LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+                    "CheckContinueTypeIsValid failed!").c_str());
                 return false;
             }
         }
@@ -1503,12 +1541,14 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
                 continue;
             }
             if (!Utils::CheckDisjoint(typeList1, typeList2)) {
-                LOGE("Module: (%s), Ability: (%s) and Ability: (%s) have same continueType.",
-                    hapVerifyInfo.GetModuleName().c_str(), (*iter1).c_str(), (*iter2).c_str());
-                LOGE("Ability: (%s) have continueType: %s", (*iter1).c_str(),
-                    Utils::ListToString(typeList1).c_str());
-                LOGE("Another Ability: (%s) have continueType: %s", (*iter1).c_str(),
-                    Utils::ListToString(typeList2).c_str());
+                // LOGE("Module: (%s), Ability: (%s) and Ability: (%s) have same continueType.",
+                //     hapVerifyInfo.GetModuleName().c_str(), (*iter1).c_str(), (*iter2).c_str());
+                // LOGE("Ability: (%s) have continueType: %s", (*iter1).c_str(),
+                //     Utils::ListToString(typeList1).c_str());
+                // LOGE("Another Ability: (%s) have continueType: %s", (*iter1).c_str(),
+                //     Utils::ListToString(typeList2).c_str());
+                LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+                    ("Module: (" + hapVerifyInfo.GetModuleName() + ") has abilities with same continueType").c_str()).c_str());
                 return false;
             }
         }
@@ -1532,16 +1572,18 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
         typeList2.insert(typeList2.end(), iter->second.begin(), iter->second.end());
     }
     if (!Utils::CheckDisjoint(typeList1, typeList2)) {
-        LOGE("Module: (%s) and Module: (%s) have same deviceType and continueType.",
-            hapVerifyInfo1.GetModuleName().c_str(), hapVerifyInfo2.GetModuleName().c_str());
-        LOGE("Module: (%s) have deviceType: %s and continueType: %s",
-            hapVerifyInfo1.GetModuleName().c_str(),
-            Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()).c_str(),
-            Utils::ListToString(typeList1).c_str());
-        LOGE("Another Module: (%s) have deviceType: %s and continueType: %s",
-            hapVerifyInfo2.GetModuleName().c_str(),
-            Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()).c_str(),
-            Utils::ListToString(typeList2).c_str());
+        // LOGE("Module: (%s) and Module: (%s) have same deviceType and continueType.",
+        //     hapVerifyInfo1.GetModuleName().c_str(), hapVerifyInfo2.GetModuleName().c_str());
+        // LOGE("Module: (%s) have deviceType: %s and continueType: %s",
+        //     hapVerifyInfo1.GetModuleName().c_str(),
+        //     Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()).c_str(),
+        //     Utils::ListToString(typeList1).c_str());
+        // LOGE("Another Module: (%s) have deviceType: %s and continueType: %s",
+        //     hapVerifyInfo2.GetModuleName().c_str(),
+        //     Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()).c_str(),
+        //     Utils::ListToString(typeList2).c_str());
+        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+            ("Module: (" + hapVerifyInfo1.GetModuleName() + ") and Module: (" + hapVerifyInfo2.GetModuleName() + ") have same deviceType and continueType").c_str()).c_str());
         return false;
     }
     return true;
