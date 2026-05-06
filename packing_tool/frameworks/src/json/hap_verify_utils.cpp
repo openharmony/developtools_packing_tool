@@ -1547,8 +1547,11 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
                 //     Utils::ListToString(typeList1).c_str());
                 // LOGE("Another Ability: (%s) have continueType: %s", (*iter1).c_str(),
                 //     Utils::ListToString(typeList2).c_str());
-                LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
-                    ("Module: (" + hapVerifyInfo.GetModuleName() + ") has abilities with same continueType").c_str()).c_str());
+                std::string cause = "Module(" + hapVerifyInfo.GetModuleName() + "), Ability(" +
+                    *iter1 + ") and Ability(" + *iter2 + ") have same continueType.\n";
+                cause += "Ability(" + *iter1 + ") have continueType: " + Utils::ListToString(typeList1) + ", ";
+                cause += "Another Ability(" + *iter2 + ") have continueType: " + Utils::ListToString(typeList2) + ".";
+                LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(cause.c_str()).c_str());
                 return false;
             }
         }
@@ -1582,8 +1585,12 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
         //     hapVerifyInfo2.GetModuleName().c_str(),
         //     Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()).c_str(),
         //     Utils::ListToString(typeList2).c_str());
-        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
-            ("Module: (" + hapVerifyInfo1.GetModuleName() + ") and Module: (" + hapVerifyInfo2.GetModuleName() + ") have same deviceType and continueType").c_str()).c_str());
+        std::string cause = "Conflict detected between modules due to overlapping deviceType and continueType:\n";
+        cause += "- Module(" + hapVerifyInfo1.GetModuleName() + ") with deviceType: " +
+            Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()) + " and continueType: " + Utils::ListToString(typeList1) + "\n";
+        cause += "- Module(" + hapVerifyInfo2.GetModuleName() + ") with deviceType: " +
+            Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) + " and continueType: " + Utils::ListToString(typeList2);
+        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(cause.c_str()).c_str());
         return false;
     }
     return true;
