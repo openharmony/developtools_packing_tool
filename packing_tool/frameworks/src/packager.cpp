@@ -712,7 +712,7 @@ void Packager::ScanSoFiles()
         if (!scanStatDuplicate.ScanSoFiles(outPath)) {
             // LOGE("make scan report failed! App path = %s", outPath.c_str());
             LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
-                ("make scan report failed! App path = " + outPath).c_str()).c_str());
+                ("Scan so files in app exist Exception: make scan report failed! App path = " + outPath).c_str()).c_str());
             fs::remove_all(reportPath);
         } else {
             std::string realFilePath;

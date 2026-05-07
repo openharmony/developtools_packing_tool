@@ -55,6 +55,11 @@
    */
   std::string toString(ScanErrorEnum err);
 
+  /**
+   * @brief 格式化输出，带参数
+   */
+  std::string toStringWithArgs(ScanErrorEnum err, const char* args);
+
   } // namespace error
   } // namespace packing_tool
 

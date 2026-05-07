@@ -53,5 +53,10 @@
              " error:" + getScanErrorMsg(err);
   }
 
+  std::string toStringWithArgs(ScanErrorEnum err, const char* args) {
+      return "code:" + std::to_string(getScanErrorCode(err)) +
+             " error:" + getScanErrorMsg(err) + " " + args;
+  }
+
   } // namespace error
   } // namespace packing_tool

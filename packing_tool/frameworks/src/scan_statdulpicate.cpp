@@ -21,9 +21,10 @@
 #include "scan_statdulpicate.h"
 #include "utils.h"
 #include "zip_utils.h"
-#include "error/packing_tool_err_msg.h"
+#include "error/scan_error_enum.h"
 
-using packing_tool::error::PackingToolErrMsg;
+using packing_tool::error::ScanErrorEnum;
+using packing_tool::error::toStringWithArgs;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -374,7 +375,7 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
     ZipUtils::Unzip(inputApp, unZipPath);
     if (!fs::exists(unZipPath) || !fs::is_directory(unZipPath)) {
         // LOGE("unzip path is invalid, unZipPath = %s", unZipPath.c_str());
-        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
             ("unzip path is invalid, unZipPath = " + unZipPath).c_str()).c_str());
         return fileList;
     }
@@ -395,7 +396,7 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
         std::string targetPath = copyPath + Constants::LINUX_FILE_SEPARATOR + fileName;
         if (!Utils::CopyFile(filePath, targetPath)) {
             // LOGE("copyFile failed, filePath = %s, targetPath = %s", filePath.c_str(), targetPath.c_str());
-            LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
+            LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_REMIND_ERROR,
                 ("copyFile failed, filePath = " + filePath + ", targetPath = " + targetPath).c_str()).c_str());
             return {};
         }
@@ -449,19 +450,19 @@ bool ScanStatDuplicate::ScanSoFiles(const std::string& outPath)
     std::string cssPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_CSS;
     if (!WriteFile(jsonPath, jsonStr)) {
         // LOGE("write failed, jsonPath = %s, jsonStr = %s", jsonPath.c_str(), jsonStr.c_str());
-        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             ("write failed, jsonPath = " + jsonPath).c_str()).c_str());
         return false;
     }
     if (!WriteFile(htmlPath, htmlStr)) {
         // LOGE("write failed, htmlStr = %s", htmlStr.c_str());
-        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "write failed, htmlStr.").c_str());
         return false;
     }
     if (!WriteFile(cssPath, TEMPLATE_CSS)) {
         // LOGE("write failed, htmlStr = %s", htmlStr.c_str());
-        LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "write failed, css file.").c_str());
         return false;
     }
@@ -487,13 +488,13 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
         // LOGE("get real file path failed! filePath = %s", filePath.c_str());
-        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_NOT_FOUND_ERROR,
             ("get real file path failed! filePath = " + filePath).c_str()).c_str());
         return false;
     }
     if (data.empty()) {
         // LOGE("data is empty");
-        LOGE("%s", PackingToolErrMsg::GET_FILE_CONTENT_FAILED.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_NO_FILE_ERROR,
             "data is empty").c_str());
         return false;
     }
@@ -503,7 +504,7 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
         outFile.close();
     } else {
         // LOGE("Failed to open file for writing");
-        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "Failed to open file for writing").c_str());
         return false;
     }
