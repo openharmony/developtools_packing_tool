@@ -185,17 +185,20 @@ bool ZipUtils::IsPathPrefixExistsInZip(const std::string& zipFilePath, const std
 {
     fs::path fsZipFilePath(zipFilePath);
     if (!fs::is_regular_file(fsZipFilePath)) {
-        LOGE("Zip file is not a regular file!");
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
+            "Zip file is not a regular file!").c_str());
         return false;
     }
     unzFile unzipFile = unzOpen64(zipFilePath.c_str());
     if (unzipFile == nullptr) {
-        LOGE("Open zip file failed! zipFilePath=%s", zipFilePath.c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            ("Open zip file failed! zipFilePath=" + zipFilePath).c_str()).c_str());
         return false;
     }
     unz_global_info64 unzGlobalInfo;
     if (unzGetGlobalInfo64(unzipFile, &unzGlobalInfo) != UNZ_OK) {
-        LOGE("Get zip global info! zipFilePath=%s", zipFilePath.c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            ("Get zip global info failed! zipFilePath=" + zipFilePath).c_str()).c_str());
         unzClose(unzipFile);
         return false;
     }
@@ -206,7 +209,8 @@ bool ZipUtils::IsPathPrefixExistsInZip(const std::string& zipFilePath, const std
     for (size_t i = 0; i < unzGlobalInfo.number_entry; ++i) {
         if (unzGetCurrentFileInfo64(unzipFile, &fileInfo, filePathInZip, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) !=
             UNZ_OK) {
-            LOGE("Get current file info in zip failed!");
+            LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+                "Get current file info in zip failed!").c_str());
             break;
         }
         std::string strFilePathInZip(filePathInZip);
@@ -219,7 +223,8 @@ bool ZipUtils::IsPathPrefixExistsInZip(const std::string& zipFilePath, const std
         if (ret == UNZ_END_OF_LIST_OF_FILE) {
             break;
         } else if (ret != UNZ_OK) {
-            LOGE("Go to next file in zip failed!");
+            LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+                "Go to next file in zip failed!").c_str());
             break;
         }
     }

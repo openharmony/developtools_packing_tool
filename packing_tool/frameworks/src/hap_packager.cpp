@@ -331,7 +331,8 @@ bool HapPackager::IsHapPathValid()
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_SKILLS_PATH)) {
-        LOGE("HapPackager::isArgsValidInHapMode skills-path is invalid.");
+        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
+            "HapPackager::isArgsValidInHapMode skills-path is invalid.").c_str());
         return false;
     }
     return true;
@@ -373,7 +374,8 @@ bool HapPackager::CompressHap()
             LOGW("GetStageModuleType failed");
         }
         if (moduleType == Constants::TYPE_SKILL) {
-            LOGE("moduleType 'skill' is not allowed in HAP mode, use HSP mode.");
+            LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
+                "moduleType 'skill' is not allowed in HAP mode, use HSP mode.").c_str());
             return false;
         }
         if (Constants::TYPE_SHARED == moduleType) {
@@ -896,7 +898,8 @@ bool HapPackager::CompressSkillsDirectory()
 {
     std::list<std::map<std::string, std::string>> skillProfiles;
     if (!moduleJson_.GetSkillProfiles(skillProfiles)) {
-        LOGE("Failed to get skillProfiles from module.json.");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Failed to get skillProfiles from module.json.").c_str());
         return false;
     }
     std::string bundleType;

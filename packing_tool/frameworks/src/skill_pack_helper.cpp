@@ -16,6 +16,9 @@
 #include "skill_pack_helper.h"
 
 #include "log.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -130,11 +133,13 @@ bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, 
         return false;
     }
     if (skillsPath.empty()) {
-        LOGE("--skills-path is required when skillProfiles is configured in module.json.");
+        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--skills-path is required when skillProfiles is configured in module.json.").c_str());
         return false;
     }
     if (!fs::exists(skillsPath) || !fs::is_directory(skillsPath)) {
-        LOGE("skills-path does not exist or is not a directory.");
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
+            "skills-path does not exist or is not a directory.").c_str());
         return false;
     }
     return true;
@@ -143,7 +148,8 @@ bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, 
 bool CheckBundleTypeAllowsSkills(const std::string &bundleType)
 {
     if (IsForbiddenBundleType(bundleType)) {
-        LOGE("skillProfiles is not allowed when bundleType is %s.", bundleType.c_str());
+        LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_SHARED_INVALID.toStringWithArgs(
+            ("skillProfiles is not allowed when bundleType is " + bundleType + ".").c_str()).c_str());
         return false;
     }
     return true;
@@ -177,7 +183,8 @@ bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &ski
         return false;
     }
     if (!AddConfiguredSkillsToZip(skillsPath, profileNames, addFile, failedProfile)) {
-        LOGE("Failed to add skill files to zip for profile: %s", failedProfile.c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            ("Failed to add skill files to zip for profile: " + failedProfile).c_str()).c_str());
         return false;
     }
     return true;

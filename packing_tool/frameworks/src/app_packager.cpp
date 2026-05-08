@@ -33,7 +33,8 @@ bool GetFirstBundleTypeFromPathList(const std::list<std::string> &pathList, std:
     for (const auto &path : pathList) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(path, hapVerifyInfo)) {
-            LOGE("Failed to parse package '%s' for bundleType validation.", path.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Failed to parse package '" + path + "' for bundleType validation.").c_str()).c_str());
             return false;
         }
         bundleType = hapVerifyInfo.GetBundleType();
@@ -47,14 +48,16 @@ bool CheckSkillModuleTypes(const std::list<std::string> &hspPathList)
     for (const auto &hsp : hspPathList) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(hsp, hapVerifyInfo)) {
-            LOGE("Failed to parse HSP '%s' for skill app moduleType validation.", hsp.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Failed to parse HSP '" + hsp + "' for skill app moduleType validation.").c_str()).c_str());
             return false;
         }
         if (hapVerifyInfo.GetModuleType() == Constants::TYPE_SKILL) {
             continue;
         }
-        LOGE("HSP moduleType must be skill when bundleType is skill, but got '%s' in %s.",
-            hapVerifyInfo.GetModuleType().c_str(), hsp.c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            ("HSP moduleType must be skill when bundleType is skill, but got '" +
+                hapVerifyInfo.GetModuleType() + "' in " + hsp + ".").c_str()).c_str());
         return false;
     }
     return true;
@@ -90,12 +93,13 @@ bool CheckSkillAppConstraints(const std::string &hapPath, const std::string &hsp
         return true;
     }
     if (!hapPath.empty()) {
-        LOGE("--hap-path must be empty when bundleType is skill.");
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-path must be empty when bundleType is skill.").c_str());
         return false;
     }
     if (CountInputPathItems(hspPath) > 1) {
-        LOGE("--hsp-path must contain only 1 HSP when bundleType is skill, but got %zu.",
-            CountInputPathItems(hspPath));
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hsp-path must contain only 1 HSP when bundleType is skill.").c_str());
         return false;
     }
     return CheckSkillModuleTypes(hspPathList);

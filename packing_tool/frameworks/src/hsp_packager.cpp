@@ -271,7 +271,8 @@ bool HspPackager::CompressHsp()
             LOGW("GetStageModuleType failed.");
         }
         if (moduleType != Constants::TYPE_SHARED && moduleType != Constants::TYPE_SKILL) {
-            LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_SHARED_INVALID.toStringWithArgs("module type must be shared.").c_str());
+            LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
+                "module type must be shared or skill.").c_str());
             return false;
         }
         if (!moduleJson_.CheckDeduplicateHar()) {
@@ -772,7 +773,8 @@ bool HspPackager::CompressSkillsDirectory()
     }
     std::list<std::map<std::string, std::string>> skillProfiles;
     if (!moduleJson_.GetSkillProfiles(skillProfiles)) {
-        LOGE("Failed to get skillProfiles from module.json.");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Failed to get skillProfiles from module.json.").c_str());
         return false;
     }
     std::string bundleType;

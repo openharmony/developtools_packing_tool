@@ -65,7 +65,8 @@ bool ValidateAppPackSkillProfiles(const fs::path &path, ModuleJson &moduleJson)
     }
     std::string bundleType;
     if (moduleJson.GetStageBundleType(bundleType) && SkillPackHelper::IsForbiddenBundleType(bundleType)) {
-        LOGE("bundleType '%s' does not support skills in app packing mode.", bundleType.c_str());
+        LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_SHARED_INVALID.toStringWithArgs(
+            ("bundleType '" + bundleType + "' does not support skills in app packing mode.").c_str()).c_str());
         return false;
     }
     std::set<std::string> profileNames;
@@ -75,7 +76,8 @@ bool ValidateAppPackSkillProfiles(const fs::path &path, ModuleJson &moduleJson)
     if (fs::is_directory(path)) {
         const std::string skillsPath = (path / Constants::SKILLS_DIR).string();
         if (!fs::exists(skillsPath) || !fs::is_directory(skillsPath)) {
-            LOGE("skillProfiles is configured but skills/ directory not found in '%s'.", path.string().c_str());
+            LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
+                ("skillProfiles is configured but skills/ directory not found in '" + path.string() + "'.").c_str()).c_str());
             return false;
         }
         if (!SkillPackHelper::ValidateSkillProfiles(skillsPath, profileNames, failedProfile, failureDetail)) {
@@ -148,7 +150,6 @@ int32_t FastAppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        // LOGE("FastApp Process failed.");
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("FastApp Process failed.").c_str());
         return ERR_INVALID_VALUE;
     }
@@ -489,14 +490,16 @@ bool FastAppPackager::CheckSkillRulesForPath(const std::string &pathValue, bool 
 
     ModuleJson moduleJson;
     if (!ParseModuleJsonContent(GetModuleJsonContentFromPath(path), moduleJson)) {
-        LOGE("Failed to parse module.json from path '%s' for Fast App skill validation.", pathValue.c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            ("Failed to parse module.json from path '" + pathValue + "' for Fast App skill validation.").c_str()).c_str());
         return false;
     }
 
     std::string moduleType;
     moduleJson.GetStageModuleType(moduleType);
     if (isHapPath && moduleType == Constants::TYPE_SKILL) {
-        LOGE("moduleType 'skill' is not allowed in --hap-path, use --hsp-path instead.");
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "moduleType 'skill' is not allowed in --hap-path, use --hsp-path instead.").c_str());
         return false;
     }
     return ValidateAppPackSkillProfiles(path, moduleJson);
@@ -509,13 +512,15 @@ bool FastAppPackager::CheckSkillBundleTypeConstraints(const std::list<std::strin
         return true;
     }
     if (!hapPathList.empty()) {
-        LOGE("--hap-path must be empty when bundleType is skill.");
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-path must be empty when bundleType is skill.").c_str());
         return false;
     }
 
     int hspCount = static_cast<int>(hspPathList.size());
     if (hspCount > 1) {
-        LOGE("--hsp-path must contain only 1 HSP when bundleType is skill, but got %d.", hspCount);
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hsp-path must contain only 1 HSP when bundleType is skill.").c_str());
         return false;
     }
 
@@ -536,8 +541,8 @@ bool FastAppPackager::IsSkillHspModule(const std::string &pathValue)
 
     ModuleJson moduleJson;
     if (!ParseModuleJsonContent(GetModuleJsonContentFromPath(path), moduleJson)) {
-        LOGE("Failed to parse module.json from path '%s' for Fast App skill moduleType validation.",
-            pathValue.c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            ("Failed to parse module.json from path '" + pathValue + "' for Fast App skill moduleType validation.").c_str()).c_str());
         return false;
     }
 
@@ -547,7 +552,8 @@ bool FastAppPackager::IsSkillHspModule(const std::string &pathValue)
         return true;
     }
 
-    LOGE("HSP moduleType must be 'skill' when bundleType is skill, but got '%s'.", moduleType.c_str());
+    LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+        ("HSP moduleType must be 'skill' when bundleType is skill, but got '" + moduleType + "'.").c_str()).c_str());
     return false;
 }
 
@@ -1071,7 +1077,8 @@ bool FastAppPackager::AddOtherFileToZip(const fs::path &entry)
                 return true;
             }
             if (!AddFastAppSkillsToZip(entry, skillProfileNames_, zipWrapper_)) {
-                LOGE("Fast App add skills directory to zip failed.");
+                LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+                    "Fast App add skills directory to zip failed.").c_str());
                 return false;
             }
         } else if (entry.filename() == Constants::LIB_PATH) {

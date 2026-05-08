@@ -67,7 +67,8 @@ bool GetFirstBundleTypeFromPathList(const std::list<std::string> &pathList, std:
         }
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(path, hapVerifyInfo)) {
-            LOGE("Failed to parse HSP '%s' for multiApp bundleType validation.", path.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Failed to parse HSP '" + path + "' for multiApp bundleType validation.").c_str()).c_str());
             return false;
         }
         bundleType = hapVerifyInfo.GetBundleType();
@@ -95,7 +96,8 @@ bool CollectHapAndHspFromAppForVerify(const std::string &appPath, const fs::path
 {
     fs::path unzipPath = tempRoot / Utils::GenerateUUID();
     if (ZipUtils::Unzip(appPath, unzipPath.string()) != ZIP_ERR_SUCCESS) {
-        LOGE("Failed to unzip app '%s' for multiApp skill validation.", appPath.c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            ("Failed to unzip app '" + appPath + "' for multiApp skill validation.").c_str()).c_str());
         if (fs::exists(unzipPath)) {
             fs::remove_all(unzipPath);
         }
@@ -143,17 +145,20 @@ bool CheckSkillHspModuleTypes(const std::list<std::string> &hspPaths)
         hspCount++;
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(path, hapVerifyInfo)) {
-            LOGE("Failed to parse HSP '%s' for multiApp skill moduleType validation.", path.c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                ("Failed to parse HSP '" + path + "' for multiApp skill moduleType validation.").c_str()).c_str());
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != Constants::TYPE_SKILL) {
-            LOGE("HSP moduleType must be skill when bundleType is skill, but got '%s' in %s.",
-                hapVerifyInfo.GetModuleType().c_str(), path.c_str());
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
+                ("HSP moduleType must be skill when bundleType is skill, but got '" +
+                    hapVerifyInfo.GetModuleType() + "' in " + path + ".").c_str()).c_str());
             return false;
         }
     }
     if (hspCount > 1) {
-        LOGE("--hsp-list must contain only 1 HSP when bundleType is skill, but got %d.", hspCount);
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hsp-list must contain only 1 HSP when bundleType is skill.").c_str());
         return false;
     }
     return true;
@@ -359,7 +364,8 @@ bool MultiAppPackager::CheckSkillRules()
         return true;
     }
     if (hasHapPath) {
-        LOGE("--hap-list must be empty when bundleType is skill.");
+        LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-list must be empty when bundleType is skill.").c_str());
         return false;
     }
     return CheckSkillHspModuleTypes(hspPaths);

@@ -931,9 +931,10 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     const bool hasSkillType = moduleType.compare(TYPE_SKILL) == 0;
     const bool hasSkillBundleType = bundleType.compare(TYPE_SKILL) == 0;
     if (hasSkillType != hasSkillBundleType) {
-        LOGE("Invalid skill configuration: moduleType and bundleType must both be 'skill' when using skill. "
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            ("Invalid skill configuration: moduleType and bundleType must both be 'skill' when using skill. "
             "If this is a skill module, package it in HSP mode instead of HAP mode. "
-            "[bundleType=%s][moduleType=%s]", bundleType.c_str(), moduleType.c_str());
+            "[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
         return false;
     }
     if (bundleType.compare(APP) == 0) {

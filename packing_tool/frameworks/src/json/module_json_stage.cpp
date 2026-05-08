@@ -1130,7 +1130,8 @@ bool ModuleJson::GetSkillProfiles(std::list<std::map<std::string, std::string>>&
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        LOGE("GetModuleObject failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_OBJECT_EXCEPTION.toStringWithArgs(
+            "GetModuleObject failed!").c_str());
         return false;
     }
     if (!moduleObj->Contains(SKILL_PROFILES.c_str())) {
@@ -1138,7 +1139,8 @@ bool ModuleJson::GetSkillProfiles(std::list<std::map<std::string, std::string>>&
     }
     std::unique_ptr<PtJson> skillProfilesObj;
     if (moduleObj->GetArray(SKILL_PROFILES.c_str(), &skillProfilesObj) != Result::SUCCESS) {
-        LOGE("Get skillProfiles array failed!");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Get skillProfiles array failed!").c_str());
         return false;
     }
     if (!skillProfilesObj) {
@@ -1147,7 +1149,8 @@ bool ModuleJson::GetSkillProfiles(std::list<std::map<std::string, std::string>>&
     for (int32_t i = 0; i < skillProfilesObj->GetSize(); ++i) {
         std::unique_ptr<PtJson> profileObj = skillProfilesObj->Get(i);
         if (!profileObj) {
-            LOGE("Get skillProfile[%d] failed!", i);
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "Get skillProfile failed!").c_str());
             return false;
         }
         std::map<std::string, std::string> profileMap;

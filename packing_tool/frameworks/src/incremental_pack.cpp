@@ -75,7 +75,6 @@ bool IncrementalPack::IncrementalPackProcess(const std::string &paramPath, ZipWr
         if (std::string(fileNameInZip).rfind("libs/", 0) == 0) {
             int ret = zipWrapper.AddRawEntryToZip(destZip, srcZip, fileNameInZip);
             if (ret != ZIP_ERR_SUCCESS) {
-                // LOGE("AddRawEntryToZip failed for [%s]", fileNameInZip);
                 LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
                     ("AddRawEntryToZip failed for [" + std::string(fileNameInZip) + "]").c_str()).c_str());
                 unzClose(srcZip);
