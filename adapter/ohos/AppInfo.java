@@ -15,7 +15,9 @@
 
 package ohos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * App AppInfo info.
@@ -155,6 +157,11 @@ public class AppInfo {
      * Indicates the labelId of app AppJson.
      */
     private int labelId = 0;
+
+    /**
+     * Indicates the alternateIcons of app AppJson.
+     */
+    private List<AlternateIcon> alternateIcons = new ArrayList<>();
 
     /**
      * Get shell version code.
@@ -298,5 +305,13 @@ public class AppInfo {
 
     public void setLabelId(int labelId) {
         this.labelId = labelId;
+    }
+
+    public List<AlternateIcon> getAlternateIcons() {
+        return alternateIcons;
+    }
+
+    public void setAlternateIcons(List<AlternateIcon> alternateIcons) {
+        this.alternateIcons = alternateIcons;
     }
 }

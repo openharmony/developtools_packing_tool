@@ -198,6 +198,8 @@ public class JsonUtil {
     private static final String REQUIRED_DEVICE_FEATURES = "requiredDeviceFeatures";
     private static final String ABILITY_NAME = "abilityName";
     private static final String SRC_ENTRIES = "srcEntries";
+    private static final String ALTERNATE_ICONS = "alternateIcons";
+    private static final String ICON = "icon";
 
 
     /**
@@ -503,7 +505,32 @@ public class JsonUtil {
         }
         // parse device type
         parseSpecifiedDeviceType(appJson, moduleAppInfo);
+        // parse alternate icons
+        parseAlternateIcons(appJson, moduleAppInfo);
         return moduleAppInfo;
+    }
+
+    static void parseAlternateIcons(JSONObject appJson, ModuleAppInfo moduleAppInfo) {
+        if (appJson == null || !appJson.containsKey(ALTERNATE_ICONS)) {
+            return;
+        }
+        JSONArray alternateIconsArray = appJson.getJSONArray(ALTERNATE_ICONS);
+        if (alternateIconsArray == null) {
+            return;
+        }
+        List<AlternateIcon> alternateIcons = new ArrayList<>();
+        for (int i = 0; i < alternateIconsArray.size(); i++) {
+            JSONObject iconObj = alternateIconsArray.getJSONObject(i);
+            if (iconObj == null) {
+                continue;
+            }
+            AlternateIcon alternateIcon = new AlternateIcon();
+            alternateIcon.iconId = iconObj.getLongValue(ICON_ID);
+            alternateIcon.name = getJsonString(iconObj, NAME);
+            alternateIcon.icon = getJsonString(iconObj, ICON);
+            alternateIcons.add(alternateIcon);
+        }
+        moduleAppInfo.setAlternateIcons(alternateIcons);
     }
 
     static void parseSpecifiedDeviceType(JSONObject appJson, ModuleAppInfo moduleAppInfo) throws BundleException {
