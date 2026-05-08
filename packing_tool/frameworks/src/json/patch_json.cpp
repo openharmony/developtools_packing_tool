@@ -43,7 +43,6 @@ bool PatchJson::ParseFromString(const std::string& jsonString)
 {
     Release();
     if (jsonString.length() == 0) {
-        // LOGE("Json length is zero!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json length is zero!").c_str());
         return false;
     }
@@ -56,14 +55,12 @@ bool PatchJson::ParseFromFile(const std::string& jsonFile)
     Release();
     std::string realJsonFile;
     if (!Utils::GetRealPath(jsonFile, realJsonFile)) {
-        // LOGE("get real json file failed! jsonFile=%s", jsonFile.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("get real json file failed! jsonFile=") + jsonFile).c_str());
         return false;
     }
     std::ifstream inFile(realJsonFile, std::ios::in);
     if (!inFile.is_open()) {
-        // LOGE("Open json file failed! jsonFile=%s, realJsonFile=%s", jsonFile.c_str(), realJsonFile.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Open json file failed! jsonFile=") + jsonFile + ", realJsonFile=" + realJsonFile).c_str());
         return false;
@@ -95,18 +92,15 @@ bool PatchJson::IsValid()
 bool PatchJson::GetAppObject(std::unique_ptr<PtJson>& appObj)
 {
     if (root_.get() == nullptr) {
-        // LOGE("Json root is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json root is null!").c_str());
         return false;
     }
     if (!root_->Contains(APP.c_str())) {
-        // LOGE("Json root has no %s node!", APP.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Json root has no ") + APP + " node!").c_str());
         return false;
     }
     if (root_->GetObject(APP.c_str(), &appObj) != Result::SUCCESS) {
-        // LOGE("Json root get %s node failed!", APP.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Json root get ") + APP + " node failed!").c_str());
         return false;
@@ -117,18 +111,15 @@ bool PatchJson::GetAppObject(std::unique_ptr<PtJson>& appObj)
 bool PatchJson::GetModuleObject(std::unique_ptr<PtJson>& moduleObj)
 {
     if (root_.get() == nullptr) {
-        // LOGE("Json root is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json root is null!").c_str());
         return false;
     }
     if (!root_->Contains(MODULE.c_str())) {
-        // LOGE("Json root has no %s node!", MODULE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Json root has no ") + MODULE + " node!").c_str());
         return false;
     }
     if (root_->GetObject(MODULE.c_str(), &moduleObj) != Result::SUCCESS) {
-        // LOGE("Json root get %s node failed!", MODULE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Json root get ") + MODULE + " node failed!").c_str());
         return false;
@@ -140,7 +131,6 @@ bool PatchJson::GetBundleName(std::string& bundleName)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        // LOGE("GetAppObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
         return false;
     }
@@ -150,18 +140,15 @@ bool PatchJson::GetBundleName(std::string& bundleName)
 bool PatchJson::GetBundleNameByAppObj(const std::unique_ptr<PtJson>& appObj, std::string& bundleName)
 {
     if (!appObj) {
-        // LOGE("App node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs("App node is null!").c_str());
         return false;
     }
     if (!appObj->Contains(BUNDLE_NAME.c_str())) {
-        // LOGE("App node has no %s node!", BUNDLE_NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs(
             std::string("App node has no ") + BUNDLE_NAME + " node!").c_str());
         return false;
     }
     if (appObj->GetString(BUNDLE_NAME.c_str(), &bundleName) != Result::SUCCESS) {
-        // LOGE("App node get %s failed!", BUNDLE_NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs(
             std::string("App node get ") + BUNDLE_NAME + " failed!").c_str());
         return false;
@@ -173,7 +160,6 @@ bool PatchJson::GetVersionCode(int32_t& versionCode)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        // LOGE("GetAppObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
         return false;
     }
@@ -183,18 +169,15 @@ bool PatchJson::GetVersionCode(int32_t& versionCode)
 bool PatchJson::GetVersionCodeByAppObj(const std::unique_ptr<PtJson>& appObj, int32_t& versionCode)
 {
     if (!appObj) {
-        // LOGE("App node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
         return false;
     }
     if (!appObj->Contains(VERSION_CODE.c_str())) {
-        // LOGE("App node has no %s node!", VERSION_CODE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node has no ") + VERSION_CODE + " node!").c_str());
         return false;
     }
     if (appObj->GetInt(VERSION_CODE.c_str(), &versionCode) != Result::SUCCESS) {
-        // LOGE("App node get %s failed!", VERSION_CODE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node get ") + VERSION_CODE + " failed!").c_str());
         return false;
@@ -206,7 +189,6 @@ bool PatchJson::GetVersionName(std::string& versionName)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        // LOGE("GetAppObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
         return false;
     }
@@ -216,18 +198,15 @@ bool PatchJson::GetVersionName(std::string& versionName)
 bool PatchJson::GetVersionNameByAppObj(const std::unique_ptr<PtJson>& appObj, std::string& versionName)
 {
     if (!appObj) {
-        // LOGE("App node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
         return false;
     }
     if (!appObj->Contains(VERSION_NAME.c_str())) {
-        // LOGE("App node has no %s node!", VERSION_NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node has no ") + VERSION_NAME + " node!").c_str());
         return false;
     }
     if (appObj->GetString(VERSION_NAME.c_str(), &versionName) != Result::SUCCESS) {
-        // LOGE("App node get %s failed!", VERSION_NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node get ") + VERSION_NAME + " failed!").c_str());
         return false;
@@ -239,7 +218,6 @@ bool PatchJson::GetPatchVersionCode(int32_t& patchVersionCode)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        // LOGE("GetAppObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
         return false;
     }
@@ -249,18 +227,15 @@ bool PatchJson::GetPatchVersionCode(int32_t& patchVersionCode)
 bool PatchJson::GetPatchVersionCodeByAppObj(const std::unique_ptr<PtJson>& appObj, int32_t& patchVersionCode)
 {
     if (!appObj) {
-        // LOGE("App node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
         return false;
     }
     if (!appObj->Contains(PATCH_VERSION_CODE.c_str())) {
-        // LOGE("App node has no %s node!", PATCH_VERSION_CODE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node has no ") + PATCH_VERSION_CODE + " node!").c_str());
         return false;
     }
     if (appObj->GetInt(PATCH_VERSION_CODE.c_str(), &patchVersionCode) != Result::SUCCESS) {
-        // LOGE("App node get %s failed!", PATCH_VERSION_CODE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node get ") + PATCH_VERSION_CODE + " failed!").c_str());
         return false;
@@ -272,7 +247,6 @@ bool PatchJson::GetPatchVersionName(std::string& patchVersionName)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        // LOGE("GetAppObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
         return false;
     }
@@ -282,18 +256,15 @@ bool PatchJson::GetPatchVersionName(std::string& patchVersionName)
 bool PatchJson::GetPatchVersionNameByAppObj(const std::unique_ptr<PtJson>& appObj, std::string& patchVersionName)
 {
     if (!appObj) {
-        // LOGE("App node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
         return false;
     }
     if (!appObj->Contains(PATCH_VERSION_NAME.c_str())) {
-        // LOGE("App node has no %s node!", PATCH_VERSION_NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node has no ") + PATCH_VERSION_NAME + " node!").c_str());
         return false;
     }
     if (appObj->GetString(PATCH_VERSION_NAME.c_str(), &patchVersionName) != Result::SUCCESS) {
-        // LOGE("App node get %s failed!", PATCH_VERSION_NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("App node get ") + PATCH_VERSION_NAME + " failed!").c_str());
         return false;
@@ -305,7 +276,6 @@ bool PatchJson::GetName(std::string& name)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        // LOGE("GetModuleObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
         return false;
     }
@@ -315,18 +285,15 @@ bool PatchJson::GetName(std::string& name)
 bool PatchJson::GetNameByModuleObj(const std::unique_ptr<PtJson>& moduleObj, std::string& name)
 {
     if (!moduleObj) {
-        // LOGE("Module node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs("Module node is null!").c_str());
         return false;
     }
     if (!moduleObj->Contains(NAME.c_str())) {
-        // LOGE("Module node has no %s node!", NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs(
             std::string("Module node has no ") + NAME + " node!").c_str());
         return false;
     }
     if (moduleObj->GetString(NAME.c_str(), &name) != Result::SUCCESS) {
-        // LOGE("Module node get %s failed!", NAME.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs(
             std::string("Module node get ") + NAME + " failed!").c_str());
         return false;
@@ -338,7 +305,6 @@ bool PatchJson::GetType(std::string& type)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        // LOGE("GetModuleObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
         return false;
     }
@@ -348,18 +314,15 @@ bool PatchJson::GetType(std::string& type)
 bool PatchJson::GetTypeByModuleObj(const std::unique_ptr<PtJson>& moduleObj, std::string& type)
 {
     if (!moduleObj) {
-        // LOGE("Module node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());
         return false;
     }
     if (!moduleObj->Contains(TYPE.c_str())) {
-        // LOGE("Module node has no %s node!", TYPE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Module node has no ") + TYPE + " node!").c_str());
         return false;
     }
     if (moduleObj->GetString(TYPE.c_str(), &type) != Result::SUCCESS) {
-        // LOGE("Module node get %s failed!", TYPE.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Module node get ") + TYPE + " failed!").c_str());
         return false;
@@ -371,7 +334,6 @@ bool PatchJson::GetDeviceTypes(std::list<std::string>& deviceTypes)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        // LOGE("GetModuleObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
         return false;
     }
@@ -381,19 +343,16 @@ bool PatchJson::GetDeviceTypes(std::list<std::string>& deviceTypes)
 bool PatchJson::GetDeviceTypesByModuleObj(const std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& deviceTypes)
 {
     if (!moduleObj) {
-        // LOGE("Module node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());
         return false;
     }
     if (!moduleObj->Contains(DEVICE_TYPES.c_str())) {
-        // LOGE("Module node has no %s node!", DEVICE_TYPES.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Module node has no ") + DEVICE_TYPES + " node!").c_str());
         return false;
     }
     std::unique_ptr<PtJson> deviceTypesObj;
     if (moduleObj->GetArray(DEVICE_TYPES.c_str(), &deviceTypesObj) != Result::SUCCESS) {
-        // LOGE("Module node get %s array node failed!", DEVICE_TYPES.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Module node get ") + DEVICE_TYPES + " array node failed!").c_str());
         return false;
@@ -408,7 +367,6 @@ bool PatchJson::GetOriginalModuleHash(std::string& originalModuleHash)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        // LOGE("GetModuleObject failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
         return false;
     }
@@ -419,18 +377,15 @@ bool PatchJson::GetOriginalModuleHashByModuleObj(const std::unique_ptr<PtJson>& 
     std::string& originalModuleHash)
 {
     if (!moduleObj) {
-        // LOGE("Module node is null!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());
         return false;
     }
     if (!moduleObj->Contains(ORIGINAL_MODULE_HASH.c_str())) {
-        // LOGE("Module node has no %s node!", ORIGINAL_MODULE_HASH.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Module node has no ") + ORIGINAL_MODULE_HASH + " node!").c_str());
         return false;
     }
     if (moduleObj->GetString(ORIGINAL_MODULE_HASH.c_str(), &originalModuleHash) != Result::SUCCESS) {
-        // LOGE("Module node get %s array node failed!", ORIGINAL_MODULE_HASH.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Module node get ") + ORIGINAL_MODULE_HASH + " array node failed!").c_str());
         return false;
@@ -463,7 +418,6 @@ bool PatchJson::GetHqfInfo(HqfInfo& hqfInfo)
         !GetTypeByModuleObj(moduleObj, type) ||
         !GetDeviceTypesByModuleObj(moduleObj, deviceTypes) ||
         !GetOriginalModuleHashByModuleObj(moduleObj, originalModuleHash)) {
-        // LOGE("Get nodes failed!");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Get nodes failed!").c_str());
         return false;
     }

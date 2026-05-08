@@ -51,14 +51,12 @@ int32_t ZipWrapper::Open(std::string& zipPath, int32_t append)
 int32_t ZipWrapper::Open(int32_t append)
 {
     if (zipFile_ != nullptr) {
-        // LOGE("zip file handle has open");
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             "zip file handle has open").c_str());
         return ZIP_ERR_SUCCESS;
     }
     zipFile_ = zipOpen64(zipFilePath_.c_str(), append);
     if (zipFile_ == nullptr) {
-        // LOGE("zip file handle open failed");
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             "zip file handle open failed").c_str());
         return ZIP_ERR_FAILURE;
@@ -94,7 +92,6 @@ int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath,
             fs::path fsZipFullPath = fsZipPath / entry.path().filename();
             ret = AddFileOrDirectoryToZip(entry.path(), fsZipFullPath, isCompress, zipLevel);
             if (ret != ZIP_ERR_SUCCESS) {
-                // LOGE("AddFileOrDirectoryToZip failed![%s]", fsFilePath.string().c_str());
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     ("AddFileOrDirectoryToZip failed![" + fsFilePath.string() + "]").c_str()).c_str());
                 return ret;
@@ -103,7 +100,6 @@ int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath,
     } else if (fs::is_regular_file(fsFilePath)) {
         ret = AddFileToZip(fsFilePath, fsZipPath, isCompress, zipLevel);
         if (ret != ZIP_ERR_SUCCESS) {
-            // LOGE("AddFileToZip failed![%s]", fsFilePath.string().c_str());
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 ("AddFileToZip failed![" + fsFilePath.string() + "]").c_str()).c_str());
             return ret;
@@ -115,7 +111,6 @@ int32_t ZipWrapper::AddFileOrDirectoryToZip(const fs::path &fsFilePath,
 int32_t ZipWrapper::WriteStringToZip(const std::string &content, const std::string& zipPath)
 {
     if (!IsOpen()) {
-        // LOGE("zip file is not open");
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             "zip file is not open").c_str());
         return ZIP_ERR_FAILURE;
@@ -124,14 +119,12 @@ int32_t ZipWrapper::WriteStringToZip(const std::string &content, const std::stri
     int ret = zipOpenNewFileInZip64(zipFile_, zipPath.c_str(), &zipFileInfo_, nullptr, 0,
         nullptr, 0, nullptr, 0, static_cast<int>(zipLevel_), 1);
     if (ret != ZIP_OK) {
-        // LOGE("open file in zip failed![ret=%d][zipPath=%s]", ret, zipPath.c_str());
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             ("open file in zip failed![ret=" + std::to_string(ret) + "][zipPath=" + zipPath + "]").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
     ret = zipWriteInFileInZip(zipFile_, content.data(), content.length());
     if (ret < 0) {
-        // LOGE("write file in zip failed![errno=%d][ret=%d]", errno, ret);
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             ("write file in zip failed![errno=" + std::to_string(errno) + "][ret=" + std::to_string(ret) + "]").c_str()).c_str());
         ret = ZIP_ERR_FAILURE;
@@ -150,7 +143,6 @@ int32_t ZipWrapper::AddEmptyDirToZip(const fs::path &fsZipPath)
     fs::path fsZipDirPath = fs::path(fsZipPath.string() + "/");
     LOGD("Add [%s] into zip", fsZipDirPath.string().c_str());
     if (!IsOpen()) {
-        // LOGE("zip file is not open");
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             "zip file is not open").c_str());
         return ZIP_ERR_FAILURE;
@@ -159,7 +151,6 @@ int32_t ZipWrapper::AddEmptyDirToZip(const fs::path &fsZipPath)
     int ret = zipOpenNewFileInZip64(zipFile_, fsZipDirPath.string().c_str(), &zipFileInfo_, nullptr, 0,
         nullptr, 0, nullptr, 0, static_cast<int>(zipLevel_), 1);
     if (ret != ZIP_OK) {
-        // LOGE("open file in zip failed![ret=%d][zipPath=%s]", ret, fsZipPath.string().c_str());
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             ("open file in zip failed![ret=" + std::to_string(ret) + "][zipPath=" + fsZipPath.string() + "]").c_str()).c_str());
         return ZIP_ERR_FAILURE;
@@ -182,7 +173,6 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
                                  const ZipLevel &zipLevel)
 {
     if (!IsOpen()) {
-        // LOGE("zip file is not open");
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             "zip file is not open").c_str());
         return ZIP_ERR_FAILURE;
@@ -213,7 +203,6 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
     int ret = zipOpenNewFileInZip64(zipFile_, fsZipPath.string().c_str(), &zipFileInfo_, nullptr, 0,
         nullptr, 0, nullptr, static_cast<int>(zipMethod_), static_cast<int>(zipLevel), 1);
     if (ret != ZIP_OK) {
-        // LOGE("open file in zip failed![ret=%d][fsZipPath=%s]", ret, fsZipPath.string().c_str());
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             ("open file in zip failed![ret=" + std::to_string(ret) + "][fsZipPath=" + fsZipPath.string() + "]").c_str()).c_str());
         file.close();
@@ -226,14 +215,12 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
         while (!file.eof()) {
             file.read(buffer, sizeof(buffer));
             if (file.fail() && !file.eof()) {
-                // LOGE("read file error!");
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     "read file error!").c_str());
                 break;
             }
             auto bytesRead = file.gcount();
             if (bytesRead < 0) {
-                // LOGE("read file bytes error![filePath=%s][bytesRead=%u]", fsFilePath.c_str(), bytesRead);
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     ("read file bytes error![filePath=" + fsFilePath.string() + "][bytesRead=" + std::to_string(bytesRead) + "]").c_str()).c_str());
                 result = ZIP_ERR_FAILURE;
@@ -243,7 +230,6 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
                 break;
             }
             if (zipWriteInFileInZip(zipFile_, buffer, bytesRead) < 0) {
-                // LOGE("write file in zip failed!");
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     "write file in zip failed!").c_str());
                 result = ZIP_ERR_FAILURE;
@@ -259,7 +245,6 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
 int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std::string &entryName)
 {
     if (unzLocateFile(srcZip, entryName.c_str(), 0) != UNZ_OK) {
-        // LOGE("Entry [%s] not found in source zip!", entryName.c_str());
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Entry [" + entryName + "] not found in source zip!").c_str()).c_str());
         return ZIP_ERR_FAILURE;
@@ -267,14 +252,12 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
 
     unz_file_info64 fileInfo;
     if (unzGetCurrentFileInfo64(srcZip, &fileInfo, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
-        // LOGE("Get file info failed for [%s]", entryName.c_str());
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Get file info failed for [" + entryName + "]").c_str()).c_str());
         return ZIP_ERR_FAILURE;
     }
 
     if (unzOpenCurrentFile2(srcZip, nullptr, nullptr, 1) != UNZ_OK) {
-        // LOGE("Cannot open entry [%s] in source zip!", entryName.c_str());
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Cannot open entry [" + entryName + "] in source zip!").c_str()).c_str());
         return ZIP_ERR_FAILURE;
@@ -284,7 +267,6 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
     int openRet = zipOpenNewFileInZip2_64(destZip, entryName.c_str(), &zfi, nullptr, 0,
         nullptr, 0, nullptr, fileInfo.compression_method, 0, 1, 1);
     if (openRet != ZIP_OK) {
-        // LOGE("zipOpenNewFileInZip2_64 failed for [%s]", entryName.c_str());
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             ("zipOpenNewFileInZip2_64 failed for [" + entryName + "]").c_str()).c_str());
         unzCloseCurrentFile(srcZip);
@@ -297,14 +279,12 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
     do {
         bytesRead = unzReadCurrentFile(srcZip, buffer.data(), buffer.size());
         if (bytesRead < 0) {
-            // LOGE("read raw data error for [%s]", entryName.c_str());
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 ("read raw data error for [" + entryName + "]").c_str()).c_str());
             break;
         }
         if (bytesRead > 0) {
             if (zipWriteInFileInZip(destZip, buffer.data(), bytesRead) < 0) {
-                // LOGE("write raw data failed for [%s]", entryName.c_str());
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     ("write raw data failed for [" + entryName + "]").c_str()).c_str());
                 break;

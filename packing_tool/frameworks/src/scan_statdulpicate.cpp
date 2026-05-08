@@ -374,7 +374,6 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
     }
     ZipUtils::Unzip(inputApp, unZipPath);
     if (!fs::exists(unZipPath) || !fs::is_directory(unZipPath)) {
-        // LOGE("unzip path is invalid, unZipPath = %s", unZipPath.c_str());
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
             ("unzip path is invalid, unZipPath = " + unZipPath).c_str()).c_str());
         return fileList;
@@ -395,7 +394,6 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
         }
         std::string targetPath = copyPath + Constants::LINUX_FILE_SEPARATOR + fileName;
         if (!Utils::CopyFile(filePath, targetPath)) {
-            // LOGE("copyFile failed, filePath = %s, targetPath = %s", filePath.c_str(), targetPath.c_str());
             LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_REMIND_ERROR,
                 ("copyFile failed, filePath = " + filePath + ", targetPath = " + targetPath).c_str()).c_str());
             return {};
@@ -449,19 +447,16 @@ bool ScanStatDuplicate::ScanSoFiles(const std::string& outPath)
     std::string htmlPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_HTML;
     std::string cssPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_CSS;
     if (!WriteFile(jsonPath, jsonStr)) {
-        // LOGE("write failed, jsonPath = %s, jsonStr = %s", jsonPath.c_str(), jsonStr.c_str());
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             ("write failed, jsonPath = " + jsonPath).c_str()).c_str());
         return false;
     }
     if (!WriteFile(htmlPath, htmlStr)) {
-        // LOGE("write failed, htmlStr = %s", htmlStr.c_str());
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "write failed, htmlStr.").c_str());
         return false;
     }
     if (!WriteFile(cssPath, TEMPLATE_CSS)) {
-        // LOGE("write failed, htmlStr = %s", htmlStr.c_str());
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "write failed, css file.").c_str());
         return false;
@@ -487,13 +482,11 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
 {
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
-        // LOGE("get real file path failed! filePath = %s", filePath.c_str());
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_NOT_FOUND_ERROR,
             ("get real file path failed! filePath = " + filePath).c_str()).c_str());
         return false;
     }
     if (data.empty()) {
-        // LOGE("data is empty");
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_NO_FILE_ERROR,
             "data is empty").c_str());
         return false;
@@ -503,7 +496,6 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
         outFile << data.c_str();
         outFile.close();
     } else {
-        // LOGE("Failed to open file for writing");
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "Failed to open file for writing").c_str());
         return false;

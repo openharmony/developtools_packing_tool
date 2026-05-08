@@ -26,19 +26,16 @@ namespace AppPackingTool {
 bool HQFVerify::CheckHQFIsValid(const std::vector<HqfInfo>& hqfInfos)
 {
     if (hqfInfos.empty()) {
-        // LOGE("Error: input hqf file is empty!");
         LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
             "Error: input hqf file is empty!").c_str());
         return false;
     }
     if (!CheckAppFields(hqfInfos)) {
-        // LOGE("Error: input hqf file has different fields in app!");
         LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
             "Error: input hqf file has different fields in app!").c_str());
         return false;
     }
     if (!CheckModuleIsValid(hqfInfos)) {
-        // LOGE("Error: input hqf file moduleName is invalid!");
         LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
             "Error: input hqf file moduleName is invalid!").c_str());
         return false;
@@ -56,31 +53,26 @@ bool HQFVerify::CheckAppFields(const std::vector<HqfInfo>& hqfInfos)
 
     for (const auto& info : hqfInfos) {
         if (bundleName.empty() || bundleName != info.GetBundleName()) {
-            // LOGE("Input hqf file has different bundleName!");
             LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
                 "Input hqf file has different bundleName!").c_str());
             return false;
         }
         if (versionCode != info.GetVersionCode()) {
-            // LOGE("Input hqf file has different versionCode!");
             LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
                 "Input hqf file has different versionCode!").c_str());
             return false;
         }
         if (versionName.empty() || versionName != info.GetVersionName()) {
-            // LOGE("Input hqf file has different versionName!");
             LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
                 "Input hqf file has different versionName!").c_str());
             return false;
         }
         if (patchVersionCode != info.GetPatchVersionCode()) {
-            // LOGE("Input hqf file has different patchVersionCode!");
             LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
                 "Input hqf file has different patchVersionCode!").c_str());
             return false;
         }
         if (patchVersionName.empty() || patchVersionName != info.GetPatchVersionName()) {
-            // LOGE("Input hqf file has different patchVersionName!");
             LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
                 "Input hqf file has different patchVersionName!").c_str());
             return false;
@@ -105,7 +97,6 @@ bool HQFVerify::CheckModuleIsValid(const std::vector<HqfInfo>& hqfInfos)
     for (size_t i = 0; i < hqfInfos.size(); ++i) {
         for (size_t j = i + 1; j < hqfInfos.size(); ++j) {
             if (CheckModuleIsDuplicated(hqfInfos[i], hqfInfos[j])) {
-                // LOGE("input hqf file moduleName duplicated.");
                 LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
                     "input hqf file moduleName duplicated.").c_str());
                 return false;

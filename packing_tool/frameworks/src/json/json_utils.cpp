@@ -51,14 +51,12 @@ std::unique_ptr<PtJson> JsonUtils::JsonFromFile(const std::string& filePath)
 {
     std::string realFilePath;
     if (!Utils::GetRealPath(filePath, realFilePath)) {
-        // LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
         LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real file path failed! jsonFile=" + filePath).c_str()).c_str());
         return nullptr;
     }
     std::ifstream inFile(realFilePath, std::ios::in);
     if (!inFile.is_open()) {
-        // LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
         LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("open file failed![filePath=" + filePath + "][realfilePath=" + realFilePath + "]").c_str()).c_str());
         return nullptr;
@@ -80,14 +78,12 @@ bool JsonUtils::StrToFile(const std::string& str, const std::string& filePath)
 {
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
-        // LOGE("get real file path failed! jsonFile=%s", filePath.c_str());
         LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("get real file path failed! jsonFile=" + filePath).c_str()).c_str());
         return false;
     }
     std::ofstream outFile(realFilePath, std::ios::out);
     if (!outFile.is_open()) {
-        // LOGE("open file failed![filePath=%s][realfilePath=%s]", filePath.c_str(), realFilePath.c_str());
         LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
             ("open file failed![filePath=" + filePath + "][realfilePath=" + realFilePath + "]").c_str()).c_str());
         return false;

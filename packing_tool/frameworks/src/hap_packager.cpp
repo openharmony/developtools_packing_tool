@@ -95,7 +95,6 @@ int32_t HapPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        // LOGE("Hap Process failed.");
         LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs("Hap Process failed.").c_str());
         return ERR_INVALID_VALUE;
     }
@@ -113,7 +112,6 @@ int32_t HapPackager::PostProcess()
             if (fs::exists(outPath)) {
                 fs::remove_all(outPath);
             }
-            // LOGE("sencond CompressHap failed.");
             LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs("sencond CompressHap failed.").c_str());
             return ERR_INVALID_VALUE;
         }
@@ -125,7 +123,6 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
 {
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
-        // LOGE("HapPackager::commandPathVerify json-path is empty.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::commandPathVerify json-path is empty.").c_str());
         return false;
@@ -133,8 +130,6 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     jsonPath_ = it->second;
     if (!IsPathValid(it->second, true, Constants::CONFIG_JSON)
         && !IsPathValid(it->second, true, Constants::MODULE_JSON)) {
-       // LOGE("HapPackager::isArgsValidInHarMode json-path must be"
-          //  " config.json or module.json file.");
            
       LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
       "HapPackager::isArgsValidInHarMode json-path must be"
@@ -145,7 +140,6 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         return false;
     }
     if (!IsPathParamValid(Constants::PARAM_EXIST_SRC_PATH, true, Constants::HAP_SUFFIX)) {
-        // LOGE("exist-src-path must be a file with the .hap suffix.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "exist-src-path must be a file with the .hap suffix.").c_str());
         return false;
@@ -161,7 +155,6 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PROFILE_NAME) {
-            // LOGE("HapPackager::isArgsValidInHapMode profile-path must be CAPABILITY.profile file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isArgsValidInHapMode profile-path must be CAPABILITY.profile file.").c_str());
             return false;
@@ -172,7 +165,6 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     }
     it = parameterMap_.find(Constants::PARAM_DIR_LIST);
     if (it != parameterMap_.end() && !SplitDirList(it->second, formatedDirList_)) {
-        // LOGE("HapPackager::isArgsValidInHapMode --dir-list is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode --dir-list is invalid.").c_str());
         return false;
@@ -182,14 +174,12 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PKG_CONTEXT_JSON) {
-            // LOGE("HapPackager::isArgsValidInHapMode --pkg-context-path file must be pkgContextInfo.json file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isArgsValidInHapMode --pkg-context-path file must be pkgContextInfo.json file.").c_str());
             return false;
         }
     }
     if (!CheckPkgSdkInfoParam()) {
-        // LOGE("CheckPkgSdkInfoParam failed!");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "CheckPkgSdkInfoParam failed!").c_str());
         return false;
@@ -203,7 +193,6 @@ bool HapPackager::Compatible(const std::string &paramPath, std::list<std::string
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(paramPath);
     if (it != parameterMap_.end() && !it->second.empty() && !CompatibleProcess(it->second,
         fileList, suffix)) {
-        // LOGE("HapPackager::isArgsValidInHapMode %s is invalid.", paramPath.c_str());
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             ("HapPackager::isArgsValidInHapMode " + paramPath + " is invalid.").c_str()).c_str());
         return false;
@@ -218,7 +207,6 @@ bool HapPackager::IsVerifyValidInHapMode()
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::RESOURCES_INDEX) {
-            // LOGE("HapPackager::isArgsValidInHapMode index-path must be resources.index file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isArgsValidInHapMode index-path must be resources.index file.").c_str());
             return false;
@@ -240,7 +228,6 @@ bool HapPackager::IsVerifyValidInHapMode()
     if (it != parameterMap_.end()) {
         const std::string filePath = it->second;
         if (!filePath.empty() && !fs::exists(filePath)) {
-            // LOGE("HapPackager::IsVerifyValidInHapMode --ets-path is invalid.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::IsVerifyValidInHapMode --ets-path is invalid.").c_str());
             return false;
@@ -269,13 +256,11 @@ bool HapPackager::IsValidRpcid()
     if (it != parameterMap_.end()) {
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath)) {
-            // LOGE("HapPackager::isValidRpcid rpcid-path is not a file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isValidRpcid rpcid-path is not a file.").c_str());
             return false;
         }
         if (fs::path(filePath).filename().string() != Constants::RPCID_SC) {
-            // LOGE("HapPackager::isValidRpcid rpcid-path must be rpcid.sc file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isValidRpcid rpcid-path must be rpcid.sc file.").c_str());
             return false;
@@ -290,13 +275,11 @@ bool HapPackager::IsValidPackInfo()
     if (it != parameterMap_.end()) {
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath)) {
-            // LOGE("HapPackager::isValidPackInfo --pack-info-path is not a file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isValidPackInfo --pack-info-path is not a file.").c_str());
             return false;
         }
         if (fs::path(filePath).filename().string() != Constants::PACK_INFO) {
-            // LOGE("HapPackager::isValidPackInfo --pack-info-path must be pack.info file.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "HapPackager::isValidPackInfo --pack-info-path must be pack.info file.").c_str());
             return false;
@@ -308,49 +291,41 @@ bool HapPackager::IsValidPackInfo()
 bool HapPackager::IsHapPathValid()
 {
     if (IsHapPathValid(Constants::PARAM_MAPLE_SO_DIR)) {
-        // LOGE("HapPackager::isArgsValidInHapMode maple-so-dir is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode maple-so-dir is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_LIB_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode lib-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode lib-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_HNP_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode hnp-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode hnp-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_RES_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode res-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode res-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_RESOURCES_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode resources-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode resources-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_ASSETS_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode assets-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode assets-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_SHAREDLIBS_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode shared-libs-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode shared-libs-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_AN_PATH)) {
-        // LOGE("HapPackager::isArgsValidInHapMode an-path is invalid.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "HapPackager::isArgsValidInHapMode an-path is invalid.").c_str());
         return false;
@@ -383,14 +358,12 @@ bool HapPackager::CompressHap()
         return false;
     }
     if (!moduleJson_.ParseFromFile(jsonPath_)) {
-        // LOGE("ParseFromFile failed");
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             "ParseFromFile failed").c_str());
         return false;
     }
     if (JsonUtils::IsModuleJson(jsonPath_)) {
         if (!CheckStageHap(jsonPath_)) {
-            // LOGE("CheckStageHap failed.");
             LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
                 "CheckStageHap failed.").c_str());
             return false;
@@ -426,13 +399,11 @@ bool HapPackager::CompressHap()
             return false;
         }
         if (Constants::TYPE_APP_PLUGIN == bundleType) {
-            // LOGE("hap can not plugin.");
             LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
                 "hap can not plugin.").c_str());
             return false;
         } else {
             if (!IsPluginHost()) {
-                // LOGE("plugin package cannot be the host.");
                 LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs(
                     "plugin package cannot be the host.").c_str());
                 return false;
@@ -450,7 +421,6 @@ bool HapPackager::IsPluginHost()
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!moduleJson_.GetModuleObject(moduleObj)) {
-        // LOGE("GetModuleObject failed!");
         LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs(
             "GetModuleObject failed!").c_str());
         return false;
@@ -471,7 +441,6 @@ bool HapPackager::IsPluginHost()
 bool HapPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
 {
     if (requestPermissionsObj == nullptr) {
-        // LOGE("requestPermissionsObj nullptr!");
         LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs(
             "requestPermissionsObj nullptr!").c_str());
         return false;
@@ -499,7 +468,6 @@ bool HapPackager::CheckPkgContext()
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PKG_CONTEXT_JSON) {
-            // LOGE("host must include pkgContextInfo.json");
             LOGE("%s", PackingToolErrMsg::CHECK_PKG_CONTEXT_FAILED.toStringWithArgs(
                 "host must include pkgContextInfo.json").c_str());
             return false;
@@ -514,28 +482,24 @@ bool HapPackager::CheckPkgContext()
 bool HapPackager::CheckStageHap(const std::string &jsonPath)
 {
     if (!moduleJson_.CheckStageAsanTsanEnabledValid()) {
-        // LOGE("CheckStageAsanTsanEnabledValid failed.");
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             "CheckStageAsanTsanEnabledValid failed.").c_str());
         return false;
     }
 
     if (!moduleJson_.CheckStageAtomicService()) {
-        // LOGE("CheckStageAtomicService failed.");
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             "CheckStageAtomicService failed.").c_str());
         return false;
     }
 
     if (!moduleJson_.CheckQuerySchemes()) {
-        // LOGE("CheckQuerySchemes failed.");
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             "CheckQuerySchemes failed.").c_str());
         return false;
     }
 
     if (!moduleJson_.CheckDeduplicateHar()) {
-        // LOGE("CheckDeduplicateHar failed.");
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             "CheckDeduplicateHar failed.").c_str());
         return false;
@@ -547,12 +511,10 @@ bool HapPackager::CheckStageHap(const std::string &jsonPath)
 bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
 {
     if (!moduleJson_.GetStageModuleName(moduleName_)) {
-        // LOGE("HapPackager::Process: GetStageModuleName failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
             "HapPackager::Process: GetStageModuleName failed!").c_str());
     }
     if (!moduleJson_.GetStageDeviceTypes(deviceTypes_)) {
-        // LOGE("HapPackager::Process: GetStageDeviceTypes failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
             "HapPackager::Process: GetStageDeviceTypes failed!").c_str());
     }
@@ -564,7 +526,6 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
     std::string jsonString = moduleJson_.ToString();
     if (!jsonString.empty()) {
         if (zipWrapper_.WriteStringToZip(jsonString, Constants::MODULE_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper WriteStringToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper WriteStringToZip failed!").c_str());
             return false;
@@ -604,12 +565,10 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
 bool HapPackager::CompressHapMode()
 {
     if (!moduleJson_.GetFaModuleName(moduleName_)) {
-        // LOGE("HapPackager::Process: GetFaModuleName failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
             "HapPackager::Process: GetFaModuleName failed!").c_str());
     }
     if (!moduleJson_.GetFaDeviceTypes(deviceTypes_)) {
-        // LOGE("HapPackager::Process: GetFaDeviceTypes failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
             "HapPackager::Process: GetFaDeviceTypes failed!").c_str());
     }
@@ -621,7 +580,6 @@ bool HapPackager::CompressHapMode()
     std::string jsonString = moduleJson_.ToString();
     if (!jsonString.empty()) {
         if (zipWrapper_.WriteStringToZip(jsonString, Constants::CONFIG_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper WriteStringToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper WriteStringToZip failed!").c_str());
             return false;
@@ -650,7 +608,6 @@ bool HapPackager::CompressHapMode()
         std::string resourcesPath = Constants::ASSETS_PATH + Constants::LINUX_FILE_SEPARATOR + moduleName_ +
             Constants::LINUX_FILE_SEPARATOR + Constants::RESOURCES_PATH;
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, resourcesPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -664,7 +621,6 @@ bool HapPackager::CompressHapModeMultiple()
     for (std::string soPathItem : formattedSoPathList_) {
         std::string zipPath = Constants::SO_ARM64_DIR + fs::path(soPathItem).filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(soPathItem, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -674,7 +630,6 @@ bool HapPackager::CompressHapModeMultiple()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_MAPLE_SO_DIR);
     if (it != parameterMap_.end() && formattedSoPathList_.size() == 0 && !it->second.empty()) {
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::SO_DIR) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -700,7 +655,6 @@ bool HapPackager::AddFileListToZip(const std::list<std::string> &pathList_)
     for (auto Item : pathList_) {
         std::string zipPath = fs::path(Item).filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(Item, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -719,7 +673,6 @@ bool HapPackager::OpenZipWrapper()
 
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
-        // LOGE("HapPackager::Process: zipWrapper Open failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
             "HapPackager::Process: zipWrapper Open failed!").c_str());
         return false;
@@ -750,7 +703,6 @@ bool HapPackager::AddCommonFileOrDirectoryToZip(const std::string &paramPath, co
                                                 targetPath,
                                                 isCompress,
                                                 zipLevel) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -769,7 +721,6 @@ bool HapPackager::AddParamFileToZip()
             zipPath = (filePath).filename().string();
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -793,7 +744,6 @@ bool HapPackager::AddResFileAndDirLsitToZip()
             resPath = Constants::RES_PATH;
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, resPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -804,7 +754,6 @@ bool HapPackager::AddResFileAndDirLsitToZip()
         for (const auto& dirPath : formatedDirList_) {
             std::string baseDir = fs::path(dirPath).filename().string();
             if (zipWrapper_.AddFileOrDirectoryToZip(dirPath, baseDir) != ZipErrCode::ZIP_ERR_SUCCESS) {
-                // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
                 return false;
@@ -821,7 +770,6 @@ bool HapPackager::AddIndexToZipForFaMaode()
         std::string assetsPath = Constants::ASSETS_PATH + Constants::LINUX_FILE_SEPARATOR + moduleName_ +
             Constants::LINUX_FILE_SEPARATOR + fs::path(it->second).filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, assetsPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -840,7 +788,6 @@ bool HapPackager::AddPkgAndBinFileToZipForStageMaode()
             zipPath = (filePath).filename().string();
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            // LOGE("HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HapPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;
@@ -850,7 +797,6 @@ bool HapPackager::AddPkgAndBinFileToZipForStageMaode()
     if (it != parameterMap_.end() && !it->second.empty()) {
         ModuleJson moduleJson;
         if (!moduleJson.ParseFromFile(it->second)) {
-            // LOGE("HapPackager::Process: moduleJson Read failed!");
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
                 "HapPackager::Process: moduleJson Read failed!").c_str());
             return false;
@@ -858,13 +804,11 @@ bool HapPackager::AddPkgAndBinFileToZipForStageMaode()
         std::string jsonString = moduleJson.ToString();
         if (!jsonString.empty()) {
             if (zipWrapper_.WriteStringToZip(jsonString, Constants::PKG_CONTEXT_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-                // LOGE("HapPackager::Process: zipWrapper WriteStringToZip failed!");
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     "HapPackager::Process: zipWrapper WriteStringToZip failed!").c_str());
                 return false;
             }
         } else {
-            // LOGE("HapPackager::Process: jsonFile error!");
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
                 "HapPackager::Process: jsonFile error!").c_str());
             return false;
@@ -877,7 +821,6 @@ bool HapPackager::CheckLibPathRetainParam()
 {
     auto it = parameterMap_.find(Constants::PARAM_LIB_PATH_RETAIN);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
-        // LOGE("Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.");
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.").c_str());
         return false;
@@ -890,7 +833,6 @@ bool HapPackager::CheckPkgSdkInfoParam()
     auto it = parameterMap_.find(Constants::PARAM_PKG_SDK_INFO_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsFileMatch(it->second, Constants::PKG_SDK_INFO_JSON)) {
-            // LOGE("pkg-sdk-info-path is invalid.");
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
                 "pkg-sdk-info-path is invalid.").c_str());
             return false;
@@ -914,7 +856,6 @@ bool HapPackager::CheckKernelPermissionCompression()
 
     // Parse module.json to check for kernel permission
     if (!moduleJson_.ParseFromFile(jsonPath)) {
-        // LOGE("Failed to parse module.json: %s", jsonPath.c_str());
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             ("Failed to parse module.json: " + jsonPath).c_str()).c_str());
         return false;
@@ -942,8 +883,6 @@ bool HapPackager::CheckKernelPermissionCompression()
 
     // Validate: if has kernel permission, at least one of compress/extract must be true
     if (!compressNativeLibs && !extractNativeLibs) {
-        // LOGE("Error: When executableBinaryPaths is configured in module.json, "
-        //     "at least one of compressNativeLibs or extractNativeLibs must be true.");
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             "Error: When executableBinaryPaths is configured in module.json, "
             "at least one of compressNativeLibs or extractNativeLibs must be true.").c_str());

@@ -55,7 +55,6 @@ int32_t ResPackager::Process()
         if (fs::exists(outPath_)) {
             fs::remove_all(outPath_);
         }
-        // LOGE("ResPackager::Process failed.");
         LOGE("%s", PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED.toStringWithArgs(
             "ResPackager::Process failed.").c_str());
         return ERR_INVALID_VALUE;
@@ -75,13 +74,11 @@ bool ResPackager::IsVerifyValidInResMode()
     if (it != parameterMap_.end()) {
         packInfoPath_ = it->second;
         if (!fs::is_regular_file(packInfoPath_)) {
-            // LOGE("ResPackager::IsVerifyValidInResMode --pack-info-path is not a file.");
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
                 "ResPackager::IsVerifyValidInResMode --pack-info-path is not a file.").c_str());
             return false;
         }
         if (fs::path(packInfoPath_).filename().string() != Constants::PACK_INFO) {
-            // LOGE("ResPackager::IsVerifyValidInResMode --pack-info-path must be pack.info file.");
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
                 "ResPackager::IsVerifyValidInResMode --pack-info-path must be pack.info file.").c_str());
             return false;
@@ -92,21 +89,17 @@ bool ResPackager::IsVerifyValidInResMode()
     if (it != parameterMap_.end()) {
         entryCardPath_ = it->second;
         if (!fs::is_directory(entryCardPath_)) {
-            // LOGE("ResPackager::IsVerifyValidInResMode --entrycard-path is not a directory.");
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
                 "ResPackager::IsVerifyValidInResMode --entrycard-path is not a directory.").c_str());
             return false;
         }
         if (fs::path(entryCardPath_).filename().string() != Constants::ENTRYCARD_NAME) {
-            // LOGE("ResPackager::IsVerifyValidInResMode the level-1 directory name must be EntryCard, current is %s",
-            //     entryCardPath_.c_str());
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
                 ("ResPackager::IsVerifyValidInResMode the level-1 directory name must be EntryCard, current is " +
                     entryCardPath_).c_str()).c_str());
             return false;
         }
         if (!CompatibleProcess(entryCardPath_, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
-            // LOGE("ResPackager::IsVerifyValidInResMode --entrycard-path is invalid.");
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
                 "ResPackager::IsVerifyValidInResMode --entrycard-path is invalid.").c_str());
             return false;
@@ -129,14 +122,12 @@ bool ResPackager::CompressPackResMode()
 {
     zipWrapper_.Open(outPath_);
     if (!zipWrapper_.IsOpen()) {
-        // LOGE("ResPackager::Process: zipWrapper Open failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED.toStringWithArgs(
             "ResPackager::Process: zipWrapper Open failed!").c_str());
         return false;
     }
     if (zipWrapper_.AddFileOrDirectoryToZip(entryCardPath_, Constants::ENTRYCARD_NAME) !=
         ZipErrCode::ZIP_ERR_SUCCESS) {
-        // LOGE("ResPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!");
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
             "ResPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return false;

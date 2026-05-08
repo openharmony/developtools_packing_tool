@@ -349,7 +349,6 @@ bool Utils::IsPositiveInteger(const std::string& str, int min, int max)
         int number = std::stoi(str);
         return number >= min && number <= max;
     } catch (const std::out_of_range& e) {
-        // LOGE("Number %s is Out of Range!", str.c_str());
         LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
             ("Number " + str + " is Out of Range!").c_str()).c_str());
         return false;
@@ -461,7 +460,6 @@ bool Utils::CopyFileToTempDir(const std::string& srcPath,
 {
     fs::path src(srcPath);
     if (!fs::exists(src) || !fs::is_regular_file(src)) {
-        // LOGE("Source file does not exist or is not a regular file: %s", srcPath.c_str());
         LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
             ("Source file does not exist or is not a regular file: " + srcPath).c_str()).c_str());
         return false;
@@ -472,7 +470,6 @@ bool Utils::CopyFileToTempDir(const std::string& srcPath,
     std::error_code ec;
     fs::create_directories(tempDir, ec);
     if (ec) {
-        // LOGE("Failed to create temp directory: %s - %s", tempDir.string().c_str(), ec.message().c_str());
         LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
             ("Failed to create temp directory: " + tempDir.string() + " - " + ec.message()).c_str()).c_str());
         return false;

@@ -72,7 +72,6 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     char filename[MAX_ZIP_BUFFER_SIZE] = {0};
     unz_file_info64 fileInfo;
     if (unzGetCurrentFileInfo64(unzFile_, &fileInfo, filename, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) != UNZ_OK) {
-        // LOGE("get current file info in zip failed!");
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "get current file info in zip failed!").c_str());
         return "";
@@ -91,7 +90,6 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
         fs::create_directories(fsFullFilePath.parent_path().string());
     }
     if (unzOpenCurrentFile(unzFile_) != UNZ_OK) {
-        // LOGE("open current file in zip failed![filename=%s]", filename);
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("open current file in zip failed![filename=" + std::string(filename) + "]").c_str()).c_str());
         return "";
@@ -113,7 +111,6 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     do {
         bytesRead = unzReadCurrentFile(unzFile_, (voidp)fileData, MAX_ZIP_BUFFER_SIZE);
         if (bytesRead < 0) {
-            // LOGE("Read current file in zip failed!!");
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Read current file in zip failed!!").c_str());
             file.close();
@@ -135,7 +132,6 @@ int32_t UnzipWrapper::UnzipFile(std::string filePath)
         return ZIP_ERR_FAILURE;
     }
     if (unzGetGlobalInfo64(unzFile_, &unzGlobalInfo_) != UNZ_OK) {
-        // LOGE("Get global info failed!");
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "Get global info failed!").c_str());
         return ZIP_ERR_FAILURE;
@@ -144,7 +140,6 @@ int32_t UnzipWrapper::UnzipFile(std::string filePath)
     for (size_t i = 0; i < unzGlobalInfo_.number_entry; ++i) {
         std::string f = ExtractFile(filePath);
         if (f.empty()) {
-            // LOGE("Extract file failed!");
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Extract file failed!").c_str());
             return ZIP_ERR_FAILURE;
@@ -153,7 +148,6 @@ int32_t UnzipWrapper::UnzipFile(std::string filePath)
         if (ret == UNZ_END_OF_LIST_OF_FILE) {
             break;
         } else if (ret != UNZ_OK) {
-            // LOGE("Go to next file in zip failed!");
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 "Go to next file in zip failed!").c_str());
             return ZIP_ERR_FAILURE;

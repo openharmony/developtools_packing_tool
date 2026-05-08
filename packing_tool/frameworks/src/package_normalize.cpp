@@ -46,19 +46,16 @@ int32_t PackageNormalize::PreProcess()
     }
     auto it = parameterMap_.find(Constants::PARAM_HSP_LIST);
     if (it == parameterMap_.end()) {
-        // LOGE("hsp-list is empty.");
         LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
             "hsp-list is empty.").c_str());
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspList_, Constants::HSP_SUFFIX)) {
-        // LOGE("hsp-list is invalid.");
         LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
             "hsp-list is invalid.").c_str());
         return ERR_INVALID_VALUE;
     }
     if (hspList_.empty()) {
-        // LOGE("hsp-list is empty.");
         LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
             "hsp-list is empty.").c_str());
         return ERR_INVALID_VALUE;
@@ -68,7 +65,6 @@ int32_t PackageNormalize::PreProcess()
     std::regex pattern(Constants::BUNDLE_NAME_PATTERN);
     if (it == parameterMap_.end() || it->second.length() < Constants::BUNDLE_NAME_LEN_MIN ||
         it->second.length() > Constants::BUNDLE_NAME_LEN_MAX || !std::regex_match(it->second, pattern)) {
-        // LOGE("bundle-name is invalid.");
         LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
             "bundle-name is invalid.").c_str());
         return ERR_INVALID_VALUE;
@@ -76,7 +72,6 @@ int32_t PackageNormalize::PreProcess()
 
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it == parameterMap_.end() || !Utils::IsPositiveInteger(it->second)) {
-        // LOGE("version-code is invalid.");
         LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
             "version-code is invalid.").c_str());
         return ERR_INVALID_VALUE;
@@ -89,25 +84,21 @@ bool PackageNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
-        // LOGE("Update module.json failed, parse json is null.");
         LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
             "Update module.json failed, parse json is null.").c_str());
         return false;
     }
     if (!moduleJson.SetBundleName(newBundleName)) {
-        // LOGE("Parse and modify module.json failed, json file not valid.");
         LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
             "Parse and modify module.json failed, json file not valid.").c_str());
         return false;
     }
     if (!moduleJson.SetStageVersionCode(newVersionCode)) {
-        // LOGE("Parse and modify module.json failed, json file not valid.");
         LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
             "Parse and modify module.json failed, json file not valid.").c_str());
         return false;
     }
     if (!JsonUtils::StrToFile(moduleJson.ToString(), moduleJsonPath)) {
-        // LOGE("Parse and modify module.json failed, write Json failed.");
         LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
             "Parse and modify module.json failed, write Json failed.").c_str());
         return false;
@@ -120,25 +111,21 @@ bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
-        // LOGE("Update packInfo failed, parse json is null.");
         LOGE("%s", PackingToolErrMsg::UPDATE_PACKINFO_FAILED.toStringWithArgs(
             "Update packInfo failed, parse json is null.").c_str());
         return false;
     }
     if (!packInfo.SetBundleName(newBundleName)) {
-        // LOGE("Parse and modify packInfo failed, json file not valid.");
         LOGE("%s", PackingToolErrMsg::UPDATE_PACKINFO_FAILED.toStringWithArgs(
             "Parse and modify packInfo failed, json file not valid.").c_str());
         return false;
     }
     if (!packInfo.SetVersionCode(newVersionCode)) {
-        // LOGE("Parse and modify packInfo failed, json file not valid.");
         LOGE("%s", PackingToolErrMsg::UPDATE_PACKINFO_FAILED.toStringWithArgs(
             "Parse and modify packInfo failed, json file not valid.").c_str());
         return false;
     }
     if (!JsonUtils::StrToFile(packInfo.ToString(), packInfoPath)) {
-        // LOGE("Parse and modify packinfo failed, write Json failed.");
         LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
             "Parse and modify packinfo failed, write Json failed.").c_str());
         return false;
@@ -157,13 +144,11 @@ int32_t PackageNormalize::Process()
         try {
             versionCode = std::stoi(it->second);
         } catch (const std::exception& e) {
-            // LOGE("Exception: %s", e.what());
             LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
                 ("Exception: " + std::string(e.what())).c_str()).c_str());
             return ERR_INVALID_VALUE;
         }
     } else {
-        // LOGE("Parameter not found: %s", Constants::PARAM_VERSION_CODE.c_str());
         LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
             ("Parameter not found: " + std::string(Constants::PARAM_VERSION_CODE)).c_str()).c_str());
         return ERR_INVALID_VALUE;
@@ -180,7 +165,6 @@ int32_t PackageNormalize::Process()
         std::string filePath = entryPath.filename().string();
         if (!fs::exists(moduleJsonPath) || !fs::is_regular_file(moduleJsonPath) || !fs::exists(packInfoPath) ||
                 !fs::is_regular_file(packInfoPath)) {
-            // LOGE("PackageNormalize failed: hsp not have file module.json or pack.info.");
             LOGE("%s", PackingToolErrMsg::PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
                 "PackageNormalize failed: hsp not have file module.json or pack.info.").c_str());
             Utils::ForceRemoveDirectory(tempPath);
