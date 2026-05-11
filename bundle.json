@@ -30,6 +30,11 @@
           "//developtools/packing_tool:packing_tool",
           "//developtools/packing_tool:ohos_packing_tool"
         ],
+        "inner_kits": [
+          {
+            "name": "//developtools/packing_tool:packing_tool_external"
+          }
+        ],
         "test": [
           "//developtools/packing_tool/packing_tool/frameworks/test/unittest:unittest"
         ]
