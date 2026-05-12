@@ -586,15 +586,15 @@ bool Packager::ParseAtomicServiceEntrySizeLimitParameter()
         try {
             entrySizeLimit = std::stoi(it->second);
         } catch (const std::exception& e) {
-            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 "ParseAtomicServiceEntrySizeLimitParameter failed, "
                 "input --atomic-service-entry-size-limit value invalid.").c_str());
-            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 ("Exception: " + std::string(e.what())).c_str()).c_str());
             return false;
         }
         if (entrySizeLimit < 0 || entrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
-            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 "ParseAtomicServiceEntrySizeLimitParameter failed, "
                 "input --atomic-service-entry-size-limit value out of range [0,4194304].").c_str());
             return false;
@@ -612,15 +612,15 @@ bool Packager::ParseAtomicServiceNonEntrySizeLimitParameter()
         try {
             nonEntrySizeLimit = std::stoi(it->second);
         } catch (const std::exception& e) {
-            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 "ParseAtomicServiceEntrySizeLimitParameter failed, "
                 "input --atomic-service-non-entry-size-limit value invalid.").c_str());
-            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 ("Exception: " + std::string(e.what())).c_str()).c_str());
             return false;
         }
         if (nonEntrySizeLimit < 0 || nonEntrySizeLimit > Constants::ATOMIC_SERVICE_TOTAL_SIZE_LIMIT_MAX) {
-            LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 "ParseAtomicServiceNonEntrySizeLimitParameter failed, "
                 "input --atomic-service-non-entry-size-limit value out of range [0,4194304].").c_str());
             return false;
