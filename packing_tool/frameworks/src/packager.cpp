@@ -298,14 +298,14 @@ bool Packager::EnsureParentDirectoryExists(const std::filesystem::path& filePath
         if (!std::filesystem::exists(parentPath)) {
             std::error_code ec;
             if (!std::filesystem::create_directories(parentPath, ec)) {
-                LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
                     ("Packager::Failed to create directory: [" + std::string(ec.message()) + "]").c_str()).c_str());
                 return false;
             }
         }
         return true;
     } catch (const std::filesystem::filesystem_error& e) {
-        LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
             ("Packager::Directory creation error: [" + std::string(e.what()) + "]").c_str()).c_str());
         return false;
     }

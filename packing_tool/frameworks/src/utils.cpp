@@ -470,7 +470,7 @@ bool Utils::CopyFileToTempDir(const std::string& srcPath,
     std::error_code ec;
     fs::create_directories(tempDir, ec);
     if (ec) {
-        LOGE("%s", PackingToolErrMsg::MAKE_DIR_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
             ("Failed to create temp directory: " + tempDir.string() + " - " + ec.message()).c_str()).c_str());
         return false;
     }
