@@ -1048,11 +1048,13 @@ HWTEST_F(HspPackagerTest, CompressHspModePartSecond_0600, Function | MediumTest 
     std::map<std::string, std::string> parameterMap1 = {
         {OHOS::AppPackingTool::Constants::PARAM_FILE_PATH, filepath}};
     OHOS::AppPackingTool::HspPackager hspPackager1(parameterMap1, resultReceiver);
+    ASSERT_TRUE(hspPackager1.moduleJson_.ParseFromString(MODULE_JSON_TEST_STRING));
     EXPECT_TRUE(hspPackager1.CompressHspModePartSecond(JSON_PATH));
 
     std::map<std::string, std::string> parameterMap2 = {
         {OHOS::AppPackingTool::Constants::PARAM_RESOURCES_PATH, TEST_PATH}};
     OHOS::AppPackingTool::HspPackager hspPackager2(parameterMap2, resultReceiver);
+    ASSERT_TRUE(hspPackager2.moduleJson_.ParseFromString(MODULE_JSON_TEST_STRING));
     EXPECT_TRUE(hspPackager2.CompressHspModePartSecond(JSON_PATH));
     system("touch /data/test/resource/packingtool/test_file/module.json");
     EXPECT_FALSE(hspPackager2.CompressHspModePartSecond(JSON_PATH));
@@ -1084,6 +1086,7 @@ HWTEST_F(HspPackagerTest, CompressHspModePartThird_0700, Function | MediumTest |
         {OHOS::AppPackingTool::Constants::PARAM_JS_PATH, TEST_PATH},
     };
     OHOS::AppPackingTool::HspPackager hspPackager1(parameterMap1, resultReceiver);
+    ASSERT_TRUE(hspPackager1.moduleJson_.ParseFromString(MODULE_JSON_TEST_STRING));
     EXPECT_TRUE(hspPackager1.CompressHspModePartThird(JSON_PATH));
     system("touch /data/test/resource/packingtool/test_file/module.json");
     EXPECT_FALSE(hspPackager1.CompressHspModePartThird(JSON_PATH));
@@ -1093,6 +1096,7 @@ HWTEST_F(HspPackagerTest, CompressHspModePartThird_0700, Function | MediumTest |
         {OHOS::AppPackingTool::Constants::PARAM_JS_PATH, TEST_PATH},
     };
     OHOS::AppPackingTool::HspPackager hspPackager2(parameterMap2, resultReceiver);
+    ASSERT_TRUE(hspPackager2.moduleJson_.ParseFromString(MODULE_JSON_TEST_STRING));
     EXPECT_TRUE(hspPackager2.CompressHspModePartThird(JSON_PATH));
     system("touch /data/test/resource/packingtool/test_file/module.json");
     EXPECT_FALSE(hspPackager2.CompressHspModePartThird(JSON_PATH));
@@ -1229,6 +1233,7 @@ HWTEST_F(HspPackagerTest, CompressHspModePartThird_1200, Function | MediumTest |
         {OHOS::AppPackingTool::Constants::PARAM_JS_PATH, ""},
     };
     OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    ASSERT_TRUE(hspPackager.moduleJson_.ParseFromString(MODULE_JSON_TEST_STRING));
     EXPECT_TRUE(hspPackager.CompressHspModePartThird(JSON_PATH));
 }
 
@@ -1292,6 +1297,7 @@ HWTEST_F(HspPackagerTest, CompressHspModePartSecond_1400, Function | MediumTest 
         {OHOS::AppPackingTool::Constants::PARAM_RESOURCES_PATH, ""},
     };
     OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    ASSERT_TRUE(hspPackager.moduleJson_.ParseFromString(MODULE_JSON_TEST_STRING));
     EXPECT_TRUE(hspPackager.CompressHspModePartSecond(JSON_PATH));
 }
 
@@ -2268,5 +2274,34 @@ HWTEST_F(HspPackagerTest, CompressHsp_EntryModuleType_0600, Function | MediumTes
     hspPackager.jsonPath_ = JSON_PATH;
     EXPECT_FALSE(hspPackager.CompressHsp());
     system("rm -f /data/test/resource/packingtool/test_file/module.json");
+}
+
+/*
+ * @tc.name: CompressSkillsDirectory_MissingSkillsPath_0700
+ * @tc.desc: HSP with skillProfiles should fail when --skills-path is missing.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HspPackagerTest, CompressSkillsDirectory_MissingSkillsPath_0700, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap;
+    OHOS::AppPackingTool::HspPackager hspPackager(parameterMap, resultReceiver);
+    const std::string moduleJsonWithSkillProfiles = "{"
+        "\"app\": {"
+            "\"bundleType\": \"app\""
+        "},"
+        "\"module\": {"
+            "\"type\": \"shared\","
+            "\"skillProfiles\": ["
+                "{"
+                    "\"name\": \"test-skill\""
+                "}"
+            "]"
+        "}"
+    "}";
+    ASSERT_TRUE(hspPackager.moduleJson_.ParseFromString(moduleJsonWithSkillProfiles));
+    hspPackager.jsonPath_ = JSON_PATH;
+    EXPECT_FALSE(hspPackager.CompressSkillsDirectory());
 }
 } // namespace OHOS

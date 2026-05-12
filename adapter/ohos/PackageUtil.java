@@ -113,6 +113,23 @@ public class PackageUtil {
         return getBundleTypeFromModuleJson(content);
     }
 
+    private static String getModuleTypeFromPath(Path path) {
+        if (!Files.exists(path)) {
+            LOG.warning("getModuleTypeFromPath path not exists: " + path);
+            return "";
+        }
+        String content = getModuleJsonContentFromPath(path);
+        if (content == null) {
+            return "";
+        }
+        try {
+            return ModuleJsonUtil.parseModuleType(content);
+        } catch (BundleException e) {
+            LOG.warning("getModuleTypeFromPath failed: " + e.getMessage());
+        }
+        return "";
+    }
+
     /**
      * get the package name list from pack.info
      *
@@ -903,14 +920,8 @@ public class PackageUtil {
         if (hspPathList.isEmpty()) {
             return false;
         }
-        try {
-            HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPathList.get(0));
-            return Constants.BUNDLE_TYPE_SKILL.equals(hapVerifyInfo.getBundleType());
-        } catch (BundleException e) {
-            String errMsg = "Failed to parse HSP for skill app bundleType validation: " + e.getMessage();
-            LOG.error(errType.toString(errMsg));
-            return false;
-        }
+        String bundleType = getBundleTypeFromPath(Paths.get(hspPathList.get(0)));
+        return Constants.BUNDLE_TYPE_SKILL.equals(bundleType);
     }
 
     static boolean checkSkillBundleConstraints(boolean hasSkillBundleType, boolean hasHapPath,
@@ -929,16 +940,10 @@ public class PackageUtil {
             LOG.error(errType.toString(errMsg));
             return false;
         }
-        try {
-            HapVerifyInfo hapVerifyInfo = Compressor.parseStageHapVerifyInfo(hspPathList.get(0));
-            if (!Constants.TYPE_SKILL.equals(hapVerifyInfo.getModuleType())) {
-                String errMsg = "HSP moduleType must be skill when bundleType is skill, but got '"
-                        + hapVerifyInfo.getModuleType() + "' in " + hspPathList.get(0) + ".";
-                LOG.error(errType.toString(errMsg));
-                return false;
-            }
-        } catch (BundleException e) {
-            String errMsg = "Failed to parse HSP for skill app validation: " + e.getMessage();
+        String moduleType = getModuleTypeFromPath(Paths.get(hspPathList.get(0)));
+        if (!Constants.TYPE_SKILL.equals(moduleType)) {
+            String errMsg = "HSP moduleType must be skill when bundleType is skill, but got '"
+                    + moduleType + "' in " + hspPathList.get(0) + ".";
             LOG.error(errType.toString(errMsg));
             return false;
         }

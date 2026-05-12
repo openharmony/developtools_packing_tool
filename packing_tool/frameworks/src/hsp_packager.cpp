@@ -728,11 +728,6 @@ bool HspPackager::CheckKernelPermissionCompression()
 
 bool HspPackager::CompressSkillsDirectory()
 {
-    std::string skillsPath;
-    SkillPackHelper::GetSkillsPathFromParam(parameterMap_, skillsPath);
-    if (skillsPath.empty()) {
-        return true;
-    }
     std::list<std::map<std::string, std::string>> skillProfiles;
     if (!moduleJson_.GetSkillProfiles(skillProfiles)) {
         LOGE("Failed to get skillProfiles from module.json.");
