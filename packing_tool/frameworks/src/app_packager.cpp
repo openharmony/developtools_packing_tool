@@ -381,11 +381,11 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
         LOGW("input hap-path or hsp-path is invalid.");
     }
     if (!hapPath.empty() && !CompatibleProcess(hapPath, formattedHapPathList_, Constants::HAP_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::HANDLE_HAP_HSP_INPUT_FAILED.toStringWithArgs("hap-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("hap-path is invalid.").c_str());
         return false;
     }
     if (!hspPath.empty() && !CompatibleProcess(hspPath, formattedHspPathList_, Constants::HSP_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::HANDLE_HAP_HSP_INPUT_FAILED.toStringWithArgs("hsp-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("hsp-path is invalid.").c_str());
         return false;
     }
     return true;
