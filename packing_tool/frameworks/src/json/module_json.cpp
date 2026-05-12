@@ -931,7 +931,7 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     const bool hasSkillType = moduleType.compare(TYPE_SKILL) == 0;
     const bool hasSkillBundleType = bundleType.compare(TYPE_SKILL) == 0;
     if (hasSkillType != hasSkillBundleType) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
             ("Invalid skill configuration: moduleType and bundleType must both be 'skill' when using skill. "
             "If this is a skill module, package it in HSP mode instead of HAP mode. "
             "[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
@@ -939,7 +939,7 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     }
     if (bundleType.compare(APP) == 0) {
         if (installationFree) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
                 ("installationFree must be false in module " + moduleName + " when bundleType is app").c_str()).c_str());
             return false;
         }
@@ -947,7 +947,7 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     } else if (bundleType.compare(ATOMIC_SERVICE) == 0) {
         if (!installationFree) {
             //     moduleName.c_str());
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
                 ("installationfree must be true in module " + moduleName + " when bundleType is atomicService").c_str()).c_str());
             return false;
         }
@@ -955,7 +955,7 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     } else if (bundleType.compare(SHARED) == 0) {
         if (moduleType.compare(SHARED) != 0) {
             //     bundleType.c_str(), moduleType.c_str());
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
                 ("moduleType must be shared bundleType is shared[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
             return false;
         }
@@ -965,7 +965,7 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     } else if (bundleType.compare(APP_PLUGIN) == 0) {
         if (moduleType.compare(SHARED) != 0) {
             //     bundleType.c_str(), moduleType.c_str());
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
                 ("moduleType must be shared bundleType is appPlugin[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
             return false;
         }

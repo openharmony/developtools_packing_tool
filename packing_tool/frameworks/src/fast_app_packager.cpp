@@ -65,8 +65,8 @@ bool ValidateAppPackSkillProfiles(const fs::path &path, ModuleJson &moduleJson)
     }
     std::string bundleType;
     if (moduleJson.GetStageBundleType(bundleType) && SkillPackHelper::IsForbiddenBundleType(bundleType)) {
-        LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_SHARED_INVALID.toStringWithArgs(
-            ("bundleType '" + bundleType + "' does not support skills in app packing mode.").c_str()).c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            ("bundleType '" + bundleType + "' does not support skills in fastApp mode.").c_str()).c_str());
         return false;
     }
     std::set<std::string> profileNames;

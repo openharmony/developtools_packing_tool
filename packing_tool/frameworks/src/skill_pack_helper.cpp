@@ -148,7 +148,7 @@ bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, 
 bool CheckBundleTypeAllowsSkills(const std::string &bundleType)
 {
     if (IsForbiddenBundleType(bundleType)) {
-        LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_SHARED_INVALID.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             ("skillProfiles is not allowed when bundleType is " + bundleType + ".").c_str()).c_str());
         return false;
     }

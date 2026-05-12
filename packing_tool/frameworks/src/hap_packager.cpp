@@ -359,7 +359,7 @@ bool HapPackager::CompressHap()
         return false;
     }
     if (!moduleJson_.ParseFromFile(jsonPath_)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "ParseFromFile failed").c_str());
         return false;
     }
@@ -799,7 +799,7 @@ bool HapPackager::AddPkgAndBinFileToZipForStageMaode()
     if (it != parameterMap_.end() && !it->second.empty()) {
         ModuleJson moduleJson;
         if (!moduleJson.ParseFromFile(it->second)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_PKG_CONTEXT_FAILED.toStringWithArgs(
                 "HapPackager::Process: moduleJson Read failed!").c_str());
             return false;
         }
@@ -811,7 +811,7 @@ bool HapPackager::AddPkgAndBinFileToZipForStageMaode()
                 return false;
             }
         } else {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_PKG_CONTEXT_FAILED.toStringWithArgs(
                 "HapPackager::Process: jsonFile error!").c_str());
             return false;
         }
@@ -858,7 +858,7 @@ bool HapPackager::CheckKernelPermissionCompression()
 
     // Parse module.json to check for kernel permission
     if (!moduleJson_.ParseFromFile(jsonPath)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             ("Failed to parse module.json: " + jsonPath).c_str()).c_str());
         return false;
     }
@@ -898,7 +898,7 @@ bool HapPackager::CompressSkillsDirectory()
 {
     std::list<std::map<std::string, std::string>> skillProfiles;
     if (!moduleJson_.GetSkillProfiles(skillProfiles)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
             "Failed to get skillProfiles from module.json.").c_str());
         return false;
     }
