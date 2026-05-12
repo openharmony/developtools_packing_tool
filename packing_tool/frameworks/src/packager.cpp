@@ -53,27 +53,27 @@ int32_t Packager::MakePackage()
     int32_t ret = ERR_OK;
     ret = InitAllowedParam();
     if (ret != ERR_OK) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
             "InitAllowedParam err").c_str());
         return ret;
     }
 
     ret = PreProcess();
     if (ret != ERR_OK) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
             "PreProcess err").c_str());
         return ret;
     }
     ret = Process();
     if (ret != ERR_OK) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
             "Process err").c_str());
         return ret;
     }
 
     ret = PostProcess();
     if (ret != ERR_OK) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
             "PostProcess err").c_str());
         return ret;
     }
