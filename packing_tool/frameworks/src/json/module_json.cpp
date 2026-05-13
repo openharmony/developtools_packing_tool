@@ -1202,8 +1202,8 @@ bool ModuleJson::IsModuleAtomicServiceValid()
     }
     if (moduleObj->Contains(ATOMIC_SERVICE.c_str())) {
         if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                "Module cannotconfig atomicService when app node has no bundleType").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_MODULE_ATOMIC_SERVICE_FAILED.toStringWithArgs(
+                "Module cannot config atomicService when app node has no bundleType").c_str());
             return false;
         } else {
             std::string bundleType;
@@ -1213,7 +1213,7 @@ bool ModuleJson::IsModuleAtomicServiceValid()
                 return false;
             }
             if (bundleType.compare(ATOMIC_SERVICE) != 0) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::CHECK_MODULE_ATOMIC_SERVICE_FAILED.toStringWithArgs(
                     "Module can not config atomicService when bundleType is not atomicService.").c_str());
                 return false;
             }
