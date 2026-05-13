@@ -374,7 +374,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
 bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHash, bool &buildHashFinish)
 {
     if (!fs::exists(jsonPath)) {
-        LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
             "Packager::setGenerateBuildHash failed for json file not exist").c_str());
         return false;
     }
@@ -398,7 +398,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
     ModuleJson moduleJsonTemp;
     moduleJsonTemp.ParseFromFile(jsonPath);
     if (!moduleJsonTemp.GetGenerateBuildHash(generateBuildHash)) {
-        LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
             "ModuleJson::GetGenerateBuildHash failed").c_str());
         return false;
     }
