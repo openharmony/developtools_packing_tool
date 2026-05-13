@@ -54,17 +54,17 @@ bool ModuleJsonUtils::GetStageHapVerifyInfo(const std::string& hapFilePath, HapV
     std::map<std::string, std::string> resourceMap;
     int64_t fileLength = Utils::GetFileLength(hapFilePath);
     if (fileLength < 0) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
             std::string("Get hap file length failed! hapFile=") + hapFilePath).c_str());
         return false;
     }
     if (!ZipUtils::GetFileContentFromZip(hapFilePath, MODULE_JSON, fileContent)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
             std::string("Get module.json content from hap file failed! hapFile=") + hapFilePath).c_str());
         return false;
     }
     if (!ZipUtils::GetResourceMapFromZip(hapFilePath, resourceMap)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
             std::string("Get resouce map from hap file failed! hapFile=") + hapFilePath).c_str());
         return false;
     }
@@ -84,11 +84,11 @@ bool ModuleJsonUtils::GetStageHapVerifyInfo(const std::string& hapFilePath, HapV
     hapVerifyInfo.SetFileType(fileType);
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromString(fileContent)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse json string failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Parse json string failed!").c_str());
         return false;
     }
     if (!moduleJson.GetStageHapVerifyInfo(hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Get stage hap verify info failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Get stage hap verify info failed!").c_str());
         return false;
     }
     return true;
@@ -99,22 +99,22 @@ bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVeri
     std::string fileContent;
     int64_t fileLength = Utils::GetFileLength(hapFilePath);
     if (fileLength < 0) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
             std::string("Get hap file length failed! hapFile=") + hapFilePath).c_str());
         return false;
     }
     if (!ZipUtils::GetFileContentFromZip(hapFilePath, CONFIG_JSON, fileContent)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
             std::string("Get config.json content from hap file failed! hapFile=") + hapFilePath).c_str());
         return false;
     }
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromString(fileContent)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse json string failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Parse json string failed!").c_str());
         return false;
     }
     if (!moduleJson.GetFaHapVerifyInfo(hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Get FA hap verify info failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Get FA hap verify info failed!").c_str());
         return false;
     }
     hapVerifyInfo.SetProfileStr(fileContent);
@@ -166,12 +166,12 @@ bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>
         HapVerifyInfo hapVerifyInfo;
         if (IsModuleHap(hapPath)) {
             if (!GetStageHapVerifyInfo(hapPath, hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetStageHapVerifyInfo failed!").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetStageHapVerifyInfo failed!").c_str());
                 return false;
             }
         } else {
             if (!GetFaHapVerifyInfo(hapPath, hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetFaHapVerifyInfo failed!").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetFaHapVerifyInfo failed!").c_str());
                 return false;
             }
         }
@@ -201,12 +201,12 @@ bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::stri
         auto hapVerifyInfo = std::make_shared<HapVerifyInfo>();
         if (IsModuleHap(hapPath)) {
             if (!GetStageHapVerifyInfo(hapPath, *hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetStageHapVerifyInfo failed").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetStageHapVerifyInfo failed").c_str());
                 return false;
             }
         } else {
             if (!GetFaHapVerifyInfo(hapPath, *hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetFaHapVerifyInfo failed").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetFaHapVerifyInfo failed").c_str());
                 return false;
             }
         }
