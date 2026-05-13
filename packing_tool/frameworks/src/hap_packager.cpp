@@ -365,7 +365,7 @@ bool HapPackager::CompressHap()
     }
     if (JsonUtils::IsModuleJson(jsonPath_)) {
         if (!CheckStageHap(jsonPath_)) {
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
                 "CheckStageHap failed.").c_str());
             return false;
         }
@@ -401,12 +401,12 @@ bool HapPackager::CompressHap()
             return false;
         }
         if (Constants::TYPE_APP_PLUGIN == bundleType) {
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
                 "hap can not plugin.").c_str());
             return false;
         } else {
             if (!IsPluginHost()) {
-                LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
                     "plugin package cannot be the host.").c_str());
                 return false;
             }
@@ -513,7 +513,7 @@ bool HapPackager::CheckStageHap(const std::string &jsonPath)
 bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
 {
     if (!moduleJson_.GetStageModuleName(moduleName_)) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_AND_MODIFY_MODULEJSON_FAILED.toStringWithArgs(
             "HapPackager::Process: GetStageModuleName failed!").c_str());
     }
     if (!moduleJson_.GetStageDeviceTypes(deviceTypes_)) {
@@ -567,7 +567,7 @@ bool HapPackager::CompressHapModeForModule(const std::string &jsonPath)
 bool HapPackager::CompressHapMode()
 {
     if (!moduleJson_.GetFaModuleName(moduleName_)) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_AND_MODIFY_MODULEJSON_FAILED.toStringWithArgs(
             "HapPackager::Process: GetFaModuleName failed!").c_str());
     }
     if (!moduleJson_.GetFaDeviceTypes(deviceTypes_)) {

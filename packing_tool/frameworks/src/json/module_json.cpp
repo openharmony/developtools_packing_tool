@@ -1314,7 +1314,7 @@ bool ModuleJson::CheckStageAsanTsanEnabledValid()
     }
 
     if (asanEnabled && tsanEnabled) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_AS_TSAN_ENABLED.toStringWithArgs(
             "asanEnabled and tsanEnabled cannot be true at the same time.").c_str());
         return false;
     }
@@ -1324,17 +1324,17 @@ bool ModuleJson::CheckStageAsanTsanEnabledValid()
 bool ModuleJson::CheckStageAtomicService()
 {
     if (!IsModuleAtomicServiceValid()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_FAILED.toStringWithArgs(
             "IsModuleAtomicServiceValid failed!").c_str());
         return false;
     }
     if (!CheckEntryInAtomicService()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_FAILED.toStringWithArgs(
             "CheckEntryInAtomicService failed!").c_str());
         return false;
     }
     if (!CheckAtomicServiceInstallationFree()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_FAILED.toStringWithArgs(
             "CheckAtomicServiceInstallationFree failed!").c_str());
         return false;
     }
@@ -1354,7 +1354,7 @@ bool ModuleJson::CheckQuerySchemes()
     int querySchemesCount = querySchemes.size();
     if (querySchemesCount > QUERY_SCHEMES_CHECK_COUNT) {
         //     QUERY_SCHEMES_CHECK_COUNT, QUERY_SCHEMES_CHECK_MIN_API_VERSION);
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             ("The number of querySchemes in the Hap(entry) exceeds " + std::to_string(QUERY_SCHEMES_CHECK_COUNT) +
             ", and the minAPIVersion is less than " + std::to_string(QUERY_SCHEMES_CHECK_MIN_API_VERSION)).c_str()).c_str());
         return false;
@@ -1376,7 +1376,7 @@ bool ModuleJson::CheckDeduplicateHar()
         std::string moduleName;
         GetStageModuleName(moduleName);
         //     moduleName.c_str(), minAPIVersion, DEDUPLICATE_HAR_CHECK_MIN_API_VERSION);
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
             ("The deduplicateHar of module " + moduleName + " is true, and the minAPIVersion(" +
             std::to_string(minAPIVersion) + ") is less than " +
             std::to_string(DEDUPLICATE_HAR_CHECK_MIN_API_VERSION)).c_str()).c_str());
