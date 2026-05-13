@@ -398,7 +398,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
     ModuleJson moduleJsonTemp;
     moduleJsonTemp.ParseFromFile(jsonPath);
     if (!moduleJsonTemp.GetGenerateBuildHash(generateBuildHash)) {
-        LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
             "ModuleJson::GetGenerateBuildHash failed").c_str());
         return false;
     }

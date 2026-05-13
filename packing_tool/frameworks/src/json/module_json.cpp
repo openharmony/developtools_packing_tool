@@ -1452,19 +1452,19 @@ bool ModuleJson::GetGenerateBuildHash(bool& generateBuildHash)
     std::unique_ptr<PtJson> moduleObj;
     std::unique_ptr<PtJson> appObj;
     if (!GetModuleObject(moduleObj) || !GetAppObject(appObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
             "GetAppObject or module node failed!").c_str());
         return false;
     }
     if (appObj->Contains(GENERATE_BUILD_HASH.c_str())) {
         if (appObj->GetBool(GENERATE_BUILD_HASH.c_str(), &generateBuildHash) != Result::SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
                 ("App node get " + GENERATE_BUILD_HASH + " failed!").c_str()).c_str());
             return false;
         }
     } else if (moduleObj->Contains(GENERATE_BUILD_HASH.c_str())) {
         if (moduleObj->GetBool(GENERATE_BUILD_HASH.c_str(), &generateBuildHash) != Result::SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
                 ("Module node get " + GENERATE_BUILD_HASH + " failed!").c_str()).c_str());
             return false;
         }
