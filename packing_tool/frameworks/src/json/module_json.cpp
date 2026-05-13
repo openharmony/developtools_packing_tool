@@ -152,17 +152,17 @@ bool ModuleJson::IsValid()
 bool ModuleJson::GetAppObject(std::unique_ptr<PtJson>& appObj)
 {
     if (root_.get() == nullptr) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Json root is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_OBJECT_EXCEPTION.toStringWithArgs("Json root is null!").c_str());
         return false;
     }
     if (!root_->Contains(APP.c_str())) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-            ("Json root has no " + APP + " node!").c_str()).c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_OBJECT_EXCEPTION.toStringWithArgs(
+            ("Json root has no " + APP + " node!").c_str());
         return false;
     }
     if (root_->GetObject(APP.c_str(), &appObj) != Result::SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-            ("Json root get " + APP + " node failed!").c_str()).c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_OBJECT_EXCEPTION.toStringWithArgs(
+            ("Json root get " + APP + " node failed!").c_str());
         return false;
     }
     return true;

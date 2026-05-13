@@ -1130,7 +1130,7 @@ bool ModuleJson::GetSkillProfiles(std::list<std::map<std::string, std::string>>&
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_OBJECT_EXCEPTION.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             "GetModuleObject failed!").c_str());
         return false;
     }
