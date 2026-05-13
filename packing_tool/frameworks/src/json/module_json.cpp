@@ -1389,58 +1389,58 @@ bool ModuleJson::CheckStageOverlayCfg()
 {
     std::string targetModuleName;
     if (!GetTargetModuleName(targetModuleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
             "GetTargetModuleName failed.").c_str());
         return false;
     }
     if (!targetModuleName.empty()) {
         if (IsExistedStageRequestPermissions()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "targetModuleName cannot be existed with requestPermissions.").c_str());
             return false;
         }
         std::string moduleName;
         if (!GetStageModuleName(moduleName)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "GetModuleName failed.").c_str());
             return false;
         }
         if (targetModuleName == moduleName) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "targetModuleName cannot be same with name in the overlay module.").c_str());
             return false;
         }
     } else if (IsExistedStageModuleTargetPriority()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
             "targetPriority cannot be existed without the targetModuleName in module.json.").c_str());
         return false;
     }
 
     std::string targetBundleName;
     if (!GetTargetBundleName(targetBundleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
             "GetTargetBundleName failed.").c_str());
         return false;
     }
     if (!targetBundleName.empty()) {
         if (targetModuleName.empty()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "targetModuleName is necessary in the overlay bundle.").c_str());
             return false;
         }
         std::string bundleName;
         if (!GetBundleName(bundleName)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "GetModuleName failed.").c_str());
             return false;
         }
         if (targetBundleName == bundleName) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "targetBundleName cannot be same with the bundleName.").c_str());
             return false;
         }
     } else if (IsExistedStageAppTargetPriority()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
             "targetPriority cannot be existed without the targetBundleName in app.json.").c_str());
         return false;
     }
