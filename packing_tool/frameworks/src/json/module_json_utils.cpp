@@ -149,18 +149,18 @@ bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>
 {
     for (auto& hapPath : fileList) {
         if (hapPath.empty()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Hap file path is empty!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file path is empty!").c_str());
             return false;
         }
         fs::path fsHapPath(hapPath);
         std::string fileName = fsHapPath.filename().string();
         if (fileName.empty()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Hap file name is empty!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file name is empty!").c_str());
             return false;
         }
         std::transform(fileName.begin(), fileName.end(), fileName.begin(), ::tolower);
         if (!Utils::EndsWith(fileName, HAP_SUFFIX) && !Utils::EndsWith(fileName, HSP_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Hap file is not a hap or hsp file!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file is not a hap or hsp file!").c_str());
             return false;
         }
         HapVerifyInfo hapVerifyInfo;
@@ -185,17 +185,17 @@ bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::stri
 {
     for (auto& hapPath : fileList) {
         if (hapPath.empty()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Hap file path is empty!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file path is empty!").c_str());
             return false;
         }
         fs::path fsHapPath(hapPath);
         std::string fileName = fsHapPath.filename().string();
         if (fileName.empty()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Hap file name is empty!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file name is empty!").c_str());
             return false;
         }
         if (!Utils::EndsWith(fileName, HAP_SUFFIX) && !Utils::EndsWith(fileName, HSP_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Hap file is not a hap or hsp file!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file is not a hap or hsp file!").c_str());
             return false;
         }
         auto hapVerifyInfo = std::make_shared<HapVerifyInfo>();
