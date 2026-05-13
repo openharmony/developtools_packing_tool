@@ -60,10 +60,11 @@ public class ResourcesParserV2 implements ResourcesParser {
     private static final int CHAR_LENGTH = 1;
     private static final String EMPTY_STRING = "";
 
-    private static int idssOffset;
-    private static Map<String, Map<String, KeysItemV2>> keysMap = new HashMap<>();
-    private static Map<Integer, Map<Integer, IdssItemV2>> idssMap = new HashMap<>();
-    private static Map<Integer, Map<Integer, DataItemV2>> dataMap = new HashMap<>();
+    // Parser state is per resources.index instance. Do not share it across parseHap calls.
+    private int idssOffset;
+    private final Map<String, Map<String, KeysItemV2>> keysMap = new HashMap<>();
+    private final Map<Integer, Map<Integer, IdssItemV2>> idssMap = new HashMap<>();
+    private final Map<Integer, Map<Integer, DataItemV2>> dataMap = new HashMap<>();
 
     /**
      * ResourcesParserV2
@@ -350,7 +351,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @return the resource value
      * @throws BundleException IOException.
      */
-    static String getBaseResource(int resId, byte[] data) {
+    String getBaseResource(int resId, byte[] data) {
         ByteBuffer byteBuf = ByteBuffer.wrap(data);
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
         byte[] version = new byte[VERSION_BYTE_LENGTH];
@@ -403,7 +404,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @return the base item
      * @throws BundleException IOException.
      */
-    static String readBaseItem(int resId, ConfigIndexV2 configIndex) {
+    String readBaseItem(int resId, ConfigIndexV2 configIndex) {
         if (configIndex == null) {
             LOG.error("ResourcesParserV2::readBaseItem configIndex is null");
             return "";
@@ -432,7 +433,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @return the result
      * @throws BundleException IOException.
      */
-    static List<String> getResource(int resId) {
+    List<String> getResource(int resId) {
         return readAllItem(resId);
     }
 
@@ -471,7 +472,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @return the item list
      * @throws BundleException IOException.
      */
-    static List<String> readAllItem(int resId) {
+    List<String> readAllItem(int resId) {
         List<String> result = new ArrayList<>();
         Map<Integer, DataItemV2> map = dataMap.get(resId);
         if (map == null) {
@@ -555,7 +556,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param buf config byte buffer
      * @return the item list
      */
-    static List<ResourceIndexResult> readDataAllItem(List<ConfigIndexV2> configs, ByteBuffer buf) {
+    List<ResourceIndexResult> readDataAllItem(List<ConfigIndexV2> configs, ByteBuffer buf) {
         List<ResourceIndexResult> resourceIndexResults = new ArrayList<>();
         for (ConfigIndexV2 index : configs) {
             String configClass = convertConfigIndexToString(index);
@@ -756,7 +757,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      *
      * @param data resource byte
      */
-    static void parseZone(byte[] data) {
+    void parseZone(byte[] data) {
         if (!parseKEYSZone(data)) {
             LOG.error("ResourcesParserV2 parseKEYSZone() failed");
         }
@@ -774,7 +775,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param data resource byte
      * @return parse result
      */
-    static boolean parseKEYSZone(byte[] data) {
+    boolean parseKEYSZone(byte[] data) {
         if (data == null || data.length == 0) {
             LOG.error("ResourcesParserV2::parseKEYSZone data byte is null");
             return false;
@@ -818,7 +819,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param data resource byte
      * @return parse result
      */
-    static boolean parseIDSSZone(byte[] data) {
+    boolean parseIDSSZone(byte[] data) {
         if (data == null || data.length == 0) {
             LOG.error("ResourcesParserV2::parseIDSSZone data byte is null");
             return false;
@@ -873,7 +874,7 @@ public class ResourcesParserV2 implements ResourcesParser {
      * @param data resource byte
      * @return data zone
      */
-    static boolean parseDATAZone(byte[] data) {
+    boolean parseDATAZone(byte[] data) {
         if (data == null || data.length == 0) {
             LOG.error("ResourcesParserV2::parseDATAZone data byte is null");
             return false;
