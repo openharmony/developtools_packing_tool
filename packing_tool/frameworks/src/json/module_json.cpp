@@ -1235,12 +1235,12 @@ bool ModuleJson::CheckEntryInAtomicService()
     std::string moduleType;
     std::list<std::string> abilityNames;
     if (!GetStageModuleType(moduleType) || !GetAbilityNames(abilityNames)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_LEASTONE_ABILITY.toStringWithArgs(
             "entry module must contain at least one ability.").c_str());
         return false;
     }
     if (moduleType.compare(ENTRY) == 0 && abilityNames.empty()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::CHECK_LEASTONE_ABILITY.toStringWithArgs(
             "entry module must contain at least one ability.").c_str());
         return false;
     }
