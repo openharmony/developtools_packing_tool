@@ -69,7 +69,7 @@ def compile_haptobin_tool(root_path, src_path, jar_output, out_path,
 def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_version, 
                            toolchain, fastjson_jar, fastjson2_jar, fastjson2ext_jar):
     java_sources = [
-        'AbilityFormInfo.java', 'AbilityInfo.java', 'ApiVersion.java', 
+        'AbilityFormInfo.java', 'AbilityInfo.java', 'AlternateIcon.java', 'ApiVersion.java',
         'AppInfo.java', 'AppModel.java', 'APPQFResult.java',
         'BundleException.java', 'CommandParser.java', 'CommonEvent.java',
         'Constants.java',

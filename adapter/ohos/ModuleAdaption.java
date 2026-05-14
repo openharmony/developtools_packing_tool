@@ -101,6 +101,7 @@ class ModuleAdaption {
         appInfo.setCompileSdkVersion(moduleAppInfo.getCompileSdkVersion());
         appInfo.setTargetBundleName(moduleAppInfo.getTargetBundleName());
         appInfo.setTargetPriority(moduleAppInfo.getTargetPriority());
+        appInfo.setAlternateIcons(moduleAppInfo.getAlternateIcons());
         return appInfo;
     }
 

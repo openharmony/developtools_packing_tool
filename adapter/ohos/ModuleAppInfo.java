@@ -15,7 +15,9 @@
 
 package ohos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -162,6 +164,11 @@ class ModuleAppInfo {
      */
     private int labelId = 0;
 
+    /**
+     * Indicates the alternateIcons of app AppJson.
+     */
+    private List<AlternateIcon> alternateIcons = new ArrayList<>();
+
     public void setDescriptions(HashMap<String, String> descriptions) {
         this.descriptions = descriptions;
     }
@@ -242,5 +249,13 @@ class ModuleAppInfo {
 
     public void setLabelId(int labelId) {
         this.labelId = labelId;
+    }
+
+    public List<AlternateIcon> getAlternateIcons() {
+        return alternateIcons;
+    }
+
+    public void setAlternateIcons(List<AlternateIcon> alternateIcons) {
+        this.alternateIcons = alternateIcons;
     }
 }
