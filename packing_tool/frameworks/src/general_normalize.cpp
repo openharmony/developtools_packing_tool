@@ -615,7 +615,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
-        LOGW("Parse and modify packInfo failed, json format invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, json format invalid.").c_str());
         return false;
     }
 
@@ -630,7 +631,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
             return ERR_INVALID_VALUE;
         }
         if (!packInfo.SetVersionCode(versionCode)) {
-            LOGW("SetVersionCode packInfo failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetVersionCode packInfo failed").c_str());
             return false;
         }
     }
@@ -639,7 +641,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         std::string buildVersion = parameterMap_.at(Constants::PARAM_BUILD_VERSION);
         if (!packInfo.SetBuildVersion(buildVersion)) {
-            LOGW("SetBuildVersion packInfo failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetBuildVersion packInfo failed").c_str());
             return false;
         }
     }
@@ -648,7 +651,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
         if (!packInfo.SetVersionName(versionName)) {
-            LOGW("SetVersionName packInfo failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetVersionName packInfo failed").c_str());
             return false;
         }
     }
@@ -657,7 +661,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         std::string bundleName = parameterMap_.at(Constants::PARAM_BUNDLE_NAME);
         if (!packInfo.SetBundleName(bundleName)) {
-            LOGW("SetBundleName failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetBundleName failed").c_str());
             return false;
         }
     }
@@ -673,7 +678,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
             return ERR_INVALID_VALUE;
         }
         if (!packInfo.SetMinCompatibleVersionCode(minCompatibleVersionCode)) {
-            LOGW("SetMinCompatibleVersionCode failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetMinCompatibleVersionCode failed").c_str());
             return false;
         }
     }
@@ -689,7 +695,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
             return ERR_INVALID_VALUE;
         }
         if (!packInfo.SetMinAPIVersion(minAPIVersion)) {
-            LOGW("SetMinAPIVersion failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetMinAPIVersion failed").c_str());
             return false;
         }
     }
@@ -705,7 +712,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
             return ERR_INVALID_VALUE;
         }
         if (!packInfo.SetTargetAPIVersion(targetAPIVersion)) {
-            LOGW("SetTargetAPIVersion failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetTargetAPIVersion failed").c_str());
             return false;
         }
     }
@@ -714,7 +722,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         std::string apiReleaseType = parameterMap_.at(Constants::PARAM_API_RELEASE_TYPE);
         if (!packInfo.SetApiReleaseType(apiReleaseType)) {
-            LOGW("SetApiReleaseType failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetApiReleaseType failed").c_str());
             return false;
         }
     }
@@ -723,7 +732,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         std::string bundleType = parameterMap_.at(Constants::PARAM_BUNDLE_TYPE);
         if (!packInfo.SetBundleType(bundleType)) {
-            LOGW("SetBundleType failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetBundleType failed").c_str());
             return false;
         }
     }
@@ -732,7 +742,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         bool installationFree = Utils::StringToBool(parameterMap_.at(Constants::PARAM_INSTALLATION_FREE));
         if (!packInfo.SetInstallationFree(installationFree)) {
-            LOGW("SetInstallationFree failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetInstallationFree failed").c_str());
             return false;
         }
     }
@@ -741,7 +752,8 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     if (it != parameterMap_.end()) {
         bool deliveryWithInstall = Utils::StringToBool(parameterMap_.at(Constants::PARAM_DELIVERY_WITH_INSTALL));
         if (!packInfo.SetDeliveryWithInstall(deliveryWithInstall)) {
-            LOGW("SetDeliveryWithInstall failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetDeliveryWithInstall failed").c_str());
             return false;
         }
     }
@@ -751,13 +763,15 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
         std::list<std::string> deviceTypes;
         Utils::StringToArray(parameterMap_.at(Constants::PARAM_DEVICE_TYPES), deviceTypes);
         if (!packInfo.SetDeviceTypes(deviceTypes)) {
-            LOGW("SetDeviceTypes failed");
+            LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+                "SetDeviceTypes failed").c_str());
             return false;
         }
     }
 
     if (!JsonUtils::StrToFile(packInfo.ToString(), packInfoPath)) {
-        LOGW("Parse and modify packInfo failed, writeJson failed.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, writeJson failed.").c_str());
         return false;
     }
     return true;

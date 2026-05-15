@@ -165,20 +165,24 @@ bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
-        LOGW("Parse and modify packInfo failed, json format invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, json format invalid.").c_str());
         return false;
     }
     if (!packInfo.SetVersionCode(newVersionCode)) {
-        LOGW("Parse and modify packInfo failed, version code invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, version code invalid.").c_str());
         return false;
     }
     if (!packInfo.SetVersionName(newVersionName)) {
-        LOGW("Parse and modify packInfo failed, version name invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, version name invalid.").c_str());
         return false;
     }
 
     if (!JsonUtils::StrToFile(packInfo.ToString(), packInfoPath)) {
-        LOGW("Parse and modify packInfo failed, writeJson failed.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, writeJson failed.").c_str());
         return false;
     }
     return true;
