@@ -496,7 +496,7 @@
                             "instance",
                             "type",
                             "bundle",
-                            "caller_instance"
+                            "callerInstance"
                           ],
                           "default": "bundle"
                         }
@@ -2090,7 +2090,7 @@
                       "instance",
                       "type",
                       "bundle",
-                      "caller_instance"
+                      "callerInstance"
                     ],
                     "default": "bundle"
                   }
