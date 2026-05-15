@@ -172,12 +172,12 @@ bool FastAppPackager::IsVerifyValidInFastAppMode()
     }
 
     if (!ModuleJsonAndPackInfoExists(formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("hap-path or hsp-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hap-path or --hsp-path is invalid.").c_str());
         return false;
     }
     
     if (!CheckBundleTypeConsistency(formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("bundleType is inconsistent.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("The bundleType is inconsistent.").c_str());
         return false;
     }
 
@@ -219,20 +219,20 @@ bool FastAppPackager::FormatPath()
     std::map<std::string, std::string>::const_iterator itHap = parameterMap_.find(Constants::PARAM_HAP_PATH);
     if (itHap != parameterMap_.end() && !itHap->second.empty() &&
         (!IsFormatPathValid(itHap->second, formattedHapPathList_) || !IsHapPathValid(formattedHapPathList_))) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager hap-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hap-path is invalid.").c_str());
         return false;
     }
 
     std::map<std::string, std::string>::const_iterator itHsp = parameterMap_.find(Constants::PARAM_HSP_PATH);
     if (itHsp != parameterMap_.end() && !itHsp->second.empty() && (!IsFormatPathValid(itHsp->second,
         formattedHspPathList_) || !IsHspPathValid(formattedHspPathList_, Constants::HSP_SUFFIX))) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager hsp-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hsp-path is invalid.").c_str());
         return false;
     }
 
     if ((itHap == parameterMap_.end() || itHap->second.empty()) &&
         (itHsp == parameterMap_.end() || itHsp->second.empty())) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager hap-path and hsp-path are empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hap-path and --hsp-path is empty.").c_str());
         return false;
     }
     return true;
@@ -242,52 +242,52 @@ bool FastAppPackager::IsVerifyValid()
 {
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PACK_INFO_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager pack-info-path is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is empty.").c_str());
         return false;
     }
 
     packInfoPath_ = it->second;
     if (!IsPathValid(packInfoPath_, true, Constants::PACK_INFO)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager pack-info-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_SIGNATURE_PATH);
     if (it != parameterMap_.end() && !it->second.empty() && !IsPathValid(it->second, true)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager signature-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--signature-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_CERTIFICATE_PATH);
     if (it != parameterMap_.end() && !it->second.empty() && !IsPathValid(it->second, true)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager certificate-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--certificate-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !IsPathValid(it->second, true, Constants::FILE_PACK_RES)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager pack-res-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-res-path is invalid.").c_str());
         return false;
     }
     
     it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !CompatibleProcess(it->second, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager entrycard-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--entrycard-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !IsFileMatch(it->second, Constants::PAC_JSON)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager pac-json-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pac-json-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("Fast App packager out-path is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--out-path is empty.").c_str());
         return false;
     }
     return true;
@@ -520,7 +520,8 @@ bool FastAppPackager::CheckSkillBundleTypeConstraints(const std::list<std::strin
     int hspCount = static_cast<int>(hspPathList.size());
     if (hspCount > 1) {
         LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "--hsp-path must contain only 1 HSP when bundleType is skill.").c_str());
+            ("--hsp-path must contain only 1 HSP when bundleType is skill, but got " +
+                std::to_string(hspCount) + ".").c_str()).c_str());
         return false;
     }
 
@@ -553,7 +554,8 @@ bool FastAppPackager::IsSkillHspModule(const std::string &pathValue)
     }
 
     LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
-        ("HSP moduleType must be 'skill' when bundleType is skill, but got '" + moduleType + "'.").c_str()).c_str());
+        ("HSP moduleType must be skill when bundleType is skill, but got '" + moduleType +
+            "' in " + pathValue + ".").c_str()).c_str());
     return false;
 }
 

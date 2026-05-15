@@ -317,7 +317,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
 
     if ("false" == forceRewrite && fs::exists(filePath)) {
         LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-            "Packager::isOutPathValid out file already existed.").c_str());
+            "--out-path file already existed.").c_str());
         return false;
     }
 	
@@ -328,7 +328,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
     if (suffix == Constants::HAP_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::HAP_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-                "Packager::isOutPathValid out-path must end with .hap.").c_str());
+                "--out-path must end with .hap.").c_str());
             return false;
         } else {
             return true;
@@ -336,7 +336,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
     } else if (suffix == Constants::HAR_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::HAR_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-                "Packager::isOutPathValid out-path must end with .har.").c_str());
+                "--out-path must end with .har.").c_str());
             return false;
         } else {
             return true;
@@ -344,7 +344,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
     } else if (suffix == Constants::APP_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::APP_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-                "Packager::isOutPathValid out-path must end with .app.").c_str());
+                "--out-path must end with .app.").c_str());
             return false;
         } else {
             return true;
@@ -352,7 +352,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
     } else if (suffix == Constants::RES_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::RES_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-                "Packager::isOutPathValid out-path must end with .res.").c_str());
+                "--out-path must end with .res.").c_str());
             return false;
         } else {
             return true;
@@ -360,7 +360,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
     } else if (suffix == Constants::HSP_SUFFIX) {
         if (!Utils::EndsWith(filePath.filename().string(), Constants::HSP_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-                "Packager::isOutPathValid out-path must end with .hsp.").c_str());
+                "--out-path must end with .hsp.").c_str());
             return false;
         } else {
             return true;

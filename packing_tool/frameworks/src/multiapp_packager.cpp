@@ -158,7 +158,8 @@ bool CheckSkillHspModuleTypes(const std::list<std::string> &hspPaths)
     }
     if (hspCount > 1) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "--hsp-list must contain only 1 HSP when bundleType is skill.").c_str());
+            ("--hsp-list must contain only 1 HSP when bundleType is skill, but got " +
+                std::to_string(hspCount) + ".").c_str()).c_str());
         return false;
     }
     return true;
@@ -222,19 +223,19 @@ bool MultiAppPackager::GetAndCheckOutPath(std::string &outPath)
 {
     if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "input out-path are null.").c_str());
+            "--out-path is missing.").c_str());
         return false;
     }
     outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     if (outPath.empty()) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "input out-path are empty.").c_str());
+            "--out-path is empty.").c_str());
         return false;
     }
     if (outPath.find('.') == std::string::npos ||
         outPath.substr(outPath.size() - Constants::APP_SUFFIX_LENGTH) != Constants::APP_SUFFIX) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "out-path must end with .app.").c_str());
+            "--out-path must end with .app.").c_str());
         return false;
     }
     return true;
@@ -247,7 +248,7 @@ bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr
         parameterMap_.find(Constants::PARAM_HSP_LIST) == parameterMap_.end() &&
         parameterMap_.find(Constants::PARAM_APP_LIST) == parameterMap_.end()) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "input hap-list, hsp-list and app-list are all null.").c_str());
+            "Input --app-list, --hap-list and --hsp-list are all missing.").c_str());
         return false;
     }
     if (parameterMap_.find(Constants::PARAM_HAP_LIST) != parameterMap_.end()) {
@@ -261,27 +262,27 @@ bool MultiAppPackager::GetAndCheckHapAndHspAndAppListStr(std::string &hapListStr
     }
     if (hapListStr.empty() && hspListStr.empty() && appListStr.empty()) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "input hap-list, hsp-list and app-list are all empty.").c_str());
+            "Input --app-list, --hap-list and --hsp-list are all empty.").c_str());
         return false;
     }
     if (!hapListStr.empty()) {
         if (!CompatibleProcess(hapListStr, formattedHapAndHspList_, Constants::HAP_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-                "hap-list is invalid.").c_str());
+                "--hap-list is invalid.").c_str());
             return false;
         }
     }
     if (!hspListStr.empty()) {
         if (!CompatibleProcess(hspListStr, formattedHapAndHspList_, Constants::HSP_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-                "hsp-list is invalid.").c_str());
+                "--hsp-list is invalid.").c_str());
             return false;
         }
     }
     if (!appListStr.empty()) {
         if (!CompatibleProcess(appListStr, formattedAppList_, Constants::APP_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-                "app-list is invalid.").c_str());
+                "--app-list is invalid.").c_str());
             return false;
         }
     }
@@ -303,7 +304,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     if (it != parameterMap_.end() && !it->second.empty() &&
         !IsFileMatch(it->second, Constants::PAC_JSON)) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "MultiAppPackager::IsVerifyValidInMultiAppMode pac-json-path is invalid.").c_str());
+            "--pac-json-path is invalid.").c_str());
         return false;
     }
 
@@ -319,8 +320,8 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     if (it != parameterMap_.end() && !it->second.empty()) {
         force = it->second;
         if (Utils::IsFileExists(outPath) && force == "false") {
-            LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
-                "out-path file already existed.").c_str());
+            LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--out-path file already exist, but --force is not 'true'.").c_str());
             return false;
         }
     }
@@ -468,7 +469,7 @@ std::string MultiAppPackager::SelectHapInApp(const std::string &appPath, std::li
     }
     std::string packInfoJsonStr;
     if (!PackInfoUtils::MergeTwoPackInfosByPackagePair(finalAppPackInfo, packInfoStr, packagePair, packInfoJsonStr)) {
-        LOGE("%s", PackingToolErrMsg::MERGE_PACKINFO_OBJ_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MERGE_TWO_PACKINFO_FAILED.toStringWithArgs(
             "PackInfoUtils::MergeTwoPackInfosByPackagePair failed.").c_str());
     }
     return packInfoJsonStr;
@@ -511,7 +512,7 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
         } else {
             std::string packInfoJsonStr;
             if (!PackInfoUtils::MergeTwoPackInfos(finalPackInfoStr, packInfo, packInfoJsonStr)) {
-                LOGE("%s", PackingToolErrMsg::MERGE_PACKINFO_OBJ_FAILED.toStringWithArgs(
+                LOGE("%s", PackingToolErrMsg::MERGE_TWO_PACKINFO_FAILED.toStringWithArgs(
                     "PackInfoUtils::MergeTwoPackInfos failed.").c_str());
             }
             finalPackInfoStr = packInfoJsonStr;

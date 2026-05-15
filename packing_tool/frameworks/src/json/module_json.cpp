@@ -348,7 +348,7 @@ bool ModuleJson::GetBundleNameByAppObj(std::unique_ptr<PtJson>& appObj, std::str
     }
     if (!appObj->Contains(BUNDLE_NAME.c_str())) {
         LOGE("%s", PackingToolErrMsg::PARSE_BUNDLE_NAME_FAILED.toStringWithArgs(
-            ("App node has no " + BUNDLE_NAME + " node!").c_str()).c_str());
+            "The module.json or config.json file does not contain 'bundleName'.").c_str());
         return false;
     }
     if (appObj->GetString(BUNDLE_NAME.c_str(), &bundleName) != Result::SUCCESS) {
@@ -931,32 +931,43 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
     const bool hasSkillType = moduleType.compare(TYPE_SKILL) == 0;
     const bool hasSkillBundleType = bundleType.compare(TYPE_SKILL) == 0;
     if (hasSkillType != hasSkillBundleType) {
+        std::string errMsg = "Invalid skill configuration in module '" + moduleName + "': 'moduleType' and "
+            "'bundleType' must both be 'skill' when using skill. If this is a skill module, package it in "
+            "HSP mode instead of HAP mode.";
+        std::string solution = "Set both 'module.moduleType' and 'app.bundleType' to 'skill', or remove "
+            "'skill' from both. Use HSP mode for skill modules.";
         LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
-            ("Invalid skill configuration: moduleType and bundleType must both be 'skill' when using skill. "
-            "If this is a skill module, package it in HSP mode instead of HAP mode. "
-            "[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
+            std::vector<std::string>{errMsg, solution}).c_str());
         return false;
     }
     if (bundleType.compare(APP) == 0) {
         if (installationFree) {
+            std::string errMsg = "'installationFree' must be false in module '" + moduleName +
+                "' when 'bundleType' is app.";
+            std::string solution = "Set 'installationFree' to false in the module.json when 'bundleType' is app.";
             LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
-                ("installationFree must be false in module " + moduleName + " when bundleType is app").c_str()).c_str());
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
         return true;
     } else if (bundleType.compare(ATOMIC_SERVICE) == 0) {
         if (!installationFree) {
-            //     moduleName.c_str());
+            std::string errMsg = "'installationFree' must be true in module '" + moduleName +
+                "' when 'bundleType' is atomicService.";
+            std::string solution = "Set 'installationFree' to true in the module.json when 'bundleType' "
+                "is atomicService.";
             LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
-                ("installationfree must be true in module " + moduleName + " when bundleType is atomicService").c_str()).c_str());
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
         return true;
     } else if (bundleType.compare(SHARED) == 0) {
         if (moduleType.compare(SHARED) != 0) {
-            //     bundleType.c_str(), moduleType.c_str());
+            std::string errMsg = "'type' must be shared in module '" + moduleName +
+                "' when 'bundleType' is shared.";
+            std::string solution = "Set the 'type' to shared in the module.json when 'bundleType' is shared.";
             LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
-                ("moduleType must be shared bundleType is shared[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
         return true;
@@ -964,9 +975,11 @@ bool ModuleJson::CheckStageBundleType(const std::string& moduleName, const std::
         return true;
     } else if (bundleType.compare(APP_PLUGIN) == 0) {
         if (moduleType.compare(SHARED) != 0) {
-            //     bundleType.c_str(), moduleType.c_str());
+            std::string errMsg = "'type' must be shared in module '" + moduleName +
+                "' when 'bundleType' is appPlugin.";
+            std::string solution = "Set the 'type' to shared in the module.json when 'bundleType' is appPlugin.";
             LOGE("%s", PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs(
-                ("moduleType must be shared bundleType is appPlugin[bundleType=" + bundleType + "][moduleType=" + moduleType + "]").c_str()).c_str());
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
         return true;
@@ -1203,7 +1216,7 @@ bool ModuleJson::IsModuleAtomicServiceValid()
     if (moduleObj->Contains(ATOMIC_SERVICE.c_str())) {
         if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
             LOGE("%s", PackingToolErrMsg::CHECK_MODULE_ATOMIC_SERVICE_FAILED.toStringWithArgs(
-                "Module cannot config atomicService when app node has no bundleType").c_str());
+                "Module cannot config atomicService when 'bundleType' is missing.").c_str());
             return false;
         } else {
             std::string bundleType;
@@ -1214,7 +1227,7 @@ bool ModuleJson::IsModuleAtomicServiceValid()
             }
             if (bundleType.compare(ATOMIC_SERVICE) != 0) {
                 LOGE("%s", PackingToolErrMsg::CHECK_MODULE_ATOMIC_SERVICE_FAILED.toStringWithArgs(
-                    "Module can not config atomicService when bundleType is not atomicService.").c_str());
+                    "Module cannot config atomicService when 'bundleType' is not atomicService.").c_str());
                 return false;
             }
         }
@@ -1260,8 +1273,11 @@ bool ModuleJson::CheckAtomicServiceInstallationFree()
     GetStageInstallationFreeByModuleObj(moduleObj, installationFree);
     if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
         if (installationFree) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                ("installationFree must be false when app node has no " + BUNDLE_TYPE).c_str()).c_str());
+            std::string errMsg =
+                "The app.json5 file configuration does not match the 'installationFree' setting of true.";
+            std::string solution = "Add the 'bundleType' field to the app.json5 file and set it atomicService.";
+            LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toStringWithArgs(
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
         return true;
@@ -1282,22 +1298,32 @@ bool ModuleJson::CheckAtomicServiceInstallationFree()
         (bundleType.compare(APP_SERVICE) == 0) ||
         (bundleType.compare(APP_PLUGIN) == 0)) {
         if (installationFree) {
-            //     moduleName.c_str());
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                ("installationFree must be false in module " + moduleName + " when bundleType is app/shared/appService/appPlugin").c_str()).c_str());
+            std::string errMsg = "'installationFree' must be false in module '" + moduleName +
+                "' when 'bundleType' is " + bundleType + ".";
+            std::string solution = "Set 'installationFree' to false in the module.json when 'bundleType' is " +
+                bundleType + ".";
+            LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toStringWithArgs(
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
     } else if (bundleType.compare(ATOMIC_SERVICE) == 0) {
         if (!installationFree) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                ("installationfree must be true in module " + moduleName + " when bundleType is atomicService").c_str()).c_str());
+            std::string errMsg = "'installationFree' must be true in module '" + moduleName +
+                "' when 'bundleType' is atomicService.";
+            std::string solution = "Set 'installationFree' to true in the module.json when 'bundleType' "
+                "is atomicService.";
+            LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toStringWithArgs(
+                std::vector<std::string>{errMsg, solution}).c_str());
             return false;
         }
     } else if (bundleType.compare(TYPE_SKILL) == 0) {
         return true;
     } else {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-            "bundleType is not app/shared/appService/atomicService/appPlugin").c_str());
+        std::string errMsg = "'bundleType' is invalid in the app.json.";
+        std::string solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one "
+            "of the valid types: 'app', 'atomicService', 'shared', 'appService', 'appPlugin', or 'skill'.";
+        LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toStringWithArgs(
+            std::vector<std::string>{errMsg, solution}).c_str());
         return false;
     }
     return true;

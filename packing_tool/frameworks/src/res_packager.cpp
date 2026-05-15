@@ -75,12 +75,12 @@ bool ResPackager::IsVerifyValidInResMode()
         packInfoPath_ = it->second;
         if (!fs::is_regular_file(packInfoPath_)) {
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
-                "ResPackager::IsVerifyValidInResMode --pack-info-path is not a file.").c_str());
+                "--pack-info-path is not a file.").c_str());
             return false;
         }
         if (fs::path(packInfoPath_).filename().string() != Constants::PACK_INFO) {
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
-                "ResPackager::IsVerifyValidInResMode --pack-info-path must be pack.info file.").c_str());
+                "--pack-info-path must be the pack.info file.").c_str());
             return false;
         }
     }
@@ -90,18 +90,17 @@ bool ResPackager::IsVerifyValidInResMode()
         entryCardPath_ = it->second;
         if (!fs::is_directory(entryCardPath_)) {
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
-                "ResPackager::IsVerifyValidInResMode --entrycard-path is not a directory.").c_str());
+                "--entrycard-path is not a directory.").c_str());
             return false;
         }
         if (fs::path(entryCardPath_).filename().string() != Constants::ENTRYCARD_NAME) {
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
-                ("ResPackager::IsVerifyValidInResMode the level-1 directory name must be EntryCard, current is " +
-                    entryCardPath_).c_str()).c_str());
+                ("The level-1 directory name must be EntryCard, current is " + entryCardPath_ + ".").c_str()).c_str());
             return false;
         }
         if (!CompatibleProcess(entryCardPath_, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
             LOGE("%s", PackingToolErrMsg::RES_MODE_ARGS_INVALID.toStringWithArgs(
-                "ResPackager::IsVerifyValidInResMode --entrycard-path is invalid.").c_str());
+                "--entrycard-path is invalid.").c_str());
             return false;
         }
     }

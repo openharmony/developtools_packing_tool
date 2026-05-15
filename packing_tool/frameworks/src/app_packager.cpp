@@ -98,8 +98,10 @@ bool CheckSkillAppConstraints(const std::string &hapPath, const std::string &hsp
         return false;
     }
     if (CountInputPathItems(hspPath) > 1) {
+        const size_t hspCount = CountInputPathItems(hspPath);
         LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "--hsp-path must contain only 1 HSP when bundleType is skill.").c_str());
+            ("--hsp-path must contain only 1 HSP when bundleType is skill, but got " +
+                std::to_string(hspCount) + ".").c_str()).c_str());
         return false;
     }
     return CheckSkillModuleTypes(hspPathList);
@@ -340,17 +342,17 @@ bool AppPackager::CheckInputModulePath(const std::string &hapPath, const std::st
 bool AppPackager::GetAndCheckOutPath(std::string &outPath)
 {
     if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("input out-path are null.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--out-path is missing.").c_str());
         return false;
     }
     outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     if (outPath.empty()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("input out-path are empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--out-path is empty.").c_str());
         return false;
     }
     if (outPath.find('.') == std::string::npos ||
         outPath.substr(outPath.size() - Constants::APP_SUFFIX_LENGTH) != Constants::APP_SUFFIX) {
-        LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs("out-path must end with .app.").c_str());
+        LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs("--out-path must end with .app.").c_str());
         return false;
     }
     return true;
@@ -360,7 +362,8 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
 {
     if (parameterMap_.find(Constants::PARAM_HAP_PATH) == parameterMap_.end() &&
         parameterMap_.find(Constants::PARAM_HSP_PATH) == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("input hap-path or hsp-path are all null.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-path and --hsp-path are both missing.").c_str());
         return false;
     }
     if (parameterMap_.find(Constants::PARAM_HAP_PATH) != parameterMap_.end()) {
@@ -370,22 +373,23 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
         hspPath = parameterMap_.at(Constants::PARAM_HSP_PATH);
     }
     if (hapPath.empty() && hspPath.empty()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("input hap-path or hsp-path are all empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-path and --hsp-path are both empty.").c_str());
         return false;
     }
     if (!CheckBundleTypeConsistency(hapPath, hspPath)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("bundleType is inconsistent.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("The bundleType is inconsistent for different HAP and HSP modules.").c_str());
         return false;
     }
     if (!CheckInputModulePath(hapPath, hspPath)) {
         LOGW("input hap-path or hsp-path is invalid.");
     }
     if (!hapPath.empty() && !CompatibleProcess(hapPath, formattedHapPathList_, Constants::HAP_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("hap-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--hap-path is invalid.").c_str());
         return false;
     }
     if (!hspPath.empty() && !CompatibleProcess(hspPath, formattedHspPathList_, Constants::HSP_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("hsp-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--hsp-path is invalid.").c_str());
         return false;
     }
     return true;
@@ -394,16 +398,16 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
 bool AppPackager::GetAndCheckPackInfoPath(std::string &packInfoPath)
 {
     if (parameterMap_.find(Constants::PARAM_PACK_INFO_PATH) == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("input pack-info-path is null.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is missing.").c_str());
         return false;
     }
     packInfoPath = parameterMap_.at(Constants::PARAM_PACK_INFO_PATH);
     if (packInfoPath.empty()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("input pack-info-path is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is empty.").c_str());
         return false;
     }
     if (!fs::is_regular_file(packInfoPath) || fs::path(packInfoPath).filename() != Constants::PACK_INFO) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("pack-info-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is invalid.").c_str());
         return false;
     }
     return true;
@@ -414,7 +418,7 @@ bool AppPackager::CheckSignaturePath()
     auto it = parameterMap_.find(Constants::PARAM_SIGNATURE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!fs::is_regular_file(it->second)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("signature-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--signature-path is invalid.").c_str());
             return false;
         }
     }
@@ -426,7 +430,7 @@ bool AppPackager::CheckCertificatePath()
     auto it = parameterMap_.find(Constants::PARAM_CERTIFICATE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!fs::is_regular_file(it->second)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("certificate-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--certificate-path is invalid.").c_str());
             return false;
         }
     }
@@ -438,7 +442,7 @@ bool AppPackager::CheckEntrycardPath()
     auto it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!CompatibleProcess(it->second, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("entrycard-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--entrycard-path is invalid.").c_str());
             return false;
         }
     }
@@ -450,7 +454,7 @@ bool AppPackager::CheckPackResPath()
     auto it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsPathValid(it->second, true, Constants::FILE_PACK_RES)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("pack-res-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-res-path is invalid.").c_str());
             return false;
         }
     }
@@ -462,7 +466,7 @@ bool AppPackager::CheckPacJsonPath()
     auto it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsFileMatch(it->second, Constants::PAC_JSON)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("pac-json-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pac-json-path is invalid.").c_str());
             return false;
         }
     }

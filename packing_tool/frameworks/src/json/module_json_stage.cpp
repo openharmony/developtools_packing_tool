@@ -96,6 +96,11 @@ const std::string SKILL_PROFILES = "skillProfiles";
 const std::string SKILL_NAME = "name";
 const std::string SKILL_ABILITY_NAME = "abilityName";
 const std::string TYPE_SKILL = "skill";
+
+std::string BuildStageBundleTypeError(const std::string& errMsg, const std::string& solution)
+{
+    return PackingToolErrMsg::PARSE_STAGE_BUNDLE_TYPE_FAILED.toStringWithArgs({errMsg, solution});
+}
 }
 
 bool ModuleJson::SetStageVersionCode(const int32_t& versionCode)
@@ -607,8 +612,17 @@ bool ModuleJson::GetStageEntry(std::list<std::string>& deviceTypes)
     }
     std::string moduleType;
     if (!moduleObj->Contains(TYPE.c_str())) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
-            std::string("Module node has no ") + TYPE + " node!").c_str());
+        std::string moduleName;
+        if (moduleObj->Contains(NAME.c_str())) {
+            moduleObj->GetString(NAME.c_str(), &moduleName);
+        }
+        std::string errMsg = moduleName.empty()
+            ? "Module does not contain 'type' in module.json."
+            : "Module: '" + moduleName + "' does not contain 'type' in module.json.";
+        std::string solution = moduleName.empty()
+            ? "Ensure the module.json file includes a valid 'type' field."
+            : "Ensure the module.json file includes a valid 'type' field for module '" + moduleName + "'.";
+        LOGE("%s", BuildStageBundleTypeError(errMsg, solution).c_str());
         return false;
     }
     if (moduleObj->GetString(TYPE.c_str(), &moduleType) != Result::SUCCESS) {
@@ -719,8 +733,17 @@ bool ModuleJson::GetStageBundleType(std::string& bundleType)
         return false;
     }
     if (!moduleObj->Contains(TYPE.c_str())) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
-            std::string("Module node has no ") + TYPE + " node!").c_str());
+        std::string moduleName;
+        if (moduleObj->Contains(NAME.c_str())) {
+            moduleObj->GetString(NAME.c_str(), &moduleName);
+        }
+        std::string errMsg = moduleName.empty()
+            ? "Module does not contain 'type' in module.json."
+            : "Module: '" + moduleName + "' does not contain 'type' in module.json.";
+        std::string solution = moduleName.empty()
+            ? "Ensure the module.json file includes a valid 'type' field."
+            : "Ensure the module.json file includes a valid 'type' field for module '" + moduleName + "'.";
+        LOGE("%s", BuildStageBundleTypeError(errMsg, solution).c_str());
         return false;
     }
     std::string moduleName;
@@ -735,9 +758,10 @@ bool ModuleJson::GetStageBundleType(std::string& bundleType)
     GetStageInstallationFreeByModuleObj(moduleObj, installationFree);
     if (!appObj->Contains(BUNDLE_TYPE.c_str())) {
         if (installationFree) {
-            LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
-                "The app.json5 file configuration does not match the installationFree: "
-                "true settings. Add the bundleType field to the app.json5 file and set it atomicService.").c_str());
+            std::string errMsg =
+                "The app.json5 file configuration does not match the 'installationFree' setting of true.";
+            std::string solution = "Add the 'bundleType' field to the app.json5 file and set it atomicService.";
+            LOGE("%s", BuildStageBundleTypeError(errMsg, solution).c_str());
             return false;
         }
         bundleType = APP;

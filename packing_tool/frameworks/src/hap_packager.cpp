@@ -124,7 +124,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::commandPathVerify json-path is empty.").c_str());
+            "--json-path is empty.").c_str());
         return false;
     }
     jsonPath_ = it->second;
@@ -132,8 +132,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         && !IsPathValid(it->second, true, Constants::MODULE_JSON)) {
            
       LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-      "HapPackager::isArgsValidInHarMode json-path must be"
-      " config.json or module.json file.").c_str());
+      "--json-path must be the config.json file or module.json file.").c_str());
         return false;
     }
     if (!IsValidRpcid() || !IsValidPackInfo()) {
@@ -141,7 +140,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     }
     if (!IsPathParamValid(Constants::PARAM_EXIST_SRC_PATH, true, Constants::HAP_SUFFIX)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "exist-src-path must be a file with the .hap suffix.").c_str());
+            "The value of --exist-src-path must be a file with the .hap suffix.").c_str());
         return false;
     }
     if (!CheckLibPathRetainParam()) {
@@ -156,7 +155,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PROFILE_NAME) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isArgsValidInHapMode profile-path must be CAPABILITY.profile file.").c_str());
+                "--profile-path must be the CAPABILITY.profile file.").c_str());
             return false;
         }
     }
@@ -166,7 +165,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     it = parameterMap_.find(Constants::PARAM_DIR_LIST);
     if (it != parameterMap_.end() && !SplitDirList(it->second, formatedDirList_)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode --dir-list is invalid.").c_str());
+            "--dir-list is invalid.").c_str());
         return false;
     }
     it = parameterMap_.find(Constants::PARAM_PKG_CONTEXT_PATH);
@@ -175,7 +174,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PKG_CONTEXT_JSON) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isArgsValidInHapMode --pkg-context-path file must be pkgContextInfo.json file.").c_str());
+                "--pkg-context-path file must be the pkgContextInfo.json file.").c_str());
             return false;
         }
     }
@@ -194,7 +193,7 @@ bool HapPackager::Compatible(const std::string &paramPath, std::list<std::string
     if (it != parameterMap_.end() && !it->second.empty() && !CompatibleProcess(it->second,
         fileList, suffix)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            ("HapPackager::isArgsValidInHapMode " + paramPath + " is invalid.").c_str()).c_str());
+            (paramPath + " is invalid.").c_str()).c_str());
         return false;
     }
     return true;
@@ -208,7 +207,7 @@ bool HapPackager::IsVerifyValidInHapMode()
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::RESOURCES_INDEX) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isArgsValidInHapMode index-path must be resources.index file.").c_str());
+                "--index-path must be the resources.index file.").c_str());
             return false;
         }
     }
@@ -229,7 +228,7 @@ bool HapPackager::IsVerifyValidInHapMode()
         const std::string filePath = it->second;
         if (!filePath.empty() && !fs::exists(filePath)) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::IsVerifyValidInHapMode --ets-path is invalid.").c_str());
+                "--ets-path is invalid.").c_str());
             return false;
         }
     }
@@ -257,12 +256,12 @@ bool HapPackager::IsValidRpcid()
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath)) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isValidRpcid rpcid-path is not a file.").c_str());
+                "--rpcid-path is not a file.").c_str());
             return false;
         }
         if (fs::path(filePath).filename().string() != Constants::RPCID_SC) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isValidRpcid rpcid-path must be rpcid.sc file.").c_str());
+                "--rpcid-path must be the rpcid.sc file.").c_str());
             return false;
         }
     }
@@ -276,12 +275,12 @@ bool HapPackager::IsValidPackInfo()
         const std::string filePath = it->second;
         if (!fs::is_regular_file(filePath)) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isValidPackInfo --pack-info-path is not a file.").c_str());
+                "--pack-info-path is not a file.").c_str());
             return false;
         }
         if (fs::path(filePath).filename().string() != Constants::PACK_INFO) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HapPackager::isValidPackInfo --pack-info-path must be pack.info file.").c_str());
+                "--pack-info-path must be the pack.info file.").c_str());
             return false;
         }
     }
@@ -292,47 +291,47 @@ bool HapPackager::IsHapPathValid()
 {
     if (IsHapPathValid(Constants::PARAM_MAPLE_SO_DIR)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode maple-so-dir is invalid.").c_str());
+            "--maple-so-dir is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_LIB_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode lib-path is invalid.").c_str());
+            "--lib-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_HNP_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode hnp-path is invalid.").c_str());
+            "--hnp-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_RES_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode res-path is invalid.").c_str());
+            "--res-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_RESOURCES_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode resources-path is invalid.").c_str());
+            "--resources-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_ASSETS_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode assets-path is invalid.").c_str());
+            "--assets-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_SHAREDLIBS_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode shared-libs-path is invalid.").c_str());
+            "--shared-libs-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_AN_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode an-path is invalid.").c_str());
+            "--an-path is invalid.").c_str());
         return false;
     }
     if (IsHapPathValid(Constants::PARAM_SKILLS_PATH)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HapPackager::isArgsValidInHapMode skills-path is invalid.").c_str());
+            "--skills-path is invalid.").c_str());
         return false;
     }
     return true;

@@ -99,12 +99,12 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     bool isValid = (it != parameterMap_.end() && !it->second.empty());
     if (!isValid) {
-        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("HspPackager::isArgsValidInHspMode json-path is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("--json-path is empty.").c_str());
         return false;
     }
     jsonPath_ = it->second;
     if (!IsPathValid(it->second, true, Constants::MODULE_JSON)) {
-        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("HspPackager::isArgsValidInHspMode json-path must be module.json file.").c_str());
+        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("--json-path must be the module.json file.").c_str());
         return false;
     }
     if (!Compatible(Constants::PARAM_JAR_PATH, formattedJarPathList_, Constants::JAR_SUFFIX) ||
@@ -117,7 +117,7 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
     it = parameterMap_.find(Constants::PARAM_DIR_LIST);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !SplitDirList(it->second, formatedDirList_)) {
-        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("HspPackager::isArgsValidInHspMode --dir-list is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("--dir-list is invalid.").c_str());
         return false;
     }
     it = parameterMap_.find(Constants::PARAM_PROFILE_PATH);
@@ -126,13 +126,13 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PROFILE_NAME) {
             LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HspPackager::isArgsValidInHspMode profile-path must be CAPABILITY.profile file.").c_str());
+                "--profile-path must be the CAPABILITY.profile file.").c_str());
             return false;
         }
     }
     if (!IsPathParamValid(Constants::PARAM_EXIST_SRC_PATH, true, Constants::HSP_SUFFIX)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "exist-src-path must be a file with the .hsp suffix.").c_str());
+            "The value of --exist-src-path must be a file with the .hsp suffix.").c_str());
         return false;
     }
     if (!CheckLibPathRetainParam()) {
@@ -147,7 +147,7 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
         if (!fs::is_regular_file(filePath) ||
             fs::path(filePath).filename().string() != Constants::PKG_CONTEXT_JSON) {
             LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HspPackager::isArgsValidInHspMode --pkg-context-path file must be pkgContextInfo.json file.").c_str());
+                "--pkg-context-path file must be the pkgContextInfo.json file.").c_str());
             return false;
         }
     }
@@ -166,7 +166,7 @@ bool HspPackager::IsVerifyValidInHspMode()
         const std::string filePath = it->second;
         if (!filePath.empty() && !fs::exists(filePath)) {
             LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-                "HspPackager::IsVerifyValidInHspMode --ets-path is invalid.").c_str());
+                "--ets-path is invalid.").c_str());
             return false;
         }
     }
@@ -193,7 +193,7 @@ bool HspPackager::Compatible(const std::string &paramPath, std::list<std::string
     if (it != parameterMap_.end() && !it->second.empty() && !CompatibleProcess(it->second,
         fileList, suffix)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            ("HspPackager::isArgsValidInHapMode " + paramPath + " is invalid.").c_str()).c_str());
+            (paramPath + " is invalid.").c_str()).c_str());
         return false;
     }
     return true;
@@ -203,32 +203,32 @@ bool HspPackager::IsHspPathValid()
 {
     if (IsHspPathValid(Constants::PARAM_LIB_PATH)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HspPackager::isArgsValidInHspMode lib-path is invalid.").c_str());
+            "--lib-path is invalid.").c_str());
         return false;
     }
     if (IsHspPathValid(Constants::PARAM_RES_PATH)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HspPackager::isArgsValidInHspMode res-path is invalid.").c_str());
+            "--res-path is invalid.").c_str());
         return false;
     }
     if (IsHspPathValid(Constants::PARAM_RESOURCES_PATH)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HspPackager::isArgsValidInHspMode resources-path is invalid.").c_str());
+            "--resources-path is invalid.").c_str());
         return false;
     }
     if (IsHspPathValid(Constants::PARAM_ASSETS_PATH)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HspPackager::isArgsValidInHspMode assets-path is invalid.").c_str());
+            "--assets-path is invalid.").c_str());
         return false;
     }
     if (IsHspPathValid(Constants::PARAM_AP_PATH)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HspPackager::isArgsValidInHspMode ap-path is invalid.").c_str());
+            "--ap-path is invalid.").c_str());
         return false;
     }
     if (IsHspPathValid(Constants::PARAM_AN_PATH)) {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "HspPackager::isArgsValidInHspMode an-path is invalid.").c_str());
+            "--an-path is invalid.").c_str());
         return false;
     }
     return true;

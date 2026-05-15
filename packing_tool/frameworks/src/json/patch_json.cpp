@@ -290,7 +290,7 @@ bool PatchJson::GetNameByModuleObj(const std::unique_ptr<PtJson>& moduleObj, std
     }
     if (!moduleObj->Contains(NAME.c_str())) {
         LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs(
-            std::string("Module node has no ") + NAME + " node!").c_str());
+            "The patch.json file does not contain 'name'.").c_str());
         return false;
     }
     if (moduleObj->GetString(NAME.c_str(), &name) != Result::SUCCESS) {
