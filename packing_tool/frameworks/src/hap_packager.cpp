@@ -422,7 +422,7 @@ bool HapPackager::IsPluginHost()
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!moduleJson_.GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IS_PLUGIN_HOST_FAILED.toStringWithArgs(
             "GetModuleObject failed!").c_str());
         return false;
     }
@@ -442,7 +442,7 @@ bool HapPackager::IsPluginHost()
 bool HapPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
 {
     if (requestPermissionsObj == nullptr) {
-        LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::IS_PERMISSION_SUPPORT_PLUGIN_FAILED.toStringWithArgs(
             "requestPermissionsObj nullptr!").c_str());
         return false;
     }

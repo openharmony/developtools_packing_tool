@@ -406,7 +406,7 @@ bool HspPackager::IsPluginHost()
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!moduleJson_.GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::IS_PLUGIN_HOST_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
         return false;
     }
     if (moduleObj->Contains(REQUEST_PERMISSIONS.c_str())) {
@@ -445,7 +445,7 @@ bool HspPackager::IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilities
 bool HspPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
 {
     if (requestPermissionsObj == nullptr) {
-        LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs("requestPermissionsObj nullptr!").c_str());
+        LOGE("%s", PackingToolErrMsg::IS_PERMISSION_SUPPORT_PLUGIN_FAILED.toStringWithArgs("requestPermissionsObj nullptr!").c_str());
         return false;
     }
     for (int32_t i = 0; i < requestPermissionsObj->GetSize(); i++) {
