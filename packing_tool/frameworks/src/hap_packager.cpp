@@ -124,7 +124,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "--json-path is empty.").c_str());
+            "--json-path is empty").c_str());
         return false;
     }
     jsonPath_ = it->second;

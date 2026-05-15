@@ -1285,8 +1285,11 @@ bool HapVerifyUtils::CheckAndInsertUris(const HapVerifyInfo& info,
             auto existingIter = nullDeviceTypeUris.find(uri);
             if (existingIter != nullDeviceTypeUris.end()) {
                 LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
-                    ("The uri(" + uri + ") is duplicated between modules for deviceType(" + NULL_DEVICE_TYPE + ")").c_str()).c_str());
-                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                    std::vector<std::string>{
+                        "The uri(" + uri + ") is duplicated between module(" + existingIter->second +
+                        ") and module(" + moduleName + ") for deviceType(" + NULL_DEVICE_TYPE + ").",
+                        "Ensure that the uri in proxyData is unique across different modules."
+                    }).c_str());
                 return false;
             }
 
@@ -1328,8 +1331,11 @@ bool HapVerifyUtils::CheckUriInNullDeviceType(
         auto existingIter = nullDeviceTypeUris.find(uri);
         if (existingIter != nullDeviceTypeUris.end()) {
             LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
-                ("The uri(" + uri + ") is duplicated between modules for deviceType(" + NULL_DEVICE_TYPE + ")").c_str()).c_str());
-            LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                std::vector<std::string>{
+                    "The uri(" + uri + ") is duplicated between module(" + existingIter->second +
+                    ") and module(" + moduleName + ") for deviceType(" + NULL_DEVICE_TYPE + ").",
+                    "Ensure that the uri in proxyData is unique across different modules."
+                }).c_str());
             return true;
         }
     }
@@ -1345,9 +1351,12 @@ bool HapVerifyUtils::CheckUriInCurrentDeviceType(
     auto existingIter = uriToModuleMap.find(uri);
     if (existingIter != uriToModuleMap.end()) {
         LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
-            ("The uri(" + uri + ") is duplicated between modules for deviceType(" + deviceType + ")").c_str()).c_str());
-        LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules "
-              "when deviceType has intersection.");
+            std::vector<std::string>{
+                "The uri(" + uri + ") is duplicated between module(" + existingIter->second +
+                ") and module(" + moduleName + ") for deviceType(" + deviceType + ").",
+                "Ensure that the uri in proxyData is unique across different modules "
+                "when deviceType has intersection."
+            }).c_str());
         return true;
     }
     return false;
@@ -1364,8 +1373,11 @@ bool HapVerifyUtils::CheckUriExistsInOtherDeviceTypes(
             auto existingIter = uriToModuleMap.find(uri);
             if (existingIter != uriToModuleMap.end()) {
                 LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
-                    ("The uri(" + uri + ") is duplicated between modules for deviceType(" + mapEntry.first + ")").c_str()).c_str());
-                LOGE("Solutions: Ensure that the uri in proxyData is unique across different modules.");
+                    std::vector<std::string>{
+                        "The uri(" + uri + ") is duplicated between module(" + existingIter->second +
+                        ") and module(" + moduleName + ") for deviceType(" + mapEntry.first + ").",
+                        "Ensure that the uri in proxyData is unique across different modules."
+                    }).c_str());
                 return true;
             }
         }

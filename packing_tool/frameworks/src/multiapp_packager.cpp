@@ -223,7 +223,7 @@ bool MultiAppPackager::GetAndCheckOutPath(std::string &outPath)
 {
     if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "--out-path is missing.").c_str());
+            "--out-path is empty.").c_str());
         return false;
     }
     outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);

@@ -179,7 +179,7 @@ bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &ski
         if (failureDetail.find("skillProfiles has '") == 0) {
             failureDetail += " Checked skillProfiles declared in --json-path: " + jsonPath + ".";
         }
-        LOGE("%s", failureDetail.c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(failureDetail.c_str()).c_str());
         return false;
     }
     if (!AddConfiguredSkillsToZip(skillsPath, profileNames, addFile, failedProfile)) {

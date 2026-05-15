@@ -342,7 +342,7 @@ bool AppPackager::CheckInputModulePath(const std::string &hapPath, const std::st
 bool AppPackager::GetAndCheckOutPath(std::string &outPath)
 {
     if (parameterMap_.find(Constants::PARAM_OUT_PATH) == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--out-path is missing.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--out-path is empty.").c_str());
         return false;
     }
     outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
@@ -398,7 +398,7 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
 bool AppPackager::GetAndCheckPackInfoPath(std::string &packInfoPath)
 {
     if (parameterMap_.find(Constants::PARAM_PACK_INFO_PATH) == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is missing.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is empty.").c_str());
         return false;
     }
     packInfoPath = parameterMap_.at(Constants::PARAM_PACK_INFO_PATH);

@@ -81,13 +81,13 @@ bool ValidateAppPackSkillProfiles(const fs::path &path, ModuleJson &moduleJson)
             return false;
         }
         if (!SkillPackHelper::ValidateSkillProfiles(skillsPath, profileNames, failedProfile, failureDetail)) {
-            LOGE("%s", failureDetail.c_str());
+            LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(failureDetail.c_str()).c_str());
             return false;
         }
         return true;
     }
     if (!ValidateSkillProfilesInArchive(path, profileNames, failureDetail)) {
-        LOGE("%s", failureDetail.c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(failureDetail.c_str()).c_str());
         return false;
     }
     return true;
@@ -150,7 +150,7 @@ int32_t FastAppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Compress fast app failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Compressor::compressAppMode compress failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -726,8 +726,8 @@ bool FastAppPackager::CompressFastAppMode()
             return false;
         }
     } catch (const std::exception& ex) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-            ("Fast App packager compressFastAppMode compress failed: " + std::string(ex.what())).c_str()).c_str());
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
+            ("Compress fast app exist IOException: " + std::string(ex.what())).c_str()).c_str());
         if (fs::exists(tmpDir)) {
             fs::remove_all(tmpDir);
         }
@@ -748,7 +748,7 @@ bool FastAppPackager::CheckHapAndPackFastApp(std::list<std::string> &fileList, c
 {
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp_)) {
             LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-                "Fast App packager HAP validation failed, check version, apiVersion, moduleName, packageName.").c_str());
+                "Verify failed when compress fast app.").c_str());
             return false;
     }
     if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {

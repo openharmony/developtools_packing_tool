@@ -54,27 +54,27 @@ int32_t Packager::MakePackage()
     ret = InitAllowedParam();
     if (ret != ERR_OK) {
         LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
-            "InitAllowedParam err").c_str());
+            "Command parser failed.").c_str());
         return ret;
     }
 
     ret = PreProcess();
     if (ret != ERR_OK) {
         LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
-            "PreProcess err").c_str());
+            "Command verify failed.").c_str());
         return ret;
     }
     ret = Process();
     if (ret != ERR_OK) {
         LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
-            "Process err").c_str());
+            "Compress failed.").c_str());
         return ret;
     }
 
     ret = PostProcess();
     if (ret != ERR_OK) {
         LOGE("%s", PackingToolErrMsg::EXECUTE_PACKING_TOOL_FAILED.toStringWithArgs(
-            "PostProcess err").c_str());
+            "Compress failed.").c_str());
         return ret;
     }
 
@@ -161,19 +161,19 @@ bool Packager::IsCompressLevelValid()
                                      [](unsigned char c) { return std::isdigit(c); });
         if (!allDigits) {
             LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
-                ("Param parse compress-level [" + levelStr + "] invalid: contains non-digit characters.").c_str()).c_str());
+                "--compress-level value not number between 1-9.").c_str());
             return false;
         }
         try {
             int level = std::stoi(levelStr);
             if (level < Constants::MIN_COMPRESS_LEVEL || level > Constants::MAX_COMPRESS_LEVEL) {
                 LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
-                    ("Param parse compress-level [" + levelStr + "] invalid: must be between 1 and 9.").c_str()).c_str());
+                    "--compress-level value not number between 1-9.").c_str());
                 return false;
             }
         } catch (const std::exception& e) {
             LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
-                ("Param parse compress-level [" + levelStr + "] invalid: conversion failed.").c_str()).c_str());
+                "--compress-level value not number between 1-9.").c_str());
             return false;
         }
     }

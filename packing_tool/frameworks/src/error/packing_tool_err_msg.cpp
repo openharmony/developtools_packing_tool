@@ -368,7 +368,7 @@ DEFINE_ERROR(CLOSE_ZIP_OUTPUT_STREAM_EXCEPTION, "14", "002",
     ADD_SOLUTION("Please check the related exception message and modify the operation."));
 
 DEFINE_ERROR(CLOSE_STREAM_EXCEPTION, "14", "003",
-    "IO exception when closing stream.", "%s",
+    "IO exception when closing stream.", "",
     ADD_SOLUTION("Please check the related exception message for more details and modify accordingly."));
 
 DEFINE_ERROR(GET_FILE_CONTENT_FAILED, "14", "004",
