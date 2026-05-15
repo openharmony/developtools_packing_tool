@@ -729,7 +729,8 @@ bool ModuleJson::GetStageBundleType(std::string& bundleType)
     std::unique_ptr<PtJson> appObj;
     std::unique_ptr<PtJson> moduleObj;
     if (!GetAppObject(appObj) || !GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAppObject or module node failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get app or module object from module.json.").c_str());
         return false;
     }
     if (!moduleObj->Contains(TYPE.c_str())) {
@@ -751,7 +752,7 @@ bool ModuleJson::GetStageBundleType(std::string& bundleType)
     if (!GetStageModuleNameByModuleObj(moduleObj, moduleName) ||
         !GetStageModuleTypeByModuleObj(moduleObj, moduleType)) {
         LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
-            "GetStageModuleNameByModuleObj or GetStageModuleTypeByModuleObj failed!").c_str());
+            "Failed to get module name or moduleType from module.json.").c_str());
         return false;
     }
     bool installationFree = false;
@@ -776,7 +777,8 @@ bool ModuleJson::GetStageAsanEnabled(bool& asanEnabled)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get app object from module.json.").c_str());
         return false;
     }
     return GetStageAsanEnabledByAppObj(appObj, asanEnabled);
@@ -785,7 +787,8 @@ bool ModuleJson::GetStageAsanEnabled(bool& asanEnabled)
 bool ModuleJson::GetStageAsanEnabledByAppObj(std::unique_ptr<PtJson>& appObj, bool& asanEnabled)
 {
     if (!appObj) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "The app object in module.json is null.").c_str());
         return false;
     }
     if (appObj->Contains(ASAN_ENABLED.c_str())) {
@@ -804,7 +807,8 @@ bool ModuleJson::GetStageTsanEnabled(bool& tsanEnabled)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get app object from module.json.").c_str());
         return false;
     }
     return GetStageTsanEnabledByAppObj(appObj, tsanEnabled);
@@ -813,7 +817,8 @@ bool ModuleJson::GetStageTsanEnabled(bool& tsanEnabled)
 bool ModuleJson::GetStageTsanEnabledByAppObj(std::unique_ptr<PtJson>& appObj, bool& tsanEnabled)
 {
     if (!appObj) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "The app object in module.json is null.").c_str());
         return false;
     }
     if (appObj->Contains(TSAN_ENABLED.c_str())) {
@@ -832,7 +837,8 @@ bool ModuleJson::GetStageCompressNativeLibs(bool& compressNativeLibs)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get module object from module.json.").c_str());
         return false;
     }
     return GetStageCompressNativeLibsByAppObj(moduleObj, compressNativeLibs);
@@ -841,7 +847,8 @@ bool ModuleJson::GetStageCompressNativeLibs(bool& compressNativeLibs)
 bool ModuleJson::GetStageCompressNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& compressNativeLibs)
 {
     if (!moduleObj) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "The module object in module.json is null.").c_str());
         return false;
     }
     if (moduleObj->Contains(COMPRESS_NATIVE_LIBS.c_str())) {
@@ -861,7 +868,8 @@ bool ModuleJson::GetStageApiReleaseType(std::string& apiReleaseType)
 {
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get app object from module.json.").c_str());
         return false;
     }
     return GetStageApiReleaseTypeByAppObj(appObj, apiReleaseType);
@@ -870,7 +878,8 @@ bool ModuleJson::GetStageApiReleaseType(std::string& apiReleaseType)
 bool ModuleJson::GetStageApiReleaseTypeByAppObj(std::unique_ptr<PtJson>& appObj, std::string& apiReleaseType)
 {
     if (!appObj) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "The app object in module.json is null.").c_str());
         return false;
     }
     if (appObj->Contains(API_RELEASE_TYPE.c_str())) {
@@ -896,26 +905,31 @@ bool ModuleJson::GetStageHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
     std::unique_ptr<PtJson> appObj;
     std::unique_ptr<PtJson> moduleObj;
     if (!GetAppObject(appObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get app object from module.json.").c_str());
         return false;
     }
     if (!GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get module object from module.json.").c_str());
         return false;
     }
     std::string bundleName;
     std::string bundleType;
     std::list<DependencyItem> dependencyItems;
     if (!GetBundleNameByAppObj(appObj, bundleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetBundleNameByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get bundleName from app object in module.json.").c_str());
         return false;
     }
     if (!GetStageBundleType(bundleType)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageBundleType failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get bundleType from module.json.").c_str());
         return false;
     }
     if (!GetDependencyItemsByModuleObj(moduleObj, dependencyItems, bundleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetDependencyItemsByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "Failed to get dependencies from module object in module.json.").c_str());
         return false;
     }
     hapVerifyInfo.SetBundleName(bundleName);

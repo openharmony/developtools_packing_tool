@@ -758,11 +758,13 @@ bool ModuleJson::GetFaHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
     std::unique_ptr<PtJson> appObj;
     std::unique_ptr<PtJson> moduleObj;
     if (!GetAppObject(appObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetAppObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "Failed to get app object from config.json.").c_str());
         return false;
     }
     if (!GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "Failed to get module object from config.json.").c_str());
         return false;
     }
     std::string bundleName;
@@ -770,15 +772,18 @@ bool ModuleJson::GetFaHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
     std::list<DependencyItem> dependencyItems;
     bool debug = false;
     if (!GetBundleNameByAppObj(appObj, bundleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetBundleNameByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "Failed to get bundleName from app object in config.json.").c_str());
         return false;
     }
     if (!GetFaBundleType(bundleType)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaBundleType failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "Failed to get bundleType from config.json.").c_str());
         return false;
     }
     if (!GetDependencyItemsByModuleObj(moduleObj, dependencyItems, bundleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetDependencyItemsByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "Failed to get dependencies from module object in config.json.").c_str());
         return false;
     }
     GetFaDebug(debug);
@@ -800,7 +805,8 @@ bool ModuleJson::GetFaHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
 bool ModuleJson::SetFaHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, HapVerifyInfo& hapVerifyInfo)
 {
     if (!appObj) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "The app object in config.json is null.").c_str());
         return false;
     }
     std::string vendor;
@@ -839,7 +845,8 @@ bool ModuleJson::SetFaHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, Hap
 bool ModuleJson::SetFaHapVerifyInfoByModuleObj(std::unique_ptr<PtJson>& moduleObj, HapVerifyInfo& hapVerifyInfo)
 {
     if (!moduleObj) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "The module object in config.json is null.").c_str());
         return false;
     }
     std::string moduleName;
