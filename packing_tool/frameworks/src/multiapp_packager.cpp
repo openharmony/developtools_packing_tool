@@ -469,7 +469,7 @@ std::string MultiAppPackager::SelectHapInApp(const std::string &appPath, std::li
     }
     std::string packInfoJsonStr;
     if (!PackInfoUtils::MergeTwoPackInfosByPackagePair(finalAppPackInfo, packInfoStr, packagePair, packInfoJsonStr)) {
-        LOGE("%s", PackingToolErrMsg::MERGE_TWO_PACKINFO_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED.toStringWithArgs(
             "PackInfoUtils::MergeTwoPackInfosByPackagePair failed.").c_str());
     }
     return packInfoJsonStr;
