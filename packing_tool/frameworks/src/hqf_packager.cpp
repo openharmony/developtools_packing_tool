@@ -41,10 +41,11 @@ int32_t HqfPackager::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Output file is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--out-path is empty.").c_str());
         return ERR_INVALID_VALUE;
     } else if (!Utils::EndsWith(it->second, Constants::HQF_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Input out file must end with .hqf.").c_str());
+        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+            "--out-path file must end with .hqf.").c_str());
         return ERR_INVALID_VALUE;
     }
 
@@ -56,7 +57,7 @@ int32_t HqfPackager::PreProcess()
     if (it->second != "true") {
         if (fs::exists(outPath) && fs::is_regular_file(outPath)) {
             LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
-                (outPath.string() + " already exist and can not overwrite.").c_str()).c_str());
+                "--out-path file already exist, but --force is not 'true'.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -67,18 +68,19 @@ int32_t HqfPackager::PreProcess()
     
     it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     if (it == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Must input patch.json file when pack hqf file.").c_str());
+        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+            "--json-path is empty, must input patch.json file when pack hqf file.").c_str());
         return ERR_INVALID_VALUE;
     } else {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_JSON_PATH), true, Constants::JSON_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Input patch.json is invalid when pack hqf file.").c_str());
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--json-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_LIB_PATH), false)) {
-            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Input lib path is invalid when pack hqf file.").c_str());
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--lib-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -86,7 +88,8 @@ int32_t HqfPackager::PreProcess()
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_RESOURCES_PATH), false)) {
-            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Input resources path is invalid when pack hqf file.").c_str());
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+                "--resources-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -94,7 +97,7 @@ int32_t HqfPackager::PreProcess()
     it = parameterMap_.find(Constants::PARAM_ETS_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_ETS_PATH), false)) {
-            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("Must input valid ets path when pack hqf file.").c_str());
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--ets-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }

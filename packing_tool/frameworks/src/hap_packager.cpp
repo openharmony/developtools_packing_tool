@@ -95,7 +95,7 @@ int32_t HapPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs("Hap Process failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs("Compress hap failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -112,7 +112,7 @@ int32_t HapPackager::PostProcess()
             if (fs::exists(outPath)) {
                 fs::remove_all(outPath);
             }
-            LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs("sencond CompressHap failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs("Compress hap failed.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -180,7 +180,7 @@ bool HapPackager::IsVerifyValidInHapCommonMode()
     }
     if (!CheckPkgSdkInfoParam()) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "CheckPkgSdkInfoParam failed!").c_str());
+            "--pkg-sdk-info-path value is invalid.").c_str());
         return false;
     }
     return true;
@@ -359,7 +359,7 @@ bool HapPackager::CompressHap()
     }
     if (!moduleJson_.ParseFromFile(jsonPath_)) {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "ParseFromFile failed").c_str());
+            "Failed to parse --json-path.").c_str());
         return false;
     }
     if (JsonUtils::IsModuleJson(jsonPath_)) {
@@ -374,7 +374,7 @@ bool HapPackager::CompressHap()
         }
         if (moduleType == Constants::TYPE_SKILL) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "moduleType 'skill' is not allowed in HAP mode, use HSP mode.").c_str());
+                "moduleType 'skill' is not allowed in HAP mode, use HSP mode instead.").c_str());
             return false;
         }
         if (Constants::TYPE_SHARED == moduleType) {
@@ -823,7 +823,7 @@ bool HapPackager::CheckLibPathRetainParam()
     auto it = parameterMap_.find(Constants::PARAM_LIB_PATH_RETAIN);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-            "Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.").c_str());
+            "--lib-path-retain parameter value must be either 'true' or 'false'.").c_str());
         return false;
     }
     return true;
@@ -835,7 +835,7 @@ bool HapPackager::CheckPkgSdkInfoParam()
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsFileMatch(it->second, Constants::PKG_SDK_INFO_JSON)) {
             LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
-                "pkg-sdk-info-path is invalid.").c_str());
+                "--pkg-sdk-info-path value is invalid.").c_str());
             return false;
         }
     }
@@ -885,7 +885,7 @@ bool HapPackager::CheckKernelPermissionCompression()
     // Validate: if has kernel permission, at least one of compress/extract must be true
     if (!compressNativeLibs && !extractNativeLibs) {
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-            "Error: When executableBinaryPaths is configured in module.json, "
+            "When executableBinaryPaths is configured in module.json, "
             "at least one of compressNativeLibs or extractNativeLibs must be true.").c_str());
         return false;
     }

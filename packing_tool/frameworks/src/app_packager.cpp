@@ -150,7 +150,7 @@ int32_t AppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("App Process failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Compress app failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -497,30 +497,34 @@ bool AppPackager::IsVerifyValidInAppMode()
     std::string hapPath;
     std::string hspPath;
     if (!GetAndCheckHapPathAndHspPath(hapPath, hspPath)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("GetAndCheckHapPathAndHspPath failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "Failed to validate --hap-path or --hsp-path.").c_str());
         return false;
     }
 
     std::string packInfoPath;
     if (!GetAndCheckPackInfoPath(packInfoPath)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("GetAndCheckPackInfoPath failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "Failed to validate --pack-info-path.").c_str());
         return false;
     }
 
     if (!CheckSignaturePath() || !CheckCertificatePath() || !CheckEntrycardPath() || !CheckPackResPath()) {
         LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "CheckSignaturePath or CheckCertificatePath or CheckEntrycardPath or CheckPackResPath failed!").c_str());
+            "Failed to validate --signature-path, --certificate-path, --entrycard-path, or --pack-res-path.").c_str());
         return false;
     }
 
     if (!CheckPacJsonPath()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("CheckPacJsonPath failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "Failed to validate --pac-json-path.").c_str());
         return false;
     }
 
     std::string outPath;
     if (!GetAndCheckOutPath(outPath)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("GetAndCheckOutPath failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "Failed to validate --out-path.").c_str());
         return false;
     }
     std::string force;
@@ -528,7 +532,8 @@ bool AppPackager::IsVerifyValidInAppMode()
         force = parameterMap_.at(Constants::PARAM_FORCE);
     }
     if (!GetAndCheckReplacePackInfo()) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("GetAndCheckReplacePackInfo failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "Failed to validate --replace-pack-info.").c_str());
         return false;
     }
     return IsOutPathValid(outPath, force, Constants::APP_SUFFIX);

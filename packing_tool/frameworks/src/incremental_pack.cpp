@@ -63,7 +63,7 @@ bool IncrementalPack::IncrementalPackProcess(const std::string &paramPath, ZipWr
     unzFile srcZip = unzOpen(IncrementalPack::destExistSrcFilePath_.c_str());
     if (!srcZip) {
         LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
-            ("Failed to open exist-src-path hap [" + IncrementalPack::destExistSrcFilePath_ + "]").c_str()).c_str());
+            ("Failed to open --exist-src-path: " + IncrementalPack::destExistSrcFilePath_).c_str()).c_str());
         return false;
     }
 
@@ -76,7 +76,7 @@ bool IncrementalPack::IncrementalPackProcess(const std::string &paramPath, ZipWr
             int ret = zipWrapper.AddRawEntryToZip(destZip, srcZip, fileNameInZip);
             if (ret != ZIP_ERR_SUCCESS) {
                 LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
-                    ("AddRawEntryToZip failed for [" + std::string(fileNameInZip) + "]").c_str()).c_str());
+                    ("Failed to add raw entry to zip: " + std::string(fileNameInZip)).c_str()).c_str());
                 unzClose(srcZip);
                 return false;
             }
@@ -100,7 +100,7 @@ bool IncrementalPack::CopyExistSrcFile(const std::map<std::string, std::string> 
     std::string realExistSrcPath;
     if (!Utils::GetRealPath(existSrcIt->second, realExistSrcPath)) {
         LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-            ("Get real existSrcPath failed! existSrcPath=" + existSrcIt->second).c_str()).c_str());
+            ("Failed to get real path for --exist-src-path: " + existSrcIt->second).c_str()).c_str());
         return false;
     }
     destExistSrcFilePath_ = realExistSrcPath;
@@ -112,7 +112,7 @@ bool IncrementalPack::CopyExistSrcFile(const std::map<std::string, std::string> 
     std::string realOutPath;
     if (!Utils::GetRealPath(outPathIt->second, realOutPath)) {
         LOGE("%s", PackingToolErrMsg::INCREMENTAL_PACK_HAP_EXCEPTION.toStringWithArgs(
-            ("Get real outPath failed! outPath=" + outPathIt->second).c_str()).c_str());
+            ("Failed to get real path for --out-path: " + outPathIt->second).c_str()).c_str());
         return false;
     }
     if (realExistSrcPath == realOutPath) {

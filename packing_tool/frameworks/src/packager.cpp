@@ -116,7 +116,7 @@ bool Packager::CheckStatDuplicateFlag()
     auto it = parameterMap_.find(Constants::PARAM_STAT_DUPLICATE);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
-            "Packager::commandVerify statDuplicate is invalid.").c_str());
+            "--stat-duplicate is invalid, must be 'true' or 'false'.").c_str());
         return false;
     }
     return true;
@@ -375,7 +375,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
 {
     if (!fs::exists(jsonPath)) {
         LOGE("%s", PackingToolErrMsg::HAS_GENERATE_BUILD_HASH.toStringWithArgs(
-            "Packager::setGenerateBuildHash failed for json file not exist").c_str());
+            "The --json-path file does not exist.").c_str());
         return false;
     }
     ModuleJson moduleJson;
@@ -391,7 +391,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
 
     if (!fs::exists(jsonPath)) {
         LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
-            "Packager::setGenerateBuildHash failed for json file not exist").c_str());
+            "The --json-path file does not exist.").c_str());
         return false;
     }
 
@@ -399,27 +399,27 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
     moduleJsonTemp.ParseFromFile(jsonPath);
     if (!moduleJsonTemp.GetGenerateBuildHash(generateBuildHash)) {
         LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
-            "ModuleJson::GetGenerateBuildHash failed").c_str());
+            "Failed to get generateBuildHash from --json-path.").c_str());
         return false;
     }
 
     if (!moduleJsonTemp.RemoveGenerateBuildHash()) {
         LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
-            "ModuleJson::RemoveGenerateBuildHash failed").c_str());
+            "Failed to remove generateBuildHash from --json-path.").c_str());
         return false;
     }
 
     std::string prettyJsonString = moduleJsonTemp.ToString();
     if (prettyJsonString.empty()) {
         LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
-            "ModuleJson::ToString failed").c_str());
+            "Failed to convert --json-path content to string.").c_str());
         return false;
     }
 
     std::string realJsonPath;
     if (!Utils::GetRealPath(jsonPath, realJsonPath)) {
         LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
-            ("get real json Path failed! jsonPath=" + jsonPath).c_str()).c_str());
+            ("Failed to get real path for --json-path: " + jsonPath).c_str()).c_str());
         return false;
     }
     std::ofstream outFile(realJsonPath);
@@ -428,7 +428,7 @@ bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHa
         outFile.close();
     } else {
         LOGE("%s", PackingToolErrMsg::SET_GENERATE_BUILD_HASH.toStringWithArgs(
-            "Failed to open file for writing").c_str());
+            "Failed to open --json-path for writing.").c_str());
         return false;
     }
     return true;
@@ -438,7 +438,7 @@ bool Packager::CopyFileToTempDir(std::string &jsonPath)
 {
     if (!fs::exists(jsonPath)) {
         LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-            "Packager::copyFileToTempDir failed for json file not found.").c_str());
+            "The --json-path file does not exist.").c_str());
         return false;
     }
     fs::path oldFileParent = fs::path(jsonPath).parent_path();
@@ -484,14 +484,14 @@ bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash
     std::string prettyJsonString = moduleJson.ToString();
     if (prettyJsonString.empty()) {
         LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
-            "ModuleJson::ToString failed").c_str());
+            "Failed to convert --json-path content to string.").c_str());
         return false;
     }
 
     std::string realJsonPath;
     if (!Utils::GetRealPath(jsonPath, realJsonPath)) {
         LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
-            ("get real json path failed! jsonFile=" + jsonPath).c_str()).c_str());
+            ("Failed to get real path for --json-path: " + jsonPath).c_str()).c_str());
         return false;
     }
     std::ofstream outFile(realJsonPath);
@@ -500,7 +500,7 @@ bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash
         outFile.close();
     } else {
         LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
-            "Failed to open file for writing").c_str());
+            "Failed to open --json-path for writing.").c_str());
         return false;
     }
 

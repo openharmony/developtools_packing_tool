@@ -71,7 +71,7 @@ int32_t HspPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("Hsp Process failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("Compress hsp failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -87,7 +87,7 @@ int32_t HspPackager::PostProcess()
             if (fs::exists(outPath)) {
                 fs::remove_all(outPath);
             }
-            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("sencond CompressHsp failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("Compress hsp failed.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -153,7 +153,8 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
     }
 
     if (!CheckPkgSdkInfoParam()) {
-        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("CheckPkgSdkInfoParam failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--pkg-sdk-info-path value is invalid.").c_str());
         return false;
     }
     return true;
@@ -250,7 +251,8 @@ bool HspPackager::CompressHsp()
         return false;
     }
     if (!moduleJson_.ParseFromFile(jsonPath_)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ParseFromFile failed").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Failed to parse --json-path.").c_str());
         return false;
     }
     if (JsonUtils::IsModuleJson(jsonPath_)) {
@@ -271,8 +273,8 @@ bool HspPackager::CompressHsp()
             LOGW("GetStageModuleType failed.");
         }
         if (moduleType != Constants::TYPE_SHARED && moduleType != Constants::TYPE_SKILL) {
-            LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-                "module type must be shared or skill.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+                "Module type must be shared or skill.").c_str());
             return false;
         }
         if (!moduleJson_.CheckDeduplicateHar()) {
@@ -694,7 +696,7 @@ bool HspPackager::CheckLibPathRetainParam()
     auto it = parameterMap_.find(Constants::PARAM_LIB_PATH_RETAIN);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-            "Packager::commandVerify lib-path-retain parameter value must be either 'true' or 'false'.").c_str());
+            "--lib-path-retain parameter value must be either 'true' or 'false'.").c_str());
         return false;
     }
     return true;
@@ -706,7 +708,7 @@ bool HspPackager::CheckPkgSdkInfoParam()
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsFileMatch(it->second, Constants::PKG_SDK_INFO_JSON)) {
             LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
-                "pkg-sdk-info-path is invalid.").c_str());
+                "--pkg-sdk-info-path value is invalid.").c_str());
             return false;
         }
     }
@@ -756,7 +758,7 @@ bool HspPackager::CheckKernelPermissionCompression()
     // Validate: if has kernel permission, at least one of compress/extract must be true
     if (!compressNativeLibs && !extractNativeLibs) {
         LOGE("%s", PackingToolErrMsg::CHECK_KERNEL_PERMISSION_COMPRESSION_FAILED.toStringWithArgs(
-            "Error: When executableBinaryPaths is configured in module.json, "
+            "When executableBinaryPaths is configured in module.json, "
             "at least one of compressNativeLibs or extractNativeLibs must be true.").c_str());
         return false;
     }

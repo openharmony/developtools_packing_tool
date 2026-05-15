@@ -208,7 +208,7 @@ int32_t MultiAppPackager::Process()
             fs::remove_all(outPath);
         }
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-            "MultiApp Process failed.").c_str());
+            "Compress app failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -296,7 +296,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     std::string appListStr;
     if (!GetAndCheckHapAndHspAndAppListStr(hapListStr, hspListStr, appListStr)) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "GetAndCheckHapAndHspAndAppListStr failed!").c_str());
+            "Failed to validate --app-list, --hap-list, or --hsp-list.").c_str());
         return false;
     }
 
@@ -311,7 +311,7 @@ bool MultiAppPackager::IsVerifyValidInMultiAppMode()
     std::string outPath;
     if (!GetAndCheckOutPath(outPath)) {
         LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-            "GetAndCheckOutPath failed!").c_str());
+            "Failed to validate --out-path.").c_str());
         return false;
     }
 

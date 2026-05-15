@@ -42,7 +42,7 @@ int32_t APPQFPackager::InitAllowedParam()
 bool APPQFPackager::CheckHqfList(const std::list<std::string>& hqfList)
 {
     if (hqfList_.size() == 0) {
-        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("Input hqf list is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("--hqf-list is empty.").c_str());
         return false;
     }
 
@@ -86,13 +86,14 @@ int32_t APPQFPackager::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("Must input output file path.").c_str());
+        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("--out-path is empty.").c_str());
         return ERR_INVALID_VALUE;
     } else {
         std::string outputPath = it->second;
         std::transform(outputPath.begin(), outputPath.end(), outputPath.begin(), ::tolower);
         if (!Utils::EndsWith(outputPath, Constants::APPQF_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("Input output file must end with .appqf.").c_str());
+            LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs(
+                "--out-path must end with .appqf.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -104,7 +105,8 @@ int32_t APPQFPackager::PreProcess()
     fs::path outPath(parameterMap_.at(Constants::PARAM_OUT_PATH));
     if (it == parameterMap_.end() || it->second == "false") {
         if (fs::exists(outPath) && fs::is_regular_file(outPath)) {
-            LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("File already exist and can not overrite.").c_str());
+            LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs(
+                "--out-path file already exist, but --force is not 'true'.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -113,11 +115,11 @@ int32_t APPQFPackager::PreProcess()
     }
     it = parameterMap_.find(Constants::PARAM_HQF_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("Input hqf list is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("--hqf-list is empty.").c_str());
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hqfList_, Constants::HQF_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("Input hqf list is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::APPQF_MODE_ARGS_INVALID.toStringWithArgs("--hqf-list is invalid.").c_str());
         return ERR_INVALID_VALUE;
     }
 

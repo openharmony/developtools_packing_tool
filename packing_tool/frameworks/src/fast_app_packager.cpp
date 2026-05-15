@@ -150,7 +150,7 @@ int32_t FastAppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("FastApp Process failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Compress fast app failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -388,13 +388,15 @@ bool FastAppPackager::CheckBundleTypeConsistency(const std::list<std::string> &h
     }
     for (const auto& hapPath : hapPathList) {
         if (GetBundleTypeFromPath(hapPath) != bundleType) {
-            LOGE("%s", PackingToolErrMsg::CHECK_BUNDLE_TYPE_CONSISTENCY.toStringWithArgs("bundleType is not same.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_BUNDLE_TYPE_CONSISTENCY.toStringWithArgs(
+                "Hap bundleType is not same.").c_str());
             return false;
         }
     }
     for (const auto& hspPath : hspPathList) {
         if (GetBundleTypeFromPath(hspPath) != bundleType) {
-            LOGE("%s", PackingToolErrMsg::CHECK_BUNDLE_TYPE_CONSISTENCY.toStringWithArgs("bundleType is not same.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_BUNDLE_TYPE_CONSISTENCY.toStringWithArgs(
+                "Hsp bundleType is not same.").c_str());
             return false;
         }
     }
@@ -563,13 +565,15 @@ std::string FastAppPackager::GetBundleTypeFromModuleJson(const std::string &modu
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromString(moduleJsonContent)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetBundleTypeFromModuleJson ParseFromString failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Failed to parse module.json for bundleType validation.").c_str());
         return "";
     }
 
     std::string bundleType;
     if (!moduleJson.GetStageBundleType(bundleType)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetBundleTypeFromModuleJson GetStageBundleType failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Failed to get bundleType from module.json.").c_str());
         return "";
     }
     return bundleType != "" ? bundleType : Constants::MODE_APP;
@@ -581,18 +585,18 @@ bool FastAppPackager::IsPackInfoValid(const fs::path &packInfo, const std::list<
     std::list<std::string> allPackages;
     if (!GetPackageNameFromPath(packInfo, allPackages)) {
         LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-            ("GetPackageNameFromPath for packInfo failed: " + packInfo.string()).c_str()).c_str());
+            ("Failed to get package names from app pack.info, the path is " + packInfo.string() + ".").c_str()).c_str());
         return false;
     }
     std::set<std::string> allPackageSet(allPackages.begin(), allPackages.end());
     if (allPackages.size() > allPackageSet.size()) {
         LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-            ("Package name is redundant in app pack.info: " + packInfo.string()).c_str()).c_str());
+            ("Package name is redundant in app pack.info, the path is " + packInfo.string() + ".").c_str()).c_str());
         return false;
     }
     if (allPackages.empty()) {
         LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-            ("App pack.info format error: " + packInfo.string()).c_str()).c_str());
+            ("App pack.info format error, the path is " + packInfo.string() + ".").c_str()).c_str());
         return false;
     }
     std::set<std::string> packages;
@@ -602,7 +606,8 @@ bool FastAppPackager::IsPackInfoValid(const fs::path &packInfo, const std::list<
     }
 
     if (allPackageSet != packages) {
-        LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs("Package name not same between module and app pack.info.").c_str());
+        LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
+            "Package name is not same between module and app pack.info.").c_str());
         return false;
     }
     return true;
@@ -614,18 +619,19 @@ bool FastAppPackager::IsPackInfoPathListValid(const std::list<std::string> &path
     for (const auto& path : pathList) {
         std::list<std::string> list;
         if (!GetPackageNameFromPath(fs::path(path), list)) {
-            LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs("GetPackageNameFromPath for packInfo failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
+                ("Failed to get package names from module pack.info, the path is " + path + ".").c_str()).c_str());
             return false;
         }
         if (list.size() != 1) {
             LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-                ("Module pack.info format error: " + path).c_str()).c_str());
+                ("Module pack.info format error, the path is " + path + ".").c_str()).c_str());
             return false;
         }
         std::string packageName = list.front();
         if (allPackageSet.find(packageName) == allPackageSet.end()) {
             LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-                ("Module pack.info name not exist in app pack.info name list: " + path).c_str()).c_str());
+                ("Module pack.info name does not exist in app pack.info name list, the path is " + path + ".").c_str()).c_str());
             return false;
         }
         if (packages.find(packageName) != packages.end()) {
@@ -660,7 +666,8 @@ bool FastAppPackager::GetPackageNameFromPath(const fs::path &path, std::list<std
     
     PackInfo packInfo;
     if (!packInfo.ParseFromString(content)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetPackageNameFromPath ParseFromString failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            ("Failed to parse pack.info, the path is " + path.string() + ".").c_str()).c_str());
         return false;
     }
     return packInfo.GetPackageNames(packageNameList);
@@ -1108,7 +1115,7 @@ void FastAppPackager::GenBuildHash(const fs::path &inputPath, std::string &jsonS
     }
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(inputPath / fs::path(Constants::MODULE_JSON))) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("pack err, module.json format err").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Failed to parse module.json.").c_str());
         return;
     }
     moduleJson.SetBuildHash(hash);

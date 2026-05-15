@@ -56,7 +56,7 @@ int32_t ResPackager::Process()
             fs::remove_all(outPath_);
         }
         LOGE("%s", PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED.toStringWithArgs(
-            "ResPackager::Process failed.").c_str());
+            "Compress pack.res failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
