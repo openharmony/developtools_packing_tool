@@ -248,28 +248,28 @@ std::string DistroFilter::Dump() const
     }
     dumpStr = "distroFilter:";
     if (!apiVersion.policy.empty()) {
-        std::string apiVersionStr = "apiVersion: policy is " + apiVersion.policy + ", value is "
-            + Utils::ListToString(apiVersion.value);
+        std::string apiVersionStr = "apiVersion: policy is " + apiVersion.policy +
+            ", value is " + Utils::ListToString(apiVersion.value);
         dumpStr += " " + apiVersionStr;
     }
     if (!screenShape.policy.empty()) {
-        std::string screenShapeStr = "screenShape: policy is " + screenShape.policy + ", value is "
-        + Utils::ListToString(screenShape.value);
+        std::string screenShapeStr = "screenShape: policy is " + screenShape.policy +
+            ", value is " + Utils::ListToString(screenShape.value);
         dumpStr += " " + screenShapeStr;
     }
     if (!screenDensity.policy.empty()) {
-        std::string screenDensityStr = "screenDensity: policy is " + screenDensity.policy + ", value is "
-            + Utils::ListToString(screenDensity.value);
+        std::string screenDensityStr = "screenDensity: policy is " + screenDensity.policy +
+            ", value is " + Utils::ListToString(screenDensity.value);
         dumpStr += " " + screenDensityStr;
     }
     if (!screenWindow.policy.empty()) {
-        std::string screenWindowStr = "screenWindow: policy is " + screenWindow.policy + ", value is "
-            + Utils::ListToString(screenWindow.value);
+        std::string screenWindowStr = "screenWindow: policy is " + screenWindow.policy +
+            ", value is " + Utils::ListToString(screenWindow.value);
         dumpStr += " " + screenWindowStr;
     }
     if (!countryCode.policy.empty()) {
-        std::string countryCodeStr = "countryCode: policy is " + countryCode.policy + ", value is "
-            + Utils::ListToString(countryCode.value);
+        std::string countryCodeStr = "countryCode: policy is " + countryCode.policy +
+            ", value is " + Utils::ListToString(countryCode.value);
         dumpStr += " " + countryCodeStr;
     }
     return dumpStr;

@@ -1075,8 +1075,6 @@ bool HapVerifyUtils::CheckAtomicServicePreloadsIsValid(const std::list<HapVerify
             if ((moduleNameWithType.count(preloadItem.moduleName) > 0) &&
                 (moduleNameWithType[preloadItem.moduleName] == ENTRY ||
                 moduleNameWithType[preloadItem.moduleName] == HAR)) {
-                // LOGE("feature or shared can not preload entry or har, %s preloads a %s module.",
-                //     hapVerifyInfo.GetModuleName().c_str(), moduleNameWithType[preloadItem.moduleName].c_str());
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
                     std::string("feature or shared can not preload entry or har, ") +
                     hapVerifyInfo.GetModuleName() + " preloads a " +

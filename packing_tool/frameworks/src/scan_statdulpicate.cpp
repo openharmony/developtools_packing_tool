@@ -351,8 +351,8 @@ std::string ScanStatDuplicate::StatDuplicate(const std::vector<std::string> file
     std::string stopTimeHtml = GetHtmlRow(STOP_TIME, stopTime_);
     std::string resultValue = GetResultHtml(filterList);
     std::string resultHtml = GetHtmlRowResultClass(RESULT, resultValue);
-    std::string htmlStr = HTML_TABLE_BOX + taskDescHtml + startTimeHtml + stopTimeHtml
-        + resultHtml + HTML_TABLE_END;
+    std::string htmlStr = HTML_TABLE_BOX + taskDescHtml + startTimeHtml + stopTimeHtml +
+        resultHtml + HTML_TABLE_END;
     jsonObject[RESULT] = nlohmann::json::array();
     for (const auto &model : filterList) {
         jsonObject[RESULT].push_back({{RESULT_FILES, model.files},

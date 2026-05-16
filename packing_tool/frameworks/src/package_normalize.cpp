@@ -136,8 +136,8 @@ bool PackageNormalize::ModifyPackInfo(const std::string &packInfoPath,
 int32_t PackageNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
-    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_PACKAGENORMALIZE_TEMP_DIR
-        + Utils::GenerateUUID();
+    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR +
+        Constants::COMPRESSOR_PACKAGENORMALIZE_TEMP_DIR + Utils::GenerateUUID();
     int32_t versionCode = 0;
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {

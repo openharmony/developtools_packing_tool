@@ -908,8 +908,8 @@ bool GeneralNormalize::ProcessJsonFiles(const std::string &tempPath,
 int32_t GeneralNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
-    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_GENERALNORMALIZE_TEMP_DIR
-        + Utils::GenerateUUID();
+    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR +
+        Constants::COMPRESSOR_GENERALNORMALIZE_TEMP_DIR + Utils::GenerateUUID();
     std::list<GeneralNormalizeVersion> generalNormalizeVersionList;
     bool isSuccess = true;
     std::string bundleName;

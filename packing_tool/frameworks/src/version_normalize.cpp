@@ -290,8 +290,8 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, std::list<N
 int32_t VersionNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
-    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR
-        + Utils::GenerateUUID();
+    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR +
+        Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR + Utils::GenerateUUID();
     int32_t versionCode = 0;
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
