@@ -19,6 +19,9 @@
 #include "json/module_json.h"
 #include "log.h"
 #include "utils.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -38,10 +41,11 @@ int32_t HqfPackager::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_OUT_PATH);
     if (it == parameterMap_.end()) {
-        LOGE("Output file is empty.");
+        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--out-path is empty.").c_str());
         return ERR_INVALID_VALUE;
     } else if (!Utils::EndsWith(it->second, Constants::HQF_SUFFIX)) {
-        LOGE("Input out file must end with .hqf.");
+        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+            "--out-path file must end with .hqf.").c_str());
         return ERR_INVALID_VALUE;
     }
 
@@ -52,7 +56,8 @@ int32_t HqfPackager::PreProcess()
     fs::path outPath(parameterMap_.at(Constants::PARAM_OUT_PATH));
     if (it->second != "true") {
         if (fs::exists(outPath) && fs::is_regular_file(outPath)) {
-            LOGE("%s already exist and can not overwrite.", outPath.c_str());
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+                "--out-path file already exist, but --force is not 'true'.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -63,18 +68,19 @@ int32_t HqfPackager::PreProcess()
     
     it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     if (it == parameterMap_.end()) {
-        LOGE("Must input patch.json file when pack hqf file.");
+        LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+            "--json-path is empty, must input patch.json file when pack hqf file.").c_str());
         return ERR_INVALID_VALUE;
     } else {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_JSON_PATH), true, Constants::JSON_SUFFIX)) {
-            LOGE("Input patch.json is invalid when pack hqf file.");
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--json-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_LIB_PATH), false)) {
-            LOGE("Input lib path is invalid when pack hqf file.");
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--lib-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -82,7 +88,8 @@ int32_t HqfPackager::PreProcess()
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_RESOURCES_PATH), false)) {
-            LOGE("Input resources path is invalid when pack hqf file.");
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs(
+                "--resources-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -90,7 +97,7 @@ int32_t HqfPackager::PreProcess()
     it = parameterMap_.find(Constants::PARAM_ETS_PATH);
     if (it != parameterMap_.end()) {
         if (!IsPathValid(parameterMap_.at(Constants::PARAM_ETS_PATH), false)) {
-            LOGE("Must input valid ets path when pack hqf file.");
+            LOGE("%s", PackingToolErrMsg::HQF_MODE_ARGS_INVALID.toStringWithArgs("--ets-path is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -104,30 +111,37 @@ int32_t HqfPackager::Process()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     ModuleJson moduleJson;
     if (moduleJson.ParseFromFile(it->second)) {
-        if (zipWrapper_.WriteStringToZip(moduleJson.ToString(), Constants::PATCH_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("ZipWrapper WriteStringToZip failed!");
+        if (zipWrapper_.WriteStringToZip(moduleJson.ToString(), Constants::PATCH_JSON) !=
+                ZipErrCode::ZIP_ERR_SUCCESS) {
+            LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+                "ZipWrapper WriteStringToZip failed!").c_str());
             return ERR_INVALID_VALUE;
         }
     } else {
-        LOGE("Input patch.json is invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Input patch.json is invalid.").c_str());
         return ERR_INVALID_VALUE;
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
-    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::LIB_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("zipWrapper AddFileOrDirectoryToZip failed!");
+    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::LIB_PATH) !=
+            ZipErrCode::ZIP_ERR_SUCCESS) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            "zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
-    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("zipWrapper AddFileOrDirectoryToZip failed!");
+    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) !=
+            ZipErrCode::ZIP_ERR_SUCCESS) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            "zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_ETS_PATH);
     if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::ETS_PATH) !=
             ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("zipWrapper AddFileOrDirectoryToZip failed!");
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            "zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return ERR_INVALID_VALUE;
     }
     zipWrapper_.Close();

@@ -18,6 +18,7 @@ config("skill_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -29,6 +30,9 @@ ohos_unittest("skill_test") {
   module_out_path = module_output_path
   public_configs = [ ":skill_test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/json/json_utils.cpp",
     "../../../src/json/module_json.cpp",
     "../../../src/json/module_json_fa.cpp",

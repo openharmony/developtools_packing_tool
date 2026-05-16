@@ -18,6 +18,7 @@ config("fast_app_packager_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -29,6 +30,9 @@ ohos_unittest("fast_app_packager_test") {
   module_out_path = module_output_path
   public_configs = [ ":fast_app_packager_test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/fast_app_packager.cpp",
     "../../../src/json/distro_filter.cpp",
     "../../../src/json/hap_verify_info.cpp",

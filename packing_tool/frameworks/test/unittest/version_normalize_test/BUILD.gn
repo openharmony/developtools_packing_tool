@@ -18,6 +18,7 @@ config("version_normalize_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -30,6 +31,9 @@ ohos_unittest("version_normalize_test") {
   module_out_path = module_output_path
   public_configs = [ ":version_normalize_test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/hap_packager.cpp",
     "../../../src/hsp_packager.cpp",
     "../../../src/json/json_utils.cpp",

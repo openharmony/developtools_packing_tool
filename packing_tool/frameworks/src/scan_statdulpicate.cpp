@@ -21,6 +21,10 @@
 #include "scan_statdulpicate.h"
 #include "utils.h"
 #include "zip_utils.h"
+#include "error/scan_error_enum.h"
+
+using packing_tool::error::ScanErrorEnum;
+using packing_tool::error::toStringWithArgs;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -224,7 +228,8 @@ std::string ScanStatDuplicate::GetCurrentTime()
     auto now = std::chrono::system_clock::now();
     std::time_t nowT = std::chrono::system_clock::to_time_t(now);
     std::tm* nowTm = std::localtime(&nowT);
-    std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    std::chrono::milliseconds ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
     std::ostringstream timeStream;
     timeStream << std::put_time(nowTm, "%Y-%m-%d %H:%M:%S");
     std::string currentTime = timeStream.str();
@@ -346,8 +351,8 @@ std::string ScanStatDuplicate::StatDuplicate(const std::vector<std::string> file
     std::string stopTimeHtml = GetHtmlRow(STOP_TIME, stopTime_);
     std::string resultValue = GetResultHtml(filterList);
     std::string resultHtml = GetHtmlRowResultClass(RESULT, resultValue);
-    std::string htmlStr = HTML_TABLE_BOX + taskDescHtml + startTimeHtml + stopTimeHtml
-        + resultHtml + HTML_TABLE_END;
+    std::string htmlStr = HTML_TABLE_BOX + taskDescHtml + startTimeHtml + stopTimeHtml +
+        resultHtml + HTML_TABLE_END;
     jsonObject[RESULT] = nlohmann::json::array();
     for (const auto &model : filterList) {
         jsonObject[RESULT].push_back({{RESULT_FILES, model.files},
@@ -370,7 +375,8 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
     }
     ZipUtils::Unzip(inputApp, unZipPath);
     if (!fs::exists(unZipPath) || !fs::is_directory(unZipPath)) {
-        LOGE("unzip path is invalid, unZipPath = %s", unZipPath.c_str());
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
+            ("unzip path is invalid, unZipPath = " + unZipPath).c_str()).c_str());
         return fileList;
     }
     std::vector<fs::path> entryPaths;
@@ -389,7 +395,8 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
         }
         std::string targetPath = copyPath + Constants::LINUX_FILE_SEPARATOR + fileName;
         if (!Utils::CopyFile(filePath, targetPath)) {
-            LOGE("copyFile failed, filePath = %s, targetPath = %s", filePath.c_str(), targetPath.c_str());
+            LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_REMIND_ERROR,
+                ("copyFile failed, filePath = " + filePath + ", targetPath = " + targetPath).c_str()).c_str());
             return {};
         }
         fs::remove(entryPath);
@@ -441,15 +448,18 @@ bool ScanStatDuplicate::ScanSoFiles(const std::string& outPath)
     std::string htmlPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_HTML;
     std::string cssPath = reportDir + Constants::LINUX_FILE_SEPARATOR + STAT_CSS;
     if (!WriteFile(jsonPath, jsonStr)) {
-        LOGE("write failed, jsonPath = %s, jsonStr = %s", jsonPath.c_str(), jsonStr.c_str());
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
+            ("write failed, jsonPath = " + jsonPath).c_str()).c_str());
         return false;
     }
     if (!WriteFile(htmlPath, htmlStr)) {
-        LOGE("write failed, htmlStr = %s", htmlStr.c_str());
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
+            "write failed, htmlStr.").c_str());
         return false;
     }
     if (!WriteFile(cssPath, TEMPLATE_CSS)) {
-        LOGE("write failed, htmlStr = %s", htmlStr.c_str());
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
+            "write failed, css file.").c_str());
         return false;
     }
     if (fs::exists(fs::path(targetPath))) {
@@ -473,11 +483,13 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
 {
     std::string realFilePath;
     if (!Utils::GetRealPathOfNoneExistFile(filePath, realFilePath)) {
-        LOGE("get real file path failed! filePath = %s", filePath.c_str());
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_NOT_FOUND_ERROR,
+            ("get real file path failed! filePath = " + filePath).c_str()).c_str());
         return false;
     }
     if (data.empty()) {
-        LOGE("data is empty");
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_NO_FILE_ERROR,
+            "data is empty").c_str());
         return false;
     }
     std::ofstream outFile(realFilePath);
@@ -485,7 +497,8 @@ bool ScanStatDuplicate::WriteFile(const std::string &filePath, const std::string
         outFile << data.c_str();
         outFile.close();
     } else {
-        LOGE("Failed to open file for writing");
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
+            "Failed to open file for writing").c_str());
         return false;
     }
     return true;

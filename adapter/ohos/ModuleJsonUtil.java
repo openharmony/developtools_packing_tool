@@ -1422,7 +1422,7 @@ class ModuleJsonUtil {
             if (installationFree) {
                 String errMsg =
                         "The app.json5 file configuration does not match the 'installationFree' setting of true.";
-                String solution = "Add the bundleType field to the app.json5 file or set it atomicService.";
+                String solution = "Add the 'bundleType' field to the app.json5 file and set it atomicService.";
                 LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                 throw new BundleException(errMsg);
             }
@@ -1443,8 +1443,8 @@ class ModuleJsonUtil {
                 if (!installationFree) {
                     String errMsg = "'installationFree' must be true in module '" + moduleName +
                             "' when 'bundleType' is atomicService.";
-                    String solution = "Set 'installationFree' to true in the module.json when 'bundleType'" +
-                            "is atomicService.";
+                    String solution = "Set 'installationFree' to true in the module.json when 'bundleType' "
+                            + "is atomicService.";
                     LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                     throw new BundleException(errMsg);
                 }
@@ -1461,8 +1461,11 @@ class ModuleJsonUtil {
                 return APP_SERVICE;
             } else if (APP_PLUGIN.equals(bundleType)) {
                 if (!SHARED.equals(type)) {
-                    String errMsg = "type must be shared in module(" + moduleName + ") when bundleType is appPlugin.";
-                    LOG.error(errMsg);
+                    String errMsg =
+                            "'type' must be shared in module '" + moduleName + "' when 'bundleType' is appPlugin.";
+                    String solution =
+                            "Set the 'type' to shared in the module.json when 'bundleType' is appPlugin.";
+                    LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                     throw new BundleException(errMsg);
                 }
                 return APP_PLUGIN;
@@ -1470,8 +1473,8 @@ class ModuleJsonUtil {
                 return Constants.BUNDLE_TYPE_SKILL;
             } else {
                 String errMsg = "'bundleType' is invalid in app.json.";
-                String solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one of" +
-                        "the valid types: 'app', 'atomicService', 'shared', 'appService', or 'skill'.";
+                String solution = "Ensure that the 'bundleType' field in the app.json file is correctly set to one of "
+                        + "the valid types: 'app', 'atomicService', 'shared', 'appService', 'appPlugin', or 'skill'.";
                 LOG.error(PackingToolErrMsg.PARSE_STAGE_BUNDLE_TYPE_FAILED.toString(errMsg, solution));
                 throw new BundleException(errMsg);
             }
@@ -2128,8 +2131,12 @@ class ModuleJsonUtil {
         }
         JSONObject appObj = getAppObj(jsonString);
 
-        if (moduleObj.containsKey(ATOMIC_SERVICE) && (!appObj.containsKey(BUNDLE_TYPE) ||
-                !getJsonString(appObj, BUNDLE_TYPE).equals(ATOMIC_SERVICE))) {
+        if (moduleObj.containsKey(ATOMIC_SERVICE) && !appObj.containsKey(BUNDLE_TYPE)) {
+            String errMsg = "Module cannot config atomicService when 'bundleType' is missing.";
+            LOG.error(PackingToolErrMsg.CHECK_MODULE_ATOMIC_SERVICE_FAILED.toString(errMsg));
+            return false;
+        }
+        if (moduleObj.containsKey(ATOMIC_SERVICE) && !getJsonString(appObj, BUNDLE_TYPE).equals(ATOMIC_SERVICE)) {
             String errMsg = "Module cannot config atomicService when 'bundleType' is not atomicService.";
             LOG.error(PackingToolErrMsg.CHECK_MODULE_ATOMIC_SERVICE_FAILED.toString(errMsg));
             return false;
@@ -2166,6 +2173,7 @@ class ModuleJsonUtil {
     public static boolean checkAtomicServiceInstallationFree(String jsonString) throws BundleException {
         JSONObject moduleObj = getModuleObj(jsonString);
         JSONObject appObj = getAppObj(jsonString);
+        String moduleName = getJsonString(moduleObj, NAME);
 
         boolean installationFree = getJsonBooleanValue(moduleObj, INSTALLATION_FREE, false);
         if (!appObj.containsKey(BUNDLE_TYPE)) {
@@ -2181,36 +2189,43 @@ class ModuleJsonUtil {
         String bundleType = getJsonString(appObj, BUNDLE_TYPE);
         if (bundleType.equals(APP)) {
             if (installationFree) {
-                String errMsg = "'installationFree' must be false when bundleType is app.";
+                String errMsg = "'installationFree' must be false in module '" + moduleName
+                        + "' when 'bundleType' is app.";
                 String solution = "Set 'installationFree' to false in the module.json when 'bundleType' is app.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (bundleType.equals(ATOMIC_SERVICE)) {
             if (!installationFree) {
-                String errMsg = "'installationFree' must be true when 'bundleType' is atomicService.";
-                String solution = "Set 'installationFree' to true in the module.json when 'bundleType'" +
-                        "is atomicService.";
+                String errMsg = "'installationFree' must be true in module '" + moduleName
+                        + "' when 'bundleType' is atomicService.";
+                String solution = "Set 'installationFree' to true in the module.json when 'bundleType' "
+                        + "is atomicService.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (SHARED.equals(bundleType)) {
             if (installationFree) {
-                String errMsg = "'installationFree' must be false when bundleType is shared.";
+                String errMsg = "'installationFree' must be false in module '" + moduleName
+                        + "' when 'bundleType' is shared.";
                 String solution = "Set 'installationFree' to false in the module.json when 'bundleType' is shared.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (APP_SERVICE.equals(bundleType)) {
             if (installationFree) {
-                String errMsg = "'installationFree' must be false when 'bundleType' is appService.";
+                String errMsg = "'installationFree' must be false in module '" + moduleName
+                        + "' when 'bundleType' is appService.";
                 String solution = "Set 'installationFree' to false in the module.json when 'bundleType' is appService.";
                 LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (APP_PLUGIN.equals(bundleType)) {
             if (installationFree) {
-                LOG.error("installationFree must be false when bundleType is appPlugin.");
+                String errMsg = "'installationFree' must be false in module '" + moduleName
+                        + "' when 'bundleType' is appPlugin.";
+                String solution = "Set 'installationFree' to false in the module.json when 'bundleType' is appPlugin.";
+                LOG.error(PackingToolErrMsg.CHECK_ATOMIC_SERVICE_INSTALLATION_FREE_FAILED.toString(errMsg, solution));
                 return false;
             }
         } else if (Constants.BUNDLE_TYPE_SKILL.equals(bundleType)) {

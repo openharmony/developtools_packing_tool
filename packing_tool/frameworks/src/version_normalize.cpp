@@ -24,6 +24,9 @@
 #include "log.h"
 #include "utils.h"
 #include "zip_utils.h"
+#include "error/packing_tool_err_msg.h"
+
+using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -46,34 +49,41 @@ int32_t VersionNormalize::PreProcess()
     }
     auto it = parameterMap_.find(Constants::PARAM_INPUT_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("Input input-list is empty.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "Input input-list is empty.").c_str());
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspOrhapList_, Constants::HAP_SUFFIX, Constants::HSP_SUFFIX)) {
-            LOGE("Input input-list is invalid.");
+            LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "Input input-list is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     if (hspOrhapList_.size() == 0) {
-        LOGE("Input input-list is empty.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "Input input-list is empty.").c_str());
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_VERSION_NAME);
     std::regex pattern(Constants::VERSION_NAME_PATTERN);
     if (it == parameterMap_.end()) {
-        LOGE("Input version-name is empty.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "Input version-name is empty.").c_str());
         return ERR_INVALID_VALUE;
     } else if (!std::regex_match(it->second, pattern)) {
-        LOGE("Input version-name is not valid.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "Input version-name is not valid.").c_str());
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it == parameterMap_.end()) {
-        LOGE("Input version-code is empty.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "Input version-code is empty.").c_str());
         return ERR_INVALID_VALUE;
     } else if (!Utils::IsPositiveInteger(it->second)) {
-        LOGE("Input version-code is invalid.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "Input version-code is invalid.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -83,8 +93,9 @@ bool VersionNormalize::VerifyModuleVersion(const NormalizeVersion &normalizeVers
     const std::string &newVersionName)
 {
     if (normalizeVersion.originVersionCode > newVersionCode) {
-        LOGE("VersionNormalize failed, input version code less than module %s version code.",
-            normalizeVersion.moduleName.c_str());
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            ("VersionNormalize failed, input version code less than module " +
+                normalizeVersion.moduleName + " version code.").c_str()).c_str());
         return false;
     } else if (normalizeVersion.originVersionCode == newVersionCode) {
         LOGW("VersionNormalize warning: module %s version code not changed.", normalizeVersion.moduleName.c_str());
@@ -100,19 +111,23 @@ bool VersionNormalize::ModifyModuleJson(const std::string &moduleJsonPath, Norma
 {
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
-        LOGE("Parse and modify module.json failed, parse module.json is null.");
+        LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+            "Parse and modify module.json failed, parse module.json is null.").c_str());
         return false;
     }
     if (!moduleJson.GetNormalizeVersion(normalizeVersion, true)) {
-        LOGE("Parse and modify module.json failed, write Json failed.");
+        LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+            "Parse and modify module.json failed, write Json failed.").c_str());
         return false;
     }
     if (!moduleJson.SetVersionCodeAndName(newVersionCode, newVersionName, true)) {
-        LOGE("Parse and modify module.json failed, json file not valid.");
+        LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+            "Parse and modify module.json failed, json file not valid.").c_str());
         return false;
     }
     if (!JsonUtils::StrToFile(moduleJson.ToString(), moduleJsonPath)) {
-        LOGE("Parse and modify module.json failed, write Json failed.");
+        LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
+            "Parse and modify module.json failed, write Json failed.").c_str());
         return false;
     }
     return true;
@@ -123,19 +138,23 @@ bool VersionNormalize::ModifyConfigJson(const std::string &configJsonPath, Norma
 {
     ModuleJson configJson;
     if (!configJson.ParseFromFile(configJsonPath)) {
-        LOGE("Parse and modify config.json failed, parse json is null.");
+        LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+            "Parse and modify config.json failed, parse json is null.").c_str());
         return false;
     }
     if (!configJson.GetNormalizeVersion(normalizeVersion, false)) {
-        LOGE("Parse and modify config.json failed, json file not valid.");
+        LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+            "Parse and modify config.json failed, json file not valid.").c_str());
         return false;
     }
     if (!configJson.SetVersionCodeAndName(newVersionCode, newVersionName, false)) {
-        LOGE("Parse and modify config.json failed, json file not valid.");
+        LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+            "Parse and modify config.json failed, json file not valid.").c_str());
         return false;
     }
     if (!JsonUtils::StrToFile(configJson.ToString(), configJsonPath)) {
-        LOGE("Parse and modify config.json failed, writeJson failed.");
+        LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
+            "Parse and modify config.json failed, writeJson failed.").c_str());
         return false;
     }
     return true;
@@ -146,20 +165,24 @@ bool VersionNormalize::ModifyPackInfo(const std::string &packInfoPath, const int
 {
     PackInfo packInfo;
     if (!packInfo.ParseFromFile(packInfoPath)) {
-        LOGW("Parse and modify packInfo failed, json format invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, json format invalid.").c_str());
         return false;
     }
     if (!packInfo.SetVersionCode(newVersionCode)) {
-        LOGW("Parse and modify packInfo failed, version code invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, version code invalid.").c_str());
         return false;
     }
     if (!packInfo.SetVersionName(newVersionName)) {
-        LOGW("Parse and modify packInfo failed, version name invalid.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, version name invalid.").c_str());
         return false;
     }
 
     if (!JsonUtils::StrToFile(packInfo.ToString(), packInfoPath)) {
-        LOGW("Parse and modify packInfo failed, writeJson failed.");
+        LOGE("%s", PackingToolErrMsg::PARSE_PACK_INFO_JSON_FAILED.toStringWithArgs(
+            "Parse and modify packInfo failed, writeJson failed.").c_str());
         return false;
     }
     return true;
@@ -233,7 +256,8 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, std::list<N
     bool isConfigFileExists = fs::exists(configJsonPath);
     bool isPackInfoFileExists = fs::exists(packInfoPath);
     if (isModuleFileExists == isConfigFileExists) {
-        LOGE("VersionNormalize failed, invalid hap structure.");
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "VersionNormalize failed, invalid hap structure.").c_str());
         return false;
     }
 
@@ -266,19 +290,21 @@ bool VersionNormalize::ProcessJsonFiles(const std::string &tempPath, std::list<N
 int32_t VersionNormalize::Process()
 {
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
-    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR + Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR
-        + Utils::GenerateUUID();
+    std::string tempPath = outPath + Constants::LINUX_FILE_SEPARATOR +
+        Constants::COMPRESSOR_VERSIONNORMALIZE_TEMP_DIR + Utils::GenerateUUID();
     int32_t versionCode = 0;
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
         try {
             versionCode = std::stoi(it->second);
         } catch (const std::exception& e) {
-            LOGE("Exception: %s", e.what());
+            LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                ("Exception: " + std::string(e.what())).c_str()).c_str());
             return ERR_INVALID_VALUE;
         }
     } else {
-        LOGE("Parameter not found: %s", Constants::PARAM_VERSION_CODE.c_str());
+        LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            ("Parameter not found: " + std::string(Constants::PARAM_VERSION_CODE)).c_str()).c_str());
         return ERR_INVALID_VALUE;
     }
     std::string versionName = parameterMap_.at(Constants::PARAM_VERSION_NAME);
@@ -300,7 +326,8 @@ int32_t VersionNormalize::Process()
 
     if (!JsonUtils::StrToFile(NormalizeVersionUtils::ArrayToString(normalizeVersionList), outPath +
         Constants::LINUX_FILE_SEPARATOR + Constants::VERSION_RECORD)) {
-        LOGE("WriteVersionRecord failed.");
+        LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
+            "WriteVersionRecord failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
