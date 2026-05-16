@@ -54,7 +54,8 @@ const long FILE_LENGTH_1KB = 1024L;
 bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs("hapVerifyInfos is empty!").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "hapVerifyInfos is empty!").c_str());
         return false;
     }
     if (!CheckIsPluginApp(hapVerifyInfos)) {
@@ -66,7 +67,8 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
         return false;
     }
     if (!CheckModuleNameIsValid(hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_MODULE_NAME_INVALID.toStringWithArgs("CheckModuleNameIsValid failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_MODULE_NAME_INVALID.toStringWithArgs(
+            "CheckModuleNameIsValid failed!").c_str());
         return false;
     }
     if (!CheckPackageNameIsValid(hapVerifyInfos)) {
@@ -79,7 +81,8 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
         return false;
     }
     if (!CheckDependencyIsValid(hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_DEPENDENCY_INVALID.toStringWithArgs("CheckDependencyIsValid failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_DEPENDENCY_INVALID.toStringWithArgs(
+            "CheckDependencyIsValid failed!").c_str());
         return false;
     }
     if (!CheckAtomicServiceIsValid(hapVerifyInfos)) {
@@ -90,19 +93,23 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
         LOGI("CheckAbilityNameIsValid failed. Ability name is duplicated.");
     }
     if (!CheckTargetModuleNameIsExisted(hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::TARGET_MODULE_NAME_NOT_EXIST.toStringWithArgs("CheckTargetModuleNameIsExisted failed. Target module is not found.").c_str());
+        LOGE("%s", PackingToolErrMsg::TARGET_MODULE_NAME_NOT_EXIST.toStringWithArgs(
+            "CheckTargetModuleNameIsExisted failed. Target module is not found.").c_str());
         return false;
     }
     if (!CheckCompileSdkIsValid(hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::COMPILE_SDK_TYPE_DIFFERENT.toStringWithArgs("CheckCompileSdkIsValid failed. Compile sdk config is not same.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPILE_SDK_TYPE_DIFFERENT.toStringWithArgs(
+            "CheckCompileSdkIsValid failed. Compile sdk config is not same.").c_str());
         return false;
     }
     if (!CheckProxyDataUriIsUnique(hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs("CheckProxyDataUriIsUnique failed. Uris in proxy data are not unique.").c_str());
+        LOGE("%s", PackingToolErrMsg::PROXY_DATA_URI_NOT_UNIQUE.toStringWithArgs(
+            "CheckProxyDataUriIsUnique failed. Uris in proxy data are not unique.").c_str());
         return false;
     }
     if (!CheckContinueTypeIsValid(hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs("CheckContinueTypeIsValid failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+            "CheckContinueTypeIsValid failed.").c_str());
         return false;
     }
     return true;
@@ -116,12 +123,14 @@ bool HapVerifyUtils::CheckIsPluginApp(const std::list<HapVerifyInfo>& hapVerifyI
         });
     if (it != hapVerifyInfos.end()) {
         if (hapVerifyInfos.size() != 1) {
-            LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs("plugin App must contain only one element").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+                "plugin App must contain only one element").c_str());
             return false;
         }
         HapVerifyInfo hapVerifyInfo = *hapVerifyInfos.begin();
         if (hapVerifyInfo.GetFileType() != HSP_SUFFIX) {
-            LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs("plugin App must be of type hsp").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+                "plugin App must be of type hsp").c_str());
             return false;
         }
     }
@@ -221,24 +230,30 @@ bool HapVerifyUtils::AppFieldsIsValid(const std::list<HapVerifyInfo>& hapVerifyI
         if (baseMinCompatibleVersionCode != hap.GetVersion().minCompatibleVersionCode) {
             LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
                 std::string("The minCompatibleVersionCode attribute values of two Hap are different. ") +
-                "Hap[" + baseHap.GetModuleName() + "]: (minCompatibleVersionCode: " + std::to_string(baseMinCompatibleVersionCode) + "); " +
-                "Hap[" + hap.GetModuleName() + "]: (minCompatibleVersionCode: " + std::to_string(hap.GetVersion().minCompatibleVersionCode) + "). " +
+                "Hap[" + baseHap.GetModuleName() + "]: (minCompatibleVersionCode: " +
+                std::to_string(baseMinCompatibleVersionCode) + "); " +
+                "Hap[" + hap.GetModuleName() + "]: (minCompatibleVersionCode: " +
+                std::to_string(hap.GetVersion().minCompatibleVersionCode) + "). " +
                 "Solution: Ensure values of minCompatibleVersionCode are same in each HAP.").c_str());
             return false;
         }
         if (baseTargetApiVersion != hap.GetApiVersion().targetApiVersion) {
             LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
                 std::string("The targetApiVersion attribute values of two Hap are different. ") +
-                "Hap[" + baseHap.GetModuleName() + "]: (targetApiVersion: " + std::to_string(baseTargetApiVersion) + "); " +
-                "Hap[" + hap.GetModuleName() + "]: (targetApiVersion: " + std::to_string(hap.GetApiVersion().targetApiVersion) + "). " +
+                "Hap[" + baseHap.GetModuleName() + "]: (targetApiVersion: " +
+                std::to_string(baseTargetApiVersion) + "); " +
+                "Hap[" + hap.GetModuleName() + "]: (targetApiVersion: " +
+                std::to_string(hap.GetApiVersion().targetApiVersion) + "). " +
                 "Solution: Ensure values of targetApiVersion are same in each HAP.").c_str());
             return false;
         }
         if (baseCompatibleApiVersion != hap.GetApiVersion().compatibleApiVersion) {
             LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
                 std::string("The minApiVersion attribute values of two Hap are different. ") +
-                "Hap[" + baseHap.GetModuleName() + "]: (minApiVersion: " + std::to_string(baseCompatibleApiVersion) + "); " +
-                "Hap[" + hap.GetModuleName() + "]: (minApiVersion: " + std::to_string(hap.GetApiVersion().compatibleApiVersion) + "). " +
+                "Hap[" + baseHap.GetModuleName() + "]: (minApiVersion: " +
+                std::to_string(baseCompatibleApiVersion) + "); " +
+                "Hap[" + hap.GetModuleName() + "]: (minApiVersion: " +
+                std::to_string(hap.GetApiVersion().compatibleApiVersion) + "). " +
                 "Solution: Ensure values of minApiVersion are same in each HAP.").c_str());
             return false;
         }
@@ -259,7 +274,8 @@ bool HapVerifyUtils::CheckField(const std::string& field, int32_t hapVal, const 
 {
     if (hapVal < hspVal) {
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            std::string("The values of ") + field + "[" + std::to_string(hapVal) + "] in HAP[" + hap.GetModuleName() + "] < " +
+            std::string("The values of ") + field + "[" + std::to_string(hapVal) +
+            "] in HAP[" + hap.GetModuleName() + "] < " +
             field + "[" + std::to_string(hspVal) + "] in HSP[" + hsp.GetModuleName() + "]. " +
             "Solution: Ensure that the values of " + field + " in HAP >= HSP.").c_str());
         return false;
@@ -278,7 +294,8 @@ bool HapVerifyUtils::ModuleDebugValidation(const std::list<HapVerifyInfo> hapVer
     for (const HapVerifyInfo& hapInfo : hapVerifyInfos) {
         if (hap.IsDebug() != hapInfo.IsDebug()) {
             LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-                std::string("The debug fields of Hap[") + hap.GetModuleName() + "] and Hap[" + hapInfo.GetModuleName() + "] are different. " +
+                std::string("The debug fields of Hap[") + hap.GetModuleName() +
+                "] and Hap[" + hapInfo.GetModuleName() + "] are different. " +
                 "Solution: Ensure values of debug are same in each HAP.").c_str());
             return false;
         }
@@ -290,8 +307,10 @@ bool HapVerifyUtils::ModuleDebugValidation(const std::list<HapVerifyInfo> hapVer
     for (const HapVerifyInfo& hapInfo : hspVerifyInfos) {
         if (hapInfo.IsDebug()) {
             LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-                std::string("Detected HAP(s) with debug=false, but some HSP") + hapInfo.GetModuleName() + " are debug=true. " +
-                "Solution: When the debug value of Hap is false,the debug value of Hsp should also be false.").c_str());
+                std::string("Detected HAP(s) with debug=false, but some HSP") +
+                hapInfo.GetModuleName() + " are debug=true. " +
+                "Solution: When the debug value of Hap is false,"
+                "the debug value of Hsp should also be false.").c_str());
             return false;
         }
     }
@@ -305,39 +324,49 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
         return false;
     }
     if (verifyCollection.bundleName != hapVerifyInfo.GetBundleName()) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("input module bundleName is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "input module bundleName is different.").c_str());
         return false;
     }
     if (verifyCollection.bundleType != hapVerifyInfo.GetBundleType()) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("input module bundleType is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "input module bundleType is different.").c_str());
         return false;
     }
     if (verifyCollection.versionCode != hapVerifyInfo.GetVersion().versionCode) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("input module versionCode is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "input module versionCode is different.").c_str());
         return false;
     }
     if (verifyCollection.buildVersion != hapVerifyInfo.GetVersion().buildVersion) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("input module buildVersion is different.").c_str());
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            std::string("Module: ( ") + verifyCollection.moduleName + " ) and Module: ( " + hapVerifyInfo.GetModuleName() + " ) has different buildVersion").c_str());
+            "input module buildVersion is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            std::string("Module: ( ") + verifyCollection.moduleName + " ) and Module: ( " +
+            hapVerifyInfo.GetModuleName() + " ) has different buildVersion").c_str());
         return false;
     }
     if (verifyCollection.releaseType != hapVerifyInfo.GetApiVersion().releaseType) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("input module releaseType is different.").c_str());
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("Solutions: > Check if the releaseType is the same in different modules.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "input module releaseType is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "Solutions: > Check if the releaseType is the same in different modules.").c_str());
         return false;
     }
     if (verifyCollection.targetBundleName != hapVerifyInfo.GetTargetBundleName()) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("targetBundleName is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "targetBundleName is different.").c_str());
         return false;
     }
     if (verifyCollection.targetPriority != hapVerifyInfo.GetTargetPriority()) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("targetPriority is different.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            "targetPriority is different.").c_str());
         return false;
     }
     if (IsEntryOrFeature(verifyCollection.moduleType) && IsEntryOrFeature(hapVerifyInfo.GetModuleType())) {
         if (verifyCollection.multiAppMode != (hapVerifyInfo.GetMultiAppMode())) {
-            LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("multiAppMode is different.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+                "multiAppMode is different.").c_str());
             return false;
         }
     }
@@ -367,27 +396,34 @@ void HapVerifyUtils::ShowCheckTips(const HapVerifyInfo& hapVerifyInfo1, const Ha
     const std::string& tip)
 {
     LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-        std::string("Module: (") + hapVerifyInfo1.GetModuleName() + ") and Module: (" + hapVerifyInfo2.GetModuleName() + ") have the same " + tip + ", " +
+        std::string("Module: (") + hapVerifyInfo1.GetModuleName() + ") and Module: (" +
+        hapVerifyInfo2.GetModuleName() + ") have the same " + tip + ", " +
         "please check deviceType or distroFilter/distributionFilter of the module.").c_str());
     LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-        std::string("Module: ") + hapVerifyInfo1.GetModuleName() + " has deviceType " + Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()) + ".").c_str());
+        std::string("Module: ") + hapVerifyInfo1.GetModuleName() + " has deviceType " +
+        Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()) + ".").c_str());
 
     LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-        std::string("Another Module: ") + hapVerifyInfo2.GetModuleName() + " has deviceType " + Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) + ".").c_str());
+        std::string("Another Module: ") + hapVerifyInfo2.GetModuleName() + " has deviceType " +
+        Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) + ".").c_str());
     if (hapVerifyInfo1.GetDistroFilter().Dump() != EMPTY_STRING) {
 
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            std::string("Module: ") + hapVerifyInfo1.GetModuleName() + " DistroFilter/DistributionFilter is : " + hapVerifyInfo1.GetDistroFilter().Dump() + ".").c_str());
+            std::string("Module: ") + hapVerifyInfo1.GetModuleName() +
+            " DistroFilter/DistributionFilter is : " + hapVerifyInfo1.GetDistroFilter().Dump() + ".").c_str());
     }
     if (hapVerifyInfo2.GetDistroFilter().Dump() != EMPTY_STRING) {
 
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            std::string("Another Module: ") + hapVerifyInfo2.GetModuleName() + " DistroFilter/DistributionFilter is " + hapVerifyInfo2.GetDistroFilter().Dump() + ".").c_str());
+            std::string("Another Module: ") + hapVerifyInfo2.GetModuleName() +
+            " DistroFilter/DistributionFilter is " + hapVerifyInfo2.GetDistroFilter().Dump() + ".").c_str());
     }
 
-    LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(std::string("Solution: Make sure the ") + tip + " is valid and unique.").c_str());
+    LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+        std::string("Solution: Make sure the ") + tip + " is valid and unique.").c_str());
 
-    LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(std::string("Reference: ") + REFERENCE_LINK + ".").c_str());
+    LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+        std::string("Reference: ") + REFERENCE_LINK + ".").c_str());
 }
 
 bool HapVerifyUtils::CheckModuleNameIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
@@ -395,7 +431,8 @@ bool HapVerifyUtils::CheckModuleNameIsValid(const std::list<HapVerifyInfo>& hapV
     for (auto iter1 = hapVerifyInfos.begin(); iter1 != hapVerifyInfos.end(); iter1++) {
         const HapVerifyInfo& hapVerifyInfo1 = *iter1;
         if (hapVerifyInfo1.GetModuleName().empty()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_MODULE_NAME_INVALID.toStringWithArgs("module name can not be empty.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_MODULE_NAME_INVALID.toStringWithArgs(
+                "module name can not be empty.").c_str());
             return false;
         }
         for (auto iter2 = std::next(iter1); iter2 != hapVerifyInfos.end(); iter2++) {
@@ -469,10 +506,12 @@ bool HapVerifyUtils::CheckPolicyValueDisjoint(const PolicyValue& policyValue1, c
             return true;
         }
     } else if (policyValue1.policy == EXCLUDE && policyValue2.policy == EXCLUDE) {
-        LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policys are both exclude.").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+            "input policys are both exclude.").c_str());
         return false;
     } else {
-        LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policy is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+            "input policy is invalid.").c_str());
     }
     return false;
 }
@@ -627,7 +666,8 @@ bool HapVerifyUtils::CheckApiVersionCovered(const ApiVersion& apiVersion, const 
         } else if (hapVerifyInfo.GetDistroFilter().apiVersion.policy == EXCLUDE) {
             Utils::CopyListToSet(hapVerifyInfo.GetDistroFilter().apiVersion.value, excludeSet);
         } else {
-            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policy is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+                "input policy is invalid.").c_str());
             return false;
         }
     }
@@ -657,7 +697,8 @@ bool HapVerifyUtils::CheckScreenShapeCovered(const ScreenShape& screenShape, con
         } else if (hapVerifyInfo.GetDistroFilter().screenShape.policy == EXCLUDE) {
             Utils::CopyListToSet(hapVerifyInfo.GetDistroFilter().screenShape.value, excludeSet);
         } else {
-            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policy is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+                "input policy is invalid.").c_str());
             return false;
         }
     }
@@ -688,7 +729,8 @@ bool HapVerifyUtils::CheckScreenWindowCovered(const ScreenWindow& screenWindow,
         } else if (hapVerifyInfo.GetDistroFilter().screenWindow.policy == EXCLUDE) {
             Utils::CopyListToSet(hapVerifyInfo.GetDistroFilter().screenWindow.value, excludeSet);
         } else {
-            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policy is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+                "input policy is invalid.").c_str());
             return false;
         }
     }
@@ -719,7 +761,8 @@ bool HapVerifyUtils::CheckScreenDensityCovered(const ScreenDensity& screenDensit
         } else if (hapVerifyInfo.GetDistroFilter().screenDensity.policy == EXCLUDE) {
             Utils::CopyListToSet(hapVerifyInfo.GetDistroFilter().screenDensity.value, excludeSet);
         } else {
-            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policy is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+                "input policy is invalid.").c_str());
             return false;
         }
     }
@@ -749,7 +792,8 @@ bool HapVerifyUtils::CheckCountryCodeCovered(const CountryCode& countryCode, con
         } else if (hapVerifyInfo.GetDistroFilter().countryCode.policy == EXCLUDE) {
             Utils::CopyListToSet(hapVerifyInfo.GetDistroFilter().countryCode.value, excludeSet);
         } else {
-            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs("input policy is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_POLICY_DISJOINT_ERROR.toStringWithArgs(
+                "input policy is invalid.").c_str());
             return false;
         }
     }
@@ -821,7 +865,8 @@ bool HapVerifyUtils::CheckDependencyIsValid(const std::list<HapVerifyInfo>& hapV
     bool isInstallationFree = hapVerifyInfos.begin()->IsInstallationFree();
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         if (isInstallationFree != hapVerifyInfo.IsInstallationFree()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_DEPENDENCY_INVALID.toStringWithArgs("installationFree is different in input hap.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_DEPENDENCY_INVALID.toStringWithArgs(
+                "installationFree is different in input hap.").c_str());
             return false;
         }
     }
@@ -853,9 +898,11 @@ bool HapVerifyUtils::DfsTraverseDependency(const HapVerifyInfo& hapVerifyInfo,
         std::list<HapVerifyInfo> layerHapVerifyInfos;
         GetLayerHapVerifyInfos(dependency.moduleName, hapVerifyInfo, hapVerifyInfos, layerHapVerifyInfos);
         for (auto& layerHapVerifyInfo : layerHapVerifyInfos) {
-            if (layerHapVerifyInfo.GetModuleType() == FEATURE || layerHapVerifyInfo.GetModuleType() == ENTRY) {
+            if (layerHapVerifyInfo.GetModuleType() == FEATURE ||
+                layerHapVerifyInfo.GetModuleType() == ENTRY) {
                 LOGE("%s", PackingToolErrMsg::DEPENDENCY_LIST_INVALID.toStringWithArgs(
-                    std::string("HAP or HSP cannot depend on HAP ") + layerHapVerifyInfo.GetModuleName() + ".").c_str());
+                    std::string("HAP or HSP cannot depend on HAP ") +
+                    layerHapVerifyInfo.GetModuleName() + ".").c_str());
                 return false;
             }
             dependencyList.push_back(layerHapVerifyInfo);
@@ -878,7 +925,8 @@ bool HapVerifyUtils::CheckDependencyListCirculate(const std::list<HapVerifyInfo>
                 std::list<std::string> moduleNames;
                 GetHapVerifyInfosNames(dependencyList, moduleNames);
                 LOGE("%s", PackingToolErrMsg::DEPENDENCY_LIST_INVALID.toStringWithArgs(
-                    std::string("circular dependency, dependencyList is ") + Utils::ListToString(moduleNames) + ".").c_str());
+                    std::string("circular dependency, dependencyList is ") +
+                    Utils::ListToString(moduleNames) + ".").c_str());
                 return true;
             }
         }
@@ -932,7 +980,8 @@ void HapVerifyUtils::GetLayerHapVerifyInfos(const std::string& moduleName, const
 bool HapVerifyUtils::CheckAtomicServiceIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs("hapVerifyInfos is empty!").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "hapVerifyInfos is empty!").c_str());
         return false;
     }
     if (hapVerifyInfos.begin()->GetBundleType() != ATOMIC_SERVICE) {
@@ -984,7 +1033,8 @@ bool HapVerifyUtils::GetDeviceHapVerifyInfoMap(const std::list<HapVerifyInfo>& h
 bool HapVerifyUtils::CheckAtomicServicePreloadsIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs("hapVerifyInfos is empty!").c_str());
+        LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
+            "hapVerifyInfos is empty!").c_str());
         return false;
     }
     std::list<std::string> moduleNames;
@@ -996,13 +1046,15 @@ bool HapVerifyUtils::CheckAtomicServicePreloadsIsValid(const std::list<HapVerify
         for (PreloadItem preloadItem : preloadItems) {
             if (Utils::CheckListContain(preloadModuleNames, preloadItem.moduleName)) {
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("preloads config a duplicate module ") + preloadItem.moduleName + " in " + hapVerifyInfo.GetModuleName() + ".").c_str());
+                    std::string("preloads config a duplicate module ") + preloadItem.moduleName +
+                    " in " + hapVerifyInfo.GetModuleName() + ".").c_str());
                 return false;
             }
             preloadModuleNames.push_back(preloadItem.moduleName);
             if (!Utils::CheckListContain(moduleNames, preloadItem.moduleName)) {
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("preloads config a invalid module ") + preloadItem.moduleName + " in " + hapVerifyInfo.GetModuleName() + ".").c_str());
+                    std::string("preloads config a invalid module ") + preloadItem.moduleName +
+                    " in " + hapVerifyInfo.GetModuleName() + ".").c_str());
                 return false;
             }
             if (preloadItem.moduleName == hapVerifyInfo.GetModuleName()) {
@@ -1026,7 +1078,9 @@ bool HapVerifyUtils::CheckAtomicServicePreloadsIsValid(const std::list<HapVerify
                 // LOGE("feature or shared can not preload entry or har, %s preloads a %s module.",
                 //     hapVerifyInfo.GetModuleName().c_str(), moduleNameWithType[preloadItem.moduleName].c_str());
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("feature or shared can not preload entry or har, ") + hapVerifyInfo.GetModuleName() + " preloads a " + moduleNameWithType[preloadItem.moduleName] + " module.").c_str());
+                    std::string("feature or shared can not preload entry or har, ") +
+                    hapVerifyInfo.GetModuleName() + " preloads a " +
+                    moduleNameWithType[preloadItem.moduleName] + " module.").c_str());
                 return false;
             }
         }
@@ -1106,14 +1160,16 @@ bool HapVerifyUtils::CheckAtomicServiceModuleSize(const std::list<HapVerifyInfo>
             entryLimit != 0 &&
             (fileSize >= entryLimit * FILE_LENGTH_1KB)) {
             LOGE("%s", PackingToolErrMsg::CHECK_FILE_SIZE_INVALID.toStringWithArgs(
-                ("module " + hapVerifyInfo.GetModuleName() + " and it's dependencies size is overlarge").c_str()).c_str());
+                ("module " + hapVerifyInfo.GetModuleName() +
+                " and it's dependencies size is overlarge").c_str()).c_str());
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != ENTRY &&
             notEntryLimit != 0 &&
             (fileSize >= notEntryLimit * FILE_LENGTH_1KB)) {
             LOGE("%s", PackingToolErrMsg::CHECK_FILE_SIZE_INVALID.toStringWithArgs(
-                ("module " + hapVerifyInfo.GetModuleName() + " and it's dependencies size is overlarge").c_str()).c_str());
+                ("module " + hapVerifyInfo.GetModuleName() +
+                " and it's dependencies size is overlarge").c_str()).c_str());
             return false;
         }
     }
@@ -1459,9 +1515,11 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
     if (!Utils::CheckDisjoint(typeList1, typeList2)) {
         std::string cause = "Conflict detected between modules due to overlapping deviceType and continueType:\n";
         cause += "- Module(" + hapVerifyInfo1.GetModuleName() + ") with deviceType: " +
-            Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()) + " and continueType: " + Utils::ListToString(typeList1) + "\n";
+            Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()) +
+            " and continueType: " + Utils::ListToString(typeList1) + "\n";
         cause += "- Module(" + hapVerifyInfo2.GetModuleName() + ") with deviceType: " +
-            Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) + " and continueType: " + Utils::ListToString(typeList2);
+            Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) +
+            " and continueType: " + Utils::ListToString(typeList2);
         LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(cause.c_str()).c_str());
         return false;
     }
@@ -1472,17 +1530,20 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
 bool HapVerifyUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs("hapVerifyInfos is empty!").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "hapVerifyInfos is empty!").c_str());
         return false;
     }
     std::string moduleName = hapVerifyInfos.begin()->GetModuleName();
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetModuleName() != moduleName) {
-            LOGE("%s", PackingToolErrMsg::CHECK_MODULE_NAME_INVALID.toStringWithArgs("moduleName is not same").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_MODULE_NAME_INVALID.toStringWithArgs(
+                "moduleName is not same").c_str());
             return false;
         }
         if (!hapVerifyInfo.GetDependencyItemList().empty()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_DEPENDENCY_INVALID.toStringWithArgs("dependencyItems is empty").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_DEPENDENCY_INVALID.toStringWithArgs(
+                "dependencyItems is empty").c_str());
             return false;
         }
         if (hapVerifyInfo.GetModuleType() != TYPE_SHARED) {
@@ -1494,7 +1555,8 @@ bool HapVerifyUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVe
     for (auto iter1 = hapVerifyInfos.begin(); iter1 != hapVerifyInfos.end(); iter1++) {
         for (auto iter2 = std::next(iter1); iter2 != hapVerifyInfos.end(); iter2++) {
             if (!CheckDuplicatedIsValid(*iter1, *iter2)) {
-                LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs("CheckDuplicatedIsValid failed!").c_str());
+                LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+                    "CheckDuplicatedIsValid failed!").c_str());
                 return false;
             }
         }

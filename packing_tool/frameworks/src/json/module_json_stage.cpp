@@ -690,7 +690,8 @@ bool ModuleJson::GetStageDistroFilterByModuleObj(std::unique_ptr<PtJson>& module
 {
     std::list<ModuleMetadataInfo> moduleMetadataInfos;
     if (!GetModuleMetadatasByModuleObj(moduleObj, resourceMap, moduleMetadataInfos)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetModuleMetadatasByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetModuleMetadatasByModuleObj failed!").c_str());
         return false;
     }
     return ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter);
@@ -936,15 +937,18 @@ bool ModuleJson::GetStageHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
     hapVerifyInfo.SetBundleType(bundleType);
     hapVerifyInfo.SetDependencyItemList(dependencyItems);
     if (!SetStageHapVerifyInfoByAppObj(appObj, hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("SetStageHapVerifyInfoByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "SetStageHapVerifyInfoByAppObj failed!").c_str());
         return false;
     }
     if (!SetStageHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("SetStageHapVerifyInfoByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "SetStageHapVerifyInfoByModuleObj failed!").c_str());
         return false;
     }
     if (!SetStageHapVerifyInfoExtByModuleObj(moduleObj, hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("SetStageHapVerifyInfoExtByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "SetStageHapVerifyInfoExtByModuleObj failed!").c_str());
         return false;
     }
     return true;
@@ -969,31 +973,38 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
         return false;
     }
     if (!GetStageVersionByAppObj(appObj, version)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageVersionByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageVersionByAppObj failed!").c_str());
         return false;
     }
     if (!GetStageModuleApiVersionByAppObj(appObj, moduleApiVersion)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageModuleApiVersionByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageModuleApiVersionByAppObj failed!").c_str());
         return false;
     }
     if (!GetTargetBundleNameByAppObj(appObj, targetBundleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetTargetBundleNameByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetTargetBundleNameByAppObj failed!").c_str());
         return false;
     }
     if (!GetTargetPriorityByAppObj(appObj, targetPriority)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetTargetPriorityByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetTargetPriorityByAppObj failed!").c_str());
         return false;
     }
     if (!GetStageDebugByAppObj(appObj, debug)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageDebugByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageDebugByAppObj failed!").c_str());
         return false;
     }
     if (!GetMultiAppModeByAppObj(appObj, multiAppMode)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetMultiAppModeByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetMultiAppModeByAppObj failed!").c_str());
         return false;
     }
     if (!GetAssetAccessGroupsByModuleObj(appObj, assetAccessGroups)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAssetAccessGroupsByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetAssetAccessGroupsByModuleObj failed!").c_str());
         return false;
     }
     hapVerifyInfo.SetVendor(vendor);
@@ -1022,19 +1033,23 @@ bool ModuleJson::SetStageHapVerifyInfoByModuleObj(std::unique_ptr<PtJson>& modul
     std::string compileSdkType;
     std::string compileSdkVersion;
     if (!GetStageModuleNameByModuleObj(moduleObj, moduleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageModuleNameByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageModuleNameByModuleObj failed!").c_str());
         return false;
     }
     if (!GetStageDeviceTypesByModuleObj(moduleObj, deviceTypes)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageDeviceTypesByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageDeviceTypesByModuleObj failed!").c_str());
         return false;
     }
     if (!GetStageModuleTypeByModuleObj(moduleObj, moduleType)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageModuleTypeByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageModuleTypeByModuleObj failed!").c_str());
         return false;
     }
     if (!GetStageInstallationFreeByModuleObj(moduleObj, installationFree)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageInstallationFreeByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageInstallationFreeByModuleObj failed!").c_str());
         return false;
     }
     if (!GetTargetModuleNameByModuleObj(moduleObj, targetModuleName) ||
@@ -1073,27 +1088,33 @@ bool ModuleJson::SetStageHapVerifyInfoExtByModuleObj(std::unique_ptr<PtJson>& mo
     std::list<std::string> proxyDataUris;
     std::map<std::string, std::list<std::string>> abilityContinueTypeMap;
     if (!GetStageDistroFilterByModuleObj(moduleObj, hapVerifyInfo.GetResourceMap(), distroFilter)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetStageDistroFilterByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageDistroFilterByModuleObj failed!").c_str());
         return false;
     }
     if (!GetAbilityNamesByModuleObj(moduleObj, abilityNames)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAbilityNamesByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetAbilityNamesByModuleObj failed!").c_str());
         return false;
     }
     if (!GetExtensionAbilityNamesByModuleObj(moduleObj, extensionAbilityNames)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetExtensionAbilityNamesByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetExtensionAbilityNamesByModuleObj failed!").c_str());
         return false;
     }
     if (!GetAtomicServicePreloadsByModuleObj(moduleObj, preloadItems)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAtomicServicePreloadsByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetAtomicServicePreloadsByModuleObj failed!").c_str());
         return false;
     }
     if (!GetProxyDataUrisByModuleObj(moduleObj, proxyDataUris)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetProxyDataUrisByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetProxyDataUrisByModuleObj failed!").c_str());
         return false;
     }
     if (!GetAbilityContinueTypeMapByModuleObj(moduleObj, abilityContinueTypeMap)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetAbilityContinueTypeMapByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetAbilityContinueTypeMapByModuleObj failed!").c_str());
         return false;
     }
     hapVerifyInfo.SetDistroFilter(distroFilter);

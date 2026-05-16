@@ -153,13 +153,15 @@ DEFINE_ERROR(CHECK_STAGE_HAP_FAILED, "12", "003",
 DEFINE_ERROR(CHECK_AS_TSAN_ENABLED, "12", "004",
     "Check asanEnabled failed.", "%s",
     WITH_SOLUTIONS(
-        ADD_SOLUTION("Please ensure the parameters are correctly set. Review 'app.json' and adjust the configuration as needed.")
+        ADD_SOLUTION("Please ensure the parameters are correctly set. Review 'app.json' and adjust "
+            "the configuration as needed.")
     ));
 
 DEFINE_ERROR(CHECK_HWASAN_ENABLED_INVALID, "12", "005",
     "Check hwasanEnabled failed.", "%s",
     WITH_SOLUTIONS(
-        ADD_SOLUTION("Please ensure the parameters are correctly set. Review 'app.json' and adjust the configuration as needed.")
+        ADD_SOLUTION("Please ensure the parameters are correctly set. Review 'app.json' and adjust "
+            "the configuration as needed.")
     ));
 
 DEFINE_ERROR(CHECK_ATOMIC_SERVICE_FAILED, "12", "006",
@@ -198,7 +200,8 @@ DEFINE_ERROR(SET_GENERATE_BUILD_HASH, "12", "011",
 DEFINE_ERROR(CHECK_UBASAN_ENABLED_INVALID, "12", "012",
     "Check ubsanEnabled failed.", "%s",
     WITH_SOLUTIONS(
-        ADD_SOLUTION("Please ensure the parameters are correctly set. Review 'app.json' and adjust the configuration as needed.")
+        ADD_SOLUTION("Please ensure the parameters are correctly set. Review 'app.json' and adjust "
+            "the configuration as needed.")
     ));
 
 DEFINE_ERROR(READ_STAGE_HAP_VERIFY_INFO_FAILED, "12", "013",
@@ -288,7 +291,8 @@ DEFINE_ERROR(COMPRESS_PACK_RES_MODE_FAILED, "12", "030",
 DEFINE_ERROR(INVALID_THIRD_LEVEL_DIRECTORY_NAME, "12", "031",
     "Invalid third level directory name.", "%s",
     WITH_SOLUTIONS(
-        ADD_SOLUTION("Please check it with reference to this example: \nzh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.")
+        ADD_SOLUTION("Please check it with reference to this example: \n"
+            "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.")
     ));
 
 DEFINE_ERROR(IS_PICTURING_FAILED, "12", "032",
@@ -440,7 +444,8 @@ DEFINE_ERROR(MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED, "13", "020",
     "Failed to merge two pack.info files into one pack.info file by packagePair.", "%s", WITH_SOLUTIONS());
 
 DEFINE_ERROR(MERGE_PACKINFO_OBJ_BY_PACKAGE_PAIR_FAILED, "13", "021",
-    "Failed to merge two pack.info json objects into one pack.info json object by packagePair.", "%s", WITH_SOLUTIONS());
+    "Failed to merge two pack.info json objects into one pack.info json object by packagePair.",
+    "%s", WITH_SOLUTIONS());
 
 DEFINE_ERROR(PARSE_PACKINFO_FORMS_FAILED, "13", "022",
     "Failed to parse pack.info forms.", "%s", WITH_SOLUTIONS());

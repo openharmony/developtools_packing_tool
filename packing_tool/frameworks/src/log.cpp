@@ -40,7 +40,8 @@ void Log(char *file, char *func, int32_t line, int32_t level, char *format, ...)
     auto now = std::chrono::system_clock::now();
     std::time_t nowT = std::chrono::system_clock::to_time_t(now);
     std::tm* nowTm = std::localtime(&nowT);
-    std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+    std::chrono::milliseconds ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
     va_list args;
     va_start(args, format);

@@ -298,7 +298,8 @@ bool PackInfo::GetDistroObjectByModulesObj(const std::unique_ptr<PtJson>& module
     int32_t moduleIndex, std::unique_ptr<PtJson>& distroObj)
 {
     if (!modulesObj || !modulesObj->IsArray()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null or is not array!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Module node is null or is not array!").c_str());
         return false;
     }
     if (moduleIndex >= modulesObj->GetSize()) {
@@ -370,7 +371,8 @@ bool PackInfo::GetExtensionAbilitiesObjByModulesObj(const std::unique_ptr<PtJson
     int32_t moduleIndex, std::unique_ptr<PtJson>& extensionAbilitiesObj)
 {
     if (!modulesObj || !modulesObj->IsArray()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null or is not array!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Module node is null or is not array!").c_str());
         return false;
     }
     if (moduleIndex >= modulesObj->GetSize()) {
@@ -665,21 +667,25 @@ bool PackInfo::GetFormNames(std::list<std::string>& formNames, std::list<std::st
     for (int32_t i = 0; i < modulesObj->GetSize(); i++) {
         std::unique_ptr<PtJson> distroObj;
         if (!GetDistroObjectByModuleObj(modulesObj->Get(i), distroObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetDistroObjectByModuleObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetDistroObjectByModuleObj failed!").c_str());
             return false;
         }
         std::string moduleName;
         if (!GetModuleNameByDistroObj(distroObj, moduleName) || moduleName.empty()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetModuleNameByDistroObj failed or moduleName is empty!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetModuleNameByDistroObj failed or moduleName is empty!").c_str());
             continue;
         }
         std::unique_ptr<PtJson> extensionAbilitiesObj;
         if (!GetExtensionAbilitiesObjByModuleObj(modulesObj->Get(i), extensionAbilitiesObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetExtensionAbilitiesObjByModuleObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetExtensionAbilitiesObjByModuleObj failed!").c_str());
             return false;
         }
         if (!GetFormNamesByExtensionAbilitiesObj(extensionAbilitiesObj, moduleName, formNames, formFullNames)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetFormNamesByExtensionAbilitiesObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetFormNamesByExtensionAbilitiesObj failed!").c_str());
             return false;
         }
     }
@@ -690,17 +696,20 @@ bool PackInfo::GetFormNamesByExtensionAbilitiesObj(const std::unique_ptr<PtJson>
     std::string moduleName, std::list<std::string>& formNames, std::list<std::string>& formFullNames)
 {
     if (!extensionAbilitiesObj || !extensionAbilitiesObj->IsArray()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ExtensionAbilities node is null or is not array!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "ExtensionAbilities node is null or is not array!").c_str());
         return false;
     }
     for (int32_t j = 0; j < extensionAbilitiesObj->GetSize(); j++) {
         std::unique_ptr<PtJson> formsObj;
         if (!GetFormsObjByExtensionAbilityObj(extensionAbilitiesObj->Get(j), formsObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetFormsObjByExtensionAbilityObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetFormsObjByExtensionAbilityObj failed!").c_str());
             return false;
         }
         if (!GetFormNamesByFormsObj(formsObj, moduleName, formNames, formFullNames)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetFormNamesByFormsObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetFormNamesByFormsObj failed!").c_str());
             return false;
         }
     }
@@ -712,7 +721,8 @@ bool PackInfo::GetFormNamesByFormsObj(const std::unique_ptr<PtJson>& formsObj,
     std::string moduleName, std::list<std::string>& formNames, std::list<std::string>& formFullNames)
 {
     if (!formsObj || !formsObj->IsArray()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Form node is null or is not array!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Form node is null or is not array!").c_str());
         return false;
     }
     for (int32_t k = 0; k < formsObj->GetSize(); k++) {
@@ -725,11 +735,13 @@ bool PackInfo::GetFormNamesByFormsObj(const std::unique_ptr<PtJson>& formsObj,
         }
         formNames.push_back(formName);
         if (!GetDefaultDimensionByFormObj(formsObj->Get(k), defaultDimension)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetDefaultDimensionByFormObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetDefaultDimensionByFormObj failed!").c_str());
             return false;
         }
         if (!GetSupportDimensionsByFormObj(formsObj->Get(k), supportDimensions)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetSupportDimensionsByFormObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetSupportDimensionsByFormObj failed!").c_str());
             return false;
         }
         for (std::string supportDimension : supportDimensions) {
@@ -754,7 +766,8 @@ bool PackInfo::GetPackageNamesByPackagesObj(const std::unique_ptr<PtJson>& packa
     std::list<std::string> &packageNames)
 {
     if (!packagesObj || !packagesObj->IsArray()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Packages node is null or is not array!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Packages node is null or is not array!").c_str());
         return false;
     }
     for (int i = 0; i < packagesObj->GetSize(); i++) {
@@ -812,7 +825,8 @@ bool PackInfo::SetMinAPIVersion(const int32_t& minAPIVersion)
         }
         std::unique_ptr<PtJson> apiVersionObj;
         if (!GetApiVersionObjectByModuleObj(moduleObj, apiVersionObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetApiVersionObjectByModuleObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetApiVersionObjectByModuleObj failed!").c_str());
             return false;
         }
         if (!apiVersionObj->Contains(COMPATIBLE.c_str())) {
@@ -848,7 +862,8 @@ bool PackInfo::SetTargetAPIVersion(const int32_t& targetAPIVersion)
         }
         std::unique_ptr<PtJson> apiVersionObj;
         if (!GetApiVersionObjectByModuleObj(moduleObj, apiVersionObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetApiVersionObjectByModuleObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetApiVersionObjectByModuleObj failed!").c_str());
             return false;
         }
         if (!apiVersionObj->Contains(TARGET.c_str())) {
@@ -884,7 +899,8 @@ bool PackInfo::SetApiReleaseType(const std::string& apiReleaseType)
         }
         std::unique_ptr<PtJson> apiVersionObj;
         if (!GetApiVersionObjectByModuleObj(moduleObj, apiVersionObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetApiVersionObjectByModuleObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetApiVersionObjectByModuleObj failed!").c_str());
             return false;
         }
         if (!apiVersionObj->Contains(RELEASE_TYPE.c_str())) {

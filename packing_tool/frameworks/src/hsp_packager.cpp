@@ -104,7 +104,8 @@ bool HspPackager::IsVerifyValidInHspCommonMode()
     }
     jsonPath_ = it->second;
     if (!IsPathValid(it->second, true, Constants::MODULE_JSON)) {
-        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs("--json-path must be the module.json file.").c_str());
+        LOGE("%s", PackingToolErrMsg::HSP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--json-path must be the module.json file.").c_str());
         return false;
     }
     if (!Compatible(Constants::PARAM_JAR_PATH, formattedJarPathList_, Constants::JAR_SUFFIX) ||
@@ -257,15 +258,18 @@ bool HspPackager::CompressHsp()
     }
     if (JsonUtils::IsModuleJson(jsonPath_)) {
         if (!moduleJson_.CheckStageAsanTsanEnabledValid()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_AS_TSAN_ENABLED.toStringWithArgs("CheckStageAsanTsanEnabledValid failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_AS_TSAN_ENABLED.toStringWithArgs(
+                "CheckStageAsanTsanEnabledValid failed.").c_str());
             return false;
         }
         if (!moduleJson_.CheckStageAtomicService()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs("CheckStageAtomicService failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
+                "CheckStageAtomicService failed.").c_str());
             return false;
         }
         if (!moduleJson_.CheckStageOverlayCfg()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs("checkStageOverlayCfg failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
+                "checkStageOverlayCfg failed.").c_str());
             return false;
         }
         std::string moduleType;
@@ -278,7 +282,8 @@ bool HspPackager::CompressHsp()
             return false;
         }
         if (!moduleJson_.CheckDeduplicateHar()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_DEDUPLICATE_HAR_FAILED.toStringWithArgs("CheckDeduplicateHar failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_DEDUPLICATE_HAR_FAILED.toStringWithArgs(
+                "CheckDeduplicateHar failed.").c_str());
             return false;
         }
         moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
@@ -305,7 +310,8 @@ bool HspPackager::CompressHspMode(const std::string &jsonPath)
     }
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("HspPackager::Process: zipWrapper Open failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+            "HspPackager::Process: zipWrapper Open failed!").c_str());
         return false;
     }
     std::string jsonString = moduleJson_.ToString();
@@ -360,7 +366,8 @@ bool HspPackager::CheckAppPlugin()
             return true;
         }
         if (!CheckPkgContext()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_PKG_CONTEXT_FAILED.toStringWithArgs("CheckPkgContext failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_PKG_CONTEXT_FAILED.toStringWithArgs(
+                "CheckPkgContext failed.").c_str());
             return false;
         }
         return true;
@@ -445,7 +452,8 @@ bool HspPackager::IsExtensionAbility(std::unique_ptr<PtJson>& extensionAbilities
 bool HspPackager::IsPermissionSupportPlugin(std::unique_ptr<PtJson>& requestPermissionsObj)
 {
     if (requestPermissionsObj == nullptr) {
-        LOGE("%s", PackingToolErrMsg::IS_PERMISSION_SUPPORT_PLUGIN_FAILED.toStringWithArgs("requestPermissionsObj nullptr!").c_str());
+        LOGE("%s", PackingToolErrMsg::IS_PERMISSION_SUPPORT_PLUGIN_FAILED.toStringWithArgs(
+            "requestPermissionsObj nullptr!").c_str());
         return false;
     }
     for (int32_t i = 0; i < requestPermissionsObj->GetSize(); i++) {
@@ -515,7 +523,8 @@ bool HspPackager::CompressHspModePartSecond(const std::string &jsonPath)
 
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
     if (it != parameterMap_.end() && !it->second.empty() && JsonUtils::IsModuleJson(jsonPath)) {
-        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
+        if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) !=
+                ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                 "HspPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
             return false;

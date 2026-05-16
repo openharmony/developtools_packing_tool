@@ -320,7 +320,7 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
             "--out-path file already existed.").c_str());
         return false;
     }
-	
+
     if (!EnsureParentDirectoryExists(filePath)) {
         return false;
     }
@@ -677,13 +677,14 @@ void Packager::ScanSoFiles()
         std::string reportPath = filePath.parent_path().string() + Constants::LINUX_FILE_SEPARATOR + SCAN_RESULT;
         if (!scanStatDuplicate.ScanSoFiles(outPath)) {
             LOGE("%s", PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION.toStringWithArgs(
-                ("Scan so files in app exist Exception: make scan report failed! App path = " + outPath).c_str()).c_str());
+                ("Scan so files in app exist Exception: make scan report failed! App path = " +
+                outPath).c_str()).c_str());
             fs::remove_all(reportPath);
         } else {
             std::string realFilePath;
             if (!Utils::GetRealPath(reportPath, realFilePath)) {
                 LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
-                ("get real report path failed! Report path = " + reportPath).c_str()).c_str());
+                    ("get real report path failed! Report path = " + reportPath).c_str()).c_str());
             } else {
                 LOGW("Scanning for duplicate SO files has completed successfully. The scan report is located at = %s",
                     realFilePath.c_str());

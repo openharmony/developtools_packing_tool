@@ -77,7 +77,8 @@ bool ValidateAppPackSkillProfiles(const fs::path &path, ModuleJson &moduleJson)
         const std::string skillsPath = (path / Constants::SKILLS_DIR).string();
         if (!fs::exists(skillsPath) || !fs::is_directory(skillsPath)) {
             LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-                ("skillProfiles is configured but skills/ directory not found in '" + path.string() + "'.").c_str()).c_str());
+                ("skillProfiles is configured but skills/ directory not found in '" +
+                    path.string() + "'.").c_str()).c_str());
             return false;
         }
         if (!SkillPackHelper::ValidateSkillProfiles(skillsPath, profileNames, failedProfile, failureDetail)) {
@@ -150,7 +151,8 @@ int32_t FastAppPackager::Process()
         if (fs::exists(outPath)) {
             fs::remove_all(outPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Compressor::compressAppMode compress failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Compressor::compressAppMode compress failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;
@@ -172,12 +174,14 @@ bool FastAppPackager::IsVerifyValidInFastAppMode()
     }
 
     if (!ModuleJsonAndPackInfoExists(formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hap-path or --hsp-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-path or --hsp-path is invalid.").c_str());
         return false;
     }
     
     if (!CheckBundleTypeConsistency(formattedHapPathList_, formattedHspPathList_)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("The bundleType is inconsistent.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "The bundleType is inconsistent.").c_str());
         return false;
     }
 
@@ -224,15 +228,18 @@ bool FastAppPackager::FormatPath()
     }
 
     std::map<std::string, std::string>::const_iterator itHsp = parameterMap_.find(Constants::PARAM_HSP_PATH);
-    if (itHsp != parameterMap_.end() && !itHsp->second.empty() && (!IsFormatPathValid(itHsp->second,
-        formattedHspPathList_) || !IsHspPathValid(formattedHspPathList_, Constants::HSP_SUFFIX))) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hsp-path is invalid.").c_str());
+    if (itHsp != parameterMap_.end() && !itHsp->second.empty() &&
+        (!IsFormatPathValid(itHsp->second, formattedHspPathList_) ||
+        !IsHspPathValid(formattedHspPathList_, Constants::HSP_SUFFIX))) {
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hsp-path is invalid.").c_str());
         return false;
     }
 
     if ((itHap == parameterMap_.end() || itHap->second.empty()) &&
         (itHsp == parameterMap_.end() || itHsp->second.empty())) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--hap-path and --hsp-path is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--hap-path and --hsp-path is empty.").c_str());
         return false;
     }
     return true;
@@ -242,46 +249,53 @@ bool FastAppPackager::IsVerifyValid()
 {
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PACK_INFO_PATH);
     if (it == parameterMap_.end() || it->second.empty()) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--pack-info-path is empty.").c_str());
         return false;
     }
 
     packInfoPath_ = it->second;
     if (!IsPathValid(packInfoPath_, true, Constants::PACK_INFO)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-info-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--pack-info-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_SIGNATURE_PATH);
     if (it != parameterMap_.end() && !it->second.empty() && !IsPathValid(it->second, true)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--signature-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--signature-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_CERTIFICATE_PATH);
     if (it != parameterMap_.end() && !it->second.empty() && !IsPathValid(it->second, true)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--certificate-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--certificate-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !IsPathValid(it->second, true, Constants::FILE_PACK_RES)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-res-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--pack-res-path is invalid.").c_str());
         return false;
     }
     
     it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !CompatibleProcess(it->second, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--entrycard-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--entrycard-path is invalid.").c_str());
         return false;
     }
 
     it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty() &&
         !IsFileMatch(it->second, Constants::PAC_JSON)) {
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs("--pac-json-path is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "--pac-json-path is invalid.").c_str());
         return false;
     }
 
@@ -454,10 +468,10 @@ std::string FastAppPackager::ReadFileToString(const fs::path &path)
     if (!file.is_open()) {
         return "";
     }
-  
+
     std::stringstream buffer;
     buffer << file.rdbuf();
-  
+
     return buffer.str();
 }
 
@@ -493,7 +507,8 @@ bool FastAppPackager::CheckSkillRulesForPath(const std::string &pathValue, bool 
     ModuleJson moduleJson;
     if (!ParseModuleJsonContent(GetModuleJsonContentFromPath(path), moduleJson)) {
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-            ("Failed to parse module.json from path '" + pathValue + "' for Fast App skill validation.").c_str()).c_str());
+            ("Failed to parse module.json from path '" + pathValue +
+                "' for Fast App skill validation.").c_str()).c_str());
         return false;
     }
 
@@ -545,7 +560,8 @@ bool FastAppPackager::IsSkillHspModule(const std::string &pathValue)
     ModuleJson moduleJson;
     if (!ParseModuleJsonContent(GetModuleJsonContentFromPath(path), moduleJson)) {
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-            ("Failed to parse module.json from path '" + pathValue + "' for Fast App skill moduleType validation.").c_str()).c_str());
+            ("Failed to parse module.json from path '" + pathValue +
+                "' for Fast App skill moduleType validation.").c_str()).c_str());
         return false;
     }
 
@@ -585,18 +601,21 @@ bool FastAppPackager::IsPackInfoValid(const fs::path &packInfo, const std::list<
     std::list<std::string> allPackages;
     if (!GetPackageNameFromPath(packInfo, allPackages)) {
         LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-            ("Failed to get package names from app pack.info, the path is " + packInfo.string() + ".").c_str()).c_str());
+            ("Failed to get package names from app pack.info, the path is " +
+            packInfo.string() + ".").c_str()).c_str());
         return false;
     }
     std::set<std::string> allPackageSet(allPackages.begin(), allPackages.end());
     if (allPackages.size() > allPackageSet.size()) {
         LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-            ("Package name is redundant in app pack.info, the path is " + packInfo.string() + ".").c_str()).c_str());
+            ("Package name is redundant in app pack.info, the path is " +
+            packInfo.string() + ".").c_str()).c_str());
         return false;
     }
     if (allPackages.empty()) {
         LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-            ("App pack.info format error, the path is " + packInfo.string() + ".").c_str()).c_str());
+            ("App pack.info format error, the path is " +
+            packInfo.string() + ".").c_str()).c_str());
         return false;
     }
     std::set<std::string> packages;
@@ -620,7 +639,8 @@ bool FastAppPackager::IsPackInfoPathListValid(const std::list<std::string> &path
         std::list<std::string> list;
         if (!GetPackageNameFromPath(fs::path(path), list)) {
             LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-                ("Failed to get package names from module pack.info, the path is " + path + ".").c_str()).c_str());
+                ("Failed to get package names from module pack.info, the path is " +
+                path + ".").c_str()).c_str());
             return false;
         }
         if (list.size() != 1) {
@@ -631,7 +651,8 @@ bool FastAppPackager::IsPackInfoPathListValid(const std::list<std::string> &path
         std::string packageName = list.front();
         if (allPackageSet.find(packageName) == allPackageSet.end()) {
             LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-                ("Module pack.info name does not exist in app pack.info name list, the path is " + path + ".").c_str()).c_str());
+                ("Module pack.info name does not exist in app pack.info name list, the path is " +
+                    path + ".").c_str()).c_str());
             return false;
         }
         if (packages.find(packageName) != packages.end()) {
@@ -752,11 +773,13 @@ bool FastAppPackager::CheckHapAndPackFastApp(std::list<std::string> &fileList, c
             return false;
     }
     if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs("Fast App packager failed to build HAP verify info map.").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+            "Fast App packager failed to build HAP verify info map.").c_str());
         return false;
     }
     if (!PackFastApp(fileList)) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App packager pack process failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Fast App packager pack process failed.").c_str());
         return false;
     }
     return true;
@@ -865,7 +888,8 @@ bool FastAppPackager::RepackHsp(const fs::path &inputPath, const fs::path &appPa
     std::string outHspStr = outHsp.string();
     zipWrapper_.Open(outHspStr);
     if (!zipWrapper_.IsOpen()) {
-        LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs("Fast App repack HSP open zip failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs(
+            "Fast App repack HSP open zip failed.").c_str());
         return false;
     }
 
@@ -874,7 +898,8 @@ bool FastAppPackager::RepackHsp(const fs::path &inputPath, const fs::path &appPa
         zipPath = (appPackInfo).filename().string();
     }
     if (zipWrapper_.AddFileOrDirectoryToZip(appPackInfo.string(), zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs("Fast App repack HSP add file to zip failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs(
+            "Fast App repack HSP add file to zip failed.").c_str());
         return false;
     }
     
@@ -887,7 +912,8 @@ bool FastAppPackager::RepackHsp(const fs::path &inputPath, const fs::path &appPa
     }
     std::string uzipHsp = UzipHspAndRemovePackInfo(inputPath.string(), unzipPathString.string());
     if (zipWrapper_.AddFileOrDirectoryToZip(uzipHsp, Constants::NULL_DIR_NAME) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs("Fast App repack HSP add file to zip failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs(
+            "Fast App repack HSP add file to zip failed.").c_str());
         if (fs::exists(uzipHsp)) {
             fs::remove_all(uzipHsp);
         }
@@ -908,18 +934,21 @@ bool FastAppPackager::PackFastApp(const std::list<std::string> &fileList)
     }
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App pack open zip failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+            "Fast App pack open zip failed.").c_str());
         return false;
     }
 
     if (zipWrapper_.AddFileOrDirectoryToZip(packInfoPath_, Constants::PACK_INFO) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App pack write string to zip failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+            "Fast App pack write string to zip failed.").c_str());
         return false;
     }
 
     if (!AddHapListToApp(fileList)) {
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
-        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App add HAP list to app failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+            "Fast App add HAP list to app failed.").c_str());
         return false;
     }
     
@@ -934,7 +963,8 @@ bool FastAppPackager::PackFastApp(const std::list<std::string> &fileList)
             if (zipWrapper_.AddFileOrDirectoryToZip(itemFormattedEntryCardPath, entryCardPath +
                 fs::path(itemFormattedEntryCardPath).filename().string()) !=
                 ZipErrCode::ZIP_ERR_SUCCESS) {
-                LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+                LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+                "Fast App process add file to zip failed.").c_str());
                 return false;
             }
         }
@@ -942,14 +972,16 @@ bool FastAppPackager::PackFastApp(const std::list<std::string> &fileList)
     it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::FILE_PACK_RES) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+                "Fast App process add file to zip failed.").c_str());
             return false;
         }
     }
     it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::PAC_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App pack add pac.json failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+                "Fast App pack add pac.json failed.").c_str());
             return false;
         }
     }
@@ -977,7 +1009,8 @@ bool FastAppPackager::AddHapListToApp(const std::list<std::string> &fileList)
             ZipErrCode::ZIP_ERR_SUCCESS) {
             zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
             zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_STORED);
-            LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
+                "Fast App process add file to zip failed.").c_str());
             return false;
         }
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
@@ -996,7 +1029,8 @@ bool FastAppPackager::AddSignatureAndCertificateToApp()
             zipPath = (filePath).filename().string();
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Fast App process add file to zip failed.").c_str());
             return false;
         }
     }
@@ -1009,7 +1043,8 @@ bool FastAppPackager::AddSignatureAndCertificateToApp()
             zipPath = (filePath).filename().string();
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Fast App process add file to zip failed.").c_str());
             return false;
         }
     }
@@ -1028,7 +1063,8 @@ bool FastAppPackager::packSingleThread(const fs::path &inputPath, const fs::path
     const fs::path &outHap, fs::path &path)
 {
     if (!fs::exists(inputPath) || !fs::is_directory(inputPath)) {
-        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs("Directory does not exist or is not a directory.").c_str());
+        LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
+            "Directory does not exist or is not a directory.").c_str());
         return false;
     }
     
@@ -1045,7 +1081,8 @@ bool FastAppPackager::packSingleThread(const fs::path &inputPath, const fs::path
         zipPath = (appPackInfo).filename().string();
     }
     if (zipWrapper_.AddFileOrDirectoryToZip(appPackInfo.string(), zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Fast App process add file to zip failed.").c_str());
         return false;
     }
 
@@ -1053,7 +1090,8 @@ bool FastAppPackager::packSingleThread(const fs::path &inputPath, const fs::path
         std::string jsonString;
         GenBuildHash(inputPath, jsonString);
         if (zipWrapper_.WriteStringToZip(jsonString, Constants::MODULE_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App single-thread pack write string to zip failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Fast App single-thread pack write string to zip failed.").c_str());
             return false;
         }
     }
@@ -1076,7 +1114,8 @@ bool FastAppPackager::AddOtherFileToZip(const fs::path &entry)
         }
         std::string zipPath = entry.filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(entry.string(), zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "Fast App process add file to zip failed.").c_str());
             return false;
         }
     } else if (fs::is_directory(entry)) {
@@ -1093,13 +1132,15 @@ bool FastAppPackager::AddOtherFileToZip(const fs::path &entry)
         } else if (entry.filename() == Constants::LIB_PATH) {
             if (zipWrapper_.AddFileOrDirectoryToZip(entry.string(), Constants::LIB_PATH) !=
                 ZipErrCode::ZIP_ERR_SUCCESS) {
-                LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+                LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+                    "Fast App process add file to zip failed.").c_str());
                 return false;
             }
         } else {
             if (zipWrapper_.AddFileOrDirectoryToZip(entry.string(), entry.filename().string() +
                 Constants::NULL_DIR_NAME) != ZipErrCode::ZIP_ERR_SUCCESS) {
-                LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("Fast App process add file to zip failed.").c_str());
+                LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+                    "Fast App process add file to zip failed.").c_str());
                 return false;
             }
         }

@@ -214,7 +214,7 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
     }
     return true;
 }
-  
+
 bool AppPackager::VerifyIsSharedApp(const std::list<std::string>& hspPath)
 {
     HapVerifyInfo hapVerifyInfo;
@@ -247,7 +247,8 @@ bool AppPackager::IsSharedApp(const std::string &hapPath, const std::string &hsp
 bool AppPackager::VerifyIsAppService(const std::list<std::string>& modulePathList)
 {
     if (modulePathList.empty()) {
-        LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_APPSERVICE_INVALID.toStringWithArgs("Module path list is empty").c_str());
+        LOGE("%s", PackingToolErrMsg::BUNDLE_TYPE_APPSERVICE_INVALID.toStringWithArgs(
+            "Module path list is empty").c_str());
         return false;
     }
 
@@ -378,7 +379,8 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
         return false;
     }
     if (!CheckBundleTypeConsistency(hapPath, hspPath)) {
-        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("The bundleType is inconsistent for different HAP and HSP modules.").c_str());
+        LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+            "The bundleType is inconsistent for different HAP and HSP modules.").c_str());
         return false;
     }
     if (!CheckInputModulePath(hapPath, hspPath)) {
@@ -418,7 +420,8 @@ bool AppPackager::CheckSignaturePath()
     auto it = parameterMap_.find(Constants::PARAM_SIGNATURE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!fs::is_regular_file(it->second)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--signature-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--signature-path is invalid.").c_str());
             return false;
         }
     }
@@ -430,7 +433,8 @@ bool AppPackager::CheckCertificatePath()
     auto it = parameterMap_.find(Constants::PARAM_CERTIFICATE_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!fs::is_regular_file(it->second)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--certificate-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--certificate-path is invalid.").c_str());
             return false;
         }
     }
@@ -442,7 +446,8 @@ bool AppPackager::CheckEntrycardPath()
     auto it = parameterMap_.find(Constants::PARAM_ENTRYCARD_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!CompatibleProcess(it->second, formattedEntryCardPathList_, Constants::PNG_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--entrycard-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--entrycard-path is invalid.").c_str());
             return false;
         }
     }
@@ -454,7 +459,8 @@ bool AppPackager::CheckPackResPath()
     auto it = parameterMap_.find(Constants::PARAM_PACK_RES_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsPathValid(it->second, true, Constants::FILE_PACK_RES)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pack-res-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--pack-res-path is invalid.").c_str());
             return false;
         }
     }
@@ -466,7 +472,8 @@ bool AppPackager::CheckPacJsonPath()
     auto it = parameterMap_.find(Constants::PARAM_PAC_JSON_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
         if (!IsFileMatch(it->second, Constants::PAC_JSON)) {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--pac-json-path is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--pac-json-path is invalid.").c_str());
             return false;
         }
     }
@@ -484,7 +491,8 @@ bool AppPackager::GetAndCheckReplacePackInfo()
             isReplacePackInfo_ = false;
             return true;
         } else {
-            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--replace-pack-info is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(
+                "--replace-pack-info is invalid.").c_str());
             return false;
         }
     }
@@ -568,7 +576,8 @@ bool AppPackager::PrepareDirectoriesAndFiles(const std::string outPath)
         if (fs::exists(hspTempDirPath)) {
             fs::remove_all(hspTempDirPath);
         }
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("AppPackager::CompressHapAndHspFiles failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "AppPackager::CompressHapAndHspFiles failed.").c_str());
         return false;
     }
     return true;
@@ -614,16 +623,19 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
         }
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp_)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs("AppPackager::CheckHapsIsValid verify failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+            "AppPackager::CheckHapsIsValid verify failed.").c_str());
         return false;
     }
     if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs("AppPackager::GetHapVerifyInfosMapfromFileList failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
+            "AppPackager::GetHapVerifyInfosMapfromFileList failed.").c_str());
         return false;
     }
     if (!AddHapListToApp(fileList)) {
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
-        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs("AppPackager::AddHapListToApp failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            "AppPackager::AddHapListToApp failed.").c_str());
         return false;
     }
     if (fs::exists(tempPath)) {

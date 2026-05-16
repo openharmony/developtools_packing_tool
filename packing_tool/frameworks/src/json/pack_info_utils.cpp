@@ -65,7 +65,8 @@ bool PackInfoUtils::MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackI
     std::unique_ptr<PtJson> modulesObj1;
     std::unique_ptr<PtJson> modulesObj2;
     if (!srcPackInfo1.GetModulesObject(modulesObj1) || !srcPackInfo2.GetModulesObject(modulesObj2)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Get module node from srcPackInfo1 or srcPackInfo2 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Get module node from srcPackInfo1 or srcPackInfo2 failed!").c_str());
         return false;
     }
     if (!modulesObj1->IsArray() || !modulesObj2->IsArray()) {
@@ -125,7 +126,8 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(const std::string& srcPackInf
         std::string moduleName = iter->second;
         std::string tmpStr = packageName.substr(0, packageName.find_last_of(DOT));
         if (!MergeTwoPackInfosByPackagePair(srcPackInfo1, srcPackInfo2, tmpStr, moduleName)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("MergeTwoPackInfosByPackagePair failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "MergeTwoPackInfosByPackagePair failed!").c_str());
             return false;
         }
         ++iter;
@@ -140,7 +142,8 @@ bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, Pac
     std::unique_ptr<PtJson> modulesObj1;
     std::unique_ptr<PtJson> modulesObj2;
     if (!srcPackInfo1.GetModulesObject(modulesObj1) || !srcPackInfo2.GetModulesObject(modulesObj2)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Get module node from srcPackInfo1 or srcPackInfo2 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Get module node from srcPackInfo1 or srcPackInfo2 failed!").c_str());
         return false;
     }
     if (!modulesObj1->IsArray() || !modulesObj2->IsArray()) {
@@ -156,7 +159,8 @@ bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, Pac
         }
         std::string moduleNameInDistroObj;
         if (!srcPackInfo2.GetModuleNameByDistroObj(distroObj, moduleNameInDistroObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetModuleNameByDistroObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "GetModuleNameByDistroObj failed!").c_str());
             return false;
         }
         if (moduleNameInDistroObj.compare(moduleName) == 0) {
@@ -169,7 +173,8 @@ bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, Pac
         }
     }
     if (!isFind) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Cannot find same moduleName in module node!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Cannot find same moduleName in module node!").c_str());
         return false;
     }
     return true;
@@ -181,7 +186,8 @@ bool PackInfoUtils::FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, Pa
     std::unique_ptr<PtJson> packagesObj1;
     std::unique_ptr<PtJson> packagesObj2;
     if (!srcPackInfo1.GetPackagesObject(packagesObj1) || !srcPackInfo2.GetPackagesObject(packagesObj2)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Get package node from srcPackInfo1 or srcPackInfo2 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Get package node from srcPackInfo1 or srcPackInfo2 failed!").c_str());
         return false;
     }
     if (!packagesObj1->IsArray() || !packagesObj2->IsArray()) {
@@ -205,7 +211,8 @@ bool PackInfoUtils::FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, Pa
         }
     }
     if (!isFind) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Cannot find same packageName in package node!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Cannot find same packageName in package node!").c_str());
         return false;
     }
     return true;
@@ -216,11 +223,13 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(PackInfo& srcPackInfo1, PackI
     const std::string& packageName, const std::string& moduleName)
 {
     if (!FindAndMergeModulesByPackagePair(srcPackInfo1, srcPackInfo2, moduleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("FindAndMergeModulesByPackagePair failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "FindAndMergeModulesByPackagePair failed!").c_str());
         return false;
     }
     if (!FindAndMergePackagesByPackagePair(srcPackInfo1, srcPackInfo2, packageName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("FindAndMergePackagesByPackagePair failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "FindAndMergePackagesByPackagePair failed!").c_str());
         return false;
     }
     return true;
@@ -245,7 +254,8 @@ bool PackInfoUtils::VerifyPackInfos(const PackInfo& packInfo1, const PackInfo& p
         return false;
     }
     if (!CheckVersionCodeInPackInfo(packInfo1, packInfo2)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("CheckVersionCodeInPackInfo failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "CheckVersionCodeInPackInfo failed!").c_str());
         return false;
     }
     return true;
@@ -256,11 +266,13 @@ bool PackInfoUtils::CheckBundleNameInPackInfo(const PackInfo& packInfo1, const P
     std::string bundleName1;
     std::string bundleName2;
     if (!const_cast<PackInfo&>(packInfo1).GetBundleName(bundleName1)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetBundleName from packInfo1 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "GetBundleName from packInfo1 failed!").c_str());
         return false;
     }
     if (!const_cast<PackInfo&>(packInfo2).GetBundleName(bundleName2)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetBundleName from packInfo2 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "GetBundleName from packInfo2 failed!").c_str());
         return false;
     }
     if (bundleName1.compare(bundleName2) != 0) {
@@ -275,11 +287,13 @@ bool PackInfoUtils::CheckBundleTypeInPackInfo(const PackInfo& packInfo1, const P
     std::string bundleType1;
     std::string bundleType2;
     if (!const_cast<PackInfo&>(packInfo1).GetBundleType(bundleType1, DEFAULT_BUNDLE_TYPE)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetBundleType from packInfo1 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "GetBundleType from packInfo1 failed!").c_str());
         return false;
     }
     if (!const_cast<PackInfo&>(packInfo2).GetBundleType(bundleType2, DEFAULT_BUNDLE_TYPE)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetBundleType from packInfo2 failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "GetBundleType from packInfo2 failed!").c_str());
         return false;
     }
     if (bundleType1.compare(bundleType2) != 0) {

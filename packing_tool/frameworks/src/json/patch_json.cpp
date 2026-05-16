@@ -276,7 +276,8 @@ bool PatchJson::GetName(std::string& name)
 {
     std::unique_ptr<PtJson> moduleObj;
     if (!GetModuleObject(moduleObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_PATCH_MODULE_NAME_FAILED.toStringWithArgs(
+            "GetModuleObject failed!").c_str());
         return false;
     }
     return GetNameByModuleObj(moduleObj, name);
@@ -340,7 +341,8 @@ bool PatchJson::GetDeviceTypes(std::list<std::string>& deviceTypes)
     return GetDeviceTypesByModuleObj(moduleObj, deviceTypes);
 }
 
-bool PatchJson::GetDeviceTypesByModuleObj(const std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& deviceTypes)
+bool PatchJson::GetDeviceTypesByModuleObj(const std::unique_ptr<PtJson>& moduleObj,
+    std::list<std::string>& deviceTypes)
 {
     if (!moduleObj) {
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Module node is null!").c_str());

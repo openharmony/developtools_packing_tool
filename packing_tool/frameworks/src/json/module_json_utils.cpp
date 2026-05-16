@@ -84,11 +84,13 @@ bool ModuleJsonUtils::GetStageHapVerifyInfo(const std::string& hapFilePath, HapV
     hapVerifyInfo.SetFileType(fileType);
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromString(fileContent)) {
-        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Parse json string failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+            "Parse json string failed!").c_str());
         return false;
     }
     if (!moduleJson.GetStageHapVerifyInfo(hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Get stage hap verify info failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+            "Get stage hap verify info failed!").c_str());
         return false;
     }
     return true;
@@ -110,11 +112,13 @@ bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVeri
     }
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromString(fileContent)) {
-        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Parse json string failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+            "Parse json string failed!").c_str());
         return false;
     }
     if (!moduleJson.GetFaHapVerifyInfo(hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("Get FA hap verify info failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+            "Get FA hap verify info failed!").c_str());
         return false;
     }
     hapVerifyInfo.SetProfileStr(fileContent);
@@ -160,18 +164,21 @@ bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>
         }
         std::transform(fileName.begin(), fileName.end(), fileName.begin(), ::tolower);
         if (!Utils::EndsWith(fileName, HAP_SUFFIX) && !Utils::EndsWith(fileName, HSP_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file is not a hap or hsp file!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs(
+                "Hap file is not a hap or hsp file!").c_str());
             return false;
         }
         HapVerifyInfo hapVerifyInfo;
         if (IsModuleHap(hapPath)) {
             if (!GetStageHapVerifyInfo(hapPath, hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetStageHapVerifyInfo failed!").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+                    "GetStageHapVerifyInfo failed!").c_str());
                 return false;
             }
         } else {
             if (!GetFaHapVerifyInfo(hapPath, hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetFaHapVerifyInfo failed!").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+                    "GetFaHapVerifyInfo failed!").c_str());
                 return false;
             }
         }
@@ -195,18 +202,21 @@ bool ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(const std::list<std::stri
             return false;
         }
         if (!Utils::EndsWith(fileName, HAP_SUFFIX) && !Utils::EndsWith(fileName, HSP_SUFFIX)) {
-            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs("Hap file is not a hap or hsp file!").c_str());
+            LOGE("%s", PackingToolErrMsg::INVALID_HAP_FILE.toStringWithArgs(
+                "Hap file is not a hap or hsp file!").c_str());
             return false;
         }
         auto hapVerifyInfo = std::make_shared<HapVerifyInfo>();
         if (IsModuleHap(hapPath)) {
             if (!GetStageHapVerifyInfo(hapPath, *hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetStageHapVerifyInfo failed").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+                    "GetStageHapVerifyInfo failed").c_str());
                 return false;
             }
         } else {
             if (!GetFaHapVerifyInfo(hapPath, *hapVerifyInfo)) {
-                LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs("GetFaHapVerifyInfo failed").c_str());
+                LOGE("%s", PackingToolErrMsg::READ_FA_HAP_VERIFY_INFO_FAILED.toStringWithArgs(
+                    "GetFaHapVerifyInfo failed").c_str());
                 return false;
             }
         }
@@ -235,7 +245,9 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::str
     std::string outPath;
     if (parameterMap.find(Constants::PARAM_MODE) == parameterMap.end() ||
         parameterMap.find(Constants::PARAM_OUT_PATH) == parameterMap.end()) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: No mode parameters or no output path!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: "
+            "No mode parameters or no output path!").c_str());
         return false;
     }
     packMode = parameterMap.at(Constants::PARAM_MODE);
@@ -247,27 +259,33 @@ bool ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(std::map<std::str
     outPath = parameterMap.at(Constants::PARAM_OUT_PATH);
     unzFile zipApp = unzOpen(outPath.c_str());
     if (!zipApp) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: unzOpen outPath failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: unzOpen outPath failed!").c_str());
         return false;
     }
     std::list<HapVerifyInfo> hapVerifyInfos;
     if (unzGoToFirstFile(zipApp) != UNZ_OK) {
         unzClose(zipApp);
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: unzGoToFirstFile outPath failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: unzGoToFirstFile outPath failed!").c_str());
         return false;
     }
     do {
         unz_file_info fileInfo;
         if (unzGetCurrentFileInfo(zipApp, &fileInfo, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
             unzClose(zipApp);
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: failed to get file info (phase 1)").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: "
+                "failed to get file info (phase 1)").c_str());
             return false;
         }
         std::vector<char> fileNameBuffer(fileInfo.size_filename + 1);
         if (unzGetCurrentFileInfo(zipApp, &fileInfo, fileNameBuffer.data(), fileNameBuffer.size(),
             nullptr, 0, nullptr, 0) != UNZ_OK) {
             unzClose(zipApp);
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: failed to get file info (phase 2)").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid: "
+                "failed to get file info (phase 2)").c_str());
             return false;
         }
         std::string fileName(fileNameBuffer.data());
@@ -299,7 +317,8 @@ bool ModuleJsonUtils::CheckHapsIsValid(const std::list<std::string>& fileList, c
 {
     std::list<HapVerifyInfo> hapVerifyInfos;
     if (!GetHapVerifyInfosfromFileList(fileList, hapVerifyInfos)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("GetHapVerifyInfosfromFileList failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "GetHapVerifyInfosfromFileList failed!").c_str());
         return false;
     }
     if (isSharedApp) {

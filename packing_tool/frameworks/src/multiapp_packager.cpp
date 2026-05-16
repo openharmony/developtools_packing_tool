@@ -393,7 +393,8 @@ bool MultiAppPackager::CopyHapAndHspFromApp(const std::string &appPath, std::lis
         }
         if (std::find(selectedHaps.begin(), selectedHaps.end(), entry.path().filename()) != selectedHaps.end()) {
             LOGE("%s", PackingToolErrMsg::MULTI_APP_MODE_ARGS_INVALID.toStringWithArgs(
-                ("CopyHapAndHspFromApp file duplicated, file is " + entry.path().filename().string()).c_str()).c_str());
+                ("CopyHapAndHspFromApp file duplicated, file is " +
+                entry.path().filename().string()).c_str()).c_str());
             if (fs::exists(tempPath)) {
                 fs::remove_all(tempPath);
             }
@@ -611,7 +612,8 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, false)) {
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            "here are somehaps with different version code or build version or duplicated moduleName or packageName.").c_str());
+            "here are somehaps with different version code or build version or duplicated moduleName "
+            "or packageName.").c_str());
         if (fs::exists(tempHapDirPath)) {
             fs::remove_all(tempHapDirPath);
         }
@@ -651,7 +653,8 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     }
     if (!ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(parameterMap_, hapVerifyInfoMap_)) {
         LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_SIZE_FAILED.toStringWithArgs(
-            "MultiAppPackager::CompressAppModeForMultiProject: CheckAppAtomicServiceCompressedSizeValid() failed!").c_str());
+            "MultiAppPackager::CompressAppModeForMultiProject: "
+            "CheckAppAtomicServiceCompressedSizeValid() failed!").c_str());
         return false;
     }
     return true;

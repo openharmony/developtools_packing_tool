@@ -62,15 +62,18 @@ int32_t GeneralNormalize::PreProcess()
 {
     auto it = parameterMap_.find(Constants::PARAM_INPUT_LIST);
     if (it == parameterMap_.end()) {
-        LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--input-list is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "--input-list is empty.").c_str());
         return ERR_INVALID_VALUE;
     }
     if (!CompatibleProcess(it->second, hspOrhapList_, Constants::HAP_SUFFIX, Constants::HSP_SUFFIX)) {
-        LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--input-list is invalid.").c_str());
+        LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "--input-list is invalid.").c_str());
         return ERR_INVALID_VALUE;
     }
     if (hspOrhapList_.size() == 0) {
-        LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--input-list is empty.").c_str());
+        LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+            "--input-list is empty.").c_str());
         return ERR_INVALID_VALUE;
     }
 
@@ -78,7 +81,8 @@ int32_t GeneralNormalize::PreProcess()
     std::regex pattern(Constants::VERSION_NAME_PATTERN);
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, pattern) || it->second.size() > Constants::MAX_VERSION_NAME_LENGTH) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--version-name is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--version-name is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -86,13 +90,15 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second)) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--version-code is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
         try {
             int32_t versionCode = std::stoi(it->second);
             if (versionCode > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--version-code is invalid.").c_str());
+                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                    "--version-code is invalid.").c_str());
                 return ERR_INVALID_VALUE;
             }
         } catch (const std::exception& e) {
@@ -106,7 +112,8 @@ int32_t GeneralNormalize::PreProcess()
     std::regex buildPattern(Constants::BUILD_VERSION_PATTERN);
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, buildPattern) || it->second.size() > Constants::BUILD_VERSION_MAX_LENGTH) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--build-version is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--build-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -115,12 +122,14 @@ int32_t GeneralNormalize::PreProcess()
     if (it != parameterMap_.end()) {
         std::list<std::string> deviceTypeList;
         if (!Utils::StringToArray(it->second, deviceTypeList)) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--device-types is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--device-types is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
         for (auto& item : deviceTypeList) {
             if ((std::find(DEVICE_TYPE_LIST.begin(), DEVICE_TYPE_LIST.end(), item) == DEVICE_TYPE_LIST.end())) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--device-types is invalid.").c_str());
+                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                    "--device-types is invalid.").c_str());
                 return ERR_INVALID_VALUE;
             }
         }
@@ -131,7 +140,8 @@ int32_t GeneralNormalize::PreProcess()
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, bundleNamePattern) || it->second.length() < Constants::BUNDLE_NAME_LEN_MIN ||
             it->second.length() > Constants::BUNDLE_NAME_LEN_MAX) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--bundle-name is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--bundle-name is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -139,13 +149,15 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second)) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--min-compatible-version-code is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--min-compatible-version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
         try {
             int32_t minCompatibleVersionCode = std::stoi(it->second);
             if (minCompatibleVersionCode > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--min-compatible-version-code is invalid.").c_str());
+                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                    "--min-compatible-version-code is invalid.").c_str());
                 return ERR_INVALID_VALUE;
             }
         } catch (const std::exception& e) {
@@ -158,13 +170,15 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second)) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--min-api-version is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--min-api-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
         try {
             int32_t minApiVersion = std::stoi(it->second);
             if (minApiVersion > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--min-api-version is invalid.").c_str());
+                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                    "--min-api-version is invalid.").c_str());
                 return ERR_INVALID_VALUE;
             }
         } catch (const std::exception& e) {
@@ -177,13 +191,15 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
         if (!Utils::IsPositiveInteger(it->second)) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--target-api-version is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--target-api-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
         try {
             int32_t targetApiVersion = std::stoi(it->second);
             if (targetApiVersion > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--target-api-version is invalid.").c_str());
+                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                    "--target-api-version is invalid.").c_str());
                 return ERR_INVALID_VALUE;
             }
         } catch (const std::exception& e) {
@@ -197,7 +213,8 @@ int32_t GeneralNormalize::PreProcess()
     std::regex releaseTypePattern(Constants::API_RELEASE_TYPE_PATTERN);
     if (it != parameterMap_.end()) {
         if (!std::regex_match(it->second, releaseTypePattern)) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--api-release-type is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--api-release-type is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -206,7 +223,8 @@ int32_t GeneralNormalize::PreProcess()
     if (it != parameterMap_.end()) {
         if ((std::find(Constants::BUNDLE_TYPE_LIST.begin(), Constants::BUNDLE_TYPE_LIST.end(), it->second) ==
             Constants::BUNDLE_TYPE_LIST.end())) {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--bundle-type is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--bundle-type is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -214,7 +232,8 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_INSTALLATION_FREE);
     if (it != parameterMap_.end()) {
         if (it->second != "true" && it->second != "false") {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--installation-free is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--installation-free is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -222,7 +241,8 @@ int32_t GeneralNormalize::PreProcess()
     it = parameterMap_.find(Constants::PARAM_DELIVERY_WITH_INSTALL);
     if (it != parameterMap_.end()) {
         if (it->second != "true" && it->second != "false") {
-            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs("--delivery-with-install is invalid.").c_str());
+            LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
+                "--delivery-with-install is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -256,7 +276,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!moduleJson.SetVersionCode(versionCode, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetVersionCode failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetVersionCode failed").c_str());
             return false;
         }
     }
@@ -268,7 +289,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         moduleJson.GetStageVersion(version);
         generalNormalizeVersion.originBuildVersion = version.buildVersion;
         if (!moduleJson.SetBuildVersion(buildVersion)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetBuildVersion failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetBuildVersion failed").c_str());
             return false;
         }
     }
@@ -311,7 +333,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetMinCompatibleVersionCode failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetMinCompatibleVersionCode failed").c_str());
             return false;
         }
     }
@@ -330,7 +353,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!moduleJson.SetMinAPIVersion(minAPIVersion, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetMinAPIVersion failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetMinAPIVersion failed").c_str());
             return false;
         }
     }
@@ -349,7 +373,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!moduleJson.SetTargetAPIVersion(targetAPIVersion, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetTargetAPIVersion failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetTargetAPIVersion failed").c_str());
             return false;
         }
     }
@@ -361,7 +386,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         moduleJson.GetStageApiReleaseType(originApiReleaseType);
         generalNormalizeVersion.originApiReleaseType = originApiReleaseType;
         if (!moduleJson.SetApiReleaseType(apiReleaseType, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetApiReleaseType failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetApiReleaseType failed").c_str());
             return false;
         }
     }
@@ -386,7 +412,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         generalNormalizeVersion.originInstallationFree = originInstallationFree;
         generalNormalizeVersion.modifyInstallationFree = true;
         if (!moduleJson.SetInstallationFree(installationFree, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetInstallationFree failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetInstallationFree failed").c_str());
             return false;
         }
     }
@@ -399,7 +426,8 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         generalNormalizeVersion.originDeliveryWithInstall = originDeliveryWithInstall;
         generalNormalizeVersion.modifyDeliveryWithInstall = true;
         if (!moduleJson.SetDeliveryWithInstall(deliveryWithInstall, true)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetDeliveryWithInstall failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetDeliveryWithInstall failed").c_str());
             return false;
         }
     }
@@ -451,7 +479,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!configJson.SetVersionCode(versionCode, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetVersionCode failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetVersionCode failed").c_str());
             return false;
         }
     }
@@ -494,7 +523,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!configJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetMinCompatibleVersionCode failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetMinCompatibleVersionCode failed").c_str());
             return false;
         }
     }
@@ -513,7 +543,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!configJson.SetMinAPIVersion(minAPIVersion, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetMinAPIVersion failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetMinAPIVersion failed").c_str());
             return false;
         }
     }
@@ -532,7 +563,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
             return ERR_INVALID_VALUE;
         }
         if (!configJson.SetTargetAPIVersion(targetAPIVersion, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetTargetAPIVersion failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetTargetAPIVersion failed").c_str());
             return false;
         }
     }
@@ -544,7 +576,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         generalNormalizeVersion.originApiReleaseType = moduleApiVersion.releaseType;
         std::string apiReleaseType = parameterMap_.at(Constants::PARAM_API_RELEASE_TYPE);
         if (!configJson.SetApiReleaseType(apiReleaseType, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetApiReleaseType failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetApiReleaseType failed").c_str());
             return false;
         }
     }
@@ -569,7 +602,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         generalNormalizeVersion.modifyInstallationFree = true;
         bool installationFree = Utils::StringToBool(parameterMap_.at(Constants::PARAM_INSTALLATION_FREE));
         if (!configJson.SetInstallationFree(installationFree, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetInstallationFree failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetInstallationFree failed").c_str());
             return false;
         }
     }
@@ -582,7 +616,8 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         generalNormalizeVersion.modifyDeliveryWithInstall = true;
         bool deliveryWithInstall = Utils::StringToBool(parameterMap_.at(Constants::PARAM_DELIVERY_WITH_INSTALL));
         if (!configJson.SetDeliveryWithInstall(deliveryWithInstall, false)) {
-            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs("SetDeliveryWithInstall failed").c_str());
+            LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
+                "SetDeliveryWithInstall failed").c_str());
             return false;
         }
     }
@@ -902,7 +937,8 @@ int32_t GeneralNormalize::Process()
     }
     if (!JsonUtils::StrToFile(GeneralNormalizeVersionUtils::ArrayToString(generalNormalizeVersionList), outPath +
         Constants::LINUX_FILE_SEPARATOR + Constants::GENERAL_RECORD)) {
-        LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs("WriteVersionRecord failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::WRITE_JSON_FILE_EXPECTION.toStringWithArgs(
+            "WriteVersionRecord failed.").c_str());
         return ERR_INVALID_VALUE;
     }
     return ERR_OK;

@@ -111,8 +111,10 @@ int32_t HqfPackager::Process()
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_JSON_PATH);
     ModuleJson moduleJson;
     if (moduleJson.ParseFromFile(it->second)) {
-        if (zipWrapper_.WriteStringToZip(moduleJson.ToString(), Constants::PATCH_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
-            LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs("ZipWrapper WriteStringToZip failed!").c_str());
+        if (zipWrapper_.WriteStringToZip(moduleJson.ToString(), Constants::PATCH_JSON) !=
+                ZipErrCode::ZIP_ERR_SUCCESS) {
+            LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+                "ZipWrapper WriteStringToZip failed!").c_str());
             return ERR_INVALID_VALUE;
         }
     } else {
@@ -120,21 +122,26 @@ int32_t HqfPackager::Process()
         return ERR_INVALID_VALUE;
     }
     it = parameterMap_.find(Constants::PARAM_LIB_PATH);
-    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::LIB_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs("zipWrapper AddFileOrDirectoryToZip failed!").c_str());
+    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::LIB_PATH) !=
+            ZipErrCode::ZIP_ERR_SUCCESS) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            "zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_RESOURCES_PATH);
-    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) != ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs("zipWrapper AddFileOrDirectoryToZip failed!").c_str());
+    if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::RESOURCES_PATH) !=
+            ZipErrCode::ZIP_ERR_SUCCESS) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            "zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return ERR_INVALID_VALUE;
     }
 
     it = parameterMap_.find(Constants::PARAM_ETS_PATH);
     if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::ETS_PATH) !=
             ZipErrCode::ZIP_ERR_SUCCESS) {
-        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs("zipWrapper AddFileOrDirectoryToZip failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
+            "zipWrapper AddFileOrDirectoryToZip failed!").c_str());
         return ERR_INVALID_VALUE;
     }
     zipWrapper_.Close();

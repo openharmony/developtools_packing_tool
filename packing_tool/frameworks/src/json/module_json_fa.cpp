@@ -213,7 +213,8 @@ bool ModuleJson::GetFaInstallationFreeByModuleObj(std::unique_ptr<PtJson>& modul
     }
     std::unique_ptr<PtJson> distroObj;
     if (!GetDistroObjectByModuleObj(moduleObj, distroObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetDistroObjectByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetDistroObjectByModuleObj failed!").c_str());
         return false;
     }
     return GetFaInstallationFreeByDistroObj(distroObj, installationFree);
@@ -345,7 +346,8 @@ bool ModuleJson::GetFaModuleName(std::string& faModuleName)
     }
     std::unique_ptr<PtJson> distroObj;
     if (!GetDistroObjectByModuleObj(moduleObj, distroObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetDistroObjectByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetDistroObjectByModuleObj failed!").c_str());
         return false;
     }
     if (!distroObj->Contains(MODULE_NAME.c_str())) {
@@ -369,7 +371,8 @@ bool ModuleJson::GetFaModuleNameByModuleObj(std::unique_ptr<PtJson>& moduleObj, 
     }
     std::unique_ptr<PtJson> distroObj;
     if (!GetDistroObjectByModuleObj(moduleObj, distroObj)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetDistroObjectByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetDistroObjectByModuleObj failed!").c_str());
         return false;
     }
     return GetFaModuleNameByDistroObj(distroObj, faModuleName);
@@ -570,7 +573,8 @@ bool ModuleJson::GetFaEntry(std::list<std::string>& deviceTypes)
     }
     if (moduleType.compare(ENTRY) == 0) {
         if (!GetFaDeviceTypesByModuleObj(moduleObj, deviceTypes)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaDeviceTypesByModuleObj failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+                "GetFaDeviceTypesByModuleObj failed!").c_str());
             return false;
         }
     }
@@ -734,7 +738,8 @@ bool ModuleJson::GetFaDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj
         }
         std::unique_ptr<PtJson> distroFilterJsonObj = PtJson::Parse(distroFilterStr);
         if (!distroFilterJsonObj) {
-            LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("Parse distro filter string failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+                "Parse distro filter string failed!").c_str());
             return false;
         }
         std::unique_ptr<PtJson> distroFilterObj;
@@ -746,7 +751,8 @@ bool ModuleJson::GetFaDistroFilterByModuleObj(std::unique_ptr<PtJson>& moduleObj
             }
         }
         if (!distroFilter.ParseFromJson(distroFilterObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("Parse distro filter failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+                "Parse distro filter failed!").c_str());
             return false;
         }
     }
@@ -792,11 +798,13 @@ bool ModuleJson::GetFaHapVerifyInfo(HapVerifyInfo& hapVerifyInfo)
     hapVerifyInfo.SetDependencyItemList(dependencyItems);
     hapVerifyInfo.SetDebug(debug);
     if (!SetFaHapVerifyInfoByAppObj(appObj, hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("SetFaHapVerifyInfoByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "SetFaHapVerifyInfoByAppObj failed!").c_str());
         return false;
     }
     if (!SetFaHapVerifyInfoByModuleObj(moduleObj, hapVerifyInfo)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("SetFaHapVerifyInfoByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "SetFaHapVerifyInfoByModuleObj failed!").c_str());
         return false;
     }
     return true;
@@ -823,15 +831,18 @@ bool ModuleJson::SetFaHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, Hap
         return false;
     }
     if (!GetFaModuleApiVersionByAppObj(appObj, moduleApiVersion)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaModuleApiVersionByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaModuleApiVersionByAppObj failed!").c_str());
         return false;
     }
     if (!GetFaCompileSdkTypeByAppObj(appObj, compileSdkType)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaCompileSdkTypeByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaCompileSdkTypeByAppObj failed!").c_str());
         return false;
     }
     if (!GetFaCompileSdkVersionByAppObj(appObj, compileSdkVersion)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaCompileSdkVersionByAppObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaCompileSdkVersionByAppObj failed!").c_str());
         return false;
     }
     hapVerifyInfo.SetVendor(vendor);
@@ -857,31 +868,38 @@ bool ModuleJson::SetFaHapVerifyInfoByModuleObj(std::unique_ptr<PtJson>& moduleOb
     std::string packageStr;
     bool installationFree = false;
     if (!GetFaModuleNameByModuleObj(moduleObj, moduleName)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaModuleNameByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaModuleNameByModuleObj failed!").c_str());
         return false;
     }
     if (!GetFaDistroFilterByModuleObj(moduleObj, distroFilter)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaDistroFilterByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaDistroFilterByModuleObj failed!").c_str());
         return false;
     }
     if (!GetFaDeviceTypesByModuleObj(moduleObj, deviceTypes)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaDeviceTypesByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaDeviceTypesByModuleObj failed!").c_str());
         return false;
     }
     if (!GetAbilityNamesByModuleObj(moduleObj, abilityNames)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetAbilityNamesByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetAbilityNamesByModuleObj failed!").c_str());
         return false;
     }
     if (!GetFaModuleTypeByModuleObj(moduleObj, moduleType)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaModuleTypeByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaModuleTypeByModuleObj failed!").c_str());
         return false;
     }
     if (!GetFaPackageStrByModuleObj(moduleObj, packageStr)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaPackageStrByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaPackageStrByModuleObj failed!").c_str());
         return false;
     }
     if (!GetFaInstallationFreeByModuleObj(moduleObj, installationFree)) {
-        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs("GetFaInstallationFreeByModuleObj failed!").c_str());
+        LOGE("%s", PackingToolErrMsg::PARSE_FA_JSON_FAILED.toStringWithArgs(
+            "GetFaInstallationFreeByModuleObj failed!").c_str());
         return false;
     }
     hapVerifyInfo.SetModuleName(moduleName);

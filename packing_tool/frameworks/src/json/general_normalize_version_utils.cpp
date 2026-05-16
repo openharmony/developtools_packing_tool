@@ -40,7 +40,8 @@ const std::string DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string MODULE_NAME = "moduleName";
 }
 
-std::string GeneralNormalizeVersionUtils::ArrayToString(const std::list<GeneralNormalizeVersion>& generalNormalizeVersions)
+std::string GeneralNormalizeVersionUtils::ArrayToString(
+    const std::list<GeneralNormalizeVersion>& generalNormalizeVersions)
 {
     LOGD("ArrayToString begin");
     std::unique_ptr<PtJson> versionsJson = PtJson::CreateArray();
@@ -54,74 +55,86 @@ std::string GeneralNormalizeVersionUtils::ArrayToString(const std::list<GeneralN
         }
         if (!generalNormalizeVersion.originDeviceTypes.empty()) {
             if (!ptJson->Add(DEVICE_TYPES.c_str(), generalNormalizeVersion.originDeviceTypes)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originDeviceTypes failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originDeviceTypes failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originBundleName != "") {
             if (!ptJson->Add(BUNDLE_NAME.c_str(), generalNormalizeVersion.originBundleName.c_str())) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originBundleName failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originBundleName failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originVersionCode != -1) {
             if (!ptJson->Add(VERSION_CODE.c_str(), generalNormalizeVersion.originVersionCode)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originVersionCode failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originVersionCode failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originBuildVersion != "") {
             if (!ptJson->Add(BUILD_VERSION.c_str(), generalNormalizeVersion.originBuildVersion.c_str())) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originBuildVersion failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originBuildVersion failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originVersionName != "") {
             if (!ptJson->Add(VERSION_NAME.c_str(), generalNormalizeVersion.originVersionName.c_str())) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originVersionName failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originVersionName failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originMinCompatibleVersionCode != -1) {
             if (!ptJson->Add(MIN_COMPATIBLE_VERSION_CODE.c_str(),
                 generalNormalizeVersion.originMinCompatibleVersionCode)) {
-                    LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originMinCompatibleVersionCode failed").c_str());
+                    LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                        "add originMinCompatibleVersionCode failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originMinAPIVersion != -1) {
             if (!ptJson->Add(MIN_API_VERSION.c_str(), generalNormalizeVersion.originMinAPIVersion)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originMinAPIVersion failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originMinAPIVersion failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originTargetAPIVersion != -1) {
             if (!ptJson->Add(TARGET_API_VERSION.c_str(), generalNormalizeVersion.originTargetAPIVersion)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originTargetAPIVersion failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originTargetAPIVersion failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originApiReleaseType != "") {
             if (!ptJson->Add(API_RELEASE_TYPE.c_str(), generalNormalizeVersion.originApiReleaseType.c_str())) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originApiReleaseType failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originApiReleaseType failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.originBundleType != "") {
             if (!ptJson->Add(BUNDLE_TYPE.c_str(), generalNormalizeVersion.originBundleType.c_str())) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originBundleType failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originBundleType failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.modifyInstallationFree == true) {
             if (!ptJson->Add(INSTALLATION_FREE.c_str(), generalNormalizeVersion.originInstallationFree)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originInstallationFree failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originInstallationFree failed").c_str());
                 return "";
             }
         }
         if (generalNormalizeVersion.modifyDeliveryWithInstall == true) {
             if (!ptJson->Add(DELIVERY_WITH_INSTALL.c_str(), generalNormalizeVersion.originDeliveryWithInstall)) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("add originDeliveryWithInstall failed").c_str());
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "add originDeliveryWithInstall failed").c_str());
                 return "";
             }
         }

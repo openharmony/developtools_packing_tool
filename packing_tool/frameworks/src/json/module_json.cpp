@@ -562,7 +562,8 @@ bool ModuleJson::GetModuleMetadataInfoByModuleMetadataInfoObj(std::unique_ptr<Pt
         std::string fileName = Utils::ReplaceAll(resource, PROFILE, "") + JSON_PREFIX;
         auto iter = resourceMap.find(fileName);
         if (iter == resourceMap.end()) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("find filename in resourceMap failed!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "find filename in resourceMap failed!").c_str());
             return false;
         }
         moduleMetadataInfo.resource = iter->second;
@@ -1381,8 +1382,10 @@ bool ModuleJson::CheckQuerySchemes()
     if (querySchemesCount > QUERY_SCHEMES_CHECK_COUNT) {
         //     QUERY_SCHEMES_CHECK_COUNT, QUERY_SCHEMES_CHECK_MIN_API_VERSION);
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-            ("The number of querySchemes in the Hap(entry) exceeds " + std::to_string(QUERY_SCHEMES_CHECK_COUNT) +
-            ", and the minAPIVersion is less than " + std::to_string(QUERY_SCHEMES_CHECK_MIN_API_VERSION)).c_str()).c_str());
+            ("The number of querySchemes in the Hap(entry) exceeds " +
+            std::to_string(QUERY_SCHEMES_CHECK_COUNT) +
+            ", and the minAPIVersion is less than " +
+            std::to_string(QUERY_SCHEMES_CHECK_MIN_API_VERSION)).c_str()).c_str());
         return false;
     }
     return true;
