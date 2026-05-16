@@ -1030,7 +1030,7 @@ bool FastAppPackager::AddSignatureAndCertificateToApp()
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-            "Fast App process add file to zip failed.").c_str());
+                "Fast App process add file to zip failed.").c_str());
             return false;
         }
     }
