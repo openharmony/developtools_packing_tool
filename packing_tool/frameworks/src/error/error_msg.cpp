@@ -16,11 +16,16 @@
 #include "error_msg.h"
   #include <algorithm>
 
-  namespace packing_tool {
-  namespace error {
+namespace packing_tool {
+namespace error {
 
-  // Builder 实现
-  ErrorMsg::Builder::Builder(const std::string& sysCode) : sysCode_(sysCode) {}
+namespace {
+constexpr char ARG_PLACEHOLDER[] = "%s";
+constexpr size_t ARG_PLACEHOLDER_LENGTH = sizeof(ARG_PLACEHOLDER) - 1;
+}
+
+// Builder 实现
+ErrorMsg::Builder::Builder(const std::string& sysCode) : sysCode_(sysCode) {}
 
   ErrorMsg::Builder& ErrorMsg::Builder::setErrCode(const std::string& errCode) {
       errCode_ = errCode;
@@ -84,17 +89,17 @@
       return toStringWithArgs(std::vector<std::string>{arg});
   }
 
-  std::string ErrorMsg::toStringWithArgs(const std::vector<std::string>& args) const {
-      std::string result = toString();
-      // 简单的占位符替换，将 %s 替换为参数
-      size_t pos = 0;
-      for (const auto& arg : args) {
-          pos = result.find("%s", pos);
-          if (pos != std::string::npos) {
-              result.replace(pos, 2, arg);
-              pos += arg.length();
-          }
-      }
+std::string ErrorMsg::toStringWithArgs(const std::vector<std::string>& args) const {
+    std::string result = toString();
+    // 简单的占位符替换，将 %s 替换为参数
+    size_t pos = 0;
+    for (const auto& arg : args) {
+        pos = result.find(ARG_PLACEHOLDER, pos);
+        if (pos != std::string::npos) {
+            result.replace(pos, ARG_PLACEHOLDER_LENGTH, arg);
+            pos += arg.length();
+        }
+    }
       return result;
   }
 
