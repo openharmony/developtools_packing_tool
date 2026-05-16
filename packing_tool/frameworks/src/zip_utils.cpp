@@ -283,7 +283,7 @@ bool ZipUtils::GetFileContentFromZip(const std::string& zipFilePath, const std::
         } else if (readLen == 0) {
             break;
         }
-        fileContent.append(buffer, 0, readLen);
+        fileContent.append(buffer, static_cast<size_t>(readLen));
     } while (readLen > 0);
     unzCloseCurrentFile(unzipFile);
     unzClose(unzipFile);
@@ -314,7 +314,7 @@ bool ZipUtils::GetUnzipCurrentFileContent(unzFile& unzipFile, std::string& fileC
         } else if (readLen == 0) {
             break;
         }
-        fileContent += std::string(buffer);
+        fileContent.append(buffer, static_cast<size_t>(readLen));
     } while (readLen > 0);
     unzCloseCurrentFile(unzipFile);
     return true;
