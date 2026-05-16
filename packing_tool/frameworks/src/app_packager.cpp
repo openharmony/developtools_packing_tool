@@ -203,7 +203,7 @@ bool AppPackager::CheckBundleTypeConsistency(const std::string &hapPath, const s
     for (const auto& hspPath : tmpHspPathList) {
         HapVerifyInfo hapVerifyInfo;
         if (!ModuleJsonUtils::GetStageHapVerifyInfo(hspPath, hapVerifyInfo)) {
-            LOGW("GetStageHapVerifyInfo failed");
+            LOGW("Get StageHapVerifyInfo failed");
             return false;
         }
         if (bundleType != hapVerifyInfo.GetBundleType()) {
@@ -577,7 +577,7 @@ bool AppPackager::PrepareDirectoriesAndFiles(const std::string outPath)
             fs::remove_all(hspTempDirPath);
         }
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-            "AppPackager::CompressHapAndHspFiles failed.").c_str());
+            "Compress Hap And Hsp Files failed.").c_str());
         return false;
     }
     return true;
@@ -624,18 +624,18 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp_)) {
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            "AppPackager::CheckHapsIsValid verify failed.").c_str());
+            "Check Haps Is Valid verify failed.").c_str());
         return false;
     }
     if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            "AppPackager::GetHapVerifyInfosMapfromFileList failed.").c_str());
+            "Get Hap Verify Infos Map from File List failed.").c_str());
         return false;
     }
     if (!AddHapListToApp(fileList)) {
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-            "AppPackager::AddHapListToApp failed.").c_str());
+            "Add Hap List To App failed.").c_str());
         return false;
     }
     if (fs::exists(tempPath)) {
@@ -669,7 +669,7 @@ bool AppPackager::AddHapListToApp(const std::list<std::string> &fileList)
             zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
             zipWrapper_.SetZipMethod(ZipMethod::ZIP_METHOD_STORED);
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
-                "AppPackager::Process: zipWrapper AddFileOrDirectoryToZip failed!").c_str());
+                "Add File Or Directory To Zip failed!").c_str());
             return false;
         }
         zipWrapper_.SetZipLevel(ZipLevel::ZIP_LEVEL_DEFAULT);
@@ -721,7 +721,7 @@ bool AppPackager::CompressOtherFiles()
     if (it != parameterMap_.end()) {
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, Constants::PAC_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
-                "AppPackager::CompressOtherFiles: zipWrapper pac.json failed!").c_str());
+                "zipWrapper pac.json failed!").c_str());
             return false;
         }
     }
@@ -737,7 +737,7 @@ bool AppPackager::CompressAppMode()
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-            "AppPackager::CompressAppMode: zipWrapper Open failed!").c_str());
+            "zipWrapper Open failed!").c_str());
         return ERR_INVALID_VALUE;
     }
     if (!PrepareDirectoriesAndFiles(outPath)) {
@@ -757,7 +757,7 @@ bool AppPackager::CompressAppMode()
     zipWrapper_.Close();
     if (!ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(parameterMap_, hapVerifyInfoMap_)) {
         LOGE("%s", PackingToolErrMsg::APP_ATOMICSERVICE_COMPRESSED_SIZE_INVALID.toStringWithArgs(
-            "AppPackager::CompressAppMode: CheckAppAtomicServiceCompressedSizeValid() failed!").c_str());
+            "Check App Atomic Service Compressed Size Valid failed!").c_str());
         return false;
     }
     return true;

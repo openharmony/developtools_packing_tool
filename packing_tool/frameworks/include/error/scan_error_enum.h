@@ -16,9 +16,9 @@
 #ifndef PACKING_TOOL_SCAN_ERROR_ENUM_H
 #define PACKING_TOOL_SCAN_ERROR_ENUM_H
 
-    #include <string>
+#include <string>
 
-    namespace packing_tool {
+namespace packing_tool {
     namespace error {
 
   /**
@@ -76,6 +76,6 @@
     std::string toStringWithArgs(ScanErrorEnum err, const char* args);
 
     } // namespace error
-    } // namespace packing_tool
+} // namespace packing_tool
 
-    #endif // PACKING_TOOL_SCAN_ERROR_ENUM_H
+#endif // PACKING_TOOL_SCAN_ERROR_ENUM_H
