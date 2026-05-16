@@ -413,7 +413,6 @@ void HapVerifyUtils::ShowCheckTips(const HapVerifyInfo& hapVerifyInfo1, const Ha
             " DistroFilter/DistributionFilter is : " + hapVerifyInfo1.GetDistroFilter().Dump() + ".").c_str());
     }
     if (hapVerifyInfo2.GetDistroFilter().Dump() != EMPTY_STRING) {
-
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
             std::string("Another Module: ") + hapVerifyInfo2.GetModuleName() +
             " DistroFilter/DistributionFilter is " + hapVerifyInfo2.GetDistroFilter().Dump() + ".").c_str());

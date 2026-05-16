@@ -105,7 +105,7 @@ bool Packager::CheckForceFlag()
     auto it = parameterMap_.find(Constants::PARAM_FORCE);
     if (it != parameterMap_.end() && it->second != "false" && it->second != "true") {
         LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
-              "If the --force parameter is configured, the value must be either 'true' or 'false'.").c_str());
+            "If the --force parameter is configured, the value must be either 'true' or 'false'.").c_str());
         return false;
     }
     return true;
@@ -277,8 +277,8 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
         RemoveDuplicatePath(inputPath, pathList);
         for (std::string pathItem : pathList) {
             if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
-                LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
-                ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
+                LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs((
+                    ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
                 return false;
             };
             if (!IsPathValid(formattedPathItem, true, suffix) &&
