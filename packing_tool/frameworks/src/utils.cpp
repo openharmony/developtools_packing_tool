@@ -216,7 +216,7 @@ std::string Utils::GetSha256Folder(const std::string &filePath)
             if (!file.is_open()) {
                 LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
                     ("file open failed! filePath=" + 
-                     entry.path().string()).c_str()).c_str());
+                        entry.path().string()).c_str()).c_str());
                 return "";
             }
             std::vector<char> buffer((std::istreambuf_iterator<char>(file)),

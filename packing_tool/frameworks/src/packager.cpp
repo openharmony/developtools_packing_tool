@@ -245,7 +245,7 @@ bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::st
         for (std::string pathItem : pathList) {
             if (!Utils::GetFormattedPath(pathItem, formattedPathItem)) {
                 LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
-                ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
+                    ("GetFormattedPath failed for " + pathItem).c_str()).c_str());
                 return false;
             };
             if (!IsPathValid(formattedPathItem, true, suffix)) {

@@ -407,7 +407,6 @@ void HapVerifyUtils::ShowCheckTips(const HapVerifyInfo& hapVerifyInfo1, const Ha
         std::string("Another Module: ") + hapVerifyInfo2.GetModuleName() + " has deviceType " +
         Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) + ".").c_str());
     if (hapVerifyInfo1.GetDistroFilter().Dump() != EMPTY_STRING) {
-
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
             std::string("Module: ") + hapVerifyInfo1.GetModuleName() +
             " DistroFilter/DistributionFilter is : " + hapVerifyInfo1.GetDistroFilter().Dump() + ".").c_str());

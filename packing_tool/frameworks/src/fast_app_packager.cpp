@@ -66,7 +66,7 @@ bool ValidateAppPackSkillProfiles(const fs::path &path, ModuleJson &moduleJson)
     std::string bundleType;
     if (moduleJson.GetStageBundleType(bundleType) && SkillPackHelper::IsForbiddenBundleType(bundleType)) {
         LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(
-                ("bundleType '" + bundleType + "' does not support skills in FastApp mode.").c_str()).c_str());
+            ("bundleType '" + bundleType + "' does not support skills in Fast App mode.").c_str()).c_str());
         return false;
     }
     std::set<std::string> profileNames;
@@ -964,7 +964,7 @@ bool FastAppPackager::PackFastApp(const std::list<std::string> &fileList)
                 fs::path(itemFormattedEntryCardPath).filename().string()) !=
                 ZipErrCode::ZIP_ERR_SUCCESS) {
                 LOGE("%s", PackingToolErrMsg::COMPRESS_PROCESS_EXCEPTION.toStringWithArgs(
-                        "Fast App process add file to zip failed.").c_str());
+                    "Fast App process add file to zip failed.").c_str());
                 return false;
             }
         }
@@ -1044,7 +1044,7 @@ bool FastAppPackager::AddSignatureAndCertificateToApp()
         }
         if (zipWrapper_.AddFileOrDirectoryToZip(it->second, zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-                    "Fast App process add file to zip failed.").c_str());
+                "Fast App process add file to zip failed.").c_str());
             return false;
         }
     }
@@ -1091,7 +1091,7 @@ bool FastAppPackager::packSingleThread(const fs::path &inputPath, const fs::path
         GenBuildHash(inputPath, jsonString);
         if (zipWrapper_.WriteStringToZip(jsonString, Constants::MODULE_JSON) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-                    "Fast App single-thread pack write string to zip failed.").c_str());
+                "Fast App single-thread pack write string to zip failed.").c_str());
             return false;
         }
     }
@@ -1115,7 +1115,7 @@ bool FastAppPackager::AddOtherFileToZip(const fs::path &entry)
         std::string zipPath = entry.filename().string();
         if (zipWrapper_.AddFileOrDirectoryToZip(entry.string(), zipPath) != ZipErrCode::ZIP_ERR_SUCCESS) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
-                    "Fast App process add file to zip failed.").c_str());
+                "Fast App process add file to zip failed.").c_str());
             return false;
         }
     } else if (fs::is_directory(entry)) {
