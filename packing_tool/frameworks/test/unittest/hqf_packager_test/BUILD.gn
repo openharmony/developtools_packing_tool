@@ -18,6 +18,7 @@ config("hqf_packager_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -30,6 +31,8 @@ ohos_unittest("hqf_packager_test") {
   module_out_path = module_output_path
   public_configs = [ ":hqf_packager_test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
     "../../../src/hqf_packager.cpp",
     "../../../src/json/json_utils.cpp",
     "../../../src/json/module_json.cpp",

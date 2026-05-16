@@ -18,6 +18,7 @@ config("utils_Test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -30,6 +31,8 @@ ohos_unittest("utils_Test") {
   module_out_path = module_output_path
   public_configs = [ ":utils_Test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
     "../../../src/json/pt_json.cpp",
     "../../../src/log.cpp",
     "../../../src/utils.cpp",

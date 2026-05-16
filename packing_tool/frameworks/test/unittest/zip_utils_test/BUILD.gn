@@ -18,6 +18,7 @@ config("zip_utils_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -30,6 +31,8 @@ ohos_unittest("zip_utils_test") {
   module_out_path = module_output_path
   public_configs = [ ":zip_utils_test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
     "../../../src/log.cpp",
     "../../../src/unzip_wrapper.cpp",
     "../../../src/utils.cpp",

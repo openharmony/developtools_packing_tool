@@ -18,6 +18,7 @@ config("shell_command_test_config") {
   include_dirs = [
     "../../../include",
     "../../../include/json",
+    "../../../include/error",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -30,6 +31,9 @@ ohos_unittest("shell_command_test") {
   module_out_path = module_output_path
   public_configs = [ ":shell_command_test_config" ]
   sources = [
+    "../../../src/error/error_msg.cpp",
+    "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/app_packager.cpp",
     "../../../src/appqf_packager.cpp",
     "../../../src/fast_app_packager.cpp",
