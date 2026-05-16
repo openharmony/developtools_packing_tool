@@ -33,6 +33,7 @@ ohos_unittest("utils_Test") {
   sources = [
     "../../../src/error/error_msg.cpp",
     "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/json/pt_json.cpp",
     "../../../src/log.cpp",
     "../../../src/utils.cpp",

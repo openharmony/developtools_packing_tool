@@ -33,6 +33,7 @@ ohos_unittest("hap_packager_test") {
   sources = [
     "../../../src/error/error_msg.cpp",
     "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/hap_packager.cpp",
     "../../../src/json/json_utils.cpp",
     "../../../src/json/module_json.cpp",

@@ -33,6 +33,7 @@ ohos_unittest("multiapp_packager_test") {
   sources = [
     "../../../src/error/error_msg.cpp",
     "../../../src/error/packing_tool_err_msg.cpp",
+    "../../../src/error/scan_error_enum.cpp",
     "../../../src/json/distro_filter.cpp",
     "../../../src/json/hap_verify_info.cpp",
     "../../../src/json/hap_verify_utils.cpp",
