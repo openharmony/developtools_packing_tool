@@ -304,7 +304,7 @@ bool ZipUtils::GetUnzipCurrentFileContent(unzFile& unzipFile, std::string& fileC
     int readLen = 0;
     fileContent = "";
     do {
-        std::fill_n(buffer, MAX_ZIP_BUFFER_SIZE, '\0');
+        std::fill_n(buffer, sizeof(buffer), '\0');
         readLen = unzReadCurrentFile(unzipFile, buffer, MAX_ZIP_BUFFER_SIZE);
         if (readLen < 0) {
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
