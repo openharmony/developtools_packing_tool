@@ -189,10 +189,6 @@ bool FastAppPackager::IsVerifyValidInFastAppMode()
         return false;
     }
 
-    if (!CheckSkillRules(formattedHapPathList_, formattedHspPathList_)) {
-        return false;
-    }
-    
     std::string packInfoPath;
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_PACK_INFO_PATH);
     if (it != parameterMap_.end() && !it->second.empty()) {
@@ -320,12 +316,12 @@ bool FastAppPackager::IsFormatPathValid(const std::string &inputPath, std::list<
                 formatPathSet.insert(realpath.string());
             } else {
                 LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-                    ("Fast App packager path does not exist: " + realpath.string()).c_str()).c_str());
+                    ("Format path not exists. Path: " + realpath.string() + ".").c_str()).c_str());
                 return false;
             }
         } catch (const std::exception& ex) {
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
-                ("Fast App packager format path failed: " + std::string(ex.what())).c_str()).c_str());
+                ("Verify format path exist IOException: " + std::string(ex.what())).c_str()).c_str());
             return false;
         }
     }
@@ -361,12 +357,12 @@ bool FastAppPackager::ModuleJsonAndPackInfoExists(const std::list<std::string> &
         fs::path path = fs::path(hapPath);
         if (!fs::exists(path / fs::path(Constants::MODULE_JSON))) {
             LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-                ("Not found module.json in path: " + path.string()).c_str()).c_str());
+                ("Not found module.json in the hap path: " + path.string() + ".").c_str()).c_str());
             return false;
         }
         if (!fs::exists(path / fs::path(Constants::PACK_INFO))) {
             LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-                ("Not found pack.info in path: " + path.string()).c_str()).c_str());
+                ("Not found pack.info in the hap path: " + path.string() + ".").c_str()).c_str());
             return false;
         }
     }
@@ -375,12 +371,12 @@ bool FastAppPackager::ModuleJsonAndPackInfoExists(const std::list<std::string> &
         if (fs::is_directory(path)) {
             if (!fs::exists(path / fs::path(Constants::MODULE_JSON))) {
                 LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-                    ("Not found module.json in path: " + path.string()).c_str()).c_str());
+                    ("Not found module.json in the hsp path: " + path.string() + ".").c_str()).c_str());
                 return false;
             }
             if (!fs::exists(path / fs::path(Constants::PACK_INFO))) {
                 LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
-                    ("Not found pack.info in path: " + path.string()).c_str()).c_str());
+                    ("Not found pack.info in the hsp path: " + path.string() + ".").c_str()).c_str());
                 return false;
             }
         }
@@ -645,7 +641,7 @@ bool FastAppPackager::IsPackInfoPathListValid(const std::list<std::string> &path
         }
         if (list.size() != 1) {
             LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-                ("Module pack.info format error, the path is " + path + ".").c_str()).c_str());
+                ("Module pack.info format err, the path is " + path + ".").c_str()).c_str());
             return false;
         }
         std::string packageName = list.front();
@@ -657,7 +653,7 @@ bool FastAppPackager::IsPackInfoPathListValid(const std::list<std::string> &path
         }
         if (packages.find(packageName) != packages.end()) {
             LOGE("%s", PackingToolErrMsg::PACK_INFO_INVALID.toStringWithArgs(
-                ("Package name is redundant in: " + path).c_str()).c_str());
+                ("Package name is redundant in " + path + ".").c_str()).c_str());
             return false;
         }
         packages.insert(packageName);

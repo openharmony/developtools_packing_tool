@@ -77,6 +77,7 @@ bool APPQFPackager::CheckHqfList(const std::list<std::string>& hqfList)
         hqfInfos.push_back(hqfInfo);
     }
     if (!HQFVerify::CheckHQFIsValid(hqfInfos)) {
+        LOGE("%s", PackingToolErrMsg::CHECK_HQF_INVALID.toStringWithArgs("Input hqf is invalid.").c_str());
         return false;
     }
     return true;

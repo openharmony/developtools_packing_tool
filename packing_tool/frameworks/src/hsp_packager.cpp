@@ -258,18 +258,18 @@ bool HspPackager::CompressHsp()
     }
     if (JsonUtils::IsModuleJson(jsonPath_)) {
         if (!moduleJson_.CheckStageAsanTsanEnabledValid()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_AS_TSAN_ENABLED.toStringWithArgs(
-                "CheckStageAsanTsanEnabledValid failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+                "Check the asanTsanEnabled parameter in the Stage module failed.").c_str());
             return false;
         }
         if (!moduleJson_.CheckStageAtomicService()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-                "CheckStageAtomicService failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+                "Check the atomicService parameter in the Stage module failed.").c_str());
             return false;
         }
         if (!moduleJson_.CheckStageOverlayCfg()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-                "checkStageOverlayCfg failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+                "Check the overlay config in the Stage module failed.").c_str());
             return false;
         }
         std::string moduleType;
@@ -282,14 +282,16 @@ bool HspPackager::CompressHsp()
             return false;
         }
         if (!moduleJson_.CheckDeduplicateHar()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_DEDUPLICATE_HAR_FAILED.toStringWithArgs(
-                "CheckDeduplicateHar failed.").c_str());
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+                "Check deduplicateHar in Stage module failed.").c_str());
             return false;
         }
         moduleJson_.GetStageCompressNativeLibs(compressNativeLibs_);
         
         // Check kernel permission compression validation
         if (!CheckKernelPermissionCompression()) {
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+                "Check kernel permission compression validation failed.").c_str());
             return false;
         }
     }
@@ -348,7 +350,8 @@ bool HspPackager::CompressHspMode(const std::string &jsonPath)
         }
     }
     if (!CheckAppPlugin()) {
-        LOGE("%s", PackingToolErrMsg::CHECK_APP_PLUGIN_FAILED.toStringWithArgs("CheckAppPlugin failed.").c_str());
+        LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs(
+            "plugin package packaging failed.").c_str());
         return false;
     }
     return CompressHspModePartSecond(jsonPath);

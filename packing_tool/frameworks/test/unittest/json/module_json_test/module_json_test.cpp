@@ -5167,7 +5167,7 @@ HWTEST_F(ModuleJsonTest, GetProxyDataUrisByProxyDatasObj_0100, Function | Medium
     ModuleJson moduleJson;
     std::unique_ptr<PtJson> proxyDatasObj;
     std::list<std::string> proxyDataUris;
-    EXPECT_FALSE(moduleJson.GetProxyDataUrisByProxyDatasObj(proxyDatasObj, proxyDataUris));
+    EXPECT_FALSE(moduleJson.GetProxyDataUrisByProxyDatasObj(proxyDatasObj, "", proxyDataUris));
 }
 
 /*
@@ -5183,7 +5183,7 @@ HWTEST_F(ModuleJsonTest, GetProxyDataUrisByProxyDatasObj_0200, Function | Medium
     std::unique_ptr<PtJson> testJson = PtJson::CreateObject();
     proxyDatasObj->Push(testJson);
     std::list<std::string> proxyDataUris;
-    EXPECT_FALSE(moduleJson.GetProxyDataUrisByProxyDatasObj(proxyDatasObj, proxyDataUris));
+    EXPECT_FALSE(moduleJson.GetProxyDataUrisByProxyDatasObj(proxyDatasObj, "", proxyDataUris));
 }
 
 /*

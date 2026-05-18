@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <optional>
 #include <set>
+#include <vector>
 
 #include "constants.h"
 #include "error/packing_tool_err_msg.h"
@@ -49,13 +50,26 @@ const std::string APP_PLUGIN = "appPlugin";
 const std::string NULL_DEVICE_TYPE = "nullDeviceType";
 const int32_t TWO = 2;
 const long FILE_LENGTH_1KB = 1024L;
+
+std::string FormatModuleNameList(const std::list<std::string>& moduleNames)
+{
+    std::string result = "[";
+    for (auto iter = moduleNames.begin(); iter != moduleNames.end(); ++iter) {
+        if (iter != moduleNames.begin()) {
+            result += ", ";
+        }
+        result += *iter;
+    }
+    result += "]";
+    return result;
+}
 }
 
 bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
-            "hapVerifyInfos is empty!").c_str());
+            "Hap verify infos is null or empty.").c_str());
         return false;
     }
     if (!CheckIsPluginApp(hapVerifyInfos)) {
@@ -94,12 +108,15 @@ bool HapVerifyUtils::CheckHapIsValid(const std::list<HapVerifyInfo>& hapVerifyIn
     }
     if (!CheckTargetModuleNameIsExisted(hapVerifyInfos)) {
         LOGE("%s", PackingToolErrMsg::TARGET_MODULE_NAME_NOT_EXIST.toStringWithArgs(
-            "CheckTargetModuleNameIsExisted failed. Target module is not found.").c_str());
+            "The target modules are needed to pack with the overlay module.").c_str());
         return false;
     }
     if (!CheckCompileSdkIsValid(hapVerifyInfos)) {
         LOGE("%s", PackingToolErrMsg::COMPILE_SDK_TYPE_DIFFERENT.toStringWithArgs(
-            "CheckCompileSdkIsValid failed. Compile sdk config is not same.").c_str());
+            std::vector<std::string>{
+                "CompileSdkType is not the same for all modules.",
+                "Ensure that all modules has same compileSdkType."
+            }).c_str());
         return false;
     }
     if (!CheckProxyDataUriIsUnique(hapVerifyInfos)) {
@@ -273,11 +290,13 @@ bool HapVerifyUtils::CheckField(const std::string& field, int32_t hapVal, const 
                                 int32_t hspVal, const HapVerifyInfo& hsp)
 {
     if (hapVal < hspVal) {
-        LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-            std::string("The values of ") + field + "[" + std::to_string(hapVal) +
-            "] in HAP[" + hap.GetModuleName() + "] < " +
-            field + "[" + std::to_string(hspVal) + "] in HSP[" + hsp.GetModuleName() + "]. " +
-            "Solution: Ensure that the values of " + field + " in HAP >= HSP.").c_str());
+        LOGE("%s", PackingToolErrMsg::CHECK_APP_FIELDS_INVALID.toStringWithArgs(
+            std::vector<std::string>{
+                std::string("The values of ") + field + "[" + std::to_string(hapVal) +
+                "] in HAP[" + hap.GetModuleName() + "] < " +
+                field + "[" + std::to_string(hspVal) + "] of HSP[" + hsp.GetModuleName() + "].",
+                "Ensure that the values of " + field + " in HAP >= HSP."
+            }).c_str());
         return false;
     }
     return true;
@@ -293,10 +312,12 @@ bool HapVerifyUtils::ModuleDebugValidation(const std::list<HapVerifyInfo> hapVer
     HapVerifyInfo hap = *hapVerifyInfos.begin();
     for (const HapVerifyInfo& hapInfo : hapVerifyInfos) {
         if (hap.IsDebug() != hapInfo.IsDebug()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-                std::string("The debug fields of Hap[") + hap.GetModuleName() +
-                "] and Hap[" + hapInfo.GetModuleName() + "] are different. " +
-                "Solution: Ensure values of debug are same in each HAP.").c_str());
+            LOGE("%s", PackingToolErrMsg::CHECK_APP_FIELDS_INVALID.toStringWithArgs(
+                std::vector<std::string>{
+                    std::string("The debug fields of Hap[") + hap.GetModuleName() +
+                    "] and Hap[" + hapInfo.GetModuleName() + "] are different.",
+                    "Ensure that the values of 'debug' in the module.json file of each HAP module are the same."
+                }).c_str());
             return false;
         }
     }
@@ -304,46 +325,57 @@ bool HapVerifyUtils::ModuleDebugValidation(const std::list<HapVerifyInfo> hapVer
         LOGI("Hap debug is true or hspVerifyInfos empty");
         return true;
     }
+    std::list<std::string> hspDebugNames;
     for (const HapVerifyInfo& hapInfo : hspVerifyInfos) {
         if (hapInfo.IsDebug()) {
-            LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
-                std::string("Detected HAP(s) with debug=false, but some HSP") +
-                hapInfo.GetModuleName() + " are debug=true. " +
-                "Solution: When the debug value of Hap is false,"
-                "the debug value of Hsp should also be false.").c_str());
-            return false;
+            hspDebugNames.push_back(hapInfo.GetModuleName());
         }
+    }
+    if (!hspDebugNames.empty()) {
+        LOGE("%s", PackingToolErrMsg::CHECK_APP_FIELDS_INVALID.toStringWithArgs(
+            std::vector<std::string>{
+                "Detected HAP(s) with debug=false, but some HSP" + FormatModuleNameList(hspDebugNames) +
+                " are debug=true.",
+                "When the debug value of Hap is false,the debug value of Hsp should also be false."
+            }).c_str());
+        return false;
     }
     return true;
 }
 
 bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, const HapVerifyInfo& hapVerifyInfo)
 {
-    if (hapVerifyInfo.GetBundleName().empty()) {
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs("bundleName is empty").c_str());
-        return false;
-    }
-    if (verifyCollection.bundleName != hapVerifyInfo.GetBundleName()) {
+    if (hapVerifyInfo.GetBundleName().empty() || verifyCollection.bundleName != hapVerifyInfo.GetBundleName()) {
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            "input module bundleName is different.").c_str());
+            std::vector<std::string>{
+                "The bundleName parameter values are different.",
+                "Check if the bundleName is the same in different modules."
+            }).c_str());
         return false;
     }
     if (verifyCollection.bundleType != hapVerifyInfo.GetBundleType()) {
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            "input module bundleType is different.").c_str());
+            std::vector<std::string>{
+                "The bundleType parameter values are different.",
+                "Check if the bundleType is the same in different modules."
+            }).c_str());
         return false;
     }
     if (verifyCollection.versionCode != hapVerifyInfo.GetVersion().versionCode) {
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            "input module versionCode is different.").c_str());
+            std::vector<std::string>{
+                "The versionCode parameter values are different.",
+                "Check if the versionCode is the same in different modules."
+            }).c_str());
         return false;
     }
     if (verifyCollection.buildVersion != hapVerifyInfo.GetVersion().buildVersion) {
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            "input module buildVersion is different.").c_str());
-        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            std::string("Module: ( ") + verifyCollection.moduleName + " ) and Module: ( " +
-            hapVerifyInfo.GetModuleName() + " ) has different buildVersion").c_str());
+            std::vector<std::string>{
+                "The buildVersion parameter values are different.",
+                std::string("Module: (") + verifyCollection.moduleName + ") and Module: (" +
+                hapVerifyInfo.GetModuleName() + ") has different buildVersion."
+            }).c_str());
         return false;
     }
     if (verifyCollection.releaseType != hapVerifyInfo.GetApiVersion().releaseType) {
@@ -355,18 +387,27 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
     }
     if (verifyCollection.targetBundleName != hapVerifyInfo.GetTargetBundleName()) {
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            "targetBundleName is different.").c_str());
+            std::vector<std::string>{
+                "The targetBundleName parameter values are different.",
+                "Check if the targetBundleName is the same in different modules."
+            }).c_str());
         return false;
     }
     if (verifyCollection.targetPriority != hapVerifyInfo.GetTargetPriority()) {
         LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-            "targetPriority is different.").c_str());
+            std::vector<std::string>{
+                "The targetPriority parameter values are different.",
+                "Check if the targetPriority is the same in different modules."
+            }).c_str());
         return false;
     }
     if (IsEntryOrFeature(verifyCollection.moduleType) && IsEntryOrFeature(hapVerifyInfo.GetModuleType())) {
         if (verifyCollection.multiAppMode != (hapVerifyInfo.GetMultiAppMode())) {
             LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
-                "multiAppMode is different.").c_str());
+                std::vector<std::string>{
+                    "The multiAppMode parameter values are different.",
+                    "Check if the multiAppMode is the same in different modules."
+                }).c_str());
             return false;
         }
     }
@@ -1044,20 +1085,21 @@ bool HapVerifyUtils::CheckAtomicServicePreloadsIsValid(const std::list<HapVerify
         for (PreloadItem preloadItem : preloadItems) {
             if (Utils::CheckListContain(preloadModuleNames, preloadItem.moduleName)) {
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("preloads config a duplicate module ") + preloadItem.moduleName +
-                    " in " + hapVerifyInfo.GetModuleName() + ".").c_str());
+                    std::string("Preloads a duplicate module, module(") + hapVerifyInfo.GetModuleName() +
+                    ") cannot preloads module (" + preloadItem.moduleName + ").").c_str());
                 return false;
             }
             preloadModuleNames.push_back(preloadItem.moduleName);
             if (!Utils::CheckListContain(moduleNames, preloadItem.moduleName)) {
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("preloads config a invalid module ") + preloadItem.moduleName +
-                    " in " + hapVerifyInfo.GetModuleName() + ".").c_str());
+                    std::string("Preloads a not exist module, module(") + hapVerifyInfo.GetModuleName() +
+                    ") cannot preloads module(" + preloadItem.moduleName + ").").c_str());
                 return false;
             }
             if (preloadItem.moduleName == hapVerifyInfo.GetModuleName()) {
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("can not preload self, ") + hapVerifyInfo.GetModuleName() + " preload self.").c_str());
+                    std::string("Cannot preload self, module ") + hapVerifyInfo.GetModuleName() +
+                    " cannot preloads self.").c_str());
                 return false;
             }
         }
@@ -1074,9 +1116,9 @@ bool HapVerifyUtils::CheckAtomicServicePreloadsIsValid(const std::list<HapVerify
                 (moduleNameWithType[preloadItem.moduleName] == ENTRY ||
                 moduleNameWithType[preloadItem.moduleName] == HAR)) {
                 LOGE("%s", PackingToolErrMsg::ATOMICSERVICE_PRELOADS_INVALID.toStringWithArgs(
-                    std::string("feature or shared can not preload entry or har, ") +
-                    hapVerifyInfo.GetModuleName() + " preloads a " +
-                    moduleNameWithType[preloadItem.moduleName] + " module.").c_str());
+                    std::string("feature or shared cannot preload entry or har, module(") +
+                    hapVerifyInfo.GetModuleName() + ") cannot preloads module(" +
+                    preloadItem.moduleName + ").").c_str());
                 return false;
             }
         }
@@ -1290,7 +1332,10 @@ bool HapVerifyUtils::CheckCompileSdkIsValid(const std::list<HapVerifyInfo>& hapV
     for (auto& hapVerifyInfo : hapVerifyInfos) {
         if (hapVerifyInfo.GetCompileSdkType() != compileSdkType) {
             LOGE("%s", PackingToolErrMsg::COMPILE_SDK_TYPE_DIFFERENT.toStringWithArgs(
-                "compile sdk type is not same.").c_str());
+                std::vector<std::string>{
+                    "CompileSdkType is not the same for all modules.",
+                    "Ensure that all modules has same compileSdkType."
+                }).c_str());
             return false;
         }
         if (hapVerifyInfo.GetCompileSdkVersion() != compileSdkVersion) {
@@ -1483,9 +1528,13 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
             if (!Utils::CheckDisjoint(typeList1, typeList2)) {
                 std::string cause = "Module(" + hapVerifyInfo.GetModuleName() + "), Ability(" +
                     *iter1 + ") and Ability(" + *iter2 + ") have same continueType.\n";
-                cause += "Ability(" + *iter1 + ") have continueType: " + Utils::ListToString(typeList1) + ", ";
-                cause += "Another Ability(" + *iter2 + ") have continueType: " + Utils::ListToString(typeList2) + ".";
-                LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(cause.c_str()).c_str());
+                cause += "Ability(" + *iter1 + ") have continueType: " + FormatModuleNameList(typeList1) + ", ";
+                cause += "Another Ability(" + *iter2 + ") have continueType: " + FormatModuleNameList(typeList2) + ".";
+                LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+                    std::vector<std::string>{
+                        cause,
+                        "Please ensure that the continueType for different abilities does not overlap."
+                    }).c_str());
                 return false;
             }
         }
@@ -1511,12 +1560,18 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
     if (!Utils::CheckDisjoint(typeList1, typeList2)) {
         std::string cause = "Conflict detected between modules due to overlapping deviceType and continueType:\n";
         cause += "- Module(" + hapVerifyInfo1.GetModuleName() + ") with deviceType: " +
-            Utils::ListToString(hapVerifyInfo1.GetDeviceTypes()) +
-            " and continueType: " + Utils::ListToString(typeList1) + "\n";
+            FormatModuleNameList(hapVerifyInfo1.GetDeviceTypes()) +
+            " and continueType: " + FormatModuleNameList(typeList1) + "\n";
         cause += "- Module(" + hapVerifyInfo2.GetModuleName() + ") with deviceType: " +
-            Utils::ListToString(hapVerifyInfo2.GetDeviceTypes()) +
-            " and continueType: " + Utils::ListToString(typeList2);
-        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(cause.c_str()).c_str());
+            FormatModuleNameList(hapVerifyInfo2.GetDeviceTypes()) +
+            " and continueType: " + FormatModuleNameList(typeList2);
+        LOGE("%s", PackingToolErrMsg::CONTINUE_TYPE_INVALID.toStringWithArgs(
+            std::vector<std::string>{
+                cause,
+                "Ensure that the continueType fields in these modules are different. Update either (" +
+                hapVerifyInfo1.GetModuleName() + ") or (" + hapVerifyInfo2.GetModuleName() +
+                ") to avoid continueType or deviceType overlap."
+            }).c_str());
         return false;
     }
     return true;

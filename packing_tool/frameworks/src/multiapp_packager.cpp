@@ -514,7 +514,7 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
             std::string packInfoJsonStr;
             if (!PackInfoUtils::MergeTwoPackInfos(finalPackInfoStr, packInfo, packInfoJsonStr)) {
                 LOGE("%s", PackingToolErrMsg::MERGE_TWO_PACKINFO_FAILED.toStringWithArgs(
-                    "PackInfoUtils::MergeTwoPackInfos failed.").c_str());
+                    "Verify pack.info failed.").c_str());
             }
             finalPackInfoStr = packInfoJsonStr;
         }
