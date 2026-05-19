@@ -576,6 +576,7 @@
                         "sysPicker/camera",
                         "autoFill/smart",
                         "liveViewLockScreen",
+                        "liveViewCard",
                         "sysPicker/filePicker",
                         "sysPicker/audioPicker",
                         "sys/visualExtension",
