@@ -16,6 +16,7 @@
 #include "module_json.h"
 
 #include <fstream>
+#include <vector>
 
 #include "log.h"
 #include "utils.h"
@@ -711,7 +712,7 @@ bool ModuleJson::GetProxyDataUrisByModuleObj(std::unique_ptr<PtJson>& moduleObj,
                 ("Module node get " + PROXY_DATAS + " array node failed!").c_str()).c_str());
             return false;
         }
-        if (!GetProxyDataUrisByProxyDatasObj(proxyDatasObj, proxyDataUris)) {
+        if (!GetProxyDataUrisByProxyDatasObj(proxyDatasObj, PROXY_DATAS, proxyDataUris)) {
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
                 "GetProxyDataUrisByProxyDatasObj failed!").c_str());
             return false;
@@ -723,7 +724,7 @@ bool ModuleJson::GetProxyDataUrisByModuleObj(std::unique_ptr<PtJson>& moduleObj,
                 ("Module node get " + PROXY_DATA + " array node failed!").c_str()).c_str());
             return false;
         }
-        if (!GetProxyDataUrisByProxyDatasObj(proxyDatasObj, proxyDataUris)) {
+        if (!GetProxyDataUrisByProxyDatasObj(proxyDatasObj, PROXY_DATA, proxyDataUris)) {
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
                 "GetProxyDataUrisByProxyDatasObj failed!").c_str());
             return false;
@@ -733,6 +734,7 @@ bool ModuleJson::GetProxyDataUrisByModuleObj(std::unique_ptr<PtJson>& moduleObj,
 }
 
 bool ModuleJson::GetProxyDataUrisByProxyDatasObj(std::unique_ptr<PtJson>& proxyDatasObj,
+    const std::string& proxyDataName,
     std::list<std::string>& proxyDataUris)
 {
     if (!proxyDatasObj || !proxyDatasObj->IsArray()) {
@@ -743,8 +745,12 @@ bool ModuleJson::GetProxyDataUrisByProxyDatasObj(std::unique_ptr<PtJson>& proxyD
     for (int32_t i = 0; i < proxyDatasObj->GetSize(); i++) {
         std::unique_ptr<PtJson> proxyDataObj = proxyDatasObj->Get(i);
         if (!proxyDataObj->Contains(PROXY_URI.c_str())) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                ("proxyData node has no " + PROXY_URI + " node!").c_str()).c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_PROXY_DATA_URI_FAILED.toStringWithArgs(
+                std::vector<std::string>{
+                    proxyDataName + " object does not contain " + PROXY_URI + ".",
+                    "Ensure that each item in the " + proxyDataName +
+                    " array includes a valid " + PROXY_URI + " field."
+                }).c_str());
             return false;
         }
         std::string proxyUri;
@@ -1247,15 +1253,16 @@ bool ModuleJson::CheckEntryInAtomicService()
         return true;
     }
     std::string moduleType;
+    std::string moduleName;
     std::list<std::string> abilityNames;
-    if (!GetStageModuleType(moduleType) || !GetAbilityNames(abilityNames)) {
+    if (!GetStageModuleType(moduleType) || !GetStageModuleName(moduleName) || !GetAbilityNames(abilityNames)) {
         LOGE("%s", PackingToolErrMsg::CHECK_LEASTONE_ABILITY.toStringWithArgs(
-            "entry module must contain at least one ability.").c_str());
+            ("Entry module(" + moduleName + ") must contain at least one ability.").c_str()).c_str());
         return false;
     }
     if (moduleType.compare(ENTRY) == 0 && abilityNames.empty()) {
         LOGE("%s", PackingToolErrMsg::CHECK_LEASTONE_ABILITY.toStringWithArgs(
-            "entry module must contain at least one ability.").c_str());
+            ("Entry module(" + moduleName + ") must contain at least one ability.").c_str()).c_str());
         return false;
     }
     return true;
@@ -1423,12 +1430,14 @@ bool ModuleJson::CheckStageOverlayCfg()
         return false;
     }
     if (!targetModuleName.empty()) {
+        std::string moduleName;
         if (IsExistedStageRequestPermissions()) {
+            GetStageModuleName(moduleName);
             LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-                "targetModuleName cannot be existed with requestPermissions.").c_str());
+                std::string("The module(") + moduleName +
+                ") targetModuleName and requestPermissions cannot be configured at the same time.").c_str());
             return false;
         }
-        std::string moduleName;
         if (!GetStageModuleName(moduleName)) {
             LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
                 "GetModuleName failed.").c_str());
@@ -1436,12 +1445,15 @@ bool ModuleJson::CheckStageOverlayCfg()
         }
         if (targetModuleName == moduleName) {
             LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-                "targetModuleName cannot be same with name in the overlay module.").c_str());
+                std::string("The targetModuleName of module(") + moduleName + ") cannot be itself.").c_str());
             return false;
         }
     } else if (IsExistedStageModuleTargetPriority()) {
+        std::string moduleName;
+        GetStageModuleName(moduleName);
         LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-            "targetPriority cannot be existed without the targetModuleName in module.json.").c_str());
+            std::string("The targetPriority cannot be existed without the targetModuleName in module.json. ") +
+            "The moduleName is " + moduleName + ".").c_str());
         return false;
     }
 
@@ -1452,9 +1464,12 @@ bool ModuleJson::CheckStageOverlayCfg()
         return false;
     }
     if (!targetBundleName.empty()) {
+        std::string moduleName;
+        GetStageModuleName(moduleName);
         if (targetModuleName.empty()) {
             LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-                "targetModuleName is necessary in the overlay bundle.").c_str());
+                std::string("The module(") + moduleName +
+                ") targetModuleName settings is necessary in the overlay bundle.").c_str());
             return false;
         }
         std::string bundleName;
@@ -1465,12 +1480,16 @@ bool ModuleJson::CheckStageOverlayCfg()
         }
         if (targetBundleName == bundleName) {
             LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-                "targetBundleName cannot be same with the bundleName.").c_str());
+                std::string("The module(") + moduleName +
+                ") targetBundleName cannot be same with the bundleName.").c_str());
             return false;
         }
     } else if (IsExistedStageAppTargetPriority()) {
+        std::string moduleName;
+        GetStageModuleName(moduleName);
         LOGE("%s", PackingToolErrMsg::CHECK_OVERLAY_CFG_FAILED.toStringWithArgs(
-            "targetPriority cannot be existed without the targetBundleName in app.json.").c_str());
+            std::string("The targetPriority cannot be existed without the targetBundleName in app.json. ") +
+            "The moduleName is " + moduleName + ".").c_str());
         return false;
     }
     return true;

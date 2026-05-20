@@ -85,7 +85,7 @@ bool PackageNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
     ModuleJson moduleJson;
     if (!moduleJson.ParseFromFile(moduleJsonPath)) {
         LOGE("%s", PackingToolErrMsg::UPDATE_MODULE_JSON_FAILED.toStringWithArgs(
-            "Update module.json failed, parse json is null.").c_str());
+            "Failed to parse module.json: jsonObject is null.").c_str());
         return false;
     }
     if (!moduleJson.SetBundleName(newBundleName)) {

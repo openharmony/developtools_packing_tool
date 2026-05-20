@@ -197,6 +197,7 @@ public:
     bool GetProxyDataUris(std::list<std::string>& proxyDataUris);
     bool GetProxyDataUrisByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::list<std::string>& proxyDataUris);
     bool GetProxyDataUrisByProxyDatasObj(std::unique_ptr<PtJson>& proxyDatasObj,
+        const std::string& proxyDataName,
         std::list<std::string>& proxyDataUris);
 
     bool GetAssetAccessGroups(std::list<std::string>& assetAccessGroups);

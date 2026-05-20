@@ -392,6 +392,8 @@ bool HapPackager::CompressHap()
         
         // Check kernel permission compression validation
         if (!CheckKernelPermissionCompression()) {
+            LOGE("%s", PackingToolErrMsg::COMPRESS_HAP_FAILED.toStringWithArgs(
+                "Check kernel permission compression validation failed.").c_str());
             return false;
         }
         
@@ -476,7 +478,7 @@ bool HapPackager::CheckPkgContext()
         return true;
     }
     LOGE("%s", PackingToolErrMsg::CHECK_PKG_CONTEXT_FAILED.toStringWithArgs(
-        "no have pkgContextInfo.json.").c_str());
+        "no have pkgContextInfo.json file.").c_str());
     return false;
 }
 
@@ -484,25 +486,25 @@ bool HapPackager::CheckStageHap(const std::string &jsonPath)
 {
     if (!moduleJson_.CheckStageAsanTsanEnabledValid()) {
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-            "CheckStageAsanTsanEnabledValid failed.").c_str());
+            "Check the asanTsanEnabled parameter in the Stage module failed.").c_str());
         return false;
     }
 
     if (!moduleJson_.CheckStageAtomicService()) {
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-            "CheckStageAtomicService failed.").c_str());
+            "Check the atomicService parameter in the Stage module failed.").c_str());
         return false;
     }
 
     if (!moduleJson_.CheckQuerySchemes()) {
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-            "CheckQuerySchemes failed.").c_str());
+            "Check the querySchemes parameter in the Stage module failed.").c_str());
         return false;
     }
 
     if (!moduleJson_.CheckDeduplicateHar()) {
         LOGE("%s", PackingToolErrMsg::CHECK_STAGE_HAP_FAILED.toStringWithArgs(
-            "CheckDeduplicateHar failed.").c_str());
+            "Check the deduplicateHar in the Stage module failed.").c_str());
         return false;
     }
 

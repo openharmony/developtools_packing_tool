@@ -171,11 +171,17 @@ const ErrorMsg PackingToolErrMsg::CHECK_STAGE_HAP_FAILED =
 
 const ErrorMsg PackingToolErrMsg::CHECK_AS_TSAN_ENABLED =
     BuildPackingToolError("12", "004",
-        "Check asanEnabled failed.", "%s");
+        "Check asanEnabled failed.", "%s",
+        {
+            "Please ensure the parameters are correctly set. Review 'app.json' and adjust the configuration as needed.",
+        });
 
 const ErrorMsg PackingToolErrMsg::CHECK_HWASAN_ENABLED_INVALID =
     BuildPackingToolError("12", "005",
-        "Check hwasanEnabled failed.", "%s");
+        "Check hwasanEnabled failed.", "%s",
+        {
+            "Please ensure the parameters are correctly set. Review 'app.json' and adjust the configuration as needed.",
+        });
 
 const ErrorMsg PackingToolErrMsg::CHECK_ATOMIC_SERVICE_FAILED =
     BuildPackingToolError("12", "006",
@@ -218,7 +224,10 @@ const ErrorMsg PackingToolErrMsg::SET_GENERATE_BUILD_HASH =
 
 const ErrorMsg PackingToolErrMsg::CHECK_UBASAN_ENABLED_INVALID =
     BuildPackingToolError("12", "012",
-        "Check ubsanEnabled failed.", "%s");
+        "Check ubsanEnabled failed.", "%s",
+        {
+            "Please ensure the parameters are correctly set. Review 'app.json' and adjust the configuration as needed.",
+        });
 
 const ErrorMsg PackingToolErrMsg::READ_STAGE_HAP_VERIFY_INFO_FAILED =
     BuildPackingToolError("12", "013",
@@ -324,7 +333,11 @@ const ErrorMsg PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED =
 
 const ErrorMsg PackingToolErrMsg::INVALID_THIRD_LEVEL_DIRECTORY_NAME =
     BuildPackingToolError("12", "031",
-        "Invalid third level directory name.", "%s");
+        "Invalid third level directory name.", "%s",
+        {
+            "Please check it with reference to this example: \n"
+            "zh_Hani_CN-vertical-car-mdpi-dark or zh_Hani_CN-vertical-car-mdpi.",
+        });
 
 const ErrorMsg PackingToolErrMsg::IS_PICTURING_FAILED =
     BuildPackingToolError("12", "032",
