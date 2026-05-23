@@ -271,7 +271,8 @@
                             "dataGroupIds",
                             "process",
                             "isolationProcess",
-                            "skipAbilityStageLifecycle"
+                            "skipAbilityStageLifecycle",
+                            "appIdentifierAllowList"
                           ]
                         }
                       }
@@ -1594,7 +1595,8 @@
                       "dataGroupIds",
                       "process",
                       "isolationProcess",
-                      "skipAbilityStageLifecycle"
+                      "skipAbilityStageLifecycle",
+                      "appIdentifierAllowList"
                     ]
                   }
                 }
