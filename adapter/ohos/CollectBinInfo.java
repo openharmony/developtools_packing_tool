@@ -66,6 +66,9 @@ public class CollectBinInfo {
                 return versionCode;
             }
             String fileData = new String(fileDataByte, "UTF-8");
+            if (fileData.isEmpty()) {
+                return versionCode;
+            }
             JSONObject object = JSON.parseObject(
                     new ByteArrayInputStream(fileData.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
             if (object == null || !object.containsKey(PROFILE_KEY)) {

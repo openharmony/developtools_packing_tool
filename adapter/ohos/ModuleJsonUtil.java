@@ -47,6 +47,9 @@ class ModuleJsonUtil {
     }
 
     private static JSONObject parseJsonObject(String jsonString) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return null;
+        }
         try {
             return JSON.parseObject(
                     new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
@@ -55,7 +58,22 @@ class ModuleJsonUtil {
         }
     }
 
+    private static <T> T parseJsonObject(String jsonString, Class<T> clazz) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return null;
+        }
+        try {
+            return JSON.parseObject(
+                    new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), clazz);
+        } catch (IOException e) {
+            throw new JSONException("Unexpected IOException from ByteArrayInputStream", e);
+        }
+    }
+
     private static List<String> parseJsonArray(String jsonString) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return new ArrayList<>();
+        }
         try {
             JSONArray array = JSON.parseObject(
                     new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), JSONArray.class);
@@ -1084,15 +1102,21 @@ class ModuleJsonUtil {
             }
             try {
                 JSONObject distroFilter = parseJsonObject(resource);
-                if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
-                    return JSON.parseObject(new ByteArrayInputStream(getJsonString(distroFilter,
-                            DISTRIBUTION_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                if (distroFilter != null && distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                    DistroFilter parsedDistroFilter =
+                            parseJsonObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+                    if (parsedDistroFilter != null) {
+                        return parsedDistroFilter;
+                    }
                 }
-                if (distroFilter.containsKey(DISTRO_FILTER)) {
-                    return JSON.parseObject(new ByteArrayInputStream(getJsonString(distroFilter,
-                            DISTRO_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                if (distroFilter != null && distroFilter.containsKey(DISTRO_FILTER)) {
+                    DistroFilter parsedDistroFilter =
+                            parseJsonObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
+                    if (parsedDistroFilter != null) {
+                        return parsedDistroFilter;
+                    }
                 }
-            } catch (JSONException | IOException exception) {
+            } catch (JSONException exception) {
                 LOG.warning("parseStageDistroFilter failed for resource: " + resource);
             }
         }
@@ -1161,15 +1185,20 @@ class ModuleJsonUtil {
         JSONObject jsonObj;
         try {
             jsonObj = parseJsonObject(jsonString);
+            if (jsonObj == null) {
+                throw new JSONException("input json is empty");
+            }
             if (jsonObj.containsKey(MODULE)) {
                 JSONObject moduleObj = jsonObj.getJSONObject(MODULE);
                 if (moduleObj.containsKey(DISTRO_FILTER)) {
-                    distroFilter = JSON.parseObject(
-                            new ByteArrayInputStream(getJsonString(moduleObj,
-                            DISTRO_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                    DistroFilter parsedDistroFilter =
+                            parseJsonObject(getJsonString(moduleObj, DISTRO_FILTER), DistroFilter.class);
+                    if (parsedDistroFilter != null) {
+                        distroFilter = parsedDistroFilter;
+                    }
                 }
             }
-        } catch (JSONException | IOException exception) {
+        } catch (JSONException exception) {
             String errMsg = "Parse the metadata info exist JSONException: " + exception.getMessage();
             LOG.error(PackingToolErrMsg.PARSE_JSON_OBJECT_EXCEPTION.toString(exception.getMessage()));
             throw new BundleException(errMsg);

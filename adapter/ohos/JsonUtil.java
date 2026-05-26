@@ -37,6 +37,9 @@ import ohos.restool.ResourcesParserFactory;
  */
 public class JsonUtil {
     private static JSONObject parseJsonObject(String jsonString) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return null;
+        }
         try {
             return JSON.parseObject(
                     new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
@@ -45,7 +48,22 @@ public class JsonUtil {
         }
     }
 
+    private static <T> T parseJsonObject(String jsonString, Class<T> clazz) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return null;
+        }
+        try {
+            return JSON.parseObject(
+                    new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), clazz);
+        } catch (IOException e) {
+            throw new JSONException("Unexpected IOException from ByteArrayInputStream", e);
+        }
+    }
+
     private static JSONArray parseJsonArray(String jsonString) {
+        if (jsonString == null || jsonString.isEmpty()) {
+            return null;
+        }
         try {
             return JSON.parseObject(
                     new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8)), JSONArray.class);
@@ -780,12 +798,9 @@ public class JsonUtil {
         }
 
         if (hapJson.containsKey("distroFilter")) {
-            try {
-                hapInfo.distroFilter = JSON.parseObject(new ByteArrayInputStream(
-                        getJsonString(hapJson, "distroFilter").getBytes(StandardCharsets.UTF_8)),
-                        DistroFilter.class);
-            } catch (IOException e) {
-                throw new JSONException("Parse distroFilter failed: " + e.getMessage(), e);
+            DistroFilter distroFilter = parseJsonObject(getJsonString(hapJson, "distroFilter"), DistroFilter.class);
+            if (distroFilter != null) {
+                hapInfo.distroFilter = distroFilter;
             }
         }
         hapInfo.setRequiredDeviceFeatures(parseRequiredDeviceFeatures(hapJson));
@@ -1339,15 +1354,21 @@ public class JsonUtil {
             }
             try {
                 JSONObject distroFilter = parseJsonObject(resource);
-                if (distroFilter.containsKey(DISTRIBUTION_FILTER)) {
-                    return JSON.parseObject(new ByteArrayInputStream(getJsonString(distroFilter,
-                            DISTRIBUTION_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                if (distroFilter != null && distroFilter.containsKey(DISTRIBUTION_FILTER)) {
+                    DistroFilter parsedDistroFilter =
+                            parseJsonObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
+                    if (parsedDistroFilter != null) {
+                        return parsedDistroFilter;
+                    }
                 }
-                if (distroFilter.containsKey(DISTRO_FILTER)) {
-                    return JSON.parseObject(new ByteArrayInputStream(getJsonString(distroFilter,
-                            DISTRO_FILTER).getBytes(StandardCharsets.UTF_8)), DistroFilter.class);
+                if (distroFilter != null && distroFilter.containsKey(DISTRO_FILTER)) {
+                    DistroFilter parsedDistroFilter =
+                            parseJsonObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
+                    if (parsedDistroFilter != null) {
+                        return parsedDistroFilter;
+                    }
                 }
-            } catch (JSONException | IOException exception) {
+            } catch (JSONException exception) {
                 LOG.warning("parseModuleDistrofilterFromMetadata failed for resource: " + resource);
             }
         }
@@ -1717,7 +1738,7 @@ public class JsonUtil {
             }
             try {
                 JSONObject jsonObj = parseJsonObject(jsonStr);
-                if (jsonObj.containsKey("shortcuts")) {
+                if (jsonObj != null && jsonObj.containsKey("shortcuts")) {
                     JSONArray shortcutObjs = jsonObj.getJSONArray("shortcuts");
                     for (int j = 0; j < shortcutObjs.size(); ++j) {
                         shortcuts.add(parseModuleShortcutObj(shortcutObjs.getJSONObject(j), data));
@@ -1834,6 +1855,9 @@ public class JsonUtil {
             JSONObject jsonObj = parseJsonObject(jsonStr);
             if (jsonObj != null && jsonObj.containsKey(FORMS)) {
                 JSONArray jsonForms = parseJsonArray(getJsonString(jsonObj, FORMS));
+                if (jsonForms == null) {
+                    continue;
+                }
                 int size = jsonForms.size();
                 for (int j = 0; j < size; ++j) {
                     JSONObject tmpObj = jsonForms.getJSONObject(j);
@@ -1863,12 +1887,10 @@ public class JsonUtil {
         moduleFormInfo.src = getJsonString(formObj, SRC);
 
         if (formObj.containsKey(WINDOW)) {
-            try {
-                moduleFormInfo.windowInfo =
-                        JSON.parseObject(new ByteArrayInputStream(getJsonString(formObj, WINDOW)
-                                .getBytes(StandardCharsets.UTF_8)), AbilityFormInfo.ModuleWindowInfo.class);
-            } catch (IOException e) {
-                throw new BundleException("Parse form window info failed: " + e.getMessage());
+            AbilityFormInfo.ModuleWindowInfo windowInfo =
+                    parseJsonObject(getJsonString(formObj, WINDOW), AbilityFormInfo.ModuleWindowInfo.class);
+            if (windowInfo != null) {
+                moduleFormInfo.windowInfo = windowInfo;
             }
         }
         moduleFormInfo.isDefault = getJsonBooleanValue(formObj, IS_DEFAULT, false);
@@ -2342,6 +2364,10 @@ public class JsonUtil {
             jsonObject = parseJsonObject(jsonString);
         } catch (JSONException exception) {
             throw new BundleException("Parse patch.json failed: " + exception.getMessage());
+        }
+        if (jsonObject == null) {
+            LOG.error("parsePatch failed, input patch.json is invalid.");
+            throw new BundleException("parsePatch failed, input patch.json is invalid.");
         }
         JSONObject appObj = jsonObject.getJSONObject(APP);
         if (appObj == null) {
