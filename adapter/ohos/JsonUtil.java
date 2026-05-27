@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.TypeReference;
 import ohos.restool.ResourcesParserFactory;
+import ohos.restool.ResourcesParser;
 
 /**
  * Json Util.
@@ -431,7 +432,7 @@ public class JsonUtil {
         String labelRes = "";
         if (appJson.containsKey("labelId")) {
             int labelId = appJson.getIntValue("labelId");
-            labelRes = ResourcesParserFactory.createParser(data).getBaseResourceById(labelId, data);
+            labelRes = ResourcesParserFactory.createParser(data).getFinalBaseResourceById(labelId, data);
         }
         if (labelRes != null && !labelRes.isEmpty()) {
             appInfo.appName = labelRes;
@@ -889,7 +890,7 @@ public class JsonUtil {
         ability.name = getJsonString(abilityJson, "name");
         if (abilityJson.containsKey("iconId")) {
             int iconId = abilityJson.getIntValue("iconId");
-            String iconPath = ResourcesParserFactory.createParser(data).getResourceById(iconId, data);
+            String iconPath = ResourcesParserFactory.createParser(data).getFinalResourceById(iconId, data);
             if (iconPath != null && !iconPath.isEmpty()) {
                 ability.iconPath = ASSETS_DIR_NAME + iconPath;
             }
@@ -899,7 +900,7 @@ public class JsonUtil {
 
         if (abilityJson.containsKey("descriptionId")) {
             int descriptionId = abilityJson.getIntValue("descriptionId");
-            ability.descriptionRes = ResourcesParserFactory.createParser(data).getBaseResourceById(descriptionId, data);
+            ability.descriptionRes = ResourcesParserFactory.createParser(data).getFinalBaseResourceById(descriptionId, data);
         }
         ability.description = ability.descriptionRes != null && !ability.descriptionRes.isEmpty() ?
                 ability.descriptionRes : getJsonString(abilityJson, "description");
@@ -907,7 +908,7 @@ public class JsonUtil {
 
         if (abilityJson.containsKey("labelId")) {
             int labelId = abilityJson.getIntValue("labelId");
-            ability.labelRes = ResourcesParserFactory.createParser(data).getBaseResourceById(labelId, data);
+            ability.labelRes = ResourcesParserFactory.createParser(data).getFinalBaseResourceById(labelId, data);
         }
         if (ability.labelRes != null && !ability.labelRes.isEmpty()) {
             ability.label = ability.labelRes;
@@ -1909,7 +1910,7 @@ public class JsonUtil {
             String descriptionId = descriptionStr.substring(len);
             try {
                 int id = Integer.parseUnsignedInt(descriptionId);
-                descriptions = ResourcesParserFactory.createParser(data).getResourceMapById(id, data);
+                descriptions = ResourcesParserFactory.createParser(data).getFinalResourceMapById(id, data);
             } catch (NumberFormatException e) {
                 LOG.error("parseFormDescriptions failed: invalid descriptionId: " + descriptionId);
             } catch (BundleException e) {
@@ -2064,7 +2065,7 @@ public class JsonUtil {
         }
         try {
             int finalId = Integer.parseUnsignedInt(id.substring(index));
-            res = ResourcesParserFactory.createParser(data).getResourceStringById(finalId, data);
+            res = ResourcesParserFactory.createParser(data).getFinalResourceStringById(finalId, data);
         } catch (NumberFormatException e) {
             LOG.error("parseResourceByStringID failed: input invalid of " + id + ".");
         }
@@ -2085,7 +2086,7 @@ public class JsonUtil {
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
             try {
-                res = ResourcesParserFactory.createParser(data).getResourceStringById(resId, data);
+                res = ResourcesParserFactory.createParser(data).getFinalResourceStringById(resId, data);
             } catch (BundleException e) {
                 LOG.warning("parseResourceByKey  ResourcesParserFactory.createParser: " + e.getMessage());
             }
@@ -2113,7 +2114,7 @@ public class JsonUtil {
         String res = "";
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
-            res = ResourcesParserFactory.createParser(data).getBaseResourceById(resId, data);
+            res = ResourcesParserFactory.createParser(data).getFinalBaseResourceById(resId, data);
         }
         if (res != null && !res.isEmpty()) {
             return res;
@@ -2129,7 +2130,7 @@ public class JsonUtil {
         if (jsonObject.containsKey(keyId)) {
             int resId = jsonObject.getIntValue(keyId);
             try {
-                map = ResourcesParserFactory.createParser(data).getResourceMapById(resId, data);
+                map = ResourcesParserFactory.createParser(data).getFinalResourceMapById(resId, data);
             } catch (BundleException e) {
                 LOG.warning("parseResourceMapByKey  ResourcesParserFactory.createParser: " + e.getMessage());
             }
@@ -2149,9 +2150,10 @@ public class JsonUtil {
         String iconPath = "";
         if (jsonObject.containsKey("iconId")) {
             int resId = jsonObject.getIntValue("iconId");
-            iconPath = ResourcesParserFactory.createParser(data).getBaseResourceById(resId, data);
+            ResourcesParser resourcesParser = ResourcesParserFactory.createParser(data);
+            iconPath = resourcesParser.getFinalBaseResourceById(resId, data);
             if (iconPath.isEmpty()) {
-                iconPath = ResourcesParserFactory.createParser(data).getResourceById(resId, data);
+                iconPath = resourcesParser.getFinalResourceById(resId, data);
             }
             if (iconPath.contains("resources")) {
                 iconPath = iconPath.substring(iconPath.lastIndexOf("resources"));
