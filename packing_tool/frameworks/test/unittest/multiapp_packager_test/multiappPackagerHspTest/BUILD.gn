@@ -23,6 +23,8 @@ ohos_hap("multiappPackagerHspTest") {
     ":hjs_demo_resources",
   ]
   certificate_profile = "../multiapp_packager_file/com.test.apppackagertest.p7b"
+  part_name = "packing_tool"
+  subsystem_name = "developtools"
 }
 
 ohos_app_scope("bmsstagedemoone_app_profile") {
