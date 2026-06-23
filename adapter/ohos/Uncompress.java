@@ -96,9 +96,13 @@ public class Uncompress {
             return false;
         }
         boolean unpackageResult = true;
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("Uncompress::unpackageProcess outPath is empty.");
+            return false;
+        }
         File destFile = new File(utility.getOutPath());
 
-        if (!destFile.exists()) {
+        if (!FileUtils.exists(destFile)) {
             if (!destFile.mkdirs()) {
                 LOG.error("Uncompress::unpackageProcess create out file directory failed!");
                 return false;
@@ -596,7 +600,7 @@ public class Uncompress {
                 if (HAP_SUFFIX.equals(suffix) && "true".equals(utility.getUnpackApk())) {
                     tempDir = tempDir + LINUX_FILE_SEPARATOR + entryName.replace(suffix, "");
                     File destFileDir = new File(tempDir);
-                    if (!destFileDir.exists()) {
+                    if (!FileUtils.exists(destFileDir)) {
                         destFileDir.mkdir();
                     }
                 }
@@ -685,7 +689,8 @@ public class Uncompress {
                 }
                 String tempPath = destDirPath + LINUX_FILE_SEPARATOR + entry.getName();
                 File destFile = new File(tempPath);
-                if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
+                if (destFile != null && destFile.getParentFile() != null
+                        && !FileUtils.exists(destFile.getParentFile())) {
                     destFile.getParentFile().mkdirs();
                 }
                 dataTransfer(zipFile, entry, destFile);
@@ -718,7 +723,8 @@ public class Uncompress {
                     throw new BundleException("Input invalid path " + filePath);
                 }
                 File destFile = new File(filePath);
-                if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
+                if (destFile != null && destFile.getParentFile() != null
+                        && !FileUtils.exists(destFile.getParentFile())) {
                     destFile.getParentFile().mkdirs();
                 }
                 boolean isUnpackApk = "true".equals(utility.getUnpackApk());
@@ -1049,7 +1055,7 @@ public class Uncompress {
             zipOut = new ZipOutputStream(checkedOut);
             for (int i = 0; i < srcFiles.length; i++) {
                 File srcFile = srcFiles[i];
-                if (srcFile.isDirectory()) {
+                if (FileUtils.isDirectory(srcFile)) {
                     if (srcFile.getPath().toLowerCase(Locale.ENGLISH).endsWith(LIBS_DIR_NAME)) {
                         compressDirectory(srcFile, "", zipOut, true);
                     } else {
@@ -1089,7 +1095,7 @@ public class Uncompress {
             return;
         }
         for (File file : files) {
-            if (file.isDirectory()) {
+            if (FileUtils.isDirectory(file)) {
                 compressDirectory(file, baseDir + dir.getName() + File.separator, zipOut, isCompression);
             } else {
                 compressFile(file, baseDir + dir.getName() + File.separator, zipOut, isCompression);
@@ -1115,7 +1121,7 @@ public class Uncompress {
             String entryName = (baseDir + srcFile.getName()).replace(File.separator, LINUX_FILE_SEPARATOR);
             ZipEntry zipEntry = new ZipEntry(entryName);
             boolean isNeedCompress = isCompression;
-            if (srcFile.isFile() && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(SO_SUFFIX)) {
+            if (FileUtils.isFile(srcFile) && srcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(SO_SUFFIX)) {
                 isNeedCompress = false;
             }
             if (isNeedCompress) {
@@ -1185,15 +1191,7 @@ public class Uncompress {
      * @param file the file to be deleted
      */
     private static void deleteFile(File file) {
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    deleteFile(files[i]);
-                }
-            }
-            file.delete();
-        }
+        FileUtils.deleteRecursively(file);
     }
 
     /**
@@ -1661,7 +1659,7 @@ public class Uncompress {
             }
             if (filePath != null) {
                 File rpcidFile = new File(rpcidPath, RPCID_SC);
-                if (rpcidFile.getParentFile() != null && !rpcidFile.getParentFile().exists()) {
+                if (rpcidFile.getParentFile() != null && !FileUtils.exists(rpcidFile.getParentFile())) {
                     rpcidFile.getParentFile().mkdirs();
                 }
                 ZipEntry rpcidEntry = zipFile.getEntry(filePath);
@@ -1800,7 +1798,7 @@ public class Uncompress {
             throws BundleException {
         String targetZipPath = outPath + LINUX_FILE_SEPARATOR + cpuAbi + LINUX_FILE_SEPARATOR + hapName;
         File targetZipFile = new File(targetZipPath);
-        if (targetZipFile.getParentFile() != null && !targetZipFile.getParentFile().exists()) {
+        if (targetZipFile.getParentFile() != null && !FileUtils.exists(targetZipFile.getParentFile())) {
             targetZipFile.getParentFile().mkdirs();
         }
         try (ZipOutputStream targetZipOutputStream = new ZipOutputStream(new FileOutputStream(targetZipPath))) {
@@ -1816,7 +1814,7 @@ public class Uncompress {
     private static void compressSourceFiles(File[] srcFiles, ZipOutputStream targetZipOutputStream)
             throws IOException, BundleException{
         for (File srcFile : srcFiles) {
-            if (srcFile.isDirectory()) {
+            if (FileUtils.isDirectory(srcFile)) {
                 compressDirectory(srcFile, "", targetZipOutputStream, false);
             } else {
                 compressFile(srcFile, "", targetZipOutputStream, false);
@@ -1864,7 +1862,8 @@ public class Uncompress {
                     throw new BundleException("uncompressAPPQFFile: Input invalid file" + filePath);
                 }
                 File destFile = new File(filePath);
-                if (destFile != null && destFile.getParentFile() != null && !destFile.getParentFile().exists()) {
+                if (destFile != null && destFile.getParentFile() != null
+                        && !FileUtils.exists(destFile.getParentFile())) {
                     destFile.getParentFile().mkdirs();
                 }
                 dataTransfer(zipFile, entry, destFile);

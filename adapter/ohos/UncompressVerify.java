@@ -78,7 +78,7 @@ class UncompressVerify {
     private static boolean hapCommandVerify(Utility utility) {
         utility.setHapPath(utility.getFormattedPath(utility.getHapPath()));
         File file = new File(utility.getHapPath());
-        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
+        if (!FileUtils.isFile(file) || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
             LOG.error("UncompressVerify::isArgsValidInHapMode hap-path must end with.hap!");
             return false;
         }
@@ -104,7 +104,7 @@ class UncompressVerify {
     private static boolean hspCommandVerify(Utility utility) {
         utility.setHspPath(utility.getFormattedPath(utility.getHspPath()));
         File file = new File(utility.getHspPath());
-        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
+        if (!FileUtils.isFile(file) || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
             LOG.error("UncompressVerify::isArgsValidInHspMode hsp-path must end with.hsp!");
             return false;
         }
@@ -126,8 +126,12 @@ class UncompressVerify {
      * @return isVerifyValidInRpcidMode if verify valid in hap mode.
      */
     private static boolean rpcidCommandVerify(Utility utility) {
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error("--out-path is empty!");
+            return false;
+        }
         File outPath = new File(utility.getOutPath(), RPCID_SC);
-        if (outPath.exists() && FALSE.equals(utility.getForceRewrite())) {
+        if (FileUtils.exists(outPath) && FALSE.equals(utility.getForceRewrite())) {
             LOG.error("UncompressVerify::rpcidCommandVerify outPath already exists");
             return false;
         }
@@ -147,7 +151,7 @@ class UncompressVerify {
         }
 
         File outFile = new File(utility.getOutPath());
-        if (("false".equals(utility.getForceRewrite())) && (outFile.exists())) {
+        if (("false".equals(utility.getForceRewrite())) && (FileUtils.exists(outFile))) {
             LOG.error("UncompressVerify::libsCommandVerify out file already existed!");
             return false;
         }
@@ -172,7 +176,7 @@ class UncompressVerify {
     private static boolean harCommandVerify(Utility utility) {
         utility.setHarPath(utility.getFormattedPath(utility.getHarPath()));
         File file = new File(utility.getHarPath());
-        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HAR_SUFFIX)) {
+        if (!FileUtils.isFile(file) || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(HAR_SUFFIX)) {
             LOG.error("UncompressVerify::isArgsValidInHarMode har-path must end with.har!");
             return false;
         }
@@ -200,7 +204,7 @@ class UncompressVerify {
 
         utility.setAppPath(utility.getFormattedPath(utility.getAppPath()));
         File file = new File(utility.getAppPath());
-        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
+        if (!FileUtils.isFile(file) || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
             LOG.error("UncompressVerify::appCommandVerify app-path must end with.app!");
             return false;
         }
@@ -217,7 +221,7 @@ class UncompressVerify {
     private static boolean appqfVerify(Utility utility) {
         utility.setAPPQFPath(utility.getFormattedPath(utility.getAPPQFPath()));
         File file = new File(utility.getAPPQFPath());
-        if (!file.isFile() || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APPQF_SUFFIX)) {
+        if (!FileUtils.isFile(file) || !file.getName().toLowerCase(Locale.ENGLISH).endsWith(APPQF_SUFFIX)) {
             LOG.error("UncompressVerify::appqfVerify appqf-path is invalid,please" +
                     " check input file is exist or this file is not end with .appqf!");
             return false;
@@ -240,7 +244,7 @@ class UncompressVerify {
         }
 
         File outFile = new File(utility.getOutPath());
-        if (("false".equals(utility.getForceRewrite())) && (outFile.exists())) {
+        if (("false".equals(utility.getForceRewrite())) && (FileUtils.exists(outFile))) {
             LOG.error("UncompressVerify::isArgsValidInHapMode out file already existed!");
             return false;
         }
@@ -256,15 +260,18 @@ class UncompressVerify {
      * @return isPathValid if path verify
      */
     public static boolean isPathValid(String path, boolean isFile, String flag) {
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
         if (!FileUtils.matchPattern(path)) {
             LOG.error("Input invalid file " + path);
             return false;
         }
         File file = new File(path);
-        if (isFile && (file.isFile()) && file.getName().toLowerCase(Locale.ENGLISH).endsWith(flag)) {
+        if (isFile && FileUtils.isFile(file) && file.getName().toLowerCase(Locale.ENGLISH).endsWith(flag)) {
             return true;
         }
-        return (!isFile) && file.isDirectory();
+        return (!isFile) && FileUtils.isDirectory(file);
     }
 
     /**

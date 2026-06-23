@@ -77,7 +77,7 @@ public class Scan {
     public boolean scanProcess(Utility utility) {
         File destFile = new File(utility.getOutPath());
         File outParentFile = destFile.getParentFile();
-        if ((outParentFile != null) && (!outParentFile.exists())) {
+        if ((outParentFile != null) && !FileUtils.exists(outParentFile)) {
             if (!outParentFile.mkdirs()) {
                 LOG.error(ScanErrorEnum.SCAN_MKDIRS_ERROR.toString());
                 return false;
@@ -95,7 +95,7 @@ public class Scan {
         } finally {
             if (!scanResult) {
                 LOG.error(ScanErrorEnum.SCAN_COMPRESS_ERROR.toString());
-                if (!destFile.delete()) {
+                if (!FileUtils.delete(destFile)) {
                     LOG.error(ScanErrorEnum.SCAN_DELETE_ERROR.toString());
                 }
             }
@@ -130,7 +130,7 @@ public class Scan {
             htmlStr = htmlStr + HTML_DIV_END + HTML_BODY_END + HTML_END;
             String reportPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + SCAN_RESULT;
             File reportDir = new File(reportPath);
-            if (!reportDir.exists()) {
+            if (!FileUtils.exists(reportDir)) {
                 reportDir.mkdirs();
             }
             String jsonPath = reportPath + LINUX_FILE_SEPARATOR + STAT_JSON;
@@ -203,7 +203,7 @@ public class Scan {
             if (fileName.endsWith(HSP) || fileName.endsWith(HAP)) {
                 String absolutePath = f.getCanonicalPath();
                 File destDir = new File(copyPath);
-                if (!destDir.exists()) {
+                if (!FileUtils.exists(destDir)) {
                     destDir.mkdirs();
                 }
                 String targetPath = copyPath + LINUX_FILE_SEPARATOR + fileName;
@@ -214,7 +214,7 @@ public class Scan {
                 deleteFile(deleteFile);
                 String outPath = path + LINUX_FILE_SEPARATOR + fileName;
                 File outDir = new File(outPath);
-                if (!outDir.exists()) {
+                if (!FileUtils.exists(outDir)) {
                     outDir.mkdirs();
                 }
                 unpackHap(targetPath, outPath);
@@ -230,7 +230,7 @@ public class Scan {
         try (FileInputStream fis = new FileInputStream(srcPath);
              ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fis))) {
             File destDir = new File(outPath);
-            if (!destDir.exists()) {
+            if (!FileUtils.exists(destDir)) {
                 destDir.mkdirs();
             }
             unpackEntryToFile(zipInputStream, outPath);
@@ -253,7 +253,7 @@ public class Scan {
                 continue;
             }
             File parent = entryFile.getParentFile();
-            if (!parent.exists()) {
+            if (!FileUtils.exists(parent)) {
                 parent.mkdirs();
             }
             try (FileOutputStream fos = new FileOutputStream(entryFile)) {
@@ -271,16 +271,7 @@ public class Scan {
     }
 
     private static void deleteFile(File file) {
-        if (file == null || !file.exists()) {
-            return;
-        }
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            for (File fileTmp : files) {
-                deleteFile(fileTmp);
-            }
-        }
-        file.delete();
+        FileUtils.deleteRecursively(file);
     }
 
     private static String getJsTemplate(String fileName) throws IOException {

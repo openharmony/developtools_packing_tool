@@ -76,11 +76,11 @@ public class PackageUtil {
      */
     public static List<String> getPackageNameFromPath(Path path) {
         List<String> list = new ArrayList<>();
-        if (!Files.exists(path)) {
+        if (!FileUtils.exists(path)) {
             LOG.warning("getPackageNameFromPath path not exists: " + path);
             return list;
         }
-        if (Files.isRegularFile(path)) {
+        if (FileUtils.isRegularFile(path)) {
             String filename = path.getFileName().toString();
             if (filename.endsWith(Constants.HSP_SUFFIX)) {
                 // .hsp: return filename
@@ -102,7 +102,7 @@ public class PackageUtil {
      * @return the bundleType
      */
     public static String getBundleTypeFromPath(Path path) {
-        if (!Files.exists(path)) {
+        if (!FileUtils.exists(path)) {
             LOG.warning("getBundleTypeFromPath path not exists: " + path);
             return "";
         }
@@ -114,7 +114,7 @@ public class PackageUtil {
     }
 
     private static String getModuleTypeFromPath(Path path) {
-        if (!Files.exists(path)) {
+        if (!FileUtils.exists(path)) {
             LOG.warning("getModuleTypeFromPath path not exists: " + path);
             return "";
         }
@@ -262,7 +262,7 @@ public class PackageUtil {
                 return "skillProfiles name '" + profileName + "' contains invalid path characters.";
             }
             File skillDir = new File(skillsDir, profileName);
-            if (!skillDir.isDirectory()) {
+            if (!FileUtils.isDirectory(skillDir)) {
                 return String.format(missingDirFormat, profileName);
             }
             if (!hasSkillMarkdown(skillDir)) {
@@ -306,7 +306,7 @@ public class PackageUtil {
 
     private static String getPackInfoContentFromPath(Path path) {
         try {
-            if (Files.isRegularFile(path)) {
+            if (FileUtils.isRegularFile(path)) {
                 String filename = path.getFileName().toString();
                 if (filename.equals(Constants.FILE_PACK_INFO)) {
                     return new String(Files.readAllBytes(path));
@@ -324,7 +324,7 @@ public class PackageUtil {
 
     private static String getModuleJsonContentFromPath(Path path) {
         try {
-            if (Files.isRegularFile(path)) {
+            if (FileUtils.isRegularFile(path)) {
                 String filename = path.getFileName().toString();
                 if (filename.equals(Constants.FILE_MODULE_JSON)) {
                     return new String(Files.readAllBytes(path));
@@ -341,7 +341,7 @@ public class PackageUtil {
     }
 
     private static String getZipEntryContent(Path zipPath, String entryName) {
-        if (!Files.isRegularFile(zipPath)) {
+        if (!FileUtils.isRegularFile(zipPath)) {
             return null;
         }
         try (ZipFile zipFile = new ZipFile(zipPath.toFile());
@@ -358,7 +358,7 @@ public class PackageUtil {
     }
 
     private static boolean hasZipEntry(Path zipPath, String entryName) {
-        if (!Files.isRegularFile(zipPath)) {
+        if (!FileUtils.isRegularFile(zipPath)) {
             return false;
         }
         try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
@@ -370,7 +370,7 @@ public class PackageUtil {
     }
 
     private static boolean hasZipEntryPrefix(Path zipPath, String entryPrefix) {
-        if (!Files.isRegularFile(zipPath)) {
+        if (!FileUtils.isRegularFile(zipPath)) {
             return false;
         }
         try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
@@ -401,15 +401,15 @@ public class PackageUtil {
      */
     public static Path pack(Path inputPath, Path appPackInfo, Path outPath, int compressLevel)
             throws BundleException, IOException {
-        if (!Files.exists(inputPath)) {
+        if (!FileUtils.exists(inputPath)) {
             throw new BundleException("pack err, input path not exists.");
         }
-        if (!Files.exists(appPackInfo)) {
+        if (!FileUtils.exists(appPackInfo)) {
             throw new BundleException("pack err, app pack.info not exists.");
         }
-        if (Files.isDirectory(inputPath)) {
+        if (FileUtils.isDirectory(inputPath)) {
             return packDir(inputPath, appPackInfo, outPath, compressLevel);
-        } else if (Files.isRegularFile(inputPath) &&
+        } else if (FileUtils.isRegularFile(inputPath) &&
                 inputPath.getFileName().toString().endsWith(Constants.HSP_SUFFIX)) {
             return repackHsp(inputPath, appPackInfo, outPath, compressLevel);
         }
@@ -427,13 +427,17 @@ public class PackageUtil {
             Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
+                    if (!FileUtils.delete(file)) {
+                        throw new IOException("Delete file failed: " + file);
+                    }
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult postVisitDirectory(Path dir, IOException ex) throws IOException {
-                    Files.delete(dir);
+                    if (!FileUtils.delete(dir)) {
+                        throw new IOException("Delete directory failed: " + dir);
+                    }
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -587,12 +591,12 @@ public class PackageUtil {
                                         boolean genHash, boolean compress,
                                         List<String> skillProfileNames) throws BundleException {
         for (File file : files) {
-            if (file.isFile() && !file.getName().equals(Constants.FILE_PACK_INFO)) {
+            if (FileUtils.isFile(file) && !file.getName().equals(Constants.FILE_PACK_INFO)) {
                 if (genHash && file.getName().equals(Constants.FILE_MODULE_JSON)) {
                     continue;
                 }
                 pathToZipEntry(file.toPath(), Constants.NULL_DIR, zipCreator, false);
-            } else if (file.isDirectory()) {
+            } else if (FileUtils.isDirectory(file)) {
                 if (file.getName().equals(Constants.SKILLS_DIR)) {
                     addSkillsDirToZip(file, zipCreator, compress, skillProfileNames);
                 } else if (file.getName().equals(Constants.LIBS_DIR)) {
@@ -610,7 +614,7 @@ public class PackageUtil {
             return;
         }
         Path moduleJson = path.resolve(Constants.FILE_MODULE_JSON);
-        if (!Files.exists(moduleJson)) {
+        if (!FileUtils.exists(moduleJson)) {
             LOG.warning("module.json not found: " + path);
             return;
         }
@@ -641,7 +645,7 @@ public class PackageUtil {
                                        boolean compress) throws BundleException {
         try {
             File file = path.toFile();
-            if (file.isDirectory()) {
+            if (FileUtils.isDirectory(file)) {
                 File[] files = file.listFiles();
                 if (files == null) {
                     return;
@@ -662,7 +666,7 @@ public class PackageUtil {
     private static void addArchiveEntry(File file, String baseDir, ParallelScatterZipCreator zipCreator,
                                         boolean compress)
             throws IOException {
-        if (file.isDirectory()) {
+        if (FileUtils.isDirectory(file)) {
             File[] files = file.listFiles();
             if (files == null) {
                 LOG.error(PackingToolErrMsg.ADD_ARCHIVE_ENTRY_FAILED.toString("listFiles null, directory name is " +
@@ -722,12 +726,12 @@ public class PackageUtil {
                                         boolean compress, List<String> skillProfileNames)
             throws BundleException {
         for (File file : files) {
-            if (file.isFile() && !file.getName().equals(Constants.FILE_PACK_INFO)) {
+            if (FileUtils.isFile(file) && !file.getName().equals(Constants.FILE_PACK_INFO)) {
                 if (genHash && file.getName().equals(Constants.FILE_MODULE_JSON)) {
                     continue;
                 }
                 pathToZipEntry(file.toPath(), Constants.NULL_DIR, zipOut, false);
-            } else if (file.isDirectory()) {
+            } else if (FileUtils.isDirectory(file)) {
                 if (file.getName().equals(Constants.SKILLS_DIR)) {
                     addSkillsDirToZip(file, zipOut, compress, skillProfileNames);
                 } else if (file.getName().equals(Constants.LIBS_DIR)) {
@@ -748,7 +752,7 @@ public class PackageUtil {
         try {
             for (String profileName : skillProfileNames) {
                 File skillDir = new File(skillsDir, profileName);
-                if (!skillDir.isDirectory()) {
+                if (!FileUtils.isDirectory(skillDir)) {
                     continue;
                 }
                 File[] children = skillDir.listFiles();
@@ -756,7 +760,7 @@ public class PackageUtil {
                     continue;
                 }
                 for (File child : children) {
-                    if (child.isDirectory() && Constants.SCRIPTS_DIR.equals(child.getName())) {
+                    if (FileUtils.isDirectory(child) && Constants.SCRIPTS_DIR.equals(child.getName())) {
                         continue; // skip scripts/
                     }
                     addArchiveEntry(child,
@@ -778,7 +782,7 @@ public class PackageUtil {
         }
         for (String profileName : skillProfileNames) {
             File skillDir = new File(skillsDir, profileName);
-            if (!skillDir.isDirectory()) {
+            if (!FileUtils.isDirectory(skillDir)) {
                 continue;
             }
             File[] children = skillDir.listFiles();
@@ -786,7 +790,7 @@ public class PackageUtil {
                 continue;
             }
             for (File child : children) {
-                if (child.isDirectory() && Constants.SCRIPTS_DIR.equals(child.getName())) {
+                if (FileUtils.isDirectory(child) && Constants.SCRIPTS_DIR.equals(child.getName())) {
                     continue; // skip scripts/
                 }
                 pathToZipEntry(child.toPath(),
@@ -802,7 +806,7 @@ public class PackageUtil {
             return;
         }
         Path moduleJson = path.resolve(Constants.FILE_MODULE_JSON);
-        if (!Files.exists(moduleJson)) {
+        if (!FileUtils.exists(moduleJson)) {
             LOG.warning("module.json not found: " + path);
             return;
         }
@@ -840,7 +844,7 @@ public class PackageUtil {
                                        boolean compress) throws BundleException {
         try {
             File file = path.toFile();
-            if (file.isDirectory()) {
+            if (FileUtils.isDirectory(file)) {
                 File[] files = file.listFiles();
                 if (files == null) {
                     return;
@@ -860,7 +864,7 @@ public class PackageUtil {
 
     private static void addArchiveEntry(File file, String baseDir, ZipOutputStream zipOut, boolean compress)
             throws IOException, BundleException {
-        if (file.isDirectory()) {
+        if (FileUtils.isDirectory(file)) {
             File[] files = file.listFiles();
             if (files == null) {
                 LOG.error(PackingToolErrMsg.ADD_ARCHIVE_ENTRY_FAILED.toString("listFiles null, directory name is " +
@@ -1011,18 +1015,15 @@ public class PackageUtil {
         String tempDirString = utility.getMultiAppExtractTempDir();
         if (!tempDirString.isEmpty()) {
             Path tempDir = Paths.get(tempDirString);
-            if (Files.exists(tempDir)) {
+            if (FileUtils.exists(tempDir)) {
                 Path normalizedTempDir = tempDir.normalize();
                 try (Stream<Path> walk = Files.walk(tempDir)) {
                     walk.sorted((a, b) -> b.compareTo(a)).forEach(path -> {
-                        try {
-                            Path normalizedPath = path.normalize();
-                            if (normalizedPath.startsWith(normalizedTempDir)) {
-                                Files.deleteIfExists(path);
+                        Path normalizedPath = path.normalize();
+                        if (normalizedPath.startsWith(normalizedTempDir)) {
+                            if (!FileUtils.delete(path)) {
+                                LOG.warning("cleanupMultiAppExtractCache delete path failed: " + path);
                             }
-                        } catch (IOException ex) {
-                            LOG.warning("cleanupMultiAppExtractCache delete path failed: " + path + ", "
-                                    + ex.getMessage());
                         }
                     });
                 } catch (IOException ex) {
@@ -1035,7 +1036,7 @@ public class PackageUtil {
     }
 
     private static boolean checkSkillRulesForFastAppPath(Path path, boolean rejectSkillModuleType) {
-        if (!Files.isDirectory(path) && !Files.isRegularFile(path)) {
+        if (!FileUtils.isDirectory(path) && !FileUtils.isRegularFile(path)) {
             return true;
         }
         String content = getModuleJsonContentFromPath(path);
@@ -1072,9 +1073,9 @@ public class PackageUtil {
                 return false;
             }
             String errMsg;
-            if (Files.isDirectory(path)) {
+            if (FileUtils.isDirectory(path)) {
                 File skillsDir = path.resolve(Constants.SKILLS_DIR).toFile();
-                if (!skillsDir.isDirectory()) {
+                if (!FileUtils.isDirectory(skillsDir)) {
                     errMsg = "skillProfiles is configured but skills/ directory not found.";
                     LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString(errMsg));
                     return false;
@@ -1129,12 +1130,12 @@ public class PackageUtil {
     private static boolean moduleJsonAndPackInfoExists(List<String> hapPathList, List<String> hspPathList) {
         for (String hapPath : hapPathList) {
             Path path = Paths.get(hapPath);
-            if (!Files.exists(path.resolve(Constants.FILE_MODULE_JSON))) {
+            if (FileUtils.isEmptyPath(path) || !FileUtils.exists(path.resolve(Constants.FILE_MODULE_JSON))) {
                 LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found module.json in the hap path: " +
                         path + "."));
                 return false;
             }
-            if (!Files.exists(path.resolve(Constants.FILE_PACK_INFO))) {
+            if (!FileUtils.exists(path.resolve(Constants.FILE_PACK_INFO))) {
                 LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found pack.info in the hap path: " +
                         path + "."));
                 return false;
@@ -1142,13 +1143,13 @@ public class PackageUtil {
         }
         for (String hspPath : hspPathList) {
             Path path = Paths.get(hspPath);
-            if (Files.isDirectory(path)) {
-                if (!Files.exists(path.resolve(Constants.FILE_MODULE_JSON))) {
+            if (FileUtils.isDirectory(path)) {
+                if (!FileUtils.exists(path.resolve(Constants.FILE_MODULE_JSON))) {
                     LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found module.json in the hsp path: " +
                             path + "."));
                     return false;
                 }
-                if (!Files.exists(path.resolve(Constants.FILE_PACK_INFO))) {
+                if (!FileUtils.exists(path.resolve(Constants.FILE_PACK_INFO))) {
                     LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Not found pack.info in the hsp path: " +
                             path + "."));
                     return false;
@@ -1159,17 +1160,26 @@ public class PackageUtil {
     }
 
     private static boolean isFileValid(String filePath, String suffix) {
+        if (filePath == null || filePath.isEmpty()) {
+            return false;
+        }
         Path path = Paths.get(filePath);
-        return Files.isRegularFile(path) && path.getFileName().toString().endsWith(suffix);
+        return FileUtils.isRegularFile(path) && path.getFileName().toString().endsWith(suffix);
     }
 
     private static boolean isFileMatch(String filePath, String matchFileName) {
+        if (filePath == null || filePath.isEmpty()) {
+            return false;
+        }
         Path path = Paths.get(filePath);
-        return Files.isRegularFile(path) && path.getFileName().toString().equals(matchFileName);
+        return FileUtils.isRegularFile(path) && path.getFileName().toString().equals(matchFileName);
     }
 
     private static boolean isDirValid(String filePath) {
-        return Files.isDirectory(Paths.get(filePath));
+        if (filePath == null || filePath.isEmpty()) {
+            return false;
+        }
+        return FileUtils.isDirectory(filePath);
     }
 
     /**
@@ -1228,7 +1238,7 @@ public class PackageUtil {
             return false;
         }
         Path outPath = Paths.get(utility.getOutPath());
-        if (utility.getForceRewrite().equals(Constants.FALSE) && Files.exists(outPath)) {
+        if (utility.getForceRewrite().equals(Constants.FALSE) && FileUtils.exists(outPath)) {
             LOG.error(PackingToolErrMsg.FAST_APP_MODE_ARGS_INVALID.toString("--out-path file already existed, but " +
                     "--force is not 'true'."));
             return false;
@@ -1301,9 +1311,13 @@ public class PackageUtil {
     private static boolean isFormatPathValid(String inputPath, List<String> formatPathList) {
         Set<String> formatPathSet = new HashSet<>();
         for (String path : inputPath.split(Constants.COMMA)) {
+            if (path == null || path.isEmpty()) {
+                LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Format path not exists. Path: " + path + "."));
+                return false;
+            }
             try {
                 Path realpath = Paths.get(path).toRealPath();
-                if (Files.exists(realpath)) {
+                if (FileUtils.exists(realpath)) {
                     formatPathSet.add(realpath.toString());
                 } else {
                     LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("Format path not exists. Path: " +

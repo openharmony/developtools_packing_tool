@@ -120,13 +120,17 @@ public class PackageNormalize {
         Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Files.delete(file);
+                if (!FileUtils.delete(file)) {
+                    throw new IOException("Delete file failed: " + file);
+                }
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException ex) throws IOException {
-                Files.delete(dir);
+                if (!FileUtils.delete(dir)) {
+                    throw new IOException("Delete directory failed: " + dir);
+                }
                 return FileVisitResult.CONTINUE;
             }
         });

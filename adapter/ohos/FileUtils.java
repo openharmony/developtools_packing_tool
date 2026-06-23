@@ -27,10 +27,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -49,6 +54,52 @@ class FileUtils {
     private static final String RESOURCE_PATH = "resources/base/profile/";
     private static final String SHA256 = "SHA-256";
     private static final String PATTERN = "[0-9A-Za-z/].{0,4095}";
+    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase(Locale.ENGLISH)
+            .contains("win");
+
+    static boolean isEmptyPath(String path) {
+        return path == null || path.isEmpty();
+    }
+
+    static boolean isEmptyPath(Path path) {
+        return path == null || path.toString().isEmpty();
+    }
+
+    static boolean exists(String path) {
+        return !isEmptyPath(path) && new File(path).exists();
+    }
+
+    static boolean exists(File file) {
+        return file != null && !isEmptyPath(file.getPath()) && file.exists();
+    }
+
+    static boolean exists(Path path) {
+        return !isEmptyPath(path) && Files.exists(path);
+    }
+
+    static boolean isFile(String path) {
+        return !isEmptyPath(path) && new File(path).isFile();
+    }
+
+    static boolean isFile(File file) {
+        return file != null && !isEmptyPath(file.getPath()) && file.isFile();
+    }
+
+    static boolean isRegularFile(Path path) {
+        return !isEmptyPath(path) && Files.isRegularFile(path);
+    }
+
+    static boolean isDirectory(String path) {
+        return !isEmptyPath(path) && new File(path).isDirectory();
+    }
+
+    static boolean isDirectory(File file) {
+        return file != null && !isEmptyPath(file.getPath()) && file.isDirectory();
+    }
+
+    static boolean isDirectory(Path path) {
+        return !isEmptyPath(path) && Files.isDirectory(path);
+    }
 
     /**
      * generate fileData byte stream
@@ -57,6 +108,9 @@ class FileUtils {
      * @return byte array
      */
     public static byte[] getFileData(final String filePath) {
+        if (isEmptyPath(filePath)) {
+            return new byte[0];
+        }
         File file = new File(filePath);
         long fileSize = file.length();
         byte[] buffer = new byte[(int) fileSize];
@@ -106,8 +160,12 @@ class FileUtils {
      * @param fileList file path in arrayList
      */
     public static void getFileList(final String filePath, ArrayList<String> fileList) {
+        if (isEmptyPath(filePath)) {
+            LOG.error("getFileList: file is not exists.");
+            return;
+        }
         File file = new File(filePath);
-        if (!file.exists()) {
+        if (!exists(file)) {
             LOG.error("getFileList: file is not exists.");
             return;
         }
@@ -118,9 +176,9 @@ class FileUtils {
         }
         for (File f : files) {
             try {
-                if (f.isFile()) {
+                if (isFile(f)) {
                     fileList.add(f.getCanonicalPath());
-                } else if (f.isDirectory()) {
+                } else if (isDirectory(f)) {
                     getFileList(f.getCanonicalPath(), fileList);
                 } else {
                     LOG.error("It's not file or directory.");
@@ -139,7 +197,7 @@ class FileUtils {
      * @return String for file
      */
     public static Optional<String> getFileContent(final String filePath) {
-        if (filePath.isEmpty()) {
+        if (isEmptyPath(filePath)) {
             return Optional.empty();
         }
         BufferedReader reader = null;
@@ -188,10 +246,88 @@ class FileUtils {
      * @param path file path which will be deleted
      */
     public static void deleteFile(final String path) {
-        File file = new File(path);
-        if (file.exists()) {
-            file.delete();
+        if (isEmptyPath(path)) {
+            return;
         }
+        delete(new File(path));
+    }
+
+    static boolean delete(Path path) {
+        if (isEmptyPath(path)) {
+            return false;
+        }
+        return delete(path.toFile());
+    }
+
+    static boolean delete(File file) {
+        if (file == null || isEmptyPath(file.getPath())) {
+            return false;
+        }
+        if (!existsNoFollowLinks(file)) {
+            return true;
+        }
+        if (file.delete()) {
+            return true;
+        }
+        if (!IS_WINDOWS) {
+            return false;
+        }
+        clearReadOnlyAttribute(file);
+        return file.delete() || !existsNoFollowLinks(file);
+    }
+
+    static boolean deleteRecursively(File file) {
+        if (file == null || isEmptyPath(file.getPath())) {
+            return false;
+        }
+        if (!existsNoFollowLinks(file)) {
+            return true;
+        }
+        boolean isDeleted = true;
+        if (isDirectoryNoFollowLinks(file)) {
+            File[] fileList = file.listFiles();
+            if (fileList == null) {
+                return false;
+            }
+            for (File child : fileList) {
+                isDeleted &= deleteRecursively(child);
+            }
+        }
+        return delete(file) && isDeleted;
+    }
+
+    private static boolean isDirectoryNoFollowLinks(File file) {
+        try {
+            return Files.isDirectory(file.toPath(), LinkOption.NOFOLLOW_LINKS);
+        } catch (SecurityException exception) {
+            LOG.warning("Check directory failed: " + file.getPath() + ", " + exception.getMessage());
+            return false;
+        }
+    }
+
+    private static boolean existsNoFollowLinks(File file) {
+        try {
+            return Files.exists(file.toPath(), LinkOption.NOFOLLOW_LINKS);
+        } catch (SecurityException exception) {
+            LOG.warning("Check path existence failed: " + file.getPath() + ", " + exception.getMessage());
+            return false;
+        }
+    }
+
+    private static void clearReadOnlyAttribute(File file) {
+        try {
+            DosFileAttributeView view = Files.getFileAttributeView(file.toPath(), DosFileAttributeView.class,
+                    LinkOption.NOFOLLOW_LINKS);
+            if (view != null) {
+                if (view.readAttributes().isReadOnly()) {
+                    view.setReadOnly(false);
+                }
+                return;
+            }
+        } catch (IOException | SecurityException exception) {
+            LOG.warning("Clear readonly attribute failed: " + file.getPath() + ", " + exception.getMessage());
+        }
+        file.setWritable(true);
     }
 
     /**
@@ -201,8 +337,11 @@ class FileUtils {
      * @param destDir path after unzip file
      */
     public static void unzip(final String hapPath, final String destDir) {
+        if (isEmptyPath(hapPath) || isEmptyPath(destDir)) {
+            return;
+        }
         File file = new File(destDir);
-        if (!file.exists()) {
+        if (!exists(file)) {
             file.mkdirs();
         }
 
@@ -233,7 +372,7 @@ class FileUtils {
                 bis = new BufferedInputStream(zipFile.getInputStream(entry));
                 File newFile = new File(filePath);
                 File parent = newFile.getParentFile();
-                if (parent != null && (!parent.exists())) {
+                if (parent != null && !exists(parent)) {
                     parent.mkdirs();
                 }
 
@@ -273,28 +412,12 @@ class FileUtils {
             return;
         }
         File dir = new File(directory);
-        if (!dir.exists()) {
+        if (!isDirectory(dir)) {
             return;
         }
-
-        File[] fileList = dir.listFiles();
-        if (fileList == null) {
-            return;
+        if (!deleteRecursively(dir)) {
+            LOG.warning("deleteDirectory failed: " + directory);
         }
-        for (File file : fileList) {
-            try {
-                if (file.isFile()) {
-                    file.delete();
-                } else if (file.isDirectory()) {
-                    deleteDirectory(file.getCanonicalPath());
-                } else {
-                    LOG.error("It's not file or directory.");
-                }
-            } catch (IOException msg) {
-                LOG.error("deleteDirectory IOException : " + msg.getMessage());
-            }
-        }
-        dir.delete();
     }
 
     /**
@@ -322,7 +445,7 @@ class FileUtils {
      * @return true: file is exist, false: file is not exist
      */
     public static boolean checkFileIsExists(final String filePath) {
-        if (filePath.isEmpty()) {
+        if (isEmptyPath(filePath)) {
             return false;
         }
 
@@ -332,10 +455,7 @@ class FileUtils {
         }
 
         File file = new File(absFilePath.get());
-        if (!file.exists()) {
-            return false;
-        }
-        return true;
+        return exists(file);
     }
 
     /**
@@ -390,6 +510,9 @@ class FileUtils {
      * @throws BundleException FileNotFoundException|IOException.
      */
     public static String getJsonInZips(File srcFile, String jsonName) throws BundleException {
+        if (srcFile == null || isEmptyPath(srcFile.getPath())) {
+            return "";
+        }
         String fileStr = srcFile.getPath();
         ZipFile zipFile = null;
         FileInputStream zipInput = null;
@@ -495,6 +618,9 @@ class FileUtils {
      */
     public static String getSha256(String hapPath) {
         String sha256 = "";
+        if (isEmptyPath(hapPath)) {
+            return sha256;
+        }
         BufferedInputStream inputStream = null;
         try {
             File file = new File(hapPath);
@@ -541,8 +667,13 @@ class FileUtils {
      * @return file length
      */
     public static long getFileSize(String filePath) {
+        if (isEmptyPath(filePath)) {
+            String errMsg = "input " + filePath + " is not a valid file.";
+            LOG.error(PackingToolErrMsg.GET_FILE_SIZE_FAILED.toString(errMsg));
+            return 0;
+        }
         File file = new File(filePath);
-        if (file.exists() && file.isFile()) {
+        if (exists(file) && isFile(file)) {
             return file.length();
         }
         String errMsg = "input " + filePath + " is not a valid file.";
@@ -556,7 +687,7 @@ class FileUtils {
      * @param file file
      */
     public static void createParentDir(File file) {
-        if (file != null && file.getParentFile() != null && !file.getParentFile().exists()) {
+        if (file != null && file.getParentFile() != null && !exists(file.getParentFile())) {
             file.getParentFile().mkdirs();
         }
     }
@@ -576,7 +707,7 @@ class FileUtils {
      * @param file File that require directory creation
      */
     public static void mkdir(File file) {
-        if (null != file && !file.exists()) {
+        if (null != file && !isEmptyPath(file.getPath()) && !exists(file)) {
             mkdir(file.getParentFile());
             file.mkdir();
         }

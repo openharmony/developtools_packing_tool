@@ -54,7 +54,7 @@ public class IncrementalPack {
         }
 
         File srcFile = new File(existSrcPath);
-        if (!srcFile.isFile()) {
+        if (!FileUtils.isFile(srcFile)) {
             return false;
         }
 
@@ -113,7 +113,7 @@ public class IncrementalPack {
         }
 
         Path existSrcPath = Paths.get(existSrcPathStr);
-        if (!Files.exists(existSrcPath) || !Files.isRegularFile(existSrcPath)) {
+        if (!FileUtils.exists(existSrcPath) || !FileUtils.isRegularFile(existSrcPath)) {
             String errMsg = "Parse --exist-src-path file does not exist, parse path: " + existSrcPathStr;
             LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             throw new BundleException("Copy file to temp dir failed: --exist-src-path file not found.");
