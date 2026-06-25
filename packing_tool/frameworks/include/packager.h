@@ -72,6 +72,7 @@ protected:
     
     bool CheckForceFlag();
     bool CheckStatDuplicateFlag();
+    bool CheckDeduplicateSoFlag();
     bool IsPathValid(const std::string &path, const bool &isFile, const std::string suffix = "");
     bool IsPathParamValid(const std::string &parameterMapKey, const bool &isFile, const std::string &suffix);
     bool IsCompressLevelValid();

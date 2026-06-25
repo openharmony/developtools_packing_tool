@@ -126,6 +126,11 @@ public class CompressVerify {
                 "If the --force parameter is configured, the value must be either 'true' or 'false'."));
             return false;
         }
+        if (!"true".equals(utility.getDeduplicateSo()) && !"false".equals(utility.getDeduplicateSo())) {
+            LOG.error(PackingToolErrMsg.COMMAND_VERIFY_FAILED.toString(
+                    "--deduplicate-so is invalid, must be 'true' or 'false'."));
+            return false;
+        }
         return commandPathVerify(utility);
     }
 

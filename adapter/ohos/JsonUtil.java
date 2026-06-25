@@ -109,6 +109,7 @@ public class JsonUtil {
     private static final String SERVICE = "service";
     private static final String FORM = "form";
     private static final String PACKAGES = "packages";
+    private static final String DEDUPLICATE_SO = "deduplicateSo";
     private static final String ABILITIES = "abilities";
     private static final String WHEN = "when";
     private static final String STRING_RESOURCE = "$string:";
@@ -241,6 +242,7 @@ public class JsonUtil {
             LOG.error("Uncompress::parseHapList exception: packages is null.");
             throw new BundleException("Parse hap list failed, packages is null.");
         }
+        boolean deduplicateSo = jsonObject.getBooleanValue(DEDUPLICATE_SO);
         int jsonListSize = jsonList.size();
         for (int i = 0; i < jsonListSize; i++) {
             JSONObject tmpObj = jsonList.getJSONObject(i);
@@ -262,6 +264,7 @@ public class JsonUtil {
                     deliveryWithInstall = getJsonString(tmpObj, INSTALL_FLAG_NEW);
                 }
                 packInfo.deliveryWithInstall = Boolean.parseBoolean(deliveryWithInstall);
+                packInfo.deduplicateSo = deduplicateSo;
                 packInfos.add(packInfo);
             }
         }
@@ -275,7 +278,12 @@ public class JsonUtil {
             throw new BundleException("Parse hap list failed, packages is null.");
         }
         String packages = getJsonString(jsonObject, PACKAGES);
-        return parseJsonArray(packages, PackInfo.class);
+        List<PackInfo> packInfos = parseJsonArray(packages, PackInfo.class);
+        boolean deduplicateSo = jsonObject.getBooleanValue(DEDUPLICATE_SO);
+        for (PackInfo packInfo : packInfos) {
+            packInfo.deduplicateSo = deduplicateSo;
+        }
+        return packInfos;
     }
 
     private static boolean parseShellVersionInfoToAppInfo(String packInfoJsonStr, AppInfo appInfo)

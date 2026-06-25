@@ -71,6 +71,7 @@ const std::string PARAM_MAPLE_SO_DIR = "maple-so-dir";
 const std::string PARAM_RPCID_PATH = "rpcid-path";
 const std::string PARAM_JS_PATH = "js-path";
 const std::string PARAM_FORCE = "force";
+const std::string PARAM_DEDUPLICATE_SO = "deduplicate-so";
 const std::string PARAM_AN_PATH = "an-path";
 const std::string PARAM_AP_PATH = "ap-path";
 const std::string PARAM_DIR_LIST = "dir-list";
@@ -265,6 +266,7 @@ const struct option LONG_OPTIONS[] = {
     {PARAM_PKG_SDK_INFO_PATH.c_str(), required_argument, nullptr, 62},
     {PARAM_BUILD_VERSION.c_str(), required_argument, nullptr, 64},
     {PARAM_SKILLS_PATH.c_str(), required_argument, nullptr, 65},
+    {PARAM_DEDUPLICATE_SO.c_str(), required_argument, nullptr, 66},
     {nullptr, 0, nullptr, 0},
 };
 constexpr const int32_t OPTIONS_SIZE = sizeof(LONG_OPTIONS) / sizeof(LONG_OPTIONS[0]);

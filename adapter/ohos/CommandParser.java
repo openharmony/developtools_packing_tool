@@ -17,6 +17,7 @@ package ohos;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -62,6 +63,7 @@ public class CommandParser {
     private static final String CMD_SIGNATURE_PATH = "--signature-path";
     private static final String CMD_CERTIFICATE_PATH = "--certificate-path";
     private static final String CMD_FORCE = "--force";
+    public static final String CMD_DEDUPLICATE_SO = "--deduplicate-so";
     private static final String CMD_OUT_PATH = "--out-path";
     private static final String CMD_PACK_INFO_PATH = "--pack-info-path";
     private static final String CMD_REPLACE_PACK_INFO = "--replace-pack-info";
@@ -247,6 +249,11 @@ public class CommandParser {
         commandFuncs.put(CMD_FORCE, entry -> {
             entry.getKey().setForceRewrite(entry.getValue());
             return true;
+        });
+        commandFuncs.put(CMD_DEDUPLICATE_SO, entry -> {
+            String value = entry.getValue().toLowerCase(Locale.ENGLISH);
+            entry.getKey().setDeduplicateSo(value);
+            return Boolean.TRUE.toString().equals(value) || Boolean.FALSE.toString().equals(value);
         });
         commandFuncs.put(CMD_OUT_PATH, entry -> {
             entry.getKey().setOutPath(entry.getValue());

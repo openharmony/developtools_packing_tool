@@ -98,6 +98,10 @@ public:
     bool SetDeliveryWithInstall(const bool& deliveryWithInstall);
     bool SetDeviceTypes(const std::list<std::string>& deviceTypes);
 
+    // SO去重相关方法
+    bool GetDeduplicateSo(bool& deduplicateSo);
+    bool GetDeduplicateSoWithDefault(bool& deduplicateSo, bool defaultValue);
+
 private:
     std::unique_ptr<PtJson> root_ = nullptr;
 };

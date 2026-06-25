@@ -19,6 +19,7 @@
 #include "json/hap_verify_info.h"
 #include "json/module_json_utils.h"
 #include "json/hap_verify_utils.h"
+#include "dedup/so_deduplicator.h"
 #include "log.h"
 #include "utils.h"
 #include "error/packing_tool_err_msg.h"
@@ -127,6 +128,9 @@ int32_t AppPackager::PreProcess()
         return ERR_INVALID_VALUE;
     }
     if (!CheckStatDuplicateFlag()) {
+        return ERR_INVALID_VALUE;
+    }
+    if (!CheckDeduplicateSoFlag()) {
         return ERR_INVALID_VALUE;
     }
     bool ret = IsVerifyValidInAppMode();
@@ -621,6 +625,15 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
                 CompressPackinfoIntoHap(hspPathItem, hspUnzipTempPath, hspTempPath.string(), it->second);
             }
         }
+    }
+    bool deduplicateSo = parameterMap_.find(Constants::PARAM_DEDUPLICATE_SO) != parameterMap_.end() &&
+        parameterMap_.at(Constants::PARAM_DEDUPLICATE_SO) == Constants::TRUE_STRING;
+    SODeduplicator soDeduplicator;
+    std::string reportDir = fs::path(parameterMap_.at(Constants::PARAM_OUT_PATH)).parent_path().string();
+    if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tempPath.string(), reportDir)) {
+        LOGE("[SO_DEDUP] %s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
+            soDeduplicator.GetErrorMessage()).c_str());
+        return false;
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp_)) {
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
