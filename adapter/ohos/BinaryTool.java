@@ -124,7 +124,7 @@ public class BinaryTool {
     private static void writeFileInfo(final String filePath, final String directory, boolean isWindows,
         ArrayList<String> fileList, RandomAccessFile appStream) {
         File file = new File(filePath);
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             return;
         }
 
@@ -135,7 +135,7 @@ public class BinaryTool {
             File[] files = dirFile.listFiles();
             for (File f : files) {
                 try {
-                    if (f.isFile()) {
+                    if (FileUtils.isFile(f)) {
                         // write name length
                         String name = f.getName();
                         appStream.writeInt(name.length());

@@ -206,7 +206,7 @@ public class ScanStatDuplicate {
         duplicateResult.setStartTime(getCurrentTime());
         List<ParamModel> resList = getDuplicateResList(fileList);
         File parentFile = new File(utility.getOutPath());
-        if (!parentFile.exists() && !parentFile.mkdirs()) {
+        if (!FileUtils.exists(parentFile) && !parentFile.mkdirs()) {
             LOG.error(ScanErrorEnum.STAT_DUPLICATE_CREATE_FILE_ERROR.toString());
         }
         List<ParamModel> filterList = new ArrayList<>();
@@ -250,7 +250,7 @@ public class ScanStatDuplicate {
         duplicateSoResult.setStartTime(getCurrentTime());
         List<ParamModel> resList = getDuplicateResList(fileList);
         File parentFile = new File(utility.getOutPath());
-        if (!parentFile.exists() && !parentFile.mkdirs()) {
+        if (!FileUtils.exists(parentFile) && !parentFile.mkdirs()) {
             LOG.error(ScanErrorEnum.STAT_DUPLICATE_CREATE_FILE_ERROR.toString());
         }
         List<ParamModel> filterList = new ArrayList<>();

@@ -219,7 +219,7 @@ public class CompressVerify {
             return false;
         }
         File outDir = new File(utility.getOutPath());
-        if (!outDir.isDirectory()) {
+        if (!FileUtils.isDirectory(outDir)) {
             String errMsg = "--out-path is not a directory.";
             LOG.error(PackingToolErrMsg.PACKAGE_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -273,7 +273,7 @@ public class CompressVerify {
         }
 
         File outDir = new File(utility.getOutPath());
-        if (!outDir.isDirectory()) {
+        if (!FileUtils.isDirectory(outDir)) {
             String errMsg = "--out-path is not a directory.";
             LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -416,7 +416,7 @@ public class CompressVerify {
         }
 
         File outDir = new File(utility.getOutPath());
-        if (!outDir.isDirectory()) {
+        if (!FileUtils.isDirectory(outDir)) {
             String errMsg = "--out-path is not a directory.";
             LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -427,7 +427,7 @@ public class CompressVerify {
     private static boolean isValidRpcid(Utility utility) {
         if (!utility.getRpcidPath().isEmpty()) {
             File file = new File(utility.getRpcidPath());
-            if (!file.isFile()) {
+            if (!FileUtils.isFile(file)) {
                 String errMsg = "--rpcid-path is not a file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -444,7 +444,7 @@ public class CompressVerify {
     private static boolean isValidPackInfo(Utility utility) {
         if (!utility.getPackInfoPath().isEmpty()) {
             File file = new File(utility.getPackInfoPath());
-            if (!file.isFile()) {
+            if (!FileUtils.isFile(file)) {
                 String errMsg = "--pack-info-path is not a file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -484,7 +484,7 @@ public class CompressVerify {
 
         if (!utility.getProfilePath().isEmpty()) {
             File file = new File(utility.getProfilePath());
-            if (!file.isFile() || !PROFILE_NAME.equals(file.getName())) {
+            if (!FileUtils.isFile(file) || !PROFILE_NAME.equals(file.getName())) {
                 String errMsg = "--profile-path must be the CAPABILITY.profile file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -513,7 +513,7 @@ public class CompressVerify {
         }
         if (!utility.getPkgContextPath().isEmpty()) {
             File file = new File(utility.getPkgContextPath());
-            if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
+            if (!FileUtils.isFile(file) || !PKG_CONTEXT_INFO.equals(file.getName())) {
                 String errMsg = "--pkg-context-path file must be the pkgContextInfo.json file.";
                 LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -530,7 +530,7 @@ public class CompressVerify {
      */
     private static boolean isVerifyValidInHapMode(Utility utility) {
         File file = new File(utility.getIndexPath());
-        if (!utility.getIndexPath().isEmpty() && !file.isFile() && INDEX_PROFILE.equals(file.getName())) {
+        if (!utility.getIndexPath().isEmpty() && !FileUtils.isFile(file) && INDEX_PROFILE.equals(file.getName())) {
             String errMsg = "--index-path must be the resources.index file.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -565,7 +565,7 @@ public class CompressVerify {
         File existSrcFile = new File(utility.getExistSrcPath());
         boolean isValidExistSrcFileName = existSrcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX);
         if (!utility.getExistSrcPath().isEmpty() &&
-            !(existSrcFile.isFile() && isValidExistSrcFileName)) {
+            !(FileUtils.isFile(existSrcFile) && isValidExistSrcFileName)) {
             String errMsg = "The value of --exist-src-path must be a file with the .hap suffix.";
             LOG.error(PackingToolErrMsg.HAP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -684,7 +684,7 @@ public class CompressVerify {
                 return false;
             }
             File skillsDir = new File(utility.getSkillsPath());
-            if (!skillsDir.isDirectory()) {
+            if (!FileUtils.isDirectory(skillsDir)) {
                 String errMsg = "--skills-path is not a valid directory.";
                 LOG.error(errCode.toString(errMsg));
                 return false;
@@ -838,7 +838,7 @@ public class CompressVerify {
         }
 
         File file = new File(utility.getPackInfoPath());
-        if (!file.isFile() || !PACK_INFO.equals(file.getName())) {
+        if (!FileUtils.isFile(file) || !PACK_INFO.equals(file.getName())) {
             String errMsg = "--pack-info-path is invalid.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -856,13 +856,13 @@ public class CompressVerify {
             return false;
         }
 
-        if (!utility.getSignaturePath().isEmpty() && !(new File(utility.getSignaturePath())).isFile()) {
+        if (!utility.getSignaturePath().isEmpty() && !FileUtils.isFile(utility.getSignaturePath())) {
             String errMsg = "--signature-path is invalid.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
 
-        if (!utility.getCertificatePath().isEmpty() && !(new File(utility.getCertificatePath())).isFile()) {
+        if (!utility.getCertificatePath().isEmpty() && !FileUtils.isFile(utility.getCertificatePath())) {
             String errMsg = "--certificate-path is invalid.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1010,7 +1010,7 @@ public class CompressVerify {
         }
 
         File outFile = new File(utility.getOutPath());
-        if (("false".equals(utility.getForceRewrite())) && outFile.exists()) {
+        if (("false".equals(utility.getForceRewrite())) && FileUtils.exists(outFile)) {
             String errMsg = "--out-path file already exist, but --force is not 'true'.";
             LOG.error(PackingToolErrMsg.MULTI_APP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1088,7 +1088,7 @@ public class CompressVerify {
             }
         }
         File outFile = new File(utility.getOutPath());
-        if ((FALSE.equals(utility.getForceRewrite())) && (outFile.exists())) {
+        if ((FALSE.equals(utility.getForceRewrite())) && FileUtils.exists(outFile)) {
             String errMsg = "--out-path file already exist, but --force is not 'true'.";
             LOG.error(PackingToolErrMsg.HQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1113,7 +1113,7 @@ public class CompressVerify {
             return false;
         }
         File outFile = new File(utility.getOutPath());
-        if ((FALSE.equals(utility.getForceRewrite())) && outFile.exists()) {
+        if ((FALSE.equals(utility.getForceRewrite())) && FileUtils.exists(outFile)) {
             String errMsg = "--out-path file already exist, but --force is not 'true'.";
             LOG.error(PackingToolErrMsg.APPQF_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1216,56 +1216,16 @@ public class CompressVerify {
     private static boolean isOutPathValid(Utility utility, String suffix) {
         File outFile = new File(utility.getOutPath());
 
-        if (("false".equals(utility.getForceRewrite())) && (outFile.exists())) {
+        if (("false".equals(utility.getForceRewrite())) && FileUtils.exists(outFile)) {
             LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path file already existed."));
             return false;
         }
 
-        if (HAP_SUFFIX.equals(suffix)) {
-            if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HAP_SUFFIX)) {
-                LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path must end with .hap."));
-                return false;
-            } else {
-                return true;
-            }
+        if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(suffix)) {
+            LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path must end with " + suffix + "."));
+            return false;
         }
-
-        if (HAR_SUFFIX.equals(suffix)) {
-            if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HAR_SUFFIX)) {
-                LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path must end with .har."));
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        if (APP_SUFFIX.equals(suffix)) {
-            if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(APP_SUFFIX)) {
-                LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path must end with .app."));
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        if (RES_SUFFIX.equals(suffix)) {
-            if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(RES_SUFFIX)) {
-                LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path must end with .res."));
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        if (HSP_SUFFIX.equals(suffix)) {
-            if (!outFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX)) {
-                LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path must end with .hsp."));
-                return false;
-            } else {
-                return true;
-            }
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -1277,32 +1237,31 @@ public class CompressVerify {
      * @return isPathValid if path verify
      */
     private static boolean isPathValid(String path, boolean isFile, String flag) {
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
         File file = new File(path);
-        if (isFile && (file.isFile()) && file.getName().toLowerCase(Locale.ENGLISH).endsWith(flag)) {
+        if (isFile && FileUtils.isFile(file) && file.getName().toLowerCase(Locale.ENGLISH).endsWith(flag)) {
             return true;
         }
-        return (!isFile) && file.isDirectory();
+        return (!isFile) && FileUtils.isDirectory(file);
     }
 
     private static boolean isPathExists(String path) {
-        if (path != null && !path.isEmpty()) {
-            File filePath = new File(path);
-            return filePath.exists();
-        }
-        return false;
+        return FileUtils.exists(path);
     }
 
     private static boolean isDirectoryValidStrictCase(String path, String directoryName) {
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
         File file = new File(path);
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             String errMsg = "The directory does not exist, directory path is: " + path + ".";
             LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             return false;
         }
-        if (file.isDirectory()) {
-            return directoryName.equals(file.getName());
-        }
-        return false;
+        return FileUtils.isDirectory(file) && directoryName.equals(file.getName());
     }
 
     /**
@@ -1388,7 +1347,7 @@ public class CompressVerify {
         File existSrcFile = new File(utility.getExistSrcPath());
         boolean isValidExistSrcFileName = existSrcFile.getName().toLowerCase(Locale.ENGLISH).endsWith(HSP_SUFFIX);
         if (!utility.getExistSrcPath().isEmpty() &&
-                !(existSrcFile.isFile() && isValidExistSrcFileName)) {
+                !(FileUtils.isFile(existSrcFile) && isValidExistSrcFileName)) {
             String errMsg = "The value of --exist-src-path must be a file with the .hsp suffix.";
             LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1433,7 +1392,7 @@ public class CompressVerify {
 
         if (!utility.getPkgContextPath().isEmpty()) {
             File file = new File(utility.getPkgContextPath());
-            if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
+            if (!FileUtils.isFile(file) || !PKG_CONTEXT_INFO.equals(file.getName())) {
                 String errMsg = "--pkg-context-path file must be the pkgContextInfo.json file.";
                 LOG.error(PackingToolErrMsg.HSP_MODE_ARGS_INVALID.toString(errMsg));
                 return false;
@@ -1467,8 +1426,11 @@ public class CompressVerify {
             return false;
         }
         String hapPath = utility.getAbsoluteHapPath();
+        if (hapPath.isEmpty()) {
+            hapPath = utility.getFormattedPath(utility.getHapPath());
+        }
         File hapFile = new File(hapPath);
-        if (hapFile.isDirectory()) {
+        if (FileUtils.isDirectory(hapFile)) {
             String errMsg = "--hap-path cannot be a folder.";
             LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1478,7 +1440,7 @@ public class CompressVerify {
             LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
         }
-        if (!hapFile.exists()) {
+        if (!FileUtils.exists(hapFile)) {
             String errMsg = "--hap-path file does not exist.";
             LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1494,7 +1456,7 @@ public class CompressVerify {
             return false;
         }
         File jsonFile = new File(utility.getJsonPath());
-        if (!jsonFile.exists()) {
+        if (!FileUtils.exists(jsonFile)) {
             String errMsg = "--json-path file does not exist.";
             LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1511,7 +1473,7 @@ public class CompressVerify {
             return false;
         }
         File dir = new File(utility.getOutPath());
-        if (dir.exists() && dir.isFile()) {
+        if (FileUtils.exists(dir) && FileUtils.isFile(dir)) {
             String errMsg = "--out-path is file.";
             LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1520,7 +1482,7 @@ public class CompressVerify {
         String hapFileName = absoluteHapFile.getName();
         String destPath = utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName;
         File destFile = new File(destPath);
-        if ("false".equals(utility.getForceRewrite()) && destFile.exists()) {
+        if ("false".equals(utility.getForceRewrite()) && FileUtils.exists(destFile)) {
             String errMsg = "--out-path file already exist, but --force is not 'true'.";
             LOG.error(PackingToolErrMsg.HAP_ADDITION_MODE_ARGS_INVALID.toString(errMsg));
             return false;
@@ -1739,7 +1701,7 @@ public class CompressVerify {
     private static boolean isValidEncryptJsonFile(Utility utility) {
         if (!utility.getEncryptPath().isEmpty()) {
             File fileEncryptJson = new File(utility.getEncryptPath());
-            return fileEncryptJson.isFile() && Constants.FILE_ENCRYPT_JSON.equals(fileEncryptJson.getName());
+            return FileUtils.isFile(fileEncryptJson) && Constants.FILE_ENCRYPT_JSON.equals(fileEncryptJson.getName());
         }
         return true;
     }
@@ -1755,7 +1717,7 @@ public class CompressVerify {
     private static boolean isValidPacJsonFile(Utility utility) {
         if (!utility.getPacJsonPath().isEmpty()) {
             File filePacJson = new File(utility.getPacJsonPath());
-            return filePacJson.isFile() && Constants.FILE_PAC_JSON.equals(filePacJson.getName());
+            return FileUtils.isFile(filePacJson) && Constants.FILE_PAC_JSON.equals(filePacJson.getName());
         }
         return true;
     }

@@ -782,7 +782,7 @@ public class Utility {
      * @return formatted path
      */
     public String getFormattedPath(String path) {
-        if (path == null) {
+        if (path == null || path.isEmpty()) {
             return "";
         }
 

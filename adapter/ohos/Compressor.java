@@ -461,8 +461,11 @@ public class Compressor {
      */
     private static boolean isModuleJSON(String path)
     {
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
         File file = new File(path);
-        if ((file.isFile()) && MODULE_JSON.equals(file.getName())) {
+        if (FileUtils.isFile(file) && MODULE_JSON.equals(file.getName())) {
             return true;
         }
         return false;
@@ -500,7 +503,7 @@ public class Compressor {
         File destFile = new File(utility.getOutPath());
         // if out file directory not exist, mkdirs.
         File outParentFile = destFile.getParentFile();
-        if ((outParentFile != null) && (!outParentFile.exists())) {
+        if ((outParentFile != null) && !FileUtils.exists(outParentFile)) {
             if (!outParentFile.mkdirs()) {
                 String errMsg = "Create output file's parent directory failed.";
                 String solution = "Check the --out-path parameter.";
@@ -548,7 +551,7 @@ public class Compressor {
             String errMsg = "Compress process failed.";
             String solution = "Please check the first error message for more details and modify accordingly.";
             LOG.error(PackingToolErrMsg.COMPRESS_PROCESS_FAILED.toString(errMsg, solution));
-            if (!destFile.delete()) {
+            if (!FileUtils.delete(destFile)) {
                 errMsg = "Delete the output file " + utility.getOutPath() + " failed.";
                 solution = "Try to close the output file using programme.";
                 LOG.error(PackingToolErrMsg.FILE_DELETE_FAILED.toString(errMsg, solution));
@@ -704,7 +707,7 @@ public class Compressor {
 
     private static boolean isPluginHost(Utility utility) throws BundleException {
         File file = new File(utility.getJsonPath());
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             String errMsg = "The --json-path file does not exist.";
             LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             throw new BundleException("Verify has generate build hash failed for --json-path file does not exist.");
@@ -744,7 +747,7 @@ public class Compressor {
     private static boolean checkPkgContext(Utility utility) throws BundleException {
         if (!utility.getPkgContextPath().isEmpty()) {
             File file = new File(utility.getPkgContextPath());
-            if (!file.isFile() || !PKG_CONTEXT_INFO.equals(file.getName())) {
+            if (!FileUtils.isFile(file) || !PKG_CONTEXT_INFO.equals(file.getName())) {
                 String errMsg = "--pkg-context-path file must be the pkgContextInfo.json file.";
                 LOG.error(PackingToolErrMsg.CHECK_PKG_CONTEXT_FAILED.toString(errMsg));
                 return false;
@@ -757,7 +760,7 @@ public class Compressor {
 
     private static boolean checkAppPlugin(Utility utility) throws BundleException {
         File file = new File(utility.getJsonPath());
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             String errMsg = "The --json-path file does not exist.";
             LOG.error(PackingToolErrMsg.CHECK_APP_PLUGIN_FAILED.toString(errMsg));
             throw new BundleException("Verify has generate build hash failed for --json-path file does not exist.");
@@ -829,7 +832,7 @@ public class Compressor {
 
     private static boolean hasGenerateBuildHash(Utility utility) throws BundleException {
         File file = new File(utility.getJsonPath());
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             String errMsg = "The --json-path file does not exist.";
             LOG.error(PackingToolErrMsg.HAS_GENERATE_BUILD_HASH.toString(errMsg));
             throw new BundleException("Verify has generate build hash failed for --json-path file does not exist.");
@@ -870,7 +873,7 @@ public class Compressor {
         }
         copyFileToTempDir(utility);
         File file = new File(utility.getJsonPath());
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             String errMsg = "The --json-path file does not exist.";
             LOG.error(PackingToolErrMsg.SET_GENERATE_BUILD_HASH.toString(errMsg));
             throw new BundleException("Set generate build hash failed for --json-path file does not exist.");
@@ -925,7 +928,7 @@ public class Compressor {
     private static void copyFileToTempDir(Utility utility) throws BundleException {
         String jsonPath = utility.getJsonPath();
         File oldfile = new File(jsonPath);
-        if (!oldfile.exists()) {
+        if (!FileUtils.exists(oldfile)) {
             String errMsg = "Parse --json-path file does not found, parse json path is " + jsonPath + ".";
             LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             throw new BundleException("Copy file to temp dir failed for --json-path file not found.");
@@ -1010,7 +1013,7 @@ public class Compressor {
         }
         String jsonPath = utility.getJsonPath();
         File file = new File(jsonPath);
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             String errMsg = "The --json-path file does not exist.";
             LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString(errMsg));
             throw new BundleException("Put build hash failed for json file not exist.");
@@ -1598,7 +1601,7 @@ public class Compressor {
             }
 
             File tempDir = new File(tempPath);
-            if (!tempDir.exists()) {
+            if (!FileUtils.exists(tempDir)) {
                 tempDir.mkdirs();
             }
 
@@ -1621,7 +1624,7 @@ public class Compressor {
             }
 
             File hspTempDir = new File(hspTempDirPath);
-            if (!hspTempDir.exists()) {
+            if (!FileUtils.exists(hspTempDir)) {
                 hspTempDir.mkdirs();
             }
             for (String hspPathItem : utility.getFormattedHspPathList()) {
@@ -1833,7 +1836,7 @@ public class Compressor {
 
         File destFile = new File(utility.getOutPath() + LINUX_FILE_SEPARATOR + hapFileName);
         File outParentFile = destFile.getParentFile();
-        if ((outParentFile != null) && (!outParentFile.exists())) {
+        if ((outParentFile != null) && !FileUtils.exists(outParentFile)) {
             if (!outParentFile.mkdirs()) {
                 LOG.error(PackingToolErrMsg.HAP_ADDITION_FAILED.toString("Create out file parent directory failed."));
             }
@@ -1977,7 +1980,7 @@ public class Compressor {
             String currentDir = System.getProperty("user.dir");
             String targetParentPath = currentDir + LINUX_FILE_SEPARATOR + TARGET_FILE_PATH;
             File targetParent = new File(targetParentPath);
-            if (!targetParent.exists()) {
+            if (!FileUtils.exists(targetParent)) {
                 if (!targetParent.mkdirs()) {
                     LOG.error(PackingToolErrMsg.COMPRESS_HAP_ADDITION_FAILED.toString(
                             "Create target file parent directory failed."));
@@ -2300,16 +2303,10 @@ public class Compressor {
      * @param path file path which will be deleted
      */
     private static void deleteFile(final String path) {
-        File file = new File(path);
-        if (file.exists()) {
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    deleteFile(files[i].toString());
-                }
-            }
-            file.delete();
+        if (path == null || path.isEmpty()) {
+            return;
         }
+        FileUtils.deleteRecursively(new File(path));
     }
 
     /**
@@ -2574,8 +2571,13 @@ public class Compressor {
     }
 
     private void getFileList(final String filePath) throws BundleException {
+        if (filePath == null || filePath.isEmpty()) {
+            LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("File does not exist. File path is "
+                    + filePath + "."));
+            return;
+        }
         File file = new File(filePath);
-        if (!file.exists()) {
+        if (!FileUtils.exists(file)) {
             LOG.error(PackingToolErrMsg.FILE_NOT_EXIST.toString("File does not exist. File path is "
                     + filePath + "."));
             return;
@@ -2588,7 +2590,7 @@ public class Compressor {
         }
         for (File f : files) {
             try {
-                if (f.isFile()) {
+                if (FileUtils.isFile(f)) {
                     if (f.getName().endsWith(".DS_Store")) {
                         deleteFile(f.getCanonicalPath());
                         continue;
@@ -2601,7 +2603,7 @@ public class Compressor {
                                 ", but current is: " + snapshotDirectoryName + ".");
                     }
                     fileNameList.add(f.getCanonicalPath());
-                } else if (f.isDirectory()) {
+                } else if (FileUtils.isDirectory(f)) {
                     getFileList(f.getCanonicalPath());
                 } else {
                     LOG.error(PackingToolErrMsg.GET_FILE_LIST_FAILED.toString("It's not file or directory."));
@@ -2615,7 +2617,7 @@ public class Compressor {
     }
 
     private void checkContain2x2EntryCard(final File snapshotDirectory) throws IOException, BundleException {
-        if (!snapshotDirectory.exists()) {
+        if (!FileUtils.exists(snapshotDirectory)) {
             LOG.error("checkContain2x2EntryCard: file is not exist: " + snapshotDirectory.getName() + ".");
             throw new BundleException("checkContain2x2EntryCard: file is not exist.");
         }
@@ -2626,7 +2628,7 @@ public class Compressor {
         }
 
         for (File entryCardFile : files) {
-            if (entryCardFile.isFile() && entryCardFile.getName().contains(PIC_2X2)) {
+            if (FileUtils.isFile(entryCardFile) && entryCardFile.getName().contains(PIC_2X2)) {
                 return;
             }
         }
@@ -2656,13 +2658,13 @@ public class Compressor {
             return;
         }
         File fileItem = new File(path);
-        if (fileItem.isDirectory()) {
+        if (FileUtils.isDirectory(fileItem)) {
             File[] files = fileItem.listFiles();
             if (files == null) {
                 return;
             }
             for (File file : files) {
-                if (file.isDirectory()) {
+                if (FileUtils.isDirectory(file)) {
                     compressDirectory(utility, file, baseDir, isCompression);
                 } else if (isCompression) {
                     compressFile(utility, file, baseDir, isCompression);
@@ -2684,7 +2686,7 @@ public class Compressor {
             ParallelScatterZipCreator zipCreator = new ParallelScatterZipCreator(
                     executorService, new DefaultBackingStoreSupplier(null), compressLevel);
             File file = new File(path);
-            if (file.isDirectory()) {
+            if (FileUtils.isDirectory(file)) {
                 File[] files = file.listFiles();
                 if (files == null) {
                     return;
@@ -2706,7 +2708,7 @@ public class Compressor {
 
     private void addArchiveEntry(File file, String baseDir, ParallelScatterZipCreator zipCreator)
             throws IOException {
-        if (file.isDirectory()) {
+        if (FileUtils.isDirectory(file)) {
             File[] files = file.listFiles();
             if (files == null) {
                 return;
@@ -2746,7 +2748,7 @@ public class Compressor {
             return;
         }
         File fileItem = new File(path);
-        if (fileItem.isDirectory()) {
+        if (FileUtils.isDirectory(fileItem)) {
             File[] files = fileItem.listFiles();
             if (files == null) {
                 return;
@@ -2756,7 +2758,7 @@ public class Compressor {
                     // moduleName not in pack.info
                     continue;
                 }
-                if (file.isDirectory()) {
+                if (FileUtils.isDirectory(file)) {
                     compressDirectory(utility, file, baseDir, isCompression);
                 } else if (isCompression) {
                     compressFile(utility, file, baseDir, isCompression);
@@ -2785,7 +2787,7 @@ public class Compressor {
             return;
         }
         for (File file : files) {
-            if (file.isDirectory()) {
+            if (FileUtils.isDirectory(file)) {
                 compressDirectory(utility, file, baseDir + dir.getName() + File.separator, isCompression);
             } else {
                 compressFile(utility, file, baseDir + dir.getName() + File.separator, isCompression);
@@ -2805,7 +2807,7 @@ public class Compressor {
         FileInputStream in = null;
         try {
             byte[] buf = new byte[BUFFER_SIZE];
-            if (sourceFile.isFile()) {
+            if (FileUtils.isFile(sourceFile)) {
                 ZipEntry zipEntry = getStoredZipEntry(sourceFile, name);
                 zipOutputStream.putNextEntry(zipEntry);
                 in = new FileInputStream(sourceFile);
@@ -3703,21 +3705,21 @@ public class Compressor {
                 File packInfoFile = new File(
                         tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + PACKINFO_NAME);
 
-                if (moduleFile.exists() && configFile.exists()) {
+                if (FileUtils.exists(moduleFile) && FileUtils.exists(configFile)) {
                     LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_FAILED.toString("Invalid hap structure."));
                     throw new BundleException("versionNormalize failed, invalid hap structure.");
                 }
-                if (moduleFile.exists()) {
+                if (FileUtils.exists(moduleFile)) {
                     String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
                     util = parseAndModifyModuleJson(moduleJsonPath, utility);
-                } else if (configFile.exists()) {
+                } else if (FileUtils.exists(configFile)) {
                     String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
                     util = parseAndModifyConfigJson(configJsonPath, utility);
                 } else {
                     LOG.error(PackingToolErrMsg.VERSION_NORMALIZE_FAILED.toString("Invalid hap structure."));
                     throw new BundleException("versionNormalize failed, invalid hap structure.");
                 }
-                if (packInfoFile.exists()) {
+                if (FileUtils.exists(packInfoFile)) {
                     String packInfoPath = tempDir.resolve(PACKINFO_NAME).toString();
                     parseAndModifyPackInfo(packInfoPath, utility);
                 }
@@ -3952,15 +3954,7 @@ public class Compressor {
     }
 
     private static void deleteDirectory(File dir) {
-        if (dir.isDirectory()) {
-            File[] children = dir.listFiles();
-            if (children != null) {
-                for (File child : children) {
-                    deleteDirectory(child);
-                }
-            }
-        }
-        dir.delete();
+        FileUtils.deleteRecursively(dir);
     }
 
     private static void writeVersionRecord(List<VersionNormalizeUtil> utils, String outPath) {
@@ -3994,7 +3988,7 @@ public class Compressor {
         try (FileInputStream fis = new FileInputStream(srcPath);
              ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fis))) {
             File destDir = new File(outPath);
-            if (!destDir.exists()) {
+            if (!FileUtils.exists(destDir)) {
                 destDir.mkdirs();
             }
 
@@ -4009,7 +4003,7 @@ public class Compressor {
                     continue;
                 }
                 File parent = entryFile.getParentFile();
-                if (!parent.exists()) {
+                if (!FileUtils.exists(parent)) {
                     parent.mkdirs();
                 }
 
@@ -4071,21 +4065,21 @@ public class Compressor {
                 File packInfoFile = new File(
                         tempDir.toAbsolutePath() + LINUX_FILE_SEPARATOR + PACKINFO_NAME);
 
-                if (moduleFile.exists() && configFile.exists()) {
+                if (FileUtils.exists(moduleFile) && FileUtils.exists(configFile)) {
                     LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString("Invalid hap structure"));
                     throw new BundleException("generalNormalize failed, invalid hap structure.");
                 }
-                if (moduleFile.exists()) {
+                if (FileUtils.exists(moduleFile)) {
                     String moduleJsonPath = tempDir.resolve(MODULE_JSON).toString();
                     util = parseAndModifyGeneralModuleJson(moduleJsonPath, utility, name);
-                } else if (configFile.exists()) {
+                } else if (FileUtils.exists(configFile)) {
                     String configJsonPath = tempDir.resolve(CONFIG_JSON).toString();
                     util = parseAndModifyGeneralConfigJson(configJsonPath, utility, name);
                 } else {
                     LOG.error(PackingToolErrMsg.GENERAL_NORMALIZE_MODE_ARGS_INVALID .toString("Invalid hap structure"));
                     throw new BundleException("generalNormalize failed, invalid hap structure.");
                 }
-                if (packInfoFile.exists()) {
+                if (FileUtils.exists(packInfoFile)) {
                     String packInfoPath = tempDir.resolve(PACKINFO_NAME).toString();
                     parseAndModifyGeneralPackInfo(packInfoPath, utility);
                 }
@@ -4591,10 +4585,13 @@ public class Compressor {
     }
 
     private static void deleteFile(File dir) {
+        if (dir == null || dir.getPath().isEmpty()) {
+            return;
+        }
         File[] children = dir.listFiles();
         if (children != null) {
             for (File child : children) {
-                child.delete();
+                FileUtils.deleteRecursively(child);
             }
         }
     }
@@ -4649,7 +4646,7 @@ public class Compressor {
             return;
         }
         File skillsDir = new File(utility.getSkillsPath());
-        if (!skillsDir.isDirectory()) {
+        if (!FileUtils.isDirectory(skillsDir)) {
             return;
         }
         List<String> profileNames = PackageUtil.getOrLoadSkillProfileNames(utility);
@@ -4669,10 +4666,10 @@ public class Compressor {
             return;
         }
         for (File child : children) {
-            if (child.isDirectory() && SCRIPTS_DIR_NAME.equals(child.getName())) {
+            if (FileUtils.isDirectory(child) && SCRIPTS_DIR_NAME.equals(child.getName())) {
                 continue; // skip scripts/ directory
             }
-            if (child.isDirectory()) {
+            if (FileUtils.isDirectory(child)) {
                 compressDirectory(utility, child, zipBase, false);
             } else {
                 pathToFile(utility, child.getAbsolutePath(), zipBase, false);

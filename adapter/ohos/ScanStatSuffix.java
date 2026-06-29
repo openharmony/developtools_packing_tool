@@ -242,7 +242,7 @@ public class ScanStatSuffix {
         resulList.sort(Comparator.comparing(ParamModelSuffix::getTotalSize).reversed());
         suffixResult.setResult(resulList);
         File parentFile = new File(utility.getOutPath());
-        if (!parentFile.exists() && !parentFile.mkdirs()) {
+        if (!FileUtils.exists(parentFile) && !parentFile.mkdirs()) {
             LOG.error(ScanErrorEnum.SUFFIX_MKDIRS_ERROR.toString());
         }
         suffixResult.setStopTime(getCurrentTime());
@@ -376,9 +376,7 @@ public class ScanStatSuffix {
                     } catch (IOException e) {
                         LOG.error("Failed to process nested package: " + entryName + ", " + e.getMessage());
                     } finally {
-                        if (tempFile != null) {
-                            tempFile.delete();
-                        }
+                        FileUtils.delete(tempFile);
                     }
                 } else if (entryName.endsWith(".so")) {
                     String fullPath = prefix + entryName;
@@ -555,7 +553,7 @@ public class ScanStatSuffix {
         try (FileInputStream fis = new FileInputStream(srcPath);
              ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(fis))) {
             File destDir = new File(outPath);
-            if (!destDir.exists()) {
+            if (!FileUtils.exists(destDir)) {
                 destDir.mkdirs();
             }
             unpackEntryToFile(zipInputStream, outPath);
@@ -578,7 +576,7 @@ public class ScanStatSuffix {
                 continue;
             }
             File parent = entryFile.getParentFile();
-            if (!parent.exists()) {
+            if (!FileUtils.exists(parent)) {
                 parent.mkdirs();
             }
             try (FileOutputStream fos = new FileOutputStream(entryFile)) {
@@ -596,15 +594,6 @@ public class ScanStatSuffix {
     }
 
     private static void deleteFile(File file) {
-        if (file == null || !file.exists()) {
-            return;
-        }
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            for (File fileTmp : files) {
-                deleteFile(fileTmp);
-            }
-        }
-        file.delete();
+        FileUtils.deleteRecursively(file);
     }
 }
