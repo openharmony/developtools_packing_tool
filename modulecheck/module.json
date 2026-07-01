@@ -10,7 +10,8 @@
     "skillProfileName": {
       "description": "Indicates the name of the skill. Max 64 characters. Lowercase letters, numbers, and hyphens only. Must not start or end with a hyphen.",
       "type": "string",
-      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 1,
       "maxLength": 64
     },
     "skillProfileSrcEntries": {
@@ -31,6 +32,21 @@
         "type": "string",
         "maxLength": 255
       }
+    },
+    "skillProfileVersion": {
+      "description": "Indicates the semantic version of the skill.",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+    },
+    "skillProfileVisibility": {
+      "description": "Indicates the visibility of the skill.",
+      "type": "string",
+      "enum": [
+        "private",
+        "system",
+        "public"
+      ],
+      "default": "system"
     }
   },
   "propertyNames": {
@@ -724,6 +740,56 @@
                   "properties": {
                     "name": {
                       "$ref": "#/definitions/skillProfileName"
+                    },
+                    "srcEntries": {
+                      "$ref": "#/definitions/skillProfileSrcEntries"
+                    },
+                    "permissions": {
+                      "$ref": "#/definitions/skillProfilePermissions"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "skillProfiles": {
+                "description": "Indicates the skill profiles configuration in the module. Only allowed for entry, feature, shared, and skill module types. The name field in each skill profile must be unique within the array.",
+                "type": "array",
+                "maxItems": 100,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "propertyNames": {
+                    "enum": [
+                      "name",
+                      "abilityName",
+                      "version",
+                      "visibility",
+                      "srcEntries",
+                      "permissions"
+                    ]
+                  },
+                  "required": [
+                    "name",
+                    "version"
+                  ],
+                  "properties": {
+                    "name": {
+                      "$ref": "#/definitions/skillProfileName"
+                    },
+                    "abilityName": {
+                      "description": "Indicates the name of the ability associated with the skill. Must be configured as UIAbility (under abilities tag) or ServiceExtension (under extensionAbilities tag with type service).",
+                      "type": "string",
+                      "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
+                      "maxLength": 127
+                    },
+                    "version": {
+                      "$ref": "#/definitions/skillProfileVersion"
+                    },
+                    "visibility": {
+                      "$ref": "#/definitions/skillProfileVisibility"
                     },
                     "srcEntries": {
                       "$ref": "#/definitions/skillProfileSrcEntries"
@@ -2823,6 +2889,8 @@
               "enum": [
                 "name",
                 "abilityName",
+                "version",
+                "visibility",
                 "srcEntries",
                 "permissions"
               ]
@@ -2839,6 +2907,12 @@
                 "type": "string",
                 "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
                 "maxLength": 127
+              },
+              "version": {
+                "$ref": "#/definitions/skillProfileVersion"
+              },
+              "visibility": {
+                "$ref": "#/definitions/skillProfileVisibility"
               },
               "srcEntries": {
                 "$ref": "#/definitions/skillProfileSrcEntries"
