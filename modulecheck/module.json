@@ -730,41 +730,6 @@
                   "propertyNames": {
                     "enum": [
                       "name",
-                      "srcEntries",
-                      "permissions"
-                    ]
-                  },
-                  "required": [
-                    "name"
-                  ],
-                  "properties": {
-                    "name": {
-                      "$ref": "#/definitions/skillProfileName"
-                    },
-                    "srcEntries": {
-                      "$ref": "#/definitions/skillProfileSrcEntries"
-                    },
-                    "permissions": {
-                      "$ref": "#/definitions/skillProfilePermissions"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "skillProfiles": {
-                "description": "Indicates the skill profiles configuration in the module. Only allowed for entry, feature, shared, and skill module types. The name field in each skill profile must be unique within the array.",
-                "type": "array",
-                "maxItems": 100,
-                "uniqueItems": true,
-                "items": {
-                  "type": "object",
-                  "propertyNames": {
-                    "enum": [
-                      "name",
-                      "abilityName",
                       "version",
                       "visibility",
                       "srcEntries",
@@ -778,12 +743,6 @@
                   "properties": {
                     "name": {
                       "$ref": "#/definitions/skillProfileName"
-                    },
-                    "abilityName": {
-                      "description": "Indicates the name of the ability associated with the skill. Must be configured as UIAbility (under abilities tag) or ServiceExtension (under extensionAbilities tag with type service).",
-                      "type": "string",
-                      "pattern": "^[a-zA-Z][0-9a-zA-Z_.]*$",
-                      "maxLength": 127
                     },
                     "version": {
                       "$ref": "#/definitions/skillProfileVersion"
@@ -2896,7 +2855,8 @@
               ]
             },
             "required": [
-              "name"
+              "name",
+              "version"
             ],
             "properties": {
               "name": {
