@@ -24,6 +24,7 @@ namespace OHOS {
 namespace AppPackingTool {
 
 enum class DedupLogLevel {
+    DEBUG,
     INFO,
     WARNING,
     ERROR,
@@ -37,6 +38,9 @@ public:
     {
         const std::string message = stream_.str();
         switch (level_) {
+            case DedupLogLevel::DEBUG:
+                LOGD("%s", message.c_str());
+                break;
             case DedupLogLevel::ERROR:
                 LOGE("%s", message.c_str());
                 break;

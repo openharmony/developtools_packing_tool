@@ -631,7 +631,7 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
     SODeduplicator soDeduplicator;
     std::string reportDir = fs::path(parameterMap_.at(Constants::PARAM_OUT_PATH)).parent_path().string();
     if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tempPath.string(), reportDir)) {
-        LOGE("[SO_DEDUP] %s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
             soDeduplicator.GetErrorMessage()).c_str());
         return false;
     }

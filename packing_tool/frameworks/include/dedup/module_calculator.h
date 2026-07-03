@@ -30,16 +30,23 @@ namespace AppPackingTool {
 struct ModuleConfig {
     std::string moduleName;
     std::string moduleType; // "entry", "feature", "shared"
+    std::string bundleType; // "app", "atomicService"
+    bool stageModel;
     std::vector<DeviceType> deviceTypes;
+    bool deviceTypesConfigured;
     std::string distributionFilter;
     bool deliveryWithInstall;
+    bool deliveryWithInstallPresent;
     std::vector<std::string> requireDeviceFeatures;
     bool compressNativeLibs;
-    bool extraNativeLibs;
+    bool extractNativeLibs;
     bool libIsolation;
+    std::string compileSdkType; // "HarmonyOS" 或 "OpenHarmony"
 
-    ModuleConfig() : deliveryWithInstall(false), compressNativeLibs(false),
-                     extraNativeLibs(false), libIsolation(false) {}
+    ModuleConfig() : stageModel(false), deviceTypesConfigured(false), deliveryWithInstall(false),
+                     deliveryWithInstallPresent(false),
+                     compressNativeLibs(false),
+                     extractNativeLibs(false), libIsolation(false) {}
 };
 
 // 模块集合计算器
@@ -71,7 +78,10 @@ public:
      * @param moduleJson ModuleJson对象
      * @return 模块配置
      */
-    static ModuleConfig ExtractModuleConfig(const std::shared_ptr<ModuleJson>& moduleJson);
+    static ModuleConfig ExtractModuleConfig(
+        const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel = true);
+
+    static bool IsValidForDedup(const ModuleConfig& moduleConfig);
 
     /**
      * @brief 检查设备的deviceTypes是否包含指定设备类型

@@ -33,8 +33,7 @@ void PackInfoParserTest::TearDown() {}
 // 测试1：解析包含deduplicateSo字段的pack.info（true）
 HWTEST_F(PackInfoParserTest, GetDeduplicateSo_WithTrueValue, TestSize.Level0) {
     std::string jsonStr = R"({
-        "deduplicateSo": true,
-        "summary": {"app": {"bundleName": "com.example.app"}, "modules": []},
+        "summary": {"app": {"bundleName": "com.example.app", "deduplicateSo": true}, "modules": []},
         "packages": []
     })";
 
@@ -48,8 +47,7 @@ HWTEST_F(PackInfoParserTest, GetDeduplicateSo_WithTrueValue, TestSize.Level0) {
 // 测试2：解析包含deduplicateSo字段的pack.info（false）
 HWTEST_F(PackInfoParserTest, GetDeduplicateSo_WithFalseValue, TestSize.Level0) {
     std::string jsonStr = R"({
-        "deduplicateSo": false,
-        "summary": {"app": {"bundleName": "com.example.app"}, "modules": []},
+        "summary": {"app": {"bundleName": "com.example.app", "deduplicateSo": false}, "modules": []},
         "packages": []
     })";
 
@@ -90,8 +88,7 @@ HWTEST_F(PackInfoParserTest, GetDeduplicateSoWithDefault_WithoutField, TestSize.
 // 测试5：使用默认值解析包含deduplicateSo字段的pack.info
 HWTEST_F(PackInfoParserTest, GetDeduplicateSoWithDefault_WithField, TestSize.Level0) {
     std::string jsonStr = R"({
-        "deduplicateSo": true,
-        "summary": {"app": {"bundleName": "com.example.app"}, "modules": []},
+        "summary": {"app": {"bundleName": "com.example.app", "deduplicateSo": true}, "modules": []},
         "packages": []
     })";
 
@@ -105,10 +102,10 @@ HWTEST_F(PackInfoParserTest, GetDeduplicateSoWithDefault_WithField, TestSize.Lev
 // 测试6：解析复杂格式的pack.info
 HWTEST_F(PackInfoParserTest, GetDeduplicateSo_ComplexPackInfo, TestSize.Level0) {
     std::string jsonStr = R"({
-        "deduplicateSo": true,
         "summary": {
             "app": {
                 "bundleName": "com.example.app",
+                "deduplicateSo": true,
                 "version": {"code": 1, "name": "1.0.0"}
             },
             "modules": []
@@ -155,8 +152,7 @@ HWTEST_F(PackInfoParserTest, GetDeduplicateSo_FromFile, TestSize.Level0) {
     // 创建临时pack.info文件
     std::string tempFilePath = "temp_pack_info.json";
     std::string jsonStr = R"({
-        "deduplicateSo": true,
-        "summary": {"app": {"bundleName": "com.example.app"}, "modules": []},
+        "summary": {"app": {"bundleName": "com.example.app", "deduplicateSo": true}, "modules": []},
         "packages": []
     })";
 
@@ -176,8 +172,8 @@ HWTEST_F(PackInfoParserTest, GetDeduplicateSo_FromFile, TestSize.Level0) {
     std::filesystem::remove(tempFilePath);
 }
 
-// 根节点是当前格式，同时兼容早期summary.app格式。
-HWTEST_F(PackInfoParserTest, GetDeduplicateSo_LegacyNestedValue, TestSize.Level0) {
+// deduplicateSo is parsed from summary.app.
+HWTEST_F(PackInfoParserTest, GetDeduplicateSo_FromSummaryApp, TestSize.Level0) {
     std::string jsonStr = R"({
         "summary": {
             "app": {
@@ -192,4 +188,16 @@ HWTEST_F(PackInfoParserTest, GetDeduplicateSo_LegacyNestedValue, TestSize.Level0
     bool deduplicateSo = false;
     EXPECT_TRUE(packInfo_.GetDeduplicateSo(deduplicateSo));
     EXPECT_TRUE(deduplicateSo);
+}
+
+HWTEST_F(PackInfoParserTest, GetDeduplicateSo_RootValueIgnored, TestSize.Level0) {
+    std::string jsonStr = R"({
+        "deduplicateSo": true,
+        "summary": {"app": {"bundleName": "com.example.app"}},
+        "packages": []
+    })";
+
+    ASSERT_TRUE(packInfo_.ParseFromString(jsonStr));
+    bool deduplicateSo = false;
+    EXPECT_FALSE(packInfo_.GetDeduplicateSo(deduplicateSo));
 }

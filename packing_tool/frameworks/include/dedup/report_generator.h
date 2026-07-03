@@ -32,9 +32,7 @@ struct DedupReport {
         std::vector<std::string> removed;  // 移除的so路径
     };
 
-    std::string version;              // 报告格式版本
     std::string timestamp;            // 生成时间
-    std::string strategy;             // 策略类型（"exact" 或 "greedy"）
     std::map<std::string, ModuleDedupInfo> modules; // 模块去重信息
 };
 
@@ -60,10 +58,9 @@ public:
     /**
      * @brief 生成报告的JSON字符串
      * @param plan 去重方案
-     * @param strategy 使用的策略
      * @return JSON字符串
      */
-    std::string GenerateReportJson(const DedupPlan& plan, DedupStrategy strategy);
+    std::string GenerateReportJson(const DedupPlan& plan);
 
 private:
     /**

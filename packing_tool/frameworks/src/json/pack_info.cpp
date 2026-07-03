@@ -1105,16 +1105,7 @@ bool PackInfo::GetDeduplicateSo(bool& deduplicateSo)
         LOGE("Failed to get root object for deduplicateSo");
         return false;
     }
-    if (root_->Contains(DEDUPLICATE_SO.c_str())) {
-        Result result = root_->GetBool(DEDUPLICATE_SO.c_str(), &deduplicateSo);
-        if (result != Result::SUCCESS) {
-            LOGE("Failed to get root deduplicateSo value");
-            return false;
-        }
-        return true;
-    }
-
-    // 兼容早期实现将字段写入summary.app的格式。
+    // deduplicateSo is defined in summary.app.
     std::unique_ptr<PtJson> appObj;
     if (!GetAppObject(appObj)) {
         LOGI("deduplicateSo field not found in pack.info");

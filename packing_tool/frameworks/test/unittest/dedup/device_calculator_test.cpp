@@ -162,7 +162,7 @@ HWTEST_F(DeviceCalculatorTest, CalculateDevices_DuplicateRemoval, TestSize.Level
 }
 
 // 测试7：默认设备类型
-HWTEST_F(DeviceCalculatorTest, CalculateDevices_DefaultDeviceTypes, TestSize.Level0) {
+HWTEST_F(DeviceCalculatorTest, CalculateDevices_MissingDeviceTypes, TestSize.Level0) {
     // 创建一个没有指定deviceTypes的模块（模拟空列表）
     std::string jsonStr = R"({
         "app": {
@@ -182,8 +182,7 @@ HWTEST_F(DeviceCalculatorTest, CalculateDevices_DefaultDeviceTypes, TestSize.Lev
 
     auto devices = calculator_.CalculateDevices(entryModules);
 
-    // 应该默认支持所有6种设备类型
-    EXPECT_EQ(devices.size(), 6);
+    EXPECT_TRUE(devices.empty());
 }
 
 HWTEST_F(DeviceCalculatorTest, CalculateDevices_DefaultMeansPhone, TestSize.Level0) {

@@ -100,12 +100,12 @@ HWTEST_F(GreedySolverTest, Solve_MultipleSoInGroup_GreedySelection, TestSize.Lev
     EXPECT_TRUE(plan.removedSoMap.find("module3") != plan.removedSoMap.end());
 }
 
-// 测试5：大规模场景（模拟21个模块）
+// 测试5：大规模场景（模拟单个SO有21个重复副本）
 HWTEST_F(GreedySolverTest, Solve_LargeScaleScenario, TestSize.Level0) {
     OHOS::AppPackingTool::DuplicateSoGroup group;
     group.md5 = "abc123";
 
-    // 创建21个模块，每个都包含相同的SO
+    // 在21个模块中创建同一路径、同一MD5的SO，即21个重复副本
     for (int i = 1; i <= 21; ++i) {
         std::string moduleName = "module" + std::to_string(i);
         int64_t fileSize = i * 100; // 递增的文件大小

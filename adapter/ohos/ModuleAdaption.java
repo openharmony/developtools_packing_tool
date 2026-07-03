@@ -102,6 +102,7 @@ class ModuleAdaption {
         appInfo.setTargetBundleName(moduleAppInfo.getTargetBundleName());
         appInfo.setTargetPriority(moduleAppInfo.getTargetPriority());
         appInfo.setAlternateIcons(moduleAppInfo.getAlternateIcons());
+        appInfo.setDeduplicateSo(moduleAppInfo.deduplicateSo);
         return appInfo;
     }
 

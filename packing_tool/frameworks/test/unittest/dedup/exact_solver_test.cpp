@@ -219,3 +219,56 @@ HWTEST_F(ExactSolverTest, Solve_ModuleOutsideMandatorySetUsesSupportedDevices, T
     EXPECT_TRUE(plan.keptSoMap.find("entry") != plan.keptSoMap.end());
     EXPECT_TRUE(plan.removedSoMap.find("ondemand") != plan.removedSoMap.end());
 }
+
+HWTEST_F(ExactSolverTest, DedupPlan_MergeSameModulePaths, TestSize.Level0)
+{
+    OHOS::AppPackingTool::DedupPlan smallPlan;
+    smallPlan.AddKeptSo("feature1", "libs/liba.so");
+    smallPlan.AddRemovedSo("feature1", "libs/liba.so", 100);
+
+    OHOS::AppPackingTool::DedupPlan largePlan;
+    largePlan.AddKeptSo("feature1", "libs/libb.so");
+    largePlan.AddRemovedSo("feature1", "libs/libb.so", 200);
+
+    smallPlan.Merge(largePlan);
+
+    ASSERT_EQ(smallPlan.keptSoMap["feature1"].size(), 2);
+    EXPECT_EQ(smallPlan.keptSoMap["feature1"][0], "libs/liba.so");
+    EXPECT_EQ(smallPlan.keptSoMap["feature1"][1], "libs/libb.so");
+    ASSERT_EQ(smallPlan.removedSoMap["feature1"].size(), 2);
+    EXPECT_EQ(smallPlan.removedSoMap["feature1"][0], "libs/liba.so");
+    EXPECT_EQ(smallPlan.removedSoMap["feature1"][1], "libs/libb.so");
+    EXPECT_EQ(smallPlan.totalSavedSize, 300);
+}
+
+HWTEST_F(ExactSolverTest, ResolveDedupStrategy_AllCombinations, TestSize.Level0)
+{
+    using OHOS::AppPackingTool::DedupStrategy;
+    using OHOS::AppPackingTool::ResolveDedupStrategy;
+
+    EXPECT_EQ(ResolveDedupStrategy(false, false), DedupStrategy::NONE);
+    EXPECT_EQ(ResolveDedupStrategy(true, false), DedupStrategy::EXACT);
+    EXPECT_EQ(ResolveDedupStrategy(false, true), DedupStrategy::GREEDY);
+    EXPECT_EQ(ResolveDedupStrategy(true, true), DedupStrategy::MIXED);
+}
+
+HWTEST_F(ExactSolverTest, Solve_TwentyCopiesKeepsSingleOptimalCopy, TestSize.Level0)
+{
+    OHOS::AppPackingTool::DuplicateSoGroup group;
+    group.relativePath = "libs/arm64-v8a/libshared.so";
+    group.md5 = "same-md5";
+
+    OHOS::AppPackingTool::DeviceInstance phone {OHOS::AppPackingTool::DeviceType::PHONE, ""};
+    std::map<OHOS::AppPackingTool::DeviceInstance, std::vector<std::string>> mandatoryMap;
+    for (size_t index = 0; index < 20; ++index) {
+        std::string moduleName = "module" + std::to_string(index);
+        group.soList.push_back({group.relativePath, group.md5, moduleName, 1000});
+        mandatoryMap[phone].push_back(moduleName);
+    }
+
+    auto plan = solver_.Solve({group}, mandatoryMap);
+
+    EXPECT_EQ(plan.keptSoMap.size(), 1);
+    EXPECT_EQ(plan.removedSoMap.size(), 19);
+    EXPECT_EQ(plan.totalSavedSize, 19000);
+}

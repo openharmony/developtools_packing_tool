@@ -619,7 +619,7 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         parameterMap_.at(Constants::PARAM_DEDUPLICATE_SO) == Constants::TRUE_STRING;
     std::string reportDir = fs::path(parameterMap_.at(Constants::PARAM_OUT_PATH)).parent_path().string();
     if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tempHapDirPath.string(), reportDir)) {
-        LOGE("[SO_DEDUP] %s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
+        LOGE("%s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
             soDeduplicator.GetErrorMessage()).c_str());
         return false;
     }

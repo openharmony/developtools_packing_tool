@@ -20,9 +20,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +40,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -48,29 +50,22 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.zip.CRC32;
-import java.util.zip.CheckedOutputStream;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 /**
  * SO deduplicator for Java packing tool.
  */
 final class SODeduplicator {
     private static final String DEDUPLICATE_SO = "deduplicateSo";
-    private static final String SO_SUFFIX = ".so";
     private static final String LIBS_DIR = "libs";
     private static final String MODULE_JSON = "module.json";
     private static final String CONFIG_JSON = "config.json";
     private static final String MODULE = "module";
-    private static final String DISTRO = "distro";
     private static final String NAME = "name";
     private static final String TYPE = "type";
-    private static final String MODULE_NAME = "moduleName";
-    private static final String MODULE_TYPE = "moduleType";
     private static final String DEVICE_TYPES = "deviceTypes";
-    private static final String DEVICE_TYPE = "deviceType";
     private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
     private static final String DISTRIBUTION_FILTER = "distributionFilter";
     private static final String DISTRO_FILTER = "distroFilter";
@@ -78,10 +73,16 @@ final class SODeduplicator {
     private static final String COMPRESS_NATIVE_LIBS = "compressNativeLibs";
     private static final String EXTRACT_NATIVE_LIBS = "extractNativeLibs";
     private static final String LIB_ISOLATION = "libIsolation";
+    private static final String COMPILE_SDK_TYPE = "compileSdkType";
+    private static final String BUNDLE_TYPE = "bundleType";
     private static final String ENTRY = "entry";
+    private static final String OPEN_HARMONY = "OpenHarmony";
+    private static final String APP = "app";
+    private static final String ATOMIC_SERVICE = "atomicService";
     private static final String REPORT_NAME = "so_dedup_report.json";
     private static final int EXACT_THRESHOLD = 20;
     private static final int BUFFER_SIZE = 8192;
+    private static final Pattern SO_PATTERN = Pattern.compile(".*\\.so(\\.\\d+)*$", Pattern.CASE_INSENSITIVE);
 
     private static final Log LOG = new Log(SODeduplicator.class.toString());
 
@@ -89,7 +90,7 @@ final class SODeduplicator {
     }
 
     private static void logDedupError(String cause) {
-        LOG.error("[SO_DEDUP] " + PackingToolErrMsg.SO_DEDUPLICATION_FAILED.toString(cause));
+        LOG.error(PackingToolErrMsg.SO_DEDUPLICATION_FAILED.toString(cause));
     }
 
     static boolean isDeduplicateSoEnabled(String packInfoPath) throws BundleException {
@@ -115,11 +116,8 @@ final class SODeduplicator {
             if (jsonObject == null) {
                 return false;
             }
-            if (jsonObject.containsKey(DEDUPLICATE_SO)) {
-                return jsonObject.getBooleanValue(DEDUPLICATE_SO);
-            }
             JSONObject summary = jsonObject.getJSONObject("summary");
-            JSONObject app = summary == null ? jsonObject.getJSONObject("app") : summary.getJSONObject("app");
+            JSONObject app = summary == null ? null : summary.getJSONObject("app");
             return app != null && app.getBooleanValue(DEDUPLICATE_SO);
         } catch (JSONException exception) {
             String errMsg = "Parse deduplicateSo in pack.info failed: " + exception.getMessage();
@@ -129,24 +127,24 @@ final class SODeduplicator {
     }
 
     static List<String> deduplicateModules(List<String> modulePaths, boolean deduplicateSo, Path workDir,
-                                           Path reportDir, int compressLevel) throws BundleException {
+                                           Path reportDir) throws BundleException {
         if (!deduplicateSo) {
-            LOG.info("[SO_DEDUP] SO deduplication skipped: disabled.");
+            LOG.info("SO deduplication skipped: disabled.");
             return modulePaths;
         }
         if (modulePaths == null || modulePaths.isEmpty()) {
             return modulePaths;
         }
         try {
-            LOG.info("[SO_DEDUP] SO deduplication started.");
+            LOG.info("SO deduplication started.");
             Path modulesRoot = Files.createTempDirectory(workDir, "so_dedup_modules_");
             Path repackedRoot = Files.createTempDirectory(workDir, "so_dedup_repacked_");
             List<ModuleRecord> modules = extractModules(modulePaths, modulesRoot, repackedRoot);
             DedupResult result = deduplicateExtractedModules(modules);
             writeReport(result, reportDir);
-            List<String> repacked = repackModules(modules, compressLevel);
+            List<String> repacked = repackModules(modules, result);
             String reportPath = reportDir == null ? "" : reportDir.resolve(REPORT_NAME).toString();
-            LOG.info("[SO_DEDUP] SO deduplication completed: removed=" + result.removedRecords.size()
+            LOG.warning("SO deduplication completed: removed=" + result.removedRecords.size()
                     + ", savedBytes=" + result.totalSavedSize + ", report=" + reportPath);
             return repacked;
         } catch (IOException exception) {
@@ -159,11 +157,11 @@ final class SODeduplicator {
     static void deduplicateExtractedModuleFiles(List<String> modulePaths, String packInfoPath, Path reportDir)
             throws BundleException {
         if (!isDeduplicateSoEnabled(packInfoPath)) {
-            LOG.info("[SO_DEDUP] SO deduplication skipped: disabled.");
+            LOG.info("SO deduplication skipped: disabled.");
             return;
         }
         try {
-            LOG.info("[SO_DEDUP] SO deduplication started.");
+            LOG.info("SO deduplication started.");
             List<ModuleRecord> modules = new ArrayList<>();
             for (String modulePath : modulePaths) {
                 Path path = Paths.get(modulePath);
@@ -173,7 +171,7 @@ final class SODeduplicator {
             DedupResult result = deduplicateExtractedModules(modules);
             writeReport(result, reportDir);
             String reportPath = reportDir == null ? "" : reportDir.resolve(REPORT_NAME).toString();
-            LOG.info("[SO_DEDUP] SO deduplication completed: removed=" + result.removedRecords.size()
+            LOG.warning("SO deduplication completed: removed=" + result.removedRecords.size()
                     + ", savedBytes=" + result.totalSavedSize + ", report=" + reportPath);
         } catch (IOException exception) {
             String errMsg = "SO deduplication error: " + exception.getMessage();
@@ -199,21 +197,23 @@ final class SODeduplicator {
 
     private static DedupResult deduplicateExtractedModules(List<ModuleRecord> modules) throws IOException {
         List<ModuleRecord> eligibleModules = new ArrayList<>();
+        List<ModuleRecord> validModules = new ArrayList<>();
         for (ModuleRecord module : modules) {
+            if (module.config.isValidForDedup()) {
+                validModules.add(module);
+            }
             if (module.config.isEligible()) {
                 eligibleModules.add(module);
             }
         }
-        String strategy = eligibleModules.size() <= EXACT_THRESHOLD ? "exact" : "greedy";
-        LOG.info("[SO_DEDUP] SO deduplication strategy: " + strategy
-                + ", eligibleModules=" + eligibleModules.size() + ".");
-        DedupResult result = new DedupResult(strategy);
+        DedupResult result = new DedupResult();
         if (eligibleModules.isEmpty()) {
             return result;
         }
-        Set<DeviceInstance> devices = calculateDevices(modules);
+        Set<DeviceInstance> devices = calculateDevices(validModules);
         if (devices.isEmpty()) {
-            throw new IOException("No devices found for deduplication");
+            LOG.info("SO deduplication skipped: no valid entry devices.");
+            return result;
         }
         Map<DeviceInstance, Set<String>> mandatoryModules = calculateMandatoryModules(eligibleModules, devices);
         Map<String, ModuleConfig> moduleConfigs = new HashMap<>();
@@ -237,8 +237,12 @@ final class SODeduplicator {
                                            Map<DeviceInstance, Set<String>> mandatoryModules,
                                            Map<String, ModuleConfig> moduleConfigs,
                                            Set<DeviceInstance> devices, DedupResult result) {
+        String strategy = group.size() <= EXACT_THRESHOLD ? "exact" : "greedy";
+        LOG.info("SO deduplication strategy: " + strategy
+                + ", duplicateCopies=" + group.size() + ".");
+
         List<SoRecord> remaining;
-        if ("exact".equals(result.strategy)) {
+        if ("exact".equals(strategy)) {
             remaining = findExactSolution(group, mandatoryModules, moduleConfigs, devices);
         } else {
             remaining = findGreedySolution(group, mandatoryModules, moduleConfigs, devices);
@@ -258,11 +262,7 @@ final class SODeduplicator {
                                                      Map<DeviceInstance, Set<String>> mandatoryModules,
                                                      Map<String, ModuleConfig> moduleConfigs,
                                                      Set<DeviceInstance> devices) {
-        if (group.size() > EXACT_THRESHOLD) {
-            return findGreedySolution(group, mandatoryModules, moduleConfigs, devices);
-        }
         List<SoRecord> best = new ArrayList<>(group);
-        long bestKeptSize = sumSize(best);
         long subsetCount = 1L << group.size();
         for (long mask = 1; mask < subsetCount; mask++) {
             int keptCount = Long.bitCount(mask);
@@ -278,10 +278,8 @@ final class SODeduplicator {
             if (!satisfiesAllDevices(group, candidate, mandatoryModules, moduleConfigs, devices)) {
                 continue;
             }
-            long keptSize = sumSize(candidate);
-            if (candidate.size() < best.size() || candidate.size() == best.size() && keptSize < bestKeptSize) {
+            if (candidate.size() < best.size()) {
                 best = candidate;
-                bestKeptSize = keptSize;
             }
         }
         return best;
@@ -292,22 +290,11 @@ final class SODeduplicator {
                                                       Map<String, ModuleConfig> moduleConfigs,
                                                       Set<DeviceInstance> devices) {
         List<SoRecord> remaining = new ArrayList<>(group);
-        List<SoRecord> candidates = new ArrayList<>(group);
-        candidates.sort(Comparator.comparingLong((SoRecord so) -> so.size).reversed());
-        boolean changed = true;
-        while (changed) {
-            changed = false;
-            for (SoRecord so : candidates) {
-                if (!remaining.contains(so)) {
-                    continue;
-                }
-                List<SoRecord> trial = new ArrayList<>(remaining);
-                trial.remove(so);
-                if (satisfiesAllDevices(group, trial, mandatoryModules, moduleConfigs, devices)) {
-                    remaining = trial;
-                    changed = true;
-                    break;
-                }
+        for (SoRecord so : group) {
+            List<SoRecord> trial = new ArrayList<>(remaining);
+            trial.remove(so);
+            if (satisfiesAllDevices(group, trial, mandatoryModules, moduleConfigs, devices)) {
+                remaining = trial;
             }
         }
         return remaining;
@@ -358,14 +345,6 @@ final class SODeduplicator {
         return false;
     }
 
-    private static long sumSize(List<SoRecord> records) {
-        long size = 0;
-        for (SoRecord record : records) {
-            size += record.size;
-        }
-        return size;
-    }
-
     private static Set<DeviceInstance> calculateDevices(List<ModuleRecord> modules) {
         Set<DeviceInstance> devices = new HashSet<>();
         for (ModuleRecord module : modules) {
@@ -385,8 +364,11 @@ final class SODeduplicator {
             Set<String> moduleNames = new HashSet<>();
             for (ModuleRecord module : modules) {
                 ModuleConfig config = module.config;
-                if (supportsDevice(config, device) && config.deliveryWithInstall
-                        && config.distributionFilter.isEmpty() && config.requiredDeviceFeatures.isEmpty()) {
+                boolean isEntry = ENTRY.equals(config.moduleType);
+                boolean isMandatory = isEntry ? supportsDevice(config, device)
+                        : supportsDevice(config, device) && config.deliveryWithInstall
+                        && config.requiredDeviceFeatures.isEmpty();
+                if (isMandatory) {
                     moduleNames.add(config.moduleName);
                 }
             }
@@ -419,7 +401,7 @@ final class SODeduplicator {
         Files.walkFileTree(libsPath, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (file.getFileName().toString().endsWith(SO_SUFFIX)) {
+                if (isSoFile(file.getFileName().toString())) {
                     addSoRecord(groups, module, file);
                 }
                 return FileVisitResult.CONTINUE;
@@ -441,6 +423,10 @@ final class SODeduplicator {
         groups.computeIfAbsent(so.relativePath + '\n' + md5, key -> new ArrayList<>()).add(so);
     }
 
+    private static boolean isSoFile(String fileName) {
+        return SO_PATTERN.matcher(fileName).matches();
+    }
+
     private static ModuleConfig readModuleConfig(Path moduleDir) throws IOException {
         Path moduleJson = moduleDir.resolve(MODULE_JSON);
         if (Files.exists(moduleJson)) {
@@ -448,54 +434,60 @@ final class SODeduplicator {
         }
         Path configJson = moduleDir.resolve(CONFIG_JSON);
         if (Files.exists(configJson)) {
-            return readFaModuleConfig(configJson);
+            return new ModuleConfig();
         }
-        ModuleConfig config = new ModuleConfig();
-        config.moduleName = moduleDir.getFileName().toString();
-        return config;
+        LOG.warning("SO deduplication skipped for module: failed to parse configuration, module=" + moduleDir);
+        return new ModuleConfig();
     }
 
     private static ModuleConfig readStageModuleConfig(Path moduleJson) throws IOException {
-        JSONObject root = JSON.parseObject(readUtf8(moduleJson));
+        JSONObject root;
+        try {
+            root = JSON.parseObject(readUtf8(moduleJson));
+        } catch (IOException | JSONException exception) {
+            LOG.warning("SO deduplication skipped for module: failed to parse configuration, module="
+                    + moduleJson.getParent());
+            return new ModuleConfig();
+        }
+        JSONObject app = root == null ? null : root.getJSONObject("app");
         JSONObject module = root == null ? null : root.getJSONObject(MODULE);
         ModuleConfig config = new ModuleConfig();
         if (module == null) {
             return config;
         }
-        config.moduleName = getString(module, NAME, moduleJson.getParent().getFileName().toString());
+        config.stageModel = true;
+        config.moduleName = getString(module, NAME, "");
         config.moduleType = getString(module, TYPE, "");
         config.deviceTypes = getDeviceTypes(module.getJSONArray(DEVICE_TYPES));
+        config.deliveryWithInstallPresent = module.containsKey(DELIVERY_WITH_INSTALL);
         config.deliveryWithInstall = module.getBooleanValue(DELIVERY_WITH_INSTALL);
         config.distributionFilter = parseDistributionFilter(module);
-        Object requiredFeatures = module.get(REQUIRED_DEVICE_FEATURES);
-        if (requiredFeatures instanceof JSONObject && !((JSONObject) requiredFeatures).isEmpty()
-                || requiredFeatures instanceof JSONArray && !((JSONArray) requiredFeatures).isEmpty()) {
-            config.requiredDeviceFeatures.add(REQUIRED_DEVICE_FEATURES);
-        }
+        parseRequiredDeviceFeatures(module.getJSONObject(REQUIRED_DEVICE_FEATURES), config);
+        config.deviceTypesConfigured = !config.deviceTypes.isEmpty();
         config.compressNativeLibs = module.getBooleanValue(COMPRESS_NATIVE_LIBS);
         config.extractNativeLibs = !module.containsKey(EXTRACT_NATIVE_LIBS)
                 || module.getBooleanValue(EXTRACT_NATIVE_LIBS);
         config.libIsolation = module.getBooleanValue(LIB_ISOLATION);
+        config.compileSdkType = app == null ? "" : getString(app, COMPILE_SDK_TYPE, "");
+        config.bundleType = app == null ? "" : getString(app, BUNDLE_TYPE, APP);
         return config;
     }
 
-    private static ModuleConfig readFaModuleConfig(Path configJson) throws IOException {
-        JSONObject root = JSON.parseObject(readUtf8(configJson));
-        JSONObject module = root == null ? null : root.getJSONObject(MODULE);
-        JSONObject distro = module == null ? null : module.getJSONObject(DISTRO);
-        ModuleConfig config = new ModuleConfig();
-        if (module == null) {
-            return config;
+    private static void parseRequiredDeviceFeatures(JSONObject features, ModuleConfig config) {
+        if (features == null) {
+            return;
         }
-        config.moduleName = distro == null ? getString(module, NAME, configJson.getParent().getFileName().toString())
-                : getString(distro, MODULE_NAME, configJson.getParent().getFileName().toString());
-        config.moduleType = distro == null ? getString(module, TYPE, "") : getString(distro, MODULE_TYPE, "");
-        config.deviceTypes = getDeviceTypes(module.getJSONArray(DEVICE_TYPE));
-        config.deliveryWithInstall = distro != null && distro.getBooleanValue(DELIVERY_WITH_INSTALL);
-        config.compressNativeLibs = module.getBooleanValue(COMPRESS_NATIVE_LIBS);
-        config.extractNativeLibs = !module.containsKey(EXTRACT_NATIVE_LIBS)
-                || module.getBooleanValue(EXTRACT_NATIVE_LIBS);
-        return config;
+        for (String deviceType : features.keySet()) {
+            JSONArray featureValues = features.getJSONArray(deviceType);
+            if (featureValues == null || featureValues.isEmpty()) {
+                continue;
+            }
+            String normalized = normalizeDeviceType(deviceType);
+            config.requiredDeviceFeatures.add(normalized);
+            if (!config.deviceTypes.contains(normalized)) {
+                config.deviceTypes.add(normalized);
+            }
+        }
     }
 
     private static String parseDistributionFilter(JSONObject module) {
@@ -506,13 +498,38 @@ final class SODeduplicator {
         return filter == null || filter.isEmpty() ? "" : filter.toJSONString();
     }
 
-    private static List<String> repackModules(List<ModuleRecord> modules, int compressLevel) throws IOException {
+    private static List<String> repackModules(List<ModuleRecord> modules, DedupResult result) throws IOException {
         List<String> repacked = new ArrayList<>();
         for (ModuleRecord module : modules) {
-            zipDirectory(module.extractDir, module.repackedPath, compressLevel);
+            Set<String> removedPaths = new HashSet<>();
+            for (SoRecord removed : result.removedRecords) {
+                if (removed.moduleName.equals(module.config.moduleName)) {
+                    removedPaths.add(removed.relativePath);
+                }
+            }
+            copyModuleEntries(module, removedPaths);
             repacked.add(module.repackedPath.toString());
         }
         return repacked;
+    }
+
+    private static void copyModuleEntries(ModuleRecord module, Set<String> removedPaths) throws IOException {
+        Files.createDirectories(module.repackedPath.getParent());
+        try (org.apache.commons.compress.archivers.zip.ZipFile source =
+                new org.apache.commons.compress.archivers.zip.ZipFile(new File(module.sourcePath));
+             ZipArchiveOutputStream target = new ZipArchiveOutputStream(module.repackedPath.toFile())) {
+            Enumeration<ZipArchiveEntry> entries = source.getEntries();
+            while (entries.hasMoreElements()) {
+                ZipArchiveEntry entry = entries.nextElement();
+                String entryName = entry.getName().replace('\\', '/');
+                if (removedPaths.contains(entryName)) {
+                    continue;
+                }
+                try (InputStream rawInput = source.getRawInputStream(entry)) {
+                    target.addRawArchiveEntry(new ZipArchiveEntry(entry), rawInput);
+                }
+            }
+        }
     }
 
     private static void writeReport(DedupResult result, Path reportDir) throws IOException {
@@ -521,9 +538,7 @@ final class SODeduplicator {
         }
         Files.createDirectories(reportDir);
         JSONObject report = new JSONObject(true);
-        report.put("version", "1.0");
         report.put("timestamp", timestamp());
-        report.put("strategy", result.strategy);
         report.put("totalSavedSize", result.totalSavedSize);
         JSONObject modules = new JSONObject(true);
         for (Map.Entry<String, ModuleReport> entry : result.modules.entrySet()) {
@@ -556,24 +571,6 @@ final class SODeduplicator {
                     copy(input, output);
                 }
             }
-        }
-    }
-
-    private static void zipDirectory(Path sourceDir, Path targetZip, int compressLevel) throws IOException {
-        Files.createDirectories(targetZip.getParent());
-        try (ZipOutputStream zipOutput = new ZipOutputStream(
-                new CheckedOutputStream(Files.newOutputStream(targetZip), new CRC32()))) {
-            zipOutput.setLevel(compressLevel);
-            Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    String entryName = sourceDir.relativize(file).toString().replace('\\', '/');
-                    zipOutput.putNextEntry(new ZipEntry(entryName));
-                    Files.copy(file, zipOutput);
-                    zipOutput.closeEntry();
-                    return FileVisitResult.CONTINUE;
-                }
-            });
         }
     }
 
@@ -643,14 +640,6 @@ final class SODeduplicator {
                 values.add(normalized);
             }
         }
-        if (values.isEmpty()) {
-            values.add("phone");
-            values.add("tablet");
-            values.add("2in1");
-            values.add("wearable");
-            values.add("tv");
-            values.add("car");
-        }
         return values;
     }
 
@@ -661,17 +650,33 @@ final class SODeduplicator {
     private static final class ModuleConfig {
         private String moduleName = "";
         private String moduleType = "";
+        private String bundleType = "";
+        private boolean stageModel = false;
         private List<String> deviceTypes = new ArrayList<>();
+        private boolean deviceTypesConfigured = false;
         private boolean deliveryWithInstall = false;
+        private boolean deliveryWithInstallPresent = false;
         private String distributionFilter = "";
         private List<String> requiredDeviceFeatures = new ArrayList<>();
         private boolean compressNativeLibs = false;
-        private boolean extractNativeLibs = false;
+        private boolean extractNativeLibs = true;
         private boolean libIsolation = false;
+        private String compileSdkType = ""; // "HarmonyOS" 或 "OpenHarmony"
 
         private boolean isEligible() {
-            return (compressNativeLibs || extractNativeLibs) && !libIsolation;
+            return isValidForDedup() && (compressNativeLibs || extractNativeLibs) && !libIsolation
+                    && !OPEN_HARMONY.equals(compileSdkType);
         }
+
+        private boolean isValidForDedup() {
+            return stageModel && !moduleName.isEmpty() && isSupportedType()
+                    && deviceTypesConfigured && deliveryWithInstallPresent;
+        }
+
+        private boolean isSupportedType() {
+            return APP.equals(bundleType) || ATOMIC_SERVICE.equals(bundleType);
+        }
+
     }
 
     private static final class ModuleRecord {
@@ -735,13 +740,11 @@ final class SODeduplicator {
     }
 
     private static final class DedupResult {
-        private final String strategy;
         private final Map<String, ModuleReport> modules = new LinkedHashMap<>();
         private final List<SoRecord> removedRecords = new ArrayList<>();
-        private long totalSavedSize = 0;
+        private long totalSavedSize = 0L;
 
-        private DedupResult(String strategy) {
-            this.strategy = strategy;
+        private DedupResult() {
         }
 
         private void addKept(SoRecord so) {

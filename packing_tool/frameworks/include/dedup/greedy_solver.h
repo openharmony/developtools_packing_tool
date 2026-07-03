@@ -35,10 +35,8 @@ namespace AppPackingTool {
  * 1. 初始化：保留所有SO
  * 2. 对于每个重复SO集合R：
  *    a. 找到包含该SO的所有模块
- *    b. 计算移除每个模块的该SO能节省的空间
- *    c. 按节省空间降序排列
- *    d. 检查移除后是否满足约束
- *    e. 移除满足约束且节省最多的
+ *    b. 按模块顺序检查移除后是否满足约束
+ *    c. 移除满足约束的副本
  * 3. 重复直到无法进一步去重
  */
 class GreedySolver {
@@ -58,10 +56,10 @@ public:
 
     /**
      * @brief 检查是否可以使用贪心算法
-     * @param totalModuleCount 总模块数
+     * @param duplicateCopyCount 单个SO的重复副本数
      * @return 是否可以使用贪心算法
      */
-    static bool CanUseGreedyAlgorithm(int32_t totalModuleCount);
+    static bool CanUseGreedyAlgorithm(size_t duplicateCopyCount);
 
 private:
     /**
@@ -70,9 +68,10 @@ private:
      * @param mandatoryModuleMap 每个设备的必然安装模块集合
      * @return 该组的去重方案（保留的SO列表）
      */
-    std::vector<SoInfo> SolveSingleGroupGreedy(const DuplicateSoGroup& group,
-                                              const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
-                                              const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap);
+    std::vector<SoInfo> SolveSingleGroupGreedy(
+        const DuplicateSoGroup& group,
+        const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
+        const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap);
 
     /**
      * @brief 检查移除指定SO后是否满足约束
@@ -87,12 +86,6 @@ private:
         const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
         const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) const;
 
-    /**
-     * @brief 按节省空间排序SO列表（降序）
-     * @param soList SO列表
-     * @return 排序后的索引列表
-     */
-    std::vector<size_t> SortBySavedSize(const std::vector<SoInfo>& soList) const;
 };
 
 }  // namespace AppPackingTool

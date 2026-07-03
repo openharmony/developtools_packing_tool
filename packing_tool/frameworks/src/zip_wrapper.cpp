@@ -15,6 +15,7 @@
 
 #include "zip_wrapper.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 
@@ -249,7 +250,21 @@ int32_t ZipWrapper::AddFileToZip(const fs::path &fsFilePath,
 
 int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std::string &entryName)
 {
-    if (unzLocateFile(srcZip, entryName.c_str(), 0) != UNZ_OK) {
+    unz_file_info64 currentInfo;
+    if (unzGetCurrentFileInfo64(srcZip, &currentInfo, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
+        return ZIP_ERR_FAILURE;
+    }
+    std::vector<char> currentName(currentInfo.size_filename + 1, '\0');
+    std::vector<char> globalExtra(currentInfo.size_file_extra);
+    std::vector<char> comment(currentInfo.size_file_comment + 1, '\0');
+    if (unzGetCurrentFileInfo64(srcZip, &currentInfo, currentName.data(), currentName.size(),
+        globalExtra.empty() ? nullptr : globalExtra.data(), globalExtra.size(),
+        comment.data(), comment.size()) != UNZ_OK) {
+        return ZIP_ERR_FAILURE;
+    }
+    std::string normalizedCurrentName(currentName.data(), currentInfo.size_filename);
+    std::replace(normalizedCurrentName.begin(), normalizedCurrentName.end(), '\\', '/');
+    if (entryName != normalizedCurrentName && unzLocateFile(srcZip, entryName.c_str(), 0) != UNZ_OK) {
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             ("Entry [" + entryName + "] not found in source zip!").c_str()).c_str());
         return ZIP_ERR_FAILURE;
@@ -268,12 +283,38 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
         return ZIP_ERR_FAILURE;
     }
 
+    int localExtraSize = unzGetLocalExtrafield(srcZip, nullptr, 0);
+    if (localExtraSize < 0) {
+        unzCloseCurrentFile(srcZip);
+        return ZIP_ERR_FAILURE;
+    }
+    std::vector<char> localExtra(static_cast<size_t>(localExtraSize));
+    if (localExtraSize > 0 &&
+        unzGetLocalExtrafield(srcZip, localExtra.data(), localExtra.size()) != localExtraSize) {
+        unzCloseCurrentFile(srcZip);
+        return ZIP_ERR_FAILURE;
+    }
+
     zip_fileinfo zfi = {};
-    int openRet = zipOpenNewFileInZip2_64(destZip, entryName.c_str(), &zfi, nullptr, 0,
-        nullptr, 0, nullptr, fileInfo.compression_method, 0, 1, 1);
+    zfi.tmz_date.tm_sec = fileInfo.tmu_date.tm_sec;
+    zfi.tmz_date.tm_min = fileInfo.tmu_date.tm_min;
+    zfi.tmz_date.tm_hour = fileInfo.tmu_date.tm_hour;
+    zfi.tmz_date.tm_mday = fileInfo.tmu_date.tm_mday;
+    zfi.tmz_date.tm_mon = fileInfo.tmu_date.tm_mon;
+    zfi.tmz_date.tm_year = fileInfo.tmu_date.tm_year;
+    zfi.dosDate = fileInfo.dosDate;
+    zfi.internal_fa = fileInfo.internal_fa;
+    zfi.external_fa = fileInfo.external_fa;
+
+    int openRet = zipOpenNewFileInZip4_64(destZip, entryName.c_str(), &zfi,
+        localExtra.empty() ? nullptr : localExtra.data(), localExtra.size(),
+        globalExtra.empty() ? nullptr : globalExtra.data(), globalExtra.size(),
+        comment.empty() ? nullptr : comment.data(), fileInfo.compression_method, 0, 1,
+        -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, nullptr, 0,
+        fileInfo.version, fileInfo.flag, 1);
     if (openRet != ZIP_OK) {
         LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
-            ("zipOpenNewFileInZip2_64 failed for [" + entryName + "]").c_str()).c_str());
+            ("zipOpenNewFileInZip4_64 failed for [" + entryName + "]").c_str()).c_str());
         unzCloseCurrentFile(srcZip);
         return ZIP_ERR_FAILURE;
     }
@@ -281,24 +322,30 @@ int32_t ZipWrapper::AddRawEntryToZip(zipFile destZip, unzFile srcZip, const std:
     const size_t BUF_SIZE = 8192;
     std::vector<char> buffer(BUF_SIZE);
     int bytesRead = 0;
+    bool copySucceeded = true;
     do {
         bytesRead = unzReadCurrentFile(srcZip, buffer.data(), buffer.size());
         if (bytesRead < 0) {
             LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
                 ("read raw data error for [" + entryName + "]").c_str()).c_str());
+            copySucceeded = false;
             break;
         }
         if (bytesRead > 0) {
             if (zipWriteInFileInZip(destZip, buffer.data(), bytesRead) < 0) {
                 LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_EXCEPTION.toStringWithArgs(
                     ("write raw data failed for [" + entryName + "]").c_str()).c_str());
+                copySucceeded = false;
                 break;
             }
         }
     } while (bytesRead > 0);
 
-    zipCloseFileInZipRaw64(destZip, fileInfo.uncompressed_size, fileInfo.crc);
-    unzCloseCurrentFile(srcZip);
+    int zipCloseRet = zipCloseFileInZipRaw64(destZip, fileInfo.uncompressed_size, fileInfo.crc);
+    int unzipCloseRet = unzCloseCurrentFile(srcZip);
+    if (!copySucceeded || zipCloseRet != ZIP_OK || unzipCloseRet != UNZ_OK) {
+        return ZIP_ERR_FAILURE;
+    }
     return ZIP_ERR_SUCCESS;
 }
 

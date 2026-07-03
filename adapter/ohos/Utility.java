@@ -435,7 +435,7 @@ public class Utility {
 
     public void setDeduplicateSo(String deduplicateSo) {
         if (!deduplicateSo.startsWith(CMD_PREFIX)) {
-            this.deduplicateSo = deduplicateSo.toLowerCase(Locale.ENGLISH);
+            this.deduplicateSo = deduplicateSo;
         }
     }
 

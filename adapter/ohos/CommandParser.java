@@ -17,7 +17,6 @@ package ohos;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -35,6 +34,8 @@ public class CommandParser {
      * Parses and returns the information about the hap.
      */
     public static final String PARSE_MODE_HAPINFO = "hap-info";
+
+    public static final String CMD_DEDUPLICATE_SO = "--deduplicate-so";
 
     private static final String CMD_MODE = "--mode";
     private static final String CMD_JSON_PATH = "--json-path";
@@ -63,7 +64,6 @@ public class CommandParser {
     private static final String CMD_SIGNATURE_PATH = "--signature-path";
     private static final String CMD_CERTIFICATE_PATH = "--certificate-path";
     private static final String CMD_FORCE = "--force";
-    public static final String CMD_DEDUPLICATE_SO = "--deduplicate-so";
     private static final String CMD_OUT_PATH = "--out-path";
     private static final String CMD_PACK_INFO_PATH = "--pack-info-path";
     private static final String CMD_REPLACE_PACK_INFO = "--replace-pack-info";
@@ -251,7 +251,7 @@ public class CommandParser {
             return true;
         });
         commandFuncs.put(CMD_DEDUPLICATE_SO, entry -> {
-            String value = entry.getValue().toLowerCase(Locale.ENGLISH);
+            String value = entry.getValue();
             entry.getKey().setDeduplicateSo(value);
             return Boolean.TRUE.toString().equals(value) || Boolean.FALSE.toString().equals(value);
         });

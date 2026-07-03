@@ -26,11 +26,18 @@ std::shared_ptr<OHOS::AppPackingTool::ModuleJson> CreateMockModule(
     const std::string& moduleType,
     const std::vector<std::string>& deviceTypes,
     bool deliveryWithInstall = true,
-    const std::string& distributionFilter = "") {
+    const std::string& distributionFilter = "",
+    const std::string& compileSdkType = "HarmonyOS") {
 
     std::string jsonStr = R"({
         "app": {
-            "bundleName": "com.example.app"
+            "bundleName": "com.example.app",
+            "bundleType": "app")";
+    if (!compileSdkType.empty()) {
+        jsonStr += R"(,
+            "compileSdkType": ")" + compileSdkType + R"(")";
+    }
+    jsonStr += R"(
         },
         "module": {
             "name": ")" + moduleName + R"(",
@@ -48,6 +55,7 @@ std::shared_ptr<OHOS::AppPackingTool::ModuleJson> CreateMockModule(
     jsonStr += R"(],
             "deliveryWithInstall": )";
     jsonStr += deliveryWithInstall ? "true" : "false";
+
     jsonStr += R"(
         }
     })";
@@ -145,6 +153,20 @@ HWTEST_F(ModuleCalculatorTest, IsMandatoryModule_DeliveryWithInstallFalse, TestS
     EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsMandatoryModule(config, device));
 }
 
+HWTEST_F(ModuleCalculatorTest, IsMandatoryEntry_IgnoresDeliveryWithInstall, TestSize.Level0) {
+    OHOS::AppPackingTool::ModuleConfig config;
+    config.moduleName = "entry";
+    config.moduleType = "entry";
+    config.deviceTypes = {OHOS::AppPackingTool::DeviceType::PHONE};
+    config.deliveryWithInstall = false;
+    config.requireDeviceFeatures = {"phone"};
+
+    OHOS::AppPackingTool::DeviceInstance device;
+    device.type = OHOS::AppPackingTool::DeviceType::PHONE;
+
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsMandatoryModule(config, device));
+}
+
 // 测试6：必然安装模块判断 - distributionFilter不为空
 HWTEST_F(ModuleCalculatorTest, IsMandatoryModule_NonEmptyDistributionFilter, TestSize.Level0) {
     OHOS::AppPackingTool::ModuleConfig config;
@@ -159,6 +181,21 @@ HWTEST_F(ModuleCalculatorTest, IsMandatoryModule_NonEmptyDistributionFilter, Tes
     device.distributionFilter = "";
 
     EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsMandatoryModule(config, device));
+}
+
+HWTEST_F(ModuleCalculatorTest, IsMandatoryModule_MatchingDistributionFilter, TestSize.Level0) {
+    OHOS::AppPackingTool::ModuleConfig config;
+    config.moduleName = "feature_module";
+    config.moduleType = "feature";
+    config.deviceTypes = {OHOS::AppPackingTool::DeviceType::PHONE};
+    config.deliveryWithInstall = true;
+    config.distributionFilter = "some_filter";
+
+    OHOS::AppPackingTool::DeviceInstance device;
+    device.type = OHOS::AppPackingTool::DeviceType::PHONE;
+    device.distributionFilter = "some_filter";
+
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsMandatoryModule(config, device));
 }
 
 // 测试7：必然安装模块判断 - requireDeviceFeatures不为空
@@ -273,4 +310,100 @@ HWTEST_F(ModuleCalculatorTest, CalculateMandatoryModules_DefaultDoesNotMatchTabl
     EXPECT_EQ(mandatoryMap[phoneDevice][0], "entry");
     ASSERT_EQ(mandatoryMap[tabletDevice].size(), 1);
     EXPECT_EQ(mandatoryMap[tabletDevice][0], "tablet_entry");
+}
+
+HWTEST_F(ModuleCalculatorTest, IsValidForDedup_RequiredFields, TestSize.Level0) {
+    auto validModule = CreateMockModule("entry", "entry", {"phone"}, false);
+    ASSERT_NE(validModule, nullptr);
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(validModule);
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+
+    config.moduleName.clear();
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.moduleName = "entry";
+    config.moduleType = "har";
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.moduleType = "skill";
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.moduleType = "entry";
+    config.bundleType = "shared";
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.bundleType = "skill";
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.bundleType = "appService";
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.bundleType = "atomicService";
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.bundleType = "app";
+    config.deviceTypesConfigured = false;
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    config.deviceTypesConfigured = true;
+    config.deliveryWithInstallPresent = false;
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+}
+
+HWTEST_F(ModuleCalculatorTest, BundleType_MissingDefaultsToApp, TestSize.Level0)
+{
+    const std::string jsonStr = R"({
+        "app": {
+            "bundleName": "com.example.app",
+            "compileSdkType": "HarmonyOS"
+        },
+        "module": {
+            "name": "entry",
+            "type": "entry",
+            "deviceTypes": ["phone"],
+            "deliveryWithInstall": true
+        }
+    })";
+    auto module = std::make_shared<OHOS::AppPackingTool::ModuleJson>();
+    ASSERT_TRUE(module->ParseFromString(jsonStr));
+
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module);
+    EXPECT_EQ(config.bundleType, "app");
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+}
+
+HWTEST_F(ModuleCalculatorTest, FaModel_IsExcludedFromDedup, TestSize.Level0)
+{
+    auto module = CreateMockModule("entry", "entry", {"phone"}, true);
+    ASSERT_NE(module, nullptr);
+
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module, false);
+    EXPECT_FALSE(config.stageModel);
+    EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+}
+
+// 测试10：compileSdkType为HarmonyOS时允许去重
+HWTEST_F(ModuleCalculatorTest, CompileSdkType_HarmonyOS_Allowed, TestSize.Level0) {
+    auto module = CreateMockModule("entry", "entry", {"phone"}, true, "", "HarmonyOS");
+    ASSERT_NE(module, nullptr);
+
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module);
+    EXPECT_EQ(config.compileSdkType, "HarmonyOS");
+    // compileSdkType为HarmonyOS不影响去重资格验证
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+}
+
+// 测试11：compileSdkType为OpenHarmony时模块不参与去重（在so_deduplicator中过滤）
+HWTEST_F(ModuleCalculatorTest, CompileSdkType_OpenHarmony_Extracted, TestSize.Level0) {
+    auto module = CreateMockModule("entry", "entry", {"phone"}, true, "", "OpenHarmony");
+    ASSERT_NE(module, nullptr);
+
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module);
+    EXPECT_EQ(config.compileSdkType, "OpenHarmony");
+    // compileSdkType为OpenHarmony时，ExtractModuleConfig仍返回有效配置
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+    // 但在so_deduplicator的FilterDedupEligibleModules中会被过滤掉
+}
+
+// 测试12：compileSdkType为空时默认允许去重
+HWTEST_F(ModuleCalculatorTest, CompileSdkType_Empty_Allowed, TestSize.Level0) {
+    auto module = CreateMockModule("entry", "entry", {"phone"}, true, "", "");
+    ASSERT_NE(module, nullptr);
+
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module);
+    EXPECT_EQ(config.compileSdkType, "");
+    // 空compileSdkType不影响去重资格验证
+    EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
 }

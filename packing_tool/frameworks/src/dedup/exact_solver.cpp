@@ -15,7 +15,6 @@
 
 #include "dedup/exact_solver.h"
 #include <algorithm>
-#include <limits>
 #include <set>
 #include <stdexcept>
 #include "dedup/dedup_log.h"
@@ -27,8 +26,8 @@ namespace AppPackingTool {
 ExactSolver::ExactSolver() {}
 ExactSolver::~ExactSolver() {}
 
-bool ExactSolver::CanUseExactAlgorithm(int32_t totalModuleCount) {
-    return totalModuleCount <= 20;
+bool ExactSolver::CanUseExactAlgorithm(size_t duplicateCopyCount) {
+    return duplicateCopyCount <= 20;
 }
 
 std::vector<SoInfo> ExactSolver::SolveSingleGroup(
@@ -49,33 +48,36 @@ std::vector<SoInfo> ExactSolver::SolveSingleGroup(
         return optimalSolution;
     }
 
-    LOG(INFO) << "Solving duplicate SO group with MD5: " << group.md5.substr(0, 8)
+    LOG(DEBUG) << "Solving duplicate SO group with MD5: " << group.md5.substr(0, 8)
               << "... (" << group.soList.size() << " SOs)";
 
     // 模块数不超过20，枚举所有非空保留子集，得到真正的最优解。
     std::vector<SoInfo> bestSolution = group.soList;
-    int64_t bestKeptSize = std::numeric_limits<int64_t>::max();
     const uint64_t subsetCount = 1ULL << group.soList.size();
     for (uint64_t mask = 1; mask < subsetCount; ++mask) {
+        size_t candidateSize = 0;
+        for (uint64_t bits = mask; bits != 0; bits &= (bits - 1)) {
+            ++candidateSize;
+        }
+        if (candidateSize >= bestSolution.size()) {
+            continue;
+        }
         std::vector<SoInfo> candidate;
-        int64_t keptSize = 0;
+        candidate.reserve(candidateSize);
         for (size_t index = 0; index < group.soList.size(); ++index) {
             if ((mask & (1ULL << index)) != 0) {
                 candidate.push_back(group.soList[index]);
-                keptSize += group.soList[index].fileSize;
             }
-        }
-        if (candidate.size() > bestSolution.size() ||
-            (candidate.size() == bestSolution.size() && keptSize >= bestKeptSize)) {
-            continue;
         }
         if (SatisfiesConstraints(candidate, group, mandatoryModuleMap, moduleSupportMap)) {
             bestSolution = candidate;
-            bestKeptSize = keptSize;
+            if (bestSolution.size() == 1) {
+                break;
+            }
         }
     }
 
-    LOG(INFO) << "Optimal solution for MD5 " << group.md5.substr(0, 8)
+    LOG(DEBUG) << "Optimal solution for MD5 " << group.md5.substr(0, 8)
               << "...: " << bestSolution.size() << " SOs to keep (removed "
               << (group.soList.size() - bestSolution.size()) << " SOs)";
 
@@ -90,11 +92,11 @@ DedupPlan ExactSolver::Solve(
     DedupPlan plan;
 
     if (duplicateSoGroups.empty()) {
-        LOG(INFO) << "No duplicate SO groups to solve";
+        LOG(DEBUG) << "No duplicate SO groups to solve";
         return plan;
     }
 
-    LOG(INFO) << "Solving " << duplicateSoGroups.size() << " duplicate SO groups using exact algorithm";
+    LOG(DEBUG) << "Solving " << duplicateSoGroups.size() << " duplicate SO groups using exact algorithm";
 
     // 对每个重复SO组求解
     for (const auto& group : duplicateSoGroups) {
@@ -116,7 +118,7 @@ DedupPlan ExactSolver::Solve(
         }
     }
 
-    LOG(INFO) << "Exact solver completed: kept " << plan.keptSoMap.size() << " modules, "
+    LOG(DEBUG) << "Exact solver completed: kept " << plan.keptSoMap.size() << " modules, "
               << "removed " << plan.removedSoMap.size() << " modules, "
               << "saved " << plan.totalSavedSize << " bytes";
 
@@ -136,10 +138,13 @@ bool ExactSolver::ValidatePlan(
     const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
     const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) const {
 
-    LOG(INFO) << "Validating deduplication plan";
+    LOG(DEBUG) << "Validating deduplication plan";
 
     // 对每个设备检查约束
     for (const auto& [device, mandatoryModules] : mandatoryModuleMap) {
+        // 显式创建引用以避免结构化绑定捕获问题
+        const std::vector<std::string>& modulesRef = mandatoryModules;
+
         // 对每个重复SO组检查
         for (const auto& group : duplicateSoGroups) {
             // 检查该设备的必然安装模块中是否有至少一个包含该SO
@@ -167,9 +172,10 @@ bool ExactSolver::ValidatePlan(
                 }
             }
 
-            bool originallyInstalled = std::any_of(group.soList.begin(), group.soList.end(), [&](const SoInfo& so) {
-                return std::find(mandatoryModules.begin(), mandatoryModules.end(), so.sourceModule) !=
-                    mandatoryModules.end();
+            bool originallyInstalled = std::any_of(
+                group.soList.begin(), group.soList.end(), [&modulesRef](const SoInfo& so) {
+                return std::find(modulesRef.begin(), modulesRef.end(), so.sourceModule) !=
+                    modulesRef.end();
             });
             if (originallyInstalled && !hasSoInMandatoryModules) {
                 std::string cause = "Device " + DeviceCalculator::DeviceTypeToString(device.type) +
@@ -194,7 +200,7 @@ bool ExactSolver::ValidatePlan(
             return false;
         }
     }
-    LOG(INFO) << "Deduplication plan validation passed";
+    LOG(DEBUG) << "Deduplication plan validation passed";
     return true;
 }
 
@@ -208,14 +214,17 @@ bool ExactSolver::SatisfiesConstraints(
     }
     std::set<std::string> mandatoryUnion;
     for (const auto& [device, mandatoryModules] : mandatoryModuleMap) {
-        mandatoryUnion.insert(mandatoryModules.begin(), mandatoryModules.end());
-        bool originallyInstalled = std::any_of(group.soList.begin(), group.soList.end(), [&](const SoInfo& so) {
-            return std::find(mandatoryModules.begin(), mandatoryModules.end(), so.sourceModule) !=
-                mandatoryModules.end();
+        // 显式创建引用以避免结构化绑定捕获问题
+        const std::vector<std::string>& modulesRef = mandatoryModules;
+        mandatoryUnion.insert(modulesRef.begin(), modulesRef.end());
+        bool originallyInstalled = std::any_of(
+            group.soList.begin(), group.soList.end(), [&modulesRef](const SoInfo& so) {
+            return std::find(modulesRef.begin(), modulesRef.end(), so.sourceModule) !=
+                modulesRef.end();
         });
-        bool stillInstalled = std::any_of(keptSo.begin(), keptSo.end(), [&](const SoInfo& so) {
-            return std::find(mandatoryModules.begin(), mandatoryModules.end(), so.sourceModule) !=
-                mandatoryModules.end();
+        bool stillInstalled = std::any_of(keptSo.begin(), keptSo.end(), [&modulesRef](const SoInfo& so) {
+            return std::find(modulesRef.begin(), modulesRef.end(), so.sourceModule) !=
+                modulesRef.end();
         });
         if (originallyInstalled && !stillInstalled) {
             return false;

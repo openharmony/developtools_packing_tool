@@ -75,26 +75,18 @@ std::vector<DeviceInstance> DeviceCalculator::ExtractDevicesFromModule(
         // 获取设备类型列表
         std::list<std::string> deviceTypeStrings;
         bool isStageModel = moduleJson->GetStageDeviceTypes(deviceTypeStrings);
-
         if (!isStageModel) {
-            // 如果不是Stage模型，尝试FA模型
-            isStageModel = moduleJson->GetFaDeviceTypes(deviceTypeStrings);
+            return devices;
         }
-
-        if (deviceTypeStrings.empty()) {
-            // 如果没有指定设备类型，默认支持所有设备类型
-            deviceTypeStrings = {"phone", "tablet", "2in1", "wearable", "tv", "car"};
+        std::list<std::string> requiredDeviceTypes;
+        if (moduleJson->GetStageRequiredDeviceFeatureTypes(requiredDeviceTypes)) {
+            deviceTypeStrings.insert(deviceTypeStrings.end(), requiredDeviceTypes.begin(), requiredDeviceTypes.end());
         }
 
         // 获取distributionFilter
         DistroFilter distroFilter;
         std::map<std::string, std::string> resourceMap; // 空资源映射
         bool hasDistroFilter = moduleJson->GetStageDistroFilter(distroFilter, resourceMap);
-
-        if (!hasDistroFilter) {
-            // 尝试FA模型的distributionFilter
-            hasDistroFilter = moduleJson->GetFaDistroFilter(distroFilter);
-        }
 
         // 为每个设备类型创建设备实例
         for (const auto& deviceTypeStr : deviceTypeStrings) {
@@ -150,7 +142,7 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
         return allDevices;
     }
 
-    LOG(INFO) << "Calculating devices from " << entryModules.size() << " entry modules";
+    LOG(DEBUG) << "Calculating devices from " << entryModules.size() << " entry modules";
 
     // 遍历所有entry模块，收集设备实例
     for (const auto& entryModule : entryModules) {
@@ -169,7 +161,7 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
         allDevices = MergeDevices(allDevices, moduleDevices);
     }
 
-    LOG(INFO) << "Calculated " << allDevices.size() << " unique device instances";
+    LOG(DEBUG) << "Calculated " << allDevices.size() << " unique device instances";
 
     // 输出设备列表用于调试
     for (const auto& device : allDevices) {
@@ -177,7 +169,7 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
         if (!device.distributionFilter.empty()) {
             deviceStr += " (distributionFilter: " + device.distributionFilter + ")";
         }
-        LOG(INFO) << "  - " << deviceStr;
+        LOG(DEBUG) << "  - " << deviceStr;
     }
 
     return allDevices;

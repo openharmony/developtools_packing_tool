@@ -83,13 +83,40 @@ struct DedupPlan {
         removedSoMap[moduleName].push_back(soPath);
         totalSavedSize += fileSize;
     }
+
+    void Merge(const DedupPlan& other) {
+        for (const auto& [moduleName, soPaths] : other.keptSoMap) {
+            auto& targetPaths = keptSoMap[moduleName];
+            targetPaths.insert(targetPaths.end(), soPaths.begin(), soPaths.end());
+        }
+        for (const auto& [moduleName, soPaths] : other.removedSoMap) {
+            auto& targetPaths = removedSoMap[moduleName];
+            targetPaths.insert(targetPaths.end(), soPaths.begin(), soPaths.end());
+        }
+        totalSavedSize += other.totalSavedSize;
+    }
 };
 
 // 去重策略类型
 enum class DedupStrategy {
-    EXACT,   // 精确算法（整数规划）
-    GREEDY   // 贪心算法
+    NONE,
+    EXACT,
+    GREEDY,
+    MIXED
 };
+
+inline DedupStrategy ResolveDedupStrategy(bool usedExact, bool usedGreedy) {
+    if (usedExact && usedGreedy) {
+        return DedupStrategy::MIXED;
+    }
+    if (usedGreedy) {
+        return DedupStrategy::GREEDY;
+    }
+    if (usedExact) {
+        return DedupStrategy::EXACT;
+    }
+    return DedupStrategy::NONE;
+}
 
 }  // namespace AppPackingTool
 }  // namespace OHOS

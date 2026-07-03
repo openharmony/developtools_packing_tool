@@ -242,7 +242,7 @@ public class JsonUtil {
             LOG.error("Uncompress::parseHapList exception: packages is null.");
             throw new BundleException("Parse hap list failed, packages is null.");
         }
-        boolean deduplicateSo = jsonObject.getBooleanValue(DEDUPLICATE_SO);
+        boolean deduplicateSo = parseDeduplicateSo(jsonObject);
         int jsonListSize = jsonList.size();
         for (int i = 0; i < jsonListSize; i++) {
             JSONObject tmpObj = jsonList.getJSONObject(i);
@@ -279,7 +279,7 @@ public class JsonUtil {
         }
         String packages = getJsonString(jsonObject, PACKAGES);
         List<PackInfo> packInfos = parseJsonArray(packages, PackInfo.class);
-        boolean deduplicateSo = jsonObject.getBooleanValue(DEDUPLICATE_SO);
+        boolean deduplicateSo = parseDeduplicateSo(jsonObject);
         for (PackInfo packInfo : packInfos) {
             packInfo.deduplicateSo = deduplicateSo;
         }
@@ -325,6 +325,16 @@ public class JsonUtil {
             LOG.error("parseShellVersionInfoToAppInfo exception: " + msg.getMessage());
             throw new BundleException("parseShellVersionInfoToAppInfo exception.");
         }
+    }
+
+    private static boolean parseDeduplicateSo(JSONObject packInfo) {
+        JSONObject summary = packInfo == null ? null : packInfo.getJSONObject(SUMMARY);
+        JSONObject app = summary == null ? null : summary.getJSONObject(APP);
+        return app != null && app.getBooleanValue(DEDUPLICATE_SO);
+    }
+
+    private static void parseDeduplicateSoToAppInfo(String packInfoJsonStr, AppInfo appInfo) {
+        appInfo.setDeduplicateSo(parseDeduplicateSo(parseJsonObject(packInfoJsonStr)));
     }
 
     private static void parseDeviceTypeToHapInfo(String packInfoJsonStr, HapInfo hapInfo, String hapName) {
@@ -390,6 +400,7 @@ public class JsonUtil {
             profileInfo.hapInfo = parseHapInfo(hapJson, data);
         }
         parseDeviceTypeToHapInfo(paclInfoJsonString, profileInfo.hapInfo, hapName);
+        parseDeduplicateSoToAppInfo(paclInfoJsonString, profileInfo.appInfo);
         if (jsonObject.containsKey("deviceConfig")) {
             JSONObject deviceConfigJson = jsonObject.getJSONObject("deviceConfig");
             profileInfo.deviceConfig = parseDeviceConfigInfo(deviceConfigJson, profileInfo.hapInfo.deviceType);
@@ -1119,8 +1130,9 @@ public class JsonUtil {
      * @return the parseProfileInfo result
      * @throws BundleException Throws this exception if the json is not standard.
      */
-    static ModuleProfileInfo parseModuleProfileInfo(String harmonyProfileJsonString, byte[] data, String packInfoJsonString,
-                                                    String hapName, HashMap<String, String> profileJsons) throws BundleException {
+    static ModuleProfileInfo parseModuleProfileInfo(String harmonyProfileJsonString, byte[] data,
+                                                    String packInfoJsonString, String hapName,
+                                                    HashMap<String, String> profileJsons) throws BundleException {
         ModuleProfileInfo moduleProfileInfo = new ModuleProfileInfo();
         JSONObject jsonObject = parseJsonObject(harmonyProfileJsonString);
         if (jsonObject == null || !jsonObject.containsKey(APP) || !jsonObject.containsKey(MODULE)) {
@@ -1130,6 +1142,8 @@ public class JsonUtil {
 
         JSONObject appJson = jsonObject.getJSONObject(APP);
         moduleProfileInfo.moduleAppInfo = parseModuleAppInfo(appJson, data);
+        moduleProfileInfo.moduleAppInfo.deduplicateSo =
+                parseDeduplicateSo(parseJsonObject(packInfoJsonString));
         JSONObject moduleJson = jsonObject.getJSONObject(MODULE);
         moduleProfileInfo.moduleInfo = parseModuleHapInfo(moduleJson, data,
                 moduleProfileInfo.moduleAppInfo.bundleName, profileJsons);

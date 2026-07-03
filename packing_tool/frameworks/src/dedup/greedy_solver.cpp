@@ -24,22 +24,8 @@ namespace AppPackingTool {
 GreedySolver::GreedySolver() {}
 GreedySolver::~GreedySolver() {}
 
-bool GreedySolver::CanUseGreedyAlgorithm(int32_t totalModuleCount) {
-    return totalModuleCount > 20;
-}
-
-std::vector<size_t> GreedySolver::SortBySavedSize(const std::vector<SoInfo>& soList) const {
-    std::vector<size_t> indices(soList.size());
-    for (size_t i = 0; i < soList.size(); ++i) {
-        indices[i] = i;
-    }
-
-    // 按文件大小降序排序
-    std::sort(indices.begin(), indices.end(), [&soList](size_t a, size_t b) {
-        return soList[a].fileSize > soList[b].fileSize;
-    });
-
-    return indices;
+bool GreedySolver::CanUseGreedyAlgorithm(size_t duplicateCopyCount) {
+    return duplicateCopyCount > 20;
 }
 
 std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
@@ -60,17 +46,14 @@ std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
         return solution;
     }
 
-    LOG(INFO) << "Solving duplicate SO group with MD5: " << group.md5.substr(0, 8)
+    LOG(DEBUG) << "Solving duplicate SO group with MD5: " << group.md5.substr(0, 8)
               << "... (" << group.soList.size() << " SOs) using greedy algorithm";
 
     // 初始时保留所有SO
     std::vector<SoInfo> remainingSo = group.soList;
 
-    // 按文件大小降序排序（贪心策略：优先移除大的文件）
-    std::vector<size_t> sortedIndices = SortBySavedSize(group.soList);
-
     // 贪心地尝试移除SO
-    for (size_t idx : sortedIndices) {
+    for (size_t idx = 0; idx < group.soList.size(); ++idx) {
         const SoInfo& soToRemove = group.soList[idx];
 
         auto it = std::find_if(remainingSo.begin(), remainingSo.end(),
@@ -82,7 +65,7 @@ std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
             std::vector<SoInfo> candidate = remainingSo;
             candidate.erase(candidate.begin() + std::distance(remainingSo.begin(), it));
             if (SatisfiesConstraints(candidate, group, mandatoryModuleMap, moduleSupportMap)) {
-                LOG(INFO) << "Greedy: removing SO " << soToRemove.relativePath
+                LOG(DEBUG) << "Greedy: removing SO " << soToRemove.relativePath
                           << " from module " << soToRemove.sourceModule
                           << " (size: " << soToRemove.fileSize << " bytes)";
                 remainingSo.erase(it);
@@ -90,7 +73,7 @@ std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
         }
     }
 
-    LOG(INFO) << "Greedy solution for MD5 " << group.md5.substr(0, 8)
+    LOG(DEBUG) << "Greedy solution for MD5 " << group.md5.substr(0, 8)
               << "...: " << remainingSo.size() << " SOs to keep (removed "
               << (group.soList.size() - remainingSo.size()) << " SOs)";
 
@@ -105,11 +88,11 @@ DedupPlan GreedySolver::Solve(
     DedupPlan plan;
 
     if (duplicateSoGroups.empty()) {
-        LOG(INFO) << "No duplicate SO groups to solve";
+        LOG(DEBUG) << "No duplicate SO groups to solve";
         return plan;
     }
 
-    LOG(INFO) << "Solving " << duplicateSoGroups.size() << " duplicate SO groups using greedy algorithm";
+    LOG(DEBUG) << "Solving " << duplicateSoGroups.size() << " duplicate SO groups using greedy algorithm";
 
     // 对每个重复SO组求解
     for (const auto& group : duplicateSoGroups) {
@@ -131,7 +114,7 @@ DedupPlan GreedySolver::Solve(
         }
     }
 
-    LOG(INFO) << "Greedy solver completed: kept " << plan.keptSoMap.size() << " modules, "
+    LOG(DEBUG) << "Greedy solver completed: kept " << plan.keptSoMap.size() << " modules, "
               << "removed " << plan.removedSoMap.size() << " modules, "
               << "saved " << plan.totalSavedSize << " bytes";
 
@@ -148,14 +131,17 @@ bool GreedySolver::SatisfiesConstraints(
     }
     std::set<std::string> mandatoryUnion;
     for (const auto& [device, mandatoryModules] : mandatoryModuleMap) {
-        mandatoryUnion.insert(mandatoryModules.begin(), mandatoryModules.end());
-        bool originallyInstalled = std::any_of(group.soList.begin(), group.soList.end(), [&](const SoInfo& so) {
-            return std::find(mandatoryModules.begin(), mandatoryModules.end(), so.sourceModule) !=
-                mandatoryModules.end();
+        // 显式创建引用以避免结构化绑定捕获问题
+        const std::vector<std::string>& modulesRef = mandatoryModules;
+        mandatoryUnion.insert(modulesRef.begin(), modulesRef.end());
+        bool originallyInstalled = std::any_of(
+            group.soList.begin(), group.soList.end(), [&modulesRef](const SoInfo& so) {
+            return std::find(modulesRef.begin(), modulesRef.end(), so.sourceModule) !=
+                modulesRef.end();
         });
-        bool stillInstalled = std::any_of(keptSo.begin(), keptSo.end(), [&](const SoInfo& so) {
-            return std::find(mandatoryModules.begin(), mandatoryModules.end(), so.sourceModule) !=
-                mandatoryModules.end();
+        bool stillInstalled = std::any_of(keptSo.begin(), keptSo.end(), [&modulesRef](const SoInfo& so) {
+            return std::find(modulesRef.begin(), modulesRef.end(), so.sourceModule) !=
+                modulesRef.end();
         });
         if (originallyInstalled && !stillInstalled) {
             return false;

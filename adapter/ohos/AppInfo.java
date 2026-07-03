@@ -82,6 +82,7 @@ public class AppInfo {
     private String shellVersionCode = "";
     private String shellVersionName = "";
     private boolean multiFrameworkBundle;
+    private boolean deduplicateSo;
 
     /**
      * Indicates the debug of app AppJson.
@@ -224,6 +225,14 @@ public class AppInfo {
      */
     public void setMultiFrameworkBundle(boolean multiFrameworkBundle) {
         this.multiFrameworkBundle = multiFrameworkBundle;
+    }
+
+    public boolean isDeduplicateSo() {
+        return deduplicateSo;
+    }
+
+    public void setDeduplicateSo(boolean deduplicateSo) {
+        this.deduplicateSo = deduplicateSo;
     }
 
     /**

@@ -54,7 +54,7 @@ HWTEST_F(ReportGeneratorTest, GenerateReport_EmptyPlan, TestSize.Level0) {
     OHOS::AppPackingTool::DedupPlan emptyPlan;
 
     std::string reportPath = generator_.GenerateReport(
-        emptyPlan, OHOS::AppPackingTool::DedupStrategy::EXACT, testOutputDir_);
+        emptyPlan, OHOS::AppPackingTool::DedupStrategy::NONE, testOutputDir_);
 
     EXPECT_FALSE(reportPath.empty());
     EXPECT_TRUE(std::filesystem::exists(reportPath));
@@ -79,8 +79,8 @@ HWTEST_F(ReportGeneratorTest, GenerateReport_WithDedupInfo, TestSize.Level0) {
     std::string content((std::istreambuf_iterator<char>(inFile)),
                        std::istreambuf_iterator<char>());
 
-    EXPECT_NE(content.find("\"version\": \"1.0\""), std::string::npos);
-    EXPECT_NE(content.find("\"strategy\": \"greedy\""), std::string::npos);
+    EXPECT_EQ(content.find("\"version\""), std::string::npos);
+    EXPECT_EQ(content.find("\"strategy\""), std::string::npos);
     EXPECT_NE(content.find("\"module1\""), std::string::npos);
     EXPECT_NE(content.find("\"module2\""), std::string::npos);
     EXPECT_NE(content.find("\"module3\""), std::string::npos);
@@ -94,12 +94,11 @@ HWTEST_F(ReportGeneratorTest, GenerateReportJson_ValidFormat, TestSize.Level0) {
     plan.AddKeptSo("module1", "libs/liba.so");
     plan.AddRemovedSo("module2", "libs/liba.so", 1000);
 
-    std::string jsonStr = generator_.GenerateReportJson(
-        plan, OHOS::AppPackingTool::DedupStrategy::EXACT);
+    std::string jsonStr = generator_.GenerateReportJson(plan);
 
     EXPECT_FALSE(jsonStr.empty());
-    EXPECT_NE(jsonStr.find("\"version\": \"1.0\""), std::string::npos);
-    EXPECT_NE(jsonStr.find("\"strategy\": \"exact\""), std::string::npos);
+    EXPECT_EQ(jsonStr.find("\"version\""), std::string::npos);
+    EXPECT_EQ(jsonStr.find("\"strategy\""), std::string::npos);
     EXPECT_NE(jsonStr.find("\"timestamp\":"), std::string::npos);
     EXPECT_NE(jsonStr.find("\"modules\":"), std::string::npos);
 }
@@ -111,13 +110,12 @@ HWTEST_F(ReportGeneratorTest, GenerateReportJson_CompleteStructure, TestSize.Lev
     plan.AddKeptSo("feature_module", "libs/feature_lib.so");
     plan.AddRemovedSo("unused_module", "libs/unused_lib.so", 5000);
 
-    std::string jsonStr = generator_.GenerateReportJson(
-        plan, OHOS::AppPackingTool::DedupStrategy::GREEDY);
+    std::string jsonStr = generator_.GenerateReportJson(plan);
 
     // 验证JSON结构包含所有必需字段
-    EXPECT_NE(jsonStr.find("\"version\""), std::string::npos);
+    EXPECT_EQ(jsonStr.find("\"version\""), std::string::npos);
     EXPECT_NE(jsonStr.find("\"timestamp\""), std::string::npos);
-    EXPECT_NE(jsonStr.find("\"strategy\""), std::string::npos);
+    EXPECT_EQ(jsonStr.find("\"strategy\""), std::string::npos);
     EXPECT_NE(jsonStr.find("\"totalSavedSize\""), std::string::npos);
     EXPECT_NE(jsonStr.find("\"modules\""), std::string::npos);
 

@@ -24,8 +24,7 @@ namespace AppPackingTool {
 
 inline std::string FormatDedupError(const std::string& cause)
 {
-    return "[SO_DEDUP] " +
-        packing_tool::error::PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(cause);
+    return packing_tool::error::PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(cause);
 }
 
 } // namespace AppPackingTool

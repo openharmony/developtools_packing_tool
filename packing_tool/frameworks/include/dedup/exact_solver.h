@@ -57,10 +57,10 @@ public:
 
     /**
      * @brief 检查是否可以使用精确算法
-     * @param totalModuleCount 总模块数
+     * @param duplicateCopyCount 单个SO的重复副本数
      * @return 是否可以使用精确算法
      */
-    static bool CanUseExactAlgorithm(int32_t totalModuleCount);
+    static bool CanUseExactAlgorithm(size_t duplicateCopyCount);
 
 private:
     /**

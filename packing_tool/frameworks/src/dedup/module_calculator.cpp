@@ -17,6 +17,7 @@
 #include "dedup/dedup_log.h"
 #include "dedup/dedup_error.h"
 #include "json/distro_filter.h"
+#include <algorithm>
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -24,30 +25,33 @@ namespace AppPackingTool {
 ModuleCalculator::ModuleCalculator() {}
 ModuleCalculator::~ModuleCalculator() {}
 
-ModuleConfig ModuleCalculator::ExtractModuleConfig(const std::shared_ptr<ModuleJson>& moduleJson) {
+ModuleConfig ModuleCalculator::ExtractModuleConfig(
+    const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel) {
     ModuleConfig config;
 
     if (!moduleJson) {
         LOG(ERROR) << FormatDedupError("ModuleJson is null");
         return config;
     }
+    if (!stageModel) {
+        return config;
+    }
 
     try {
+        std::unique_ptr<PtJson> moduleObj;
+        if (!moduleJson->GetModuleObject(moduleObj) || !moduleObj) {
+            return config;
+        }
+        config.stageModel = true;
         // 获取模块名
         std::string moduleName;
         if (moduleJson->GetStageModuleName(moduleName)) {
-            config.moduleName = moduleName;
-        } else {
-            moduleJson->GetFaModuleName(moduleName);
             config.moduleName = moduleName;
         }
 
         // 获取模块类型
         std::string moduleType;
         if (moduleJson->GetStageModuleType(moduleType)) {
-            config.moduleType = moduleType;
-        } else {
-            moduleJson->GetFaModuleType(moduleType);
             config.moduleType = moduleType;
         }
 
@@ -57,19 +61,7 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(const std::shared_ptr<ModuleJ
             for (const auto& deviceTypeStr : deviceTypeStrings) {
                 config.deviceTypes.push_back(DeviceCalculator::StringToDeviceType(deviceTypeStr));
             }
-        } else {
-            moduleJson->GetFaDeviceTypes(deviceTypeStrings);
-            for (const auto& deviceTypeStr : deviceTypeStrings) {
-                config.deviceTypes.push_back(DeviceCalculator::StringToDeviceType(deviceTypeStr));
-            }
-        }
-
-        // 如果没有指定设备类型，默认支持所有设备
-        if (config.deviceTypes.empty()) {
-            config.deviceTypes = {
-                DeviceType::PHONE, DeviceType::TABLET, DeviceType::TWOINONE,
-                DeviceType::WEARABLE, DeviceType::TV, DeviceType::CAR
-            };
+            // 移除过早判断，在处理完requiredDeviceFeatures后再判断
         }
 
         // 获取distributionFilter
@@ -77,13 +69,11 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(const std::shared_ptr<ModuleJ
         std::map<std::string, std::string> resourceMap;
         if (moduleJson->GetStageDistroFilter(distroFilter, resourceMap)) {
             config.distributionFilter = distroFilter.Dump();
-        } else {
-            moduleJson->GetFaDistroFilter(distroFilter);
-            config.distributionFilter = distroFilter.Dump();
         }
 
         // 获取deliveryWithInstall
         bool deliveryWithInstall = false;
+        config.deliveryWithInstallPresent = moduleObj->Contains("deliveryWithInstall");
         if (moduleJson->GetDeliveryWithInstall(deliveryWithInstall)) {
             config.deliveryWithInstall = deliveryWithInstall;
         }
@@ -94,10 +84,10 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(const std::shared_ptr<ModuleJ
             config.compressNativeLibs = compressNativeLibs;
         }
 
-        // 获取extractNativeLibs (extraNativeLibs)
+        // 获取extractNativeLibs
         bool extractNativeLibs = false;
         if (moduleJson->GetStageExtractNativeLibs(extractNativeLibs)) {
-            config.extraNativeLibs = extractNativeLibs;
+            config.extractNativeLibs = extractNativeLibs;
         }
 
         bool libIsolation = false;
@@ -108,14 +98,44 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(const std::shared_ptr<ModuleJ
         bool hasRequiredDeviceFeatures = false;
         if (moduleJson->GetStageHasRequiredDeviceFeatures(hasRequiredDeviceFeatures) &&
             hasRequiredDeviceFeatures) {
-            config.requireDeviceFeatures.push_back("requiredDeviceFeatures");
+            std::list<std::string> requiredDeviceTypes;
+            moduleJson->GetStageRequiredDeviceFeatureTypes(requiredDeviceTypes);
+            for (const auto& deviceType : requiredDeviceTypes) {
+                DeviceType normalized = DeviceCalculator::StringToDeviceType(deviceType);
+                config.requireDeviceFeatures.push_back(deviceType);
+                if (std::find(config.deviceTypes.begin(), config.deviceTypes.end(), normalized) ==
+                    config.deviceTypes.end()) {
+                    config.deviceTypes.push_back(normalized);
+                }
+            }
         }
 
+        // 在处理完所有设备类型（包括从requiredDeviceFeatures添加的）之后判断
+        config.deviceTypesConfigured = !config.deviceTypes.empty();
+
+        // 获取compileSdkType
+        std::string compileSdkType;
+        if (moduleJson->GetStageCompileSdkType(compileSdkType)) {
+            config.compileSdkType = compileSdkType;
+        }
+
+        // 获取bundleType
+        std::string bundleType;
+        if (moduleJson->GetStageBundleType(bundleType)) {
+            config.bundleType = bundleType;
+        }
     } catch (const std::exception& e) {
         LOG(ERROR) << FormatDedupError("Extract module config failed: " + std::string(e.what()));
     }
 
     return config;
+}
+
+bool ModuleCalculator::IsValidForDedup(const ModuleConfig& moduleConfig)
+{
+    bool supportedType = moduleConfig.bundleType == "app" || moduleConfig.bundleType == "atomicService";
+    return moduleConfig.stageModel && !moduleConfig.moduleName.empty() && supportedType &&
+        moduleConfig.deviceTypesConfigured && moduleConfig.deliveryWithInstallPresent;
 }
 
 bool ModuleCalculator::SupportsDeviceType(const ModuleConfig& moduleConfig, DeviceType deviceType) {
@@ -158,19 +178,11 @@ bool ModuleCalculator::IsMandatoryModule(const ModuleConfig& moduleConfig, const
         return false;
     }
 
-    if (!moduleConfig.deliveryWithInstall) {
-        return false;
+    if (moduleConfig.moduleType == "entry") {
+        return MatchesDistributionFilter(moduleConfig, device);
     }
-
-    if (!moduleConfig.distributionFilter.empty()) {
-        return false;
-    }
-
-    if (!HasEmptyRequireDeviceFeatures(moduleConfig)) {
-        return false;
-    }
-
-    return true;
+    return moduleConfig.deliveryWithInstall && MatchesDistributionFilter(moduleConfig, device) &&
+        HasEmptyRequireDeviceFeatures(moduleConfig);
 }
 
 std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMandatoryModules(
@@ -184,7 +196,7 @@ std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMa
         return mandatoryModuleMap;
     }
 
-    LOG(INFO) << "Calculating mandatory modules for " << devices.size() << " devices from "
+    LOG(DEBUG) << "Calculating mandatory modules for " << devices.size() << " devices from "
               << allModules.size() << " modules";
 
     // 为每个设备计算必然安装模块集合
@@ -202,13 +214,11 @@ std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMa
             // 判断是否为必然安装模块
             if (IsMandatoryModule(config, device)) {
                 mandatoryModules.push_back(config.moduleName);
-                LOG(INFO) << "Module " << config.moduleName << " is mandatory for device "
-                          << DeviceCalculator::DeviceTypeToString(device.type);
             }
         }
 
         mandatoryModuleMap[device] = mandatoryModules;
-        LOG(INFO) << "Device " << DeviceCalculator::DeviceTypeToString(device.type)
+        LOG(DEBUG) << "Device " << DeviceCalculator::DeviceTypeToString(device.type)
                   << " has " << mandatoryModules.size() << " mandatory modules";
     }
 

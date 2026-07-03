@@ -1642,7 +1642,7 @@ public class Compressor {
                 }
             }
             fileList = SODeduplicator.deduplicateModules(fileList, utility.isDeduplicateSo(), tempDir.toPath(),
-                    appOutputFile.getParentFile().toPath(), utility.getCompressLevel());
+                    appOutputFile.getParentFile().toPath());
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Verify failed when compress app.");
@@ -1712,7 +1712,7 @@ public class Compressor {
                 }
             }
             fileList = SODeduplicator.deduplicateModules(fileList, utility.isDeduplicateSo(), tmpDir,
-                    appOutPath.getParent(), utility.getCompressLevel());
+                    appOutPath.getParent());
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Verify failed when compress fast app.");
@@ -1798,7 +1798,7 @@ public class Compressor {
                 selectedHapPaths.add(tempSelectedHapDir.getPath() + File.separator + selectedHapName);
             }
             selectedHapPaths = SODeduplicator.deduplicateModules(selectedHapPaths, utility.isDeduplicateSo(),
-                    tempHapDir.toPath(), appOutputFile.getParentFile().toPath(), utility.getCompressLevel());
+                    tempHapDir.toPath(), appOutputFile.getParentFile().toPath());
             for (String hapPathItem : selectedHapPaths) {
                 File hapFile = new File(hapPathItem.trim());
                 String hapTempPath = tempHapDir.getPath() + File.separator + hapFile.getName();

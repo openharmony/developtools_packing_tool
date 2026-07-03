@@ -126,10 +126,31 @@ private:
     bool ApplyDedupPlan(const DedupPlan& plan, const std::string& modulesRootPath);
 
     /**
+     * @brief 重新打包模块，排除指定的SO文件
+     * @param sourceZip 源ZIP文件路径
+     * @param targetZip 目标ZIP文件路径
+     * @param moduleName 模块名
+     * @param plan 去重方案
+     * @return 是否成功
+     */
+    bool RepackModuleExcludingSOs(
+        const std::string& sourceZip,
+        const std::string& targetZip,
+        const std::string& moduleName,
+        const DedupPlan& plan);
+
+    /**
      * @brief 设置错误信息
      * @param error 错误信息
      */
     void SetError(const std::string& error);
+
+    /**
+     * @brief 判断文件是否为.so文件（包括版本号文件如.so.1）
+     * @param fileName 文件名
+     * @return 是否为.so文件
+     */
+    static bool IsSoFile(const std::string& fileName);
 
 private:
     DedupPlan dedupPlan_;

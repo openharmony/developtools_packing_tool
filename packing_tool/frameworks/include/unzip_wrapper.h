@@ -41,6 +41,11 @@ public:
         return (unzFile_ != nullptr);
     }
 
+    unzFile GetUnzipFile() const
+    {
+        return unzFile_;
+    }
+
 protected:
     std::string ExtractFile(const std::string filePath);
 

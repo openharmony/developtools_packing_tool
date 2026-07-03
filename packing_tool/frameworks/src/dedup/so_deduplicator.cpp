@@ -22,11 +22,15 @@
 #include "dedup/dedup_log.h"
 #include "dedup/dedup_error.h"
 #include "zip_utils.h"
+#include "zip_wrapper.h"
+#include "unzip_wrapper.h"
 #include "utils.h"
 #include <openssl/md5.h>
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <regex>
+#include <set>
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -40,6 +44,13 @@ void SODeduplicator::SetError(const std::string& error) {
     errorMessage_ = error;
     dedupSuccess_ = false;
     LOG(ERROR) << FormatDedupError(error);
+}
+
+bool SODeduplicator::IsSoFile(const std::string& fileName)
+{
+    // 匹配所有.so文件和带版本号的.so文件（如libtest.so.1.2.3）
+    static const std::regex SO_PATTERN(".*\\.so(\\.\\d+)*", std::regex_constants::icase);
+    return std::regex_match(fileName, SO_PATTERN);
 }
 
 std::string SODeduplicator::CalculateFileMD5(const std::string& filePath) {
@@ -74,7 +85,7 @@ std::string SODeduplicator::CalculateFileMD5(const std::string& filePath) {
     }
 
     std::string md5String = ss.str();
-    LOG(INFO) << "Calculated MD5 for file: " << filePath << " -> " << md5String.substr(0, 8) << "...";
+    LOG(DEBUG) << "Calculated MD5 for file: " << filePath << " -> " << md5String.substr(0, 8) << "...";
 
     return md5String;
 }
@@ -89,20 +100,13 @@ std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterEntryModules(
             continue;
         }
 
-        std::string moduleType;
-        if (module->GetStageModuleType(moduleType)) {
-            if (moduleType == "entry") {
-                entryModules.push_back(module);
-            }
-        } else {
-            module->GetFaModuleType(moduleType);
-            if (moduleType == "entry") {
-                entryModules.push_back(module);
-            }
+        ModuleConfig config = ModuleCalculator::ExtractModuleConfig(module);
+        if (ModuleCalculator::IsValidForDedup(config) && config.moduleType == "entry") {
+            entryModules.push_back(module);
         }
     }
 
-    LOG(INFO) << "Filtered " << entryModules.size() << " entry modules from "
+    LOG(DEBUG) << "Filtered " << entryModules.size() << " entry modules from "
               << allModules.size() << " total modules";
 
     return entryModules;
@@ -121,32 +125,38 @@ std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterDedupEligibleModu
         try {
             // 检查模块是否满足去重条件
             ModuleConfig config = ModuleCalculator::ExtractModuleConfig(module);
-            if (config.moduleName.empty()) {
-                SetError("Failed to parse module configuration");
-                break;
+            if (!config.stageModel) {
+                continue;
+            }
+            if (!ModuleCalculator::IsValidForDedup(config)) {
+                continue;
             }
 
-            // 条件1：会解压SO (compressNativeLibs 或 extraNativeLibs 为 true)
-            if (!config.compressNativeLibs && !config.extraNativeLibs) {
-                LOG(INFO) << "Module " << config.moduleName << " not eligible: SO not extracted";
+            // 条件1：会解压SO (compressNativeLibs 或 extractNativeLibs 为 true)
+            if (!config.compressNativeLibs && !config.extractNativeLibs) {
+                LOG(DEBUG) << "Module " << config.moduleName << " not eligible: SO not extracted";
                 continue;
             }
 
             // 条件2：libIsolation 为 false
             if (config.libIsolation) {
-                LOG(INFO) << "Module " << config.moduleName << " not eligible: libIsolation enabled";
+                LOG(DEBUG) << "Module " << config.moduleName << " not eligible: libIsolation enabled";
+                continue;
+            }
+
+            // 条件3：compileSdkType 不能为 "OpenHarmony"
+            if (config.compileSdkType == "OpenHarmony") {
                 continue;
             }
 
             eligibleModules.push_back(module);
-            LOG(INFO) << "Module " << config.moduleName << " is eligible for deduplication";
 
         } catch (const std::exception& e) {
             LOG(WARNING) << "Failed to check module eligibility: " << e.what();
         }
     }
 
-    LOG(INFO) << "Found " << eligibleModules.size() << " dedup-eligible modules from "
+    LOG(DEBUG) << "Found " << eligibleModules.size() << " dedup-eligible modules from "
               << allModules.size() << " total modules";
 
     return eligibleModules;
@@ -163,7 +173,7 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
         return moduleSoMap;
     }
 
-    LOG(INFO) << "Collecting SO files from " << modules.size() << " modules in " << modulesRootPath;
+    LOG(DEBUG) << "Collecting SO files from " << modules.size() << " modules in " << modulesRootPath;
 
     for (const auto& module : modules) {
         if (!module) {
@@ -173,7 +183,7 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
         try {
             std::string moduleName;
             if (!module->GetStageModuleName(moduleName)) {
-                module->GetFaModuleName(moduleName);
+                continue;
             }
 
             std::string modulePath = modulesRootPath + "/" + moduleName;
@@ -187,37 +197,35 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
             // 遍历模块目录，查找.so文件
             std::vector<SoInfo> soFiles;
             for (const auto& entry : std::filesystem::recursive_directory_iterator(modulePath)) {
-                if (entry.is_regular_file()) {
-                    std::string filePath = entry.path().string();
-                    if (entry.path().extension() == ".so") {
-                        // 计算MD5
-                        std::string md5 = CalculateFileMD5(filePath);
-                        if (md5.empty()) {
-                            SetError("Failed to calculate MD5 for file: " + filePath);
-                            return {};
-                        }
-
-                        // 获取相对路径
-                        std::string relativePath = std::filesystem::relative(entry.path(), modulePath).generic_string();
-
-                        // 获取文件大小
-                        int64_t fileSize = std::filesystem::file_size(entry.path());
-
-                        SoInfo soInfo;
-                        soInfo.relativePath = relativePath;
-                        soInfo.md5 = md5;
-                        soInfo.sourceModule = moduleName;
-                        soInfo.fileSize = fileSize;
-
-                        soFiles.push_back(soInfo);
-                        LOG(INFO) << "Found SO file: " << relativePath << " (MD5: " << md5.substr(0, 8) << "...)";
-                    }
+                if (!entry.is_regular_file()) {
+                    continue;
                 }
+                std::string filePath = entry.path().string();
+                std::string fileName = entry.path().filename().string();
+                if (!IsSoFile(fileName)) {
+                    continue;
+                }
+                std::string md5 = CalculateFileMD5(filePath);
+                if (md5.empty()) {
+                    SetError("Failed to calculate MD5 for file: " + filePath);
+                    return {};
+                }
+
+                std::string relativePath = std::filesystem::relative(entry.path(), modulePath).generic_string();
+                int64_t fileSize = std::filesystem::file_size(entry.path());
+                SoInfo soInfo;
+                soInfo.relativePath = relativePath;
+                soInfo.md5 = md5;
+                soInfo.sourceModule = moduleName;
+                soInfo.fileSize = fileSize;
+
+                soFiles.push_back(soInfo);
+                LOG(DEBUG) << "Found SO file: " << relativePath << " (MD5: " << md5.substr(0, 8) << "...)";
             }
 
             if (!soFiles.empty()) {
                 moduleSoMap[moduleName] = soFiles;
-                LOG(INFO) << "Module " << moduleName << " contains " << soFiles.size() << " SO files";
+                LOG(DEBUG) << "Module " << moduleName << " contains " << soFiles.size() << " SO files";
             }
 
         } catch (const std::exception& e) {
@@ -231,7 +239,7 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
         totalSoCount += soList.size();
     }
 
-    LOG(INFO) << "Collected " << totalSoCount << " SO files from "
+    LOG(DEBUG) << "Collected " << totalSoCount << " SO files from "
               << moduleSoMap.size() << " modules";
 
     return moduleSoMap;
@@ -260,19 +268,19 @@ std::vector<DuplicateSoGroup> SODeduplicator::GroupDuplicateSos(
             group.soList = soList;
             duplicateGroups.push_back(group);
 
-            LOG(INFO) << "Found duplicate SO group " << group.relativePath << " with MD5 "
+            LOG(DEBUG) << "Found duplicate SO group " << group.relativePath << " with MD5 "
                       << group.md5.substr(0, 8)
                       << "... (" << soList.size() << " SOs)";
         }
     }
 
-    LOG(INFO) << "Found " << duplicateGroups.size() << " duplicate SO groups";
+    LOG(DEBUG) << "Found " << duplicateGroups.size() << " duplicate SO groups";
 
     return duplicateGroups;
 }
 
 bool SODeduplicator::ApplyDedupPlan(const DedupPlan& plan, const std::string& modulesRootPath) {
-    LOG(INFO) << "Applying deduplication plan";
+    LOG(DEBUG) << "Applying deduplication plan";
 
     if (modulesRootPath.empty()) {
         SetError("Modules root path is empty for applying dedup plan");
@@ -290,7 +298,7 @@ bool SODeduplicator::ApplyDedupPlan(const DedupPlan& plan, const std::string& mo
                 if (std::filesystem::exists(fullFilePath)) {
                     std::filesystem::remove(fullFilePath);
                     removedCount++;
-                    LOG(INFO) << "Removed SO file: " << fullFilePath;
+                    LOG(DEBUG) << "Removed SO file: " << fullFilePath;
                 } else {
                     LOG(WARNING) << "SO file does not exist, cannot remove: " << fullFilePath;
                 }
@@ -303,7 +311,117 @@ bool SODeduplicator::ApplyDedupPlan(const DedupPlan& plan, const std::string& mo
         }
     }
 
-    LOG(INFO) << "Successfully applied deduplication plan: removed " << removedCount << " SO files";
+    LOG(DEBUG) << "Successfully applied deduplication plan: removed " << removedCount << " SO files";
+
+    return true;
+}
+
+bool SODeduplicator::RepackModuleExcludingSOs(
+    const std::string& sourceZip,
+    const std::string& targetZip,
+    const std::string& moduleName,
+    const DedupPlan& plan)
+{
+    LOG(DEBUG) << "Repacking module excluding removed SOs: " << moduleName
+              << " from " << sourceZip << " to " << targetZip;
+
+    // 收集该模块需要排除的SO文件路径
+    std::set<std::string> excludedPaths;
+    auto it = plan.removedSoMap.find(moduleName);
+    if (it != plan.removedSoMap.end()) {
+        for (const auto& soPath : it->second) {
+            std::string normalized = soPath;
+            std::replace(normalized.begin(), normalized.end(), '\\', '/');
+            excludedPaths.insert(normalized);
+        }
+    }
+
+    // 打开源ZIP文件
+    UnzipWrapper srcUnzip;
+    std::string srcPath = sourceZip;
+    if (srcUnzip.Open(srcPath) != UNZ_OK) {
+        SetError("Failed to open source ZIP: " + sourceZip);
+        return false;
+    }
+
+    // 创建目标ZIP文件
+    ZipWrapper destZip;
+    std::string targetPath = targetZip;
+    if (destZip.Open(targetPath, APPEND_STATUS_CREATE) != ZIP_OK) {
+        srcUnzip.Close();
+        SetError("Failed to create target ZIP: " + targetZip);
+        return false;
+    }
+
+    // 遍历源ZIP中的所有文件
+    unzFile srcFile = srcUnzip.GetUnzipFile();
+    zipFile destFile = destZip.GetZipFile();
+
+    if (unzGoToFirstFile(srcFile) != UNZ_OK) {
+        srcUnzip.Close();
+        destZip.Close();
+        SetError("Failed to iterate source ZIP entries");
+        return false;
+    }
+
+    int32_t copiedCount = 0;
+    int32_t skippedCount = 0;
+    bool hasError = false;
+
+    do {
+        unz_file_info64 fileInfo;
+        if (unzGetCurrentFileInfo64(srcFile, &fileInfo, nullptr, 0,
+            nullptr, 0, nullptr, 0) != UNZ_OK) {
+            LOG(ERROR) << "Failed to get file info for entry";
+            hasError = true;
+            break;
+        }
+        std::vector<char> fileName(fileInfo.size_filename + 1, '\0');
+        if (unzGetCurrentFileInfo64(srcFile, &fileInfo, fileName.data(), fileName.size(),
+            nullptr, 0, nullptr, 0) != UNZ_OK) {
+            LOG(ERROR) << "Failed to get file name for entry";
+            hasError = true;
+            break;
+        }
+
+        std::string entryName(fileName.data(), fileInfo.size_filename);
+        // 标准化路径分隔符为统一的格式
+        std::replace(entryName.begin(), entryName.end(), '\\', '/');
+
+        // 检查是否需要跳过此文件（被移除的SO）
+        if (excludedPaths.find(entryName) != excludedPaths.end()) {
+            LOG(DEBUG) << "Skipping removed SO: " << entryName;
+            skippedCount++;
+            continue;
+        }
+
+        // 使用AddRawEntryToZip直接复制ZIP条目
+        if (destZip.AddRawEntryToZip(destFile, srcFile, entryName) != ZIP_ERR_SUCCESS) {
+            LOG(ERROR) << "Failed to copy entry: " << entryName;
+            hasError = true;
+            break;
+        }
+
+        copiedCount++;
+    } while (unzGoToNextFile(srcFile) == UNZ_OK);
+
+    srcUnzip.Close();
+    destZip.Close();
+
+    // 如果有错误，删除不完整的文件
+    if (hasError) {
+        LOG(ERROR) << "Repacking failed with errors, cleaning up incomplete file";
+        try {
+            std::filesystem::remove(targetZip);
+        } catch (const std::exception& e) {
+            LOG(WARNING) << "Failed to remove incomplete file: " << e.what();
+        }
+        SetError("Failed to repack module: error during copying entries");
+        return false;
+    }
+
+    LOG(DEBUG) << "Repacking completed successfully: copied=" << copiedCount
+              << ", skipped=" << skippedCount;
 
     return true;
 }
@@ -312,7 +430,7 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
     bool deduplicateSo, const std::string& workDir, const std::string& reportDir)
 {
     if (!deduplicateSo) {
-        LOG(INFO) << "[SO_DEDUP] SO deduplication skipped: disabled.";
+        LOG(INFO) << "SO deduplication skipped: disabled.";
         return true;
     }
     if (modulePaths.empty()) {
@@ -328,38 +446,50 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
         std::filesystem::create_directories(repackedRoot);
 
         std::vector<std::shared_ptr<ModuleJson>> modules;
-        std::vector<std::pair<std::filesystem::path, std::filesystem::path>> moduleFiles;
+        // 使用三元组：原始路径、解压目录、目标路径、模块名
+        using ModuleFile = std::tuple<std::string, std::filesystem::path,
+            std::filesystem::path, std::string>;
+        std::vector<ModuleFile> moduleFiles;
         size_t index = 0;
         for (const auto& modulePath : modulePaths) {
             std::filesystem::path source(modulePath);
+            std::string sourcePathStr = source.string();
             std::filesystem::path extractDir = root / ("extract_" + std::to_string(index++));
             std::filesystem::create_directories(extractDir);
-            if (ZipUtils::Unzip(source.string(), extractDir.string()) != ZIP_ERR_SUCCESS) {
-                SetError("Failed to unzip module: " + source.string());
+            if (ZipUtils::Unzip(sourcePathStr, extractDir.string()) != ZIP_ERR_SUCCESS) {
+                SetError("Failed to unzip module: " + sourcePathStr);
                 return false;
             }
             std::filesystem::path jsonPath = extractDir / "module.json";
-            if (!std::filesystem::exists(jsonPath)) {
+            bool stageModel = std::filesystem::exists(jsonPath);
+            if (!stageModel) {
                 jsonPath = extractDir / "config.json";
             }
             auto module = std::make_shared<ModuleJson>();
             if (!std::filesystem::exists(jsonPath) || !module->ParseFromFile(jsonPath.string())) {
-                SetError("Failed to parse module configuration: " + source.string());
-                return false;
+                LOG(WARNING) << "SO deduplication skipped for module: failed to parse configuration, module="
+                             << sourcePathStr;
+                module.reset();
             }
-            ModuleConfig config = ModuleCalculator::ExtractModuleConfig(module);
-            if (config.moduleName.empty()) {
-                SetError("Module name is empty: " + source.string());
-                return false;
+            if (!stageModel) {
+                module.reset();
             }
-            std::filesystem::path finalExtractDir = modulesRoot / config.moduleName;
+            ModuleConfig config;
+            if (module) {
+                config = ModuleCalculator::ExtractModuleConfig(module, stageModel);
+            }
+            std::string directoryName = ModuleCalculator::IsValidForDedup(config) ? config.moduleName :
+                "excluded_module_" + std::to_string(index);
+            std::filesystem::path finalExtractDir = modulesRoot / directoryName;
             if (std::filesystem::exists(finalExtractDir)) {
                 SetError("Duplicate module name: " + config.moduleName);
                 return false;
             }
             std::filesystem::rename(extractDir, finalExtractDir);
             modules.push_back(module);
-            moduleFiles.push_back({finalExtractDir, repackedRoot / source.filename()});
+            // 保存：原始路径、解压目录、目标路径、模块名
+            moduleFiles.push_back({sourcePathStr, finalExtractDir,
+                repackedRoot / source.filename(), config.moduleName});
         }
 
         std::string effectiveReportDir = reportDir.empty() ? "." : reportDir;
@@ -368,8 +498,9 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
         }
 
         std::list<std::string> repackedPaths;
-        for (const auto& [moduleDir, repackedPath] : moduleFiles) {
-            if (ZipUtils::Zip(moduleDir.string(), repackedPath.string(), "") != ZIP_ERR_SUCCESS) {
+        for (const auto& [sourcePath, moduleDir, repackedPath, moduleName] : moduleFiles) {
+            // 使用优化的重新打包方法：直接复制ZIP条目，排除被移除的SO
+            if (!RepackModuleExcludingSOs(sourcePath, repackedPath.string(), moduleName, dedupPlan_)) {
                 SetError("Failed to repack module: " + repackedPath.string());
                 return false;
             }
@@ -380,7 +511,7 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
         for (const auto& [moduleName, paths] : dedupPlan_.removedSoMap) {
             removedCount += paths.size();
         }
-        LOG(INFO) << "[SO_DEDUP] SO deduplication completed: removed=" << removedCount
+        LOG(WARNING) << "SO deduplication completed: removed=" << removedCount
                   << ", savedBytes=" << dedupPlan_.totalSavedSize << ", report=" << reportFilePath_;
         return true;
     } catch (const std::exception& exception) {
@@ -395,9 +526,9 @@ bool SODeduplicator::ExecuteDeduplication(
     const std::string& reportOutputPath,
     bool dedupEnabled) {
 
-    LOG(INFO) << "[SO_DEDUP] SO deduplication started.";
-    LOG(INFO) << "Deduplication enabled: " << (dedupEnabled ? "true" : "false");
-    LOG(INFO) << "Total modules: " << allModules.size();
+    LOG(INFO) << "SO deduplication started.";
+    LOG(DEBUG) << "Deduplication enabled: " << (dedupEnabled ? "true" : "false");
+    LOG(DEBUG) << "Total modules: " << allModules.size();
 
     // 重置状态
     dedupSuccess_ = false;
@@ -405,7 +536,7 @@ bool SODeduplicator::ExecuteDeduplication(
     dedupPlan_ = DedupPlan();
 
     if (!dedupEnabled) {
-        LOG(INFO) << "[SO_DEDUP] SO deduplication skipped: disabled.";
+        LOG(INFO) << "SO deduplication skipped: disabled.";
         dedupSuccess_ = true; // 不启用去重不算失败
         return true;
     }
@@ -424,8 +555,12 @@ bool SODeduplicator::ExecuteDeduplication(
         std::vector<DeviceInstance> devices = deviceCalculator.CalculateDevices(entryModules);
 
         if (devices.empty()) {
-            SetError("No devices found for deduplication");
-            return false;
+            LOG(INFO) << "SO deduplication skipped: no valid entry devices.";
+            ReportGenerator reportGenerator;
+            reportFilePath_ = reportGenerator.GenerateReport(
+                dedupPlan_, DedupStrategy::NONE, reportOutputPath);
+            dedupSuccess_ = !reportFilePath_.empty();
+            return dedupSuccess_;
         }
 
         // 第3步：过滤参与去重的模块
@@ -433,14 +568,11 @@ bool SODeduplicator::ExecuteDeduplication(
         if (!errorMessage_.empty()) {
             return false;
         }
-        std::string strategyName = ExactSolver::CanUseExactAlgorithm(eligibleModules.size()) ? "exact" : "greedy";
-        LOG(INFO) << "[SO_DEDUP] SO deduplication strategy: " << strategyName
-                  << ", eligibleModules=" << eligibleModules.size() << ".";
 
         if (eligibleModules.empty()) {
-            LOG(INFO) << "No modules eligible for deduplication";
+            LOG(DEBUG) << "No modules eligible for deduplication";
             ReportGenerator reportGenerator;
-            reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, DedupStrategy::EXACT, reportOutputPath);
+            reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, DedupStrategy::NONE, reportOutputPath);
             if (reportFilePath_.empty()) {
                 SetError("Failed to generate deduplication report");
                 return false;
@@ -476,11 +608,9 @@ bool SODeduplicator::ExecuteDeduplication(
         }
 
         if (moduleSoMap.empty()) {
-            LOG(INFO) << "No SO files found for deduplication";
-            DedupStrategy emptyStrategy = ExactSolver::CanUseExactAlgorithm(eligibleModules.size()) ?
-                DedupStrategy::EXACT : DedupStrategy::GREEDY;
+            LOG(DEBUG) << "No SO files found for deduplication";
             ReportGenerator reportGenerator;
-            reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, emptyStrategy, reportOutputPath);
+            reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, DedupStrategy::NONE, reportOutputPath);
             if (reportFilePath_.empty()) {
                 SetError("Failed to generate deduplication report");
                 return false;
@@ -493,11 +623,9 @@ bool SODeduplicator::ExecuteDeduplication(
         std::vector<DuplicateSoGroup> duplicateGroups = GroupDuplicateSos(moduleSoMap);
 
         if (duplicateGroups.empty()) {
-            LOG(INFO) << "No duplicate SO groups found";
-            DedupStrategy emptyStrategy = ExactSolver::CanUseExactAlgorithm(eligibleModules.size()) ?
-                DedupStrategy::EXACT : DedupStrategy::GREEDY;
+            LOG(DEBUG) << "No duplicate SO groups found";
             ReportGenerator reportGenerator;
-            reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, emptyStrategy, reportOutputPath);
+            reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, DedupStrategy::NONE, reportOutputPath);
             if (reportFilePath_.empty()) {
                 SetError("Failed to generate deduplication report");
                 return false;
@@ -506,21 +634,38 @@ bool SODeduplicator::ExecuteDeduplication(
             return true;
         }
 
-        // 第7步：选择去重算法并求解
-        DedupStrategy strategy;
-        if (ExactSolver::CanUseExactAlgorithm(eligibleModules.size())) {
-            LOG(INFO) << "Using EXACT algorithm for " << eligibleModules.size() << " modules";
-            strategy = DedupStrategy::EXACT;
+        // 第7步：根据SO重复副本数量选择算法并求解
+        std::vector<DuplicateSoGroup> smallGroups;  // 副本数<=20的组
+        std::vector<DuplicateSoGroup> largeGroups;  // 副本数>20的组
 
-            ExactSolver exactSolver;
-            dedupPlan_ = exactSolver.Solve(duplicateGroups, mandatoryModuleMap, moduleSupportMap);
-        } else {
-            LOG(INFO) << "Using GREEDY algorithm for " << eligibleModules.size() << " modules";
-            strategy = DedupStrategy::GREEDY;
-
-            GreedySolver greedySolver;
-            dedupPlan_ = greedySolver.Solve(duplicateGroups, mandatoryModuleMap, moduleSupportMap);
+        for (const auto& group : duplicateGroups) {
+            if (ExactSolver::CanUseExactAlgorithm(group.soList.size())) {
+                smallGroups.push_back(group);
+            } else if (GreedySolver::CanUseGreedyAlgorithm(group.soList.size())) {
+                largeGroups.push_back(group);
+            }
         }
+
+        LOG(DEBUG) << "Using EXACT algorithm for " << smallGroups.size() << " small groups (size <= 20)";
+        LOG(DEBUG) << "Using GREEDY algorithm for " << largeGroups.size() << " large groups (size > 20)";
+
+        // 对小groups使用精确算法
+        DedupPlan smallGroupsPlan;
+        if (!smallGroups.empty()) {
+            ExactSolver exactSolver;
+            smallGroupsPlan = exactSolver.Solve(smallGroups, mandatoryModuleMap, moduleSupportMap);
+        }
+
+        // 对大groups使用贪心算法
+        DedupPlan largeGroupsPlan;
+        if (!largeGroups.empty()) {
+            GreedySolver greedySolver;
+            largeGroupsPlan = greedySolver.Solve(largeGroups, mandatoryModuleMap, moduleSupportMap);
+        }
+
+        // 合并结果
+        dedupPlan_.Merge(smallGroupsPlan);
+        dedupPlan_.Merge(largeGroupsPlan);
 
         if (dedupPlan_.keptSoMap.empty() && dedupPlan_.removedSoMap.empty()) {
             SetError("Failed to generate deduplication plan");
@@ -534,7 +679,8 @@ bool SODeduplicator::ExecuteDeduplication(
 
         // 第9步：生成去重报告
         ReportGenerator reportGenerator;
-        reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, strategy, reportOutputPath);
+        DedupStrategy actualStrategy = ResolveDedupStrategy(!smallGroups.empty(), !largeGroups.empty());
+        reportFilePath_ = reportGenerator.GenerateReport(dedupPlan_, actualStrategy, reportOutputPath);
 
         if (reportFilePath_.empty()) {
             SetError("Failed to generate deduplication report");

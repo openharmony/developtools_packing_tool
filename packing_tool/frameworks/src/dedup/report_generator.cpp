@@ -39,10 +39,14 @@ std::string ReportGenerator::GetCurrentTimestamp() const {
 
 std::string ReportGenerator::StrategyToString(DedupStrategy strategy) const {
     switch (strategy) {
+        case DedupStrategy::NONE:
+            return "none";
         case DedupStrategy::EXACT:
             return "exact";
         case DedupStrategy::GREEDY:
             return "greedy";
+        case DedupStrategy::MIXED:
+            return "mixed";
         default:
             return "unknown";
     }
@@ -52,13 +56,11 @@ std::string ReportGenerator::GenerateReportFileName() const {
     return "so_dedup_report.json";
 }
 
-std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan, DedupStrategy strategy) {
+std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan) {
     std::stringstream json;
 
     json << "{\n";
-    json << "  \"version\": \"1.0\",\n";
     json << "  \"timestamp\": \"" << GetCurrentTimestamp() << "\",\n";
-    json << "  \"strategy\": \"" << StrategyToString(strategy) << "\",\n";
     json << "  \"totalSavedSize\": " << plan.totalSavedSize << ",\n";
     json << "  \"modules\": {\n";
 
@@ -115,16 +117,17 @@ std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan, DedupStra
     return json.str();
 }
 
-std::string ReportGenerator::GenerateReport(const DedupPlan& plan, DedupStrategy strategy, const std::string& outputPath) {
+std::string ReportGenerator::GenerateReport(
+    const DedupPlan& plan, DedupStrategy strategy, const std::string& outputPath) {
     if (outputPath.empty()) {
         LOG(ERROR) << FormatDedupError("Output path is empty");
         return "";
     }
 
-    LOG(INFO) << "Generating SO deduplication report in directory: " << outputPath;
+    LOG(DEBUG) << "Generating SO deduplication report in directory: " << outputPath;
 
     // 生成JSON内容
-    std::string jsonContent = GenerateReportJson(plan, strategy);
+    std::string jsonContent = GenerateReportJson(plan);
 
     // 生成文件路径
     std::string reportFileName = GenerateReportFileName();
@@ -152,11 +155,11 @@ std::string ReportGenerator::GenerateReport(const DedupPlan& plan, DedupStrategy
         outFile << jsonContent;
         outFile.close();
 
-        LOG(INFO) << "SO deduplication report generated successfully: " << reportFilePath;
-        LOG(INFO) << "  - Strategy: " << StrategyToString(strategy);
-        LOG(INFO) << "  - Total saved size: " << plan.totalSavedSize << " bytes";
-        LOG(INFO) << "  - Modules with kept SOs: " << plan.keptSoMap.size();
-        LOG(INFO) << "  - Modules with removed SOs: " << plan.removedSoMap.size();
+        LOG(DEBUG) << "SO deduplication report generated successfully: " << reportFilePath;
+        LOG(DEBUG) << "  - Strategy: " << StrategyToString(strategy);
+        LOG(DEBUG) << "  - Total saved size: " << plan.totalSavedSize << " bytes";
+        LOG(DEBUG) << "  - Modules with kept SOs: " << plan.keptSoMap.size();
+        LOG(DEBUG) << "  - Modules with removed SOs: " << plan.removedSoMap.size();
 
         return reportFilePath;
 

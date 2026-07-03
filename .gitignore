@@ -1,2 +1,17 @@
 jar
 .*
+!.agents/
+!.agents/skills/
+!.agents/skills/**
+
+# Local Codex/test artifacts
+/.agents/
+/AGENTS.md
+/CLAUDE.md
+/JDK_EMPTY_PATH_FIX_REPORT.md
+/build_recommendation.md
+/developtools_packing_tool.iml
+/docs/
+/lib/
+/simple_java_build.sh
+/out

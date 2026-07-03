@@ -112,6 +112,7 @@ public:
     bool GetStageExtractNativeLibsByAppObj(std::unique_ptr<PtJson>& moduleObj, bool& extractNativeLibs);
     bool GetStageLibIsolation(bool& libIsolation);
     bool GetStageHasRequiredDeviceFeatures(bool& hasRequiredDeviceFeatures);
+    bool GetStageRequiredDeviceFeatureTypes(std::list<std::string>& deviceTypes);
     bool HasExecutableBinaries();
     bool HasExecutableBinariesByModuleObj(std::unique_ptr<PtJson>& moduleObj);
     bool GetAbilityContinueTypeMap(std::map<std::string, std::list<std::string>>& abilityContinueTypeMap);

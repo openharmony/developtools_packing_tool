@@ -19,6 +19,7 @@ group("unittest") {
   deps = [
     "app_packager_test:unittest",
     "appqf_packager_test:unittest",
+    "dedup:unittest",
     "fast_app_packager_test:unittest",
     "general_normalize_test:unittest",
     "hap_packager_test:unittest",

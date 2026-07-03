@@ -1196,6 +1196,26 @@ bool ModuleJson::GetStageHasRequiredDeviceFeatures(bool& hasRequiredDeviceFeatur
     return true;
 }
 
+bool ModuleJson::GetStageRequiredDeviceFeatureTypes(std::list<std::string>& deviceTypes)
+{
+    deviceTypes.clear();
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj) || !moduleObj->Contains(REQUIRED_DEVICE_FEATURES.c_str())) {
+        return true;
+    }
+    std::unique_ptr<PtJson> featuresObj;
+    if (moduleObj->GetAny(REQUIRED_DEVICE_FEATURES.c_str(), &featuresObj) != Result::SUCCESS || !featuresObj) {
+        return false;
+    }
+    for (int32_t index = 0; index < featuresObj->GetSize(); ++index) {
+        std::unique_ptr<PtJson> feature = featuresObj->Get(index);
+        if (feature && feature->IsArray() && feature->GetSize() > 0) {
+            deviceTypes.push_back(feature->GetKey());
+        }
+    }
+    return true;
+}
+
 bool ModuleJson::HasExecutableBinaries()
 {
     std::unique_ptr<PtJson> moduleObj;
