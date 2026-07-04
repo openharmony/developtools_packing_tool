@@ -43,4 +43,16 @@ public class SkillProfileInfo {
      * Indicates the permissions of SkillProfileInfo.
      */
     public List<String> permissions = new ArrayList<>();
+
+    /**
+     * Indicates the version of SkillProfileInfo.
+     * Must follow Semver format:^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$
+     */
+    public String version = "";
+
+    /**
+     * Indicates the visibility of SkillProfileInfo.
+     * Default value is "system".
+     */
+    public String visibility = "system";
 }

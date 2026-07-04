@@ -219,6 +219,8 @@ public class JsonUtil {
     private static final String SRC_ENTRIES = "srcEntries";
     private static final String ALTERNATE_ICONS = "alternateIcons";
     private static final String ICON = "icon";
+    private static final String SKILL_VERSION = "version";
+    private static final String SKILL_VISIBILITY = "visibility";
 
 
     /**
@@ -1224,6 +1226,8 @@ public class JsonUtil {
             profileInfo.abilityName = getJsonString(profileObj, ABILITY_NAME, profileInfo.abilityName);
             profileInfo.srcEntries = parseStringArrayField(profileObj, SRC_ENTRIES);
             profileInfo.permissions = parseStringArrayField(profileObj, PERMISSIONS);
+            profileInfo.version = getJsonString(profileObj, SKILL_VERSION, profileInfo.version);
+            profileInfo.visibility = getJsonString(profileObj, SKILL_VISIBILITY, profileInfo.visibility);
             skillProfiles.add(profileInfo);
         }
         return skillProfiles;
