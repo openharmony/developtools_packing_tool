@@ -85,7 +85,6 @@ private:
         const DuplicateSoGroup& group,
         const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
         const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) const;
-
 };
 
 }  // namespace AppPackingTool

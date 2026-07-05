@@ -15,6 +15,7 @@
 
 #include "dedup/report_generator.h"
 #include <chrono>
+#include <ctime>
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
@@ -25,10 +26,13 @@
 namespace OHOS {
 namespace AppPackingTool {
 
-ReportGenerator::ReportGenerator() {}
-ReportGenerator::~ReportGenerator() {}
+ReportGenerator::ReportGenerator()
+{}
+ReportGenerator::~ReportGenerator()
+{}
 
-std::string ReportGenerator::GetCurrentTimestamp() const {
+std::string ReportGenerator::GetCurrentTimestamp() const
+{
     auto now = std::chrono::system_clock::now();
     auto time_t_now = std::chrono::system_clock::to_time_t(now);
 
@@ -37,7 +41,8 @@ std::string ReportGenerator::GetCurrentTimestamp() const {
     return ss.str();
 }
 
-std::string ReportGenerator::StrategyToString(DedupStrategy strategy) const {
+std::string ReportGenerator::StrategyToString(DedupStrategy strategy) const
+{
     switch (strategy) {
         case DedupStrategy::NONE:
             return "none";
@@ -52,11 +57,13 @@ std::string ReportGenerator::StrategyToString(DedupStrategy strategy) const {
     }
 }
 
-std::string ReportGenerator::GenerateReportFileName() const {
+std::string ReportGenerator::GenerateReportFileName() const
+{
     return "so_dedup_report.json";
 }
 
-std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan) {
+std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan)
+{
     std::stringstream json;
 
     json << "{\n";
@@ -64,29 +71,28 @@ std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan) {
     json << "  \"totalSavedSize\": " << plan.totalSavedSize << ",\n";
     json << "  \"modules\": {\n";
 
-    // 构建模块去重信息
+    // Build module deduplication information
     std::map<std::string, DedupReport::ModuleDedupInfo> moduleDedupMap;
 
-    // 添加保留的SO信息
+    // Add retained SO information
     for (const auto& [moduleName, soPaths] : plan.keptSoMap) {
         auto& dedupInfo = moduleDedupMap[moduleName];
         dedupInfo.kept = soPaths;
     }
 
-    // 添加移除的SO信息
+    // Add removed SO information
     for (const auto& [moduleName, soPaths] : plan.removedSoMap) {
         auto& dedupInfo = moduleDedupMap[moduleName];
         dedupInfo.removed = soPaths;
     }
 
-    // 生成JSON
+    // Generate JSON
     bool firstModule = true;
     for (const auto& [moduleName, dedupInfo] : moduleDedupMap) {
         if (!firstModule) {
             json << ",\n";
         }
         firstModule = false;
-
         json << "    \"" << moduleName << "\": {\n";
         json << "      \"kept\": [";
 
@@ -118,7 +124,8 @@ std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan) {
 }
 
 std::string ReportGenerator::GenerateReport(
-    const DedupPlan& plan, DedupStrategy strategy, const std::string& outputPath) {
+    const DedupPlan& plan, DedupStrategy strategy, const std::string& outputPath)
+{
     if (outputPath.empty()) {
         LOG(ERROR) << FormatDedupError("Output path is empty");
         return "";
@@ -126,7 +133,7 @@ std::string ReportGenerator::GenerateReport(
 
     LOG(DEBUG) << "Generating SO deduplication report in directory: " << outputPath;
 
-    // 生成JSON内容
+    // Generate JSON content
     std::string jsonContent = GenerateReportJson(plan);
 
     // 生成文件路径
@@ -162,12 +169,10 @@ std::string ReportGenerator::GenerateReport(
         LOG(DEBUG) << "  - Modules with removed SOs: " << plan.removedSoMap.size();
 
         return reportFilePath;
-
     } catch (const std::exception& e) {
         LOG(ERROR) << FormatDedupError("Failed to write report file: " + std::string(e.what()));
         return "";
     }
 }
-
 }  // namespace AppPackingTool
 }  // namespace OHOS

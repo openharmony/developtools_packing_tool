@@ -17,22 +17,26 @@
 #include <algorithm>
 #include <set>
 #include "dedup/dedup_log.h"
+#include "dedup/so_deduplicator.h"
 
 namespace OHOS {
 namespace AppPackingTool {
 
-GreedySolver::GreedySolver() {}
-GreedySolver::~GreedySolver() {}
+GreedySolver::GreedySolver()
+{}
+GreedySolver::~GreedySolver()
+{}
 
-bool GreedySolver::CanUseGreedyAlgorithm(size_t duplicateCopyCount) {
-    return duplicateCopyCount > 20;
+bool GreedySolver::CanUseGreedyAlgorithm(size_t duplicateCopyCount)
+{
+    return duplicateCopyCount > DEDUP_ALGORITHM_THRESHOLD;
 }
 
 std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
     const DuplicateSoGroup& group,
     const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
-    const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) {
-
+    const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap)
+{
     std::vector<SoInfo> solution;
 
     if (group.soList.empty()) {
@@ -41,18 +45,18 @@ std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
     }
 
     if (group.soList.size() == 1) {
-        // 只有一个SO，必须保留
+    // Only one SO, must keep
         solution.push_back(group.soList[0]);
         return solution;
     }
 
-    LOG(DEBUG) << "Solving duplicate SO group with MD5: " << group.md5.substr(0, 8)
+    LOG(DEBUG) << "Solving duplicate SO group with MD5: " << group.md5.substr(0, MD5_DISPLAY_LENGTH)
               << "... (" << group.soList.size() << " SOs) using greedy algorithm";
 
-    // 初始时保留所有SO
+    // Initially keep all SOs
     std::vector<SoInfo> remainingSo = group.soList;
 
-    // 贪心地尝试移除SO
+    // Greedily try to remove SOs
     for (size_t idx = 0; idx < group.soList.size(); ++idx) {
         const SoInfo& soToRemove = group.soList[idx];
 
@@ -73,7 +77,7 @@ std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
         }
     }
 
-    LOG(DEBUG) << "Greedy solution for MD5 " << group.md5.substr(0, 8)
+    LOG(DEBUG) << "Greedy solution for MD5 " << group.md5.substr(0, MD5_DISPLAY_LENGTH)
               << "...: " << remainingSo.size() << " SOs to keep (removed "
               << (group.soList.size() - remainingSo.size()) << " SOs)";
 
@@ -83,8 +87,8 @@ std::vector<SoInfo> GreedySolver::SolveSingleGroupGreedy(
 DedupPlan GreedySolver::Solve(
     const std::vector<DuplicateSoGroup>& duplicateSoGroups,
     const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
-    const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) {
-
+    const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap)
+{
     DedupPlan plan;
 
     if (duplicateSoGroups.empty()) {
@@ -94,19 +98,17 @@ DedupPlan GreedySolver::Solve(
 
     LOG(DEBUG) << "Solving " << duplicateSoGroups.size() << " duplicate SO groups using greedy algorithm";
 
-    // 对每个重复SO组求解
+    // Solve for each duplicate SO group
     for (const auto& group : duplicateSoGroups) {
         // 求解该组的贪心保留方案
         std::vector<SoInfo> keptSo = SolveSingleGroupGreedy(group, mandatoryModuleMap, moduleSupportMap);
-
         // 根据求解结果构建去重方案
         std::set<std::pair<std::string, std::string>> keptSoPaths;
         for (const auto& so : keptSo) {
             keptSoPaths.insert({so.sourceModule, so.relativePath});
             plan.AddKeptSo(so.sourceModule, so.relativePath);
         }
-
-        // 添加移除的SO
+        // Add removed SOs
         for (const auto& so : group.soList) {
             if (keptSoPaths.find({so.sourceModule, so.relativePath}) == keptSoPaths.end()) {
                 plan.AddRemovedSo(so.sourceModule, so.relativePath, so.fileSize);
@@ -125,7 +127,8 @@ bool GreedySolver::SatisfiesConstraints(
     const std::vector<SoInfo>& keptSo,
     const DuplicateSoGroup& group,
     const std::map<DeviceInstance, std::vector<std::string>>& mandatoryModuleMap,
-    const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) const {
+    const std::map<std::string, std::vector<DeviceInstance>>& moduleSupportMap) const
+{
     if (keptSo.empty()) {
         return false;
     }
@@ -170,6 +173,5 @@ bool GreedySolver::SatisfiesConstraints(
     }
     return true;
 }
-
 }  // namespace AppPackingTool
 }  // namespace OHOS

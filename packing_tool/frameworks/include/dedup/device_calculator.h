@@ -39,11 +39,13 @@ struct DeviceInstance {
     DeviceType type;
     std::string distributionFilter; // 可选的distributionFilter标识
 
-    bool operator==(const DeviceInstance& other) const {
+    bool operator==(const DeviceInstance& other) const
+    {
         return type == other.type && distributionFilter == other.distributionFilter;
     }
 
-    bool operator<(const DeviceInstance& other) const {
+    bool operator<(const DeviceInstance& other) const
+    {
         if (type != other.type) {
             return type < other.type;
         }

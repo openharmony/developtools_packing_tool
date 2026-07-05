@@ -38,6 +38,7 @@ ohos_unittest("report_generator_test") {
     "../../../../src/error/packing_tool_err_msg.cpp",
     "../../../../src/error/scan_error_enum.cpp",
     "../../../../src/json/distro_filter.cpp",
+    "../../../../src/json/hap_verify_info.cpp",
     "../../../../src/json/module_json.cpp",
     "../../../../src/json/module_json_fa.cpp",
     "../../../../src/json/module_json_stage.cpp",

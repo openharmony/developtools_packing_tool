@@ -30,6 +30,13 @@
 namespace OHOS {
 namespace AppPackingTool {
 
+// 去重算法选择阈值：重复副本数量超过此值时使用贪心算法，否则使用精确算法
+constexpr size_t DEDUP_ALGORITHM_THRESHOLD = 20;
+
+// MD5哈希显示相关常量
+constexpr size_t MD5_HEX_WIDTH = 2;           // MD5十六进制宽度
+constexpr size_t MD5_DISPLAY_LENGTH = 8;      // MD5哈希显示长度（前N个字符）
+
 /**
  * @brief SO去重器
  *

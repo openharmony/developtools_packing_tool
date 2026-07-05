@@ -41,7 +41,7 @@ struct ModuleConfig {
     bool compressNativeLibs;
     bool extractNativeLibs;
     bool libIsolation;
-    std::string compileSdkType; // "HarmonyOS" 或 "OpenHarmony"
+    std::string compileSdkType; // SDK类型标识
 
     ModuleConfig() : stageModel(false), deviceTypesConfigured(false), deliveryWithInstall(false),
                      deliveryWithInstallPresent(false),

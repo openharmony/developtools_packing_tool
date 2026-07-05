@@ -68,6 +68,8 @@ private:
 }  // namespace AppPackingTool
 }  // namespace OHOS
 
+// Logging macro for deduplication operations
+// Note: Using macro instead of function to support stream interface with automatic line/file info
 #define LOG(level) OHOS::AppPackingTool::DedupLogStream(OHOS::AppPackingTool::DedupLogLevel::level)
 
 #endif  // DEVELOPTOOLS_PACKING_TOOL_APT_FRAMEWORKS_INCLUDE_DEDUP_DEDUP_LOG_H

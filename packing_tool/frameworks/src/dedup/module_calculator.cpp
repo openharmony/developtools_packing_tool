@@ -22,11 +22,14 @@
 namespace OHOS {
 namespace AppPackingTool {
 
-ModuleCalculator::ModuleCalculator() {}
-ModuleCalculator::~ModuleCalculator() {}
+ModuleCalculator::ModuleCalculator()
+{}
+ModuleCalculator::~ModuleCalculator()
+{}
 
 ModuleConfig ModuleCalculator::ExtractModuleConfig(
-    const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel) {
+    const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel)
+{
     ModuleConfig config;
 
     if (!moduleJson) {
@@ -43,48 +46,48 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(
             return config;
         }
         config.stageModel = true;
-        // 获取模块名
+        // Get module name
         std::string moduleName;
         if (moduleJson->GetStageModuleName(moduleName)) {
             config.moduleName = moduleName;
         }
 
-        // 获取模块类型
+        // Get module type
         std::string moduleType;
         if (moduleJson->GetStageModuleType(moduleType)) {
             config.moduleType = moduleType;
         }
 
-        // 获取设备类型列表
+        // Get device type list
         std::list<std::string> deviceTypeStrings;
         if (moduleJson->GetStageDeviceTypes(deviceTypeStrings)) {
             for (const auto& deviceTypeStr : deviceTypeStrings) {
                 config.deviceTypes.push_back(DeviceCalculator::StringToDeviceType(deviceTypeStr));
             }
-            // 移除过早判断，在处理完requiredDeviceFeatures后再判断
+            // Remove premature judgment, judge after processing requiredDeviceFeatures
         }
 
-        // 获取distributionFilter
+        // Get distributionFilter
         DistroFilter distroFilter;
         std::map<std::string, std::string> resourceMap;
         if (moduleJson->GetStageDistroFilter(distroFilter, resourceMap)) {
             config.distributionFilter = distroFilter.Dump();
         }
 
-        // 获取deliveryWithInstall
+        // Get deliveryWithInstall
         bool deliveryWithInstall = false;
         config.deliveryWithInstallPresent = moduleObj->Contains("deliveryWithInstall");
         if (moduleJson->GetDeliveryWithInstall(deliveryWithInstall)) {
             config.deliveryWithInstall = deliveryWithInstall;
         }
 
-        // 获取compressNativeLibs
+        // Get compressNativeLibs
         bool compressNativeLibs = false;
         if (moduleJson->GetStageCompressNativeLibs(compressNativeLibs)) {
             config.compressNativeLibs = compressNativeLibs;
         }
 
-        // 获取extractNativeLibs
+        // Get extractNativeLibs
         bool extractNativeLibs = false;
         if (moduleJson->GetStageExtractNativeLibs(extractNativeLibs)) {
             config.extractNativeLibs = extractNativeLibs;
@@ -110,16 +113,16 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(
             }
         }
 
-        // 在处理完所有设备类型（包括从requiredDeviceFeatures添加的）之后判断
+        // Judge after processing all device types (including those added from requiredDeviceFeatures)
         config.deviceTypesConfigured = !config.deviceTypes.empty();
 
-        // 获取compileSdkType
+        // Get compileSdkType
         std::string compileSdkType;
         if (moduleJson->GetStageCompileSdkType(compileSdkType)) {
             config.compileSdkType = compileSdkType;
         }
 
-        // 获取bundleType
+        // Get bundleType
         std::string bundleType;
         if (moduleJson->GetStageBundleType(bundleType)) {
             config.bundleType = bundleType;
@@ -138,7 +141,8 @@ bool ModuleCalculator::IsValidForDedup(const ModuleConfig& moduleConfig)
         moduleConfig.deviceTypesConfigured && moduleConfig.deliveryWithInstallPresent;
 }
 
-bool ModuleCalculator::SupportsDeviceType(const ModuleConfig& moduleConfig, DeviceType deviceType) {
+bool ModuleCalculator::SupportsDeviceType(const ModuleConfig& moduleConfig, DeviceType deviceType)
+{
     for (const auto& supportedType : moduleConfig.deviceTypes) {
         if (supportedType == deviceType) {
             return true;
@@ -148,31 +152,35 @@ bool ModuleCalculator::SupportsDeviceType(const ModuleConfig& moduleConfig, Devi
 }
 
 bool ModuleCalculator::MatchesDistributionFilter(const ModuleConfig& moduleConfig,
-                                                  const DeviceInstance& device) {
-    // 如果模块的distributionFilter为空，则匹配所有设备
+                                                 const DeviceInstance& device)
+{
+    // If module's distributionFilter is empty, match all devices
     if (moduleConfig.distributionFilter.empty()) {
         return true;
     }
 
-    // 如果设备的distributionFilter为空，则不匹配有distributionFilter的模块
+    // If device's distributionFilter is empty, don't match modules with distributionFilter
     if (device.distributionFilter.empty()) {
         return false;
     }
 
-    // 比较distributionFilter
+    // Compare distributionFilter
     return moduleConfig.distributionFilter == device.distributionFilter;
 }
 
-bool ModuleCalculator::HasEmptyRequireDeviceFeatures(const ModuleConfig& moduleConfig) {
+bool ModuleCalculator::HasEmptyRequireDeviceFeatures(const ModuleConfig& moduleConfig)
+{
     return moduleConfig.requireDeviceFeatures.empty();
 }
 
-bool ModuleCalculator::IsMandatoryModule(const ModuleConfig& moduleConfig, const DeviceInstance& device) {
-    // 必然安装模块判断条件：
-    // 1. deviceTypes 包含设备
+bool ModuleCalculator::IsMandatoryModule(const ModuleConfig& moduleConfig,
+                                         const DeviceInstance& device)
+{
+    // Mandatory module judgment conditions:
+    // 1. deviceTypes contains device
     // 2. deliveryWithInstall = true
-    // 3. distributionFilter 为空
-    // 4. requireDeviceFeatures 为空
+    // 3. distributionFilter is empty
+    // 4. requireDeviceFeatures is empty
 
     if (!SupportsDeviceType(moduleConfig, device.type)) {
         return false;
@@ -187,8 +195,8 @@ bool ModuleCalculator::IsMandatoryModule(const ModuleConfig& moduleConfig, const
 
 std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMandatoryModules(
     const std::vector<std::shared_ptr<ModuleJson>>& allModules,
-    const std::vector<DeviceInstance>& devices) {
-
+    const std::vector<DeviceInstance>& devices)
+{
     std::map<DeviceInstance, std::vector<std::string>> mandatoryModuleMap;
 
     if (allModules.empty() || devices.empty()) {
@@ -199,7 +207,7 @@ std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMa
     LOG(DEBUG) << "Calculating mandatory modules for " << devices.size() << " devices from "
               << allModules.size() << " modules";
 
-    // 为每个设备计算必然安装模块集合
+    // Calculate mandatory module set for each device
     for (const auto& device : devices) {
         std::vector<std::string> mandatoryModules;
 
@@ -208,10 +216,9 @@ std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMa
                 continue;
             }
 
-            // 提取模块配置
+            // Extract module configuration
             ModuleConfig config = ExtractModuleConfig(moduleJson);
-
-            // 判断是否为必然安装模块
+            // Check if module is mandatory
             if (IsMandatoryModule(config, device)) {
                 mandatoryModules.push_back(config.moduleName);
             }
@@ -224,6 +231,5 @@ std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMa
 
     return mandatoryModuleMap;
 }
-
 }  // namespace AppPackingTool
 }  // namespace OHOS

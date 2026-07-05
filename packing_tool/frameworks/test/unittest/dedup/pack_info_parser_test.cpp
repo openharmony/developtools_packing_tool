@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest/gtest.h>
+#include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
 #include <memory>
 #include "json/pack_info.h"
+
+using testing::ext::TestSize;
 
 class PackInfoParserTest : public testing::Test {
 protected:

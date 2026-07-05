@@ -183,14 +183,18 @@ final class SODeduplicator {
     private static List<ModuleRecord> extractModules(List<String> modulePaths, Path modulesRoot, Path repackedRoot)
             throws IOException, BundleException {
         List<ModuleRecord> modules = new ArrayList<>();
+        int index = 0;
         for (String modulePath : modulePaths) {
             Path source = Paths.get(modulePath);
             String fileName = source.getFileName().toString();
-            Path extractDir = modulesRoot.resolve(stripSuffix(fileName));
+            Path moduleRoot = modulesRoot.resolve(String.valueOf(index));
+            Path extractDir = moduleRoot.resolve(stripSuffix(fileName));
+            Path repackedPath = repackedRoot.resolve(String.valueOf(index)).resolve(fileName);
             Files.createDirectories(extractDir);
             unzip(source, extractDir);
             ModuleConfig config = readModuleConfig(extractDir);
-            modules.add(new ModuleRecord(modulePath, extractDir, repackedRoot.resolve(fileName), config));
+            modules.add(new ModuleRecord(modulePath, extractDir, repackedPath, config));
+            index++;
         }
         return modules;
     }

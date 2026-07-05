@@ -22,10 +22,13 @@
 namespace OHOS {
 namespace AppPackingTool {
 
-DeviceCalculator::DeviceCalculator() {}
-DeviceCalculator::~DeviceCalculator() {}
+DeviceCalculator::DeviceCalculator()
+{}
+DeviceCalculator::~DeviceCalculator()
+{}
 
-DeviceType DeviceCalculator::StringToDeviceType(const std::string& deviceTypeStr) {
+DeviceType DeviceCalculator::StringToDeviceType(const std::string& deviceTypeStr)
+{
     if (deviceTypeStr == "phone") {
         return DeviceType::PHONE;
     } else if (deviceTypeStr == "tablet") {
@@ -39,12 +42,13 @@ DeviceType DeviceCalculator::StringToDeviceType(const std::string& deviceTypeStr
     } else if (deviceTypeStr == "car") {
         return DeviceType::CAR;
     } else {
-        // 默认返回phone
+        // Default to phone
         return DeviceType::PHONE;
     }
 }
 
-std::string DeviceCalculator::DeviceTypeToString(DeviceType deviceType) {
+std::string DeviceCalculator::DeviceTypeToString(DeviceType deviceType)
+{
     switch (deviceType) {
         case DeviceType::PHONE:
             return "phone";
@@ -64,7 +68,8 @@ std::string DeviceCalculator::DeviceTypeToString(DeviceType deviceType) {
 }
 
 std::vector<DeviceInstance> DeviceCalculator::ExtractDevicesFromModule(
-    const std::shared_ptr<ModuleJson>& moduleJson) {
+    const std::shared_ptr<ModuleJson>& moduleJson)
+{
     std::vector<DeviceInstance> devices;
 
     if (!moduleJson) {
@@ -72,7 +77,7 @@ std::vector<DeviceInstance> DeviceCalculator::ExtractDevicesFromModule(
     }
 
     try {
-        // 获取设备类型列表
+        // Get device type list
         std::list<std::string> deviceTypeStrings;
         bool isStageModel = moduleJson->GetStageDeviceTypes(deviceTypeStrings);
         if (!isStageModel) {
@@ -83,26 +88,25 @@ std::vector<DeviceInstance> DeviceCalculator::ExtractDevicesFromModule(
             deviceTypeStrings.insert(deviceTypeStrings.end(), requiredDeviceTypes.begin(), requiredDeviceTypes.end());
         }
 
-        // 获取distributionFilter
+        // Get distributionFilter
         DistroFilter distroFilter;
-        std::map<std::string, std::string> resourceMap; // 空资源映射
+        std::map<std::string, std::string> resourceMap; // Empty resource mapping
         bool hasDistroFilter = moduleJson->GetStageDistroFilter(distroFilter, resourceMap);
 
-        // 为每个设备类型创建设备实例
+        // Create device instance for each device type
         for (const auto& deviceTypeStr : deviceTypeStrings) {
             DeviceInstance device;
             device.type = StringToDeviceType(deviceTypeStr);
 
-            // 如果有distributionFilter，添加到设备实例中
+            // If has distributionFilter, add to device instance
             if (hasDistroFilter && !distroFilter.IsEmpty()) {
                 device.distributionFilter = distroFilter.Dump();
             } else {
-                device.distributionFilter = ""; // 无distributionFilter
+                device.distributionFilter = ""; // No distributionFilter
             }
 
             devices.push_back(device);
         }
-
     } catch (const std::exception& e) {
         LOG(ERROR) << FormatDedupError("Extract devices from module failed: " + std::string(e.what()));
     }
@@ -112,7 +116,8 @@ std::vector<DeviceInstance> DeviceCalculator::ExtractDevicesFromModule(
 
 std::vector<DeviceInstance> DeviceCalculator::MergeDevices(
     const std::vector<DeviceInstance>& devices1,
-    const std::vector<DeviceInstance>& devices2) {
+    const std::vector<DeviceInstance>& devices2)
+{
     std::vector<DeviceInstance> merged = devices1;
 
     for (const auto& device : devices2) {
@@ -134,7 +139,8 @@ std::vector<DeviceInstance> DeviceCalculator::MergeDevices(
 }
 
 std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
-    const std::vector<std::shared_ptr<ModuleJson>>& entryModules) {
+    const std::vector<std::shared_ptr<ModuleJson>>& entryModules)
+{
     std::vector<DeviceInstance> allDevices;
 
     if (entryModules.empty()) {
@@ -144,7 +150,7 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
 
     LOG(DEBUG) << "Calculating devices from " << entryModules.size() << " entry modules";
 
-    // 遍历所有entry模块，收集设备实例
+    // Traverse all entry modules, collect device instances
     for (const auto& entryModule : entryModules) {
         if (!entryModule) {
             continue;
@@ -157,13 +163,13 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
             continue;
         }
 
-        // 合并设备实例
+        // Merge device instances
         allDevices = MergeDevices(allDevices, moduleDevices);
     }
 
     LOG(DEBUG) << "Calculated " << allDevices.size() << " unique device instances";
 
-    // 输出设备列表用于调试
+    // Output device list for debugging
     for (const auto& device : allDevices) {
         std::string deviceStr = DeviceTypeToString(device.type);
         if (!device.distributionFilter.empty()) {
@@ -174,6 +180,5 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
 
     return allDevices;
 }
-
 }  // namespace AppPackingTool
 }  // namespace OHOS

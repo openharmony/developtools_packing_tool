@@ -13,16 +13,19 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest/gtest.h>
+#include <gtest/gtest.h>
 #include <memory>
 #include "dedup/device_calculator.h"
 #include "json/module_json.h"
 
+using testing::ext::TestSize;
+
 // 测试辅助函数：创建模拟的entry模块
 std::shared_ptr<OHOS::AppPackingTool::ModuleJson> CreateMockEntryModule(
     const std::vector<std::string>& deviceTypes,
-    const std::string& distributionFilter = "") {
-
+    const std::string& distributionFilter = "")
+{
+    (void)distributionFilter;
     // 创建包含deviceTypes的module.json字符串
     std::string jsonStr = R"({
         "app": {

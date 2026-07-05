@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest/gtest.h>
+#include <gtest/gtest.h>
 #include <algorithm>
 #include <memory>
 #include "dedup/module_calculator.h"
 #include "dedup/device_calculator.h"
 #include "json/module_json.h"
+
+using testing::ext::TestSize;
 
 // 测试辅助函数：创建模拟模块
 std::shared_ptr<OHOS::AppPackingTool::ModuleJson> CreateMockModule(
@@ -27,22 +29,15 @@ std::shared_ptr<OHOS::AppPackingTool::ModuleJson> CreateMockModule(
     const std::vector<std::string>& deviceTypes,
     bool deliveryWithInstall = true,
     const std::string& distributionFilter = "",
-    const std::string& compileSdkType = "HarmonyOS") {
-
-    std::string jsonStr = R"({
-        "app": {
-            "bundleName": "com.example.app",
-            "bundleType": "app")";
+    const std::string& compileSdkType = "OpenHarmony")
+{
+    (void)distributionFilter;
+    std::string jsonStr = R"({"app":{"bundleName":"com.example.app","bundleType":"app")";
     if (!compileSdkType.empty()) {
-        jsonStr += R"(,
-            "compileSdkType": ")" + compileSdkType + R"(")";
+        jsonStr += R"(,"compileSdkType":")" + compileSdkType + "\"";
     }
-    jsonStr += R"(
-        },
-        "module": {
-            "name": ")" + moduleName + R"(",
-            "type": ")" + moduleType + R"(",
-            "deviceTypes": [)";
+    jsonStr += R"(},"module":{"name":")" + moduleName +
+        R"(","type":")" + moduleType + R"(","deviceTypes":[)";
 
     // 添加设备类型
     for (size_t i = 0; i < deviceTypes.size(); ++i) {
@@ -52,13 +47,9 @@ std::shared_ptr<OHOS::AppPackingTool::ModuleJson> CreateMockModule(
         }
     }
 
-    jsonStr += R"(],
-            "deliveryWithInstall": )";
-    jsonStr += deliveryWithInstall ? "true" : "false";
-
-    jsonStr += R"(
-        }
-    })";
+    jsonStr += R"(],"deliveryWithInstall":)";
+    jsonStr += (deliveryWithInstall ? "true" : "false");
+    jsonStr += "}}";
 
     auto moduleJson = std::make_shared<OHOS::AppPackingTool::ModuleJson>();
     if (moduleJson->ParseFromString(jsonStr)) {
@@ -347,7 +338,7 @@ HWTEST_F(ModuleCalculatorTest, BundleType_MissingDefaultsToApp, TestSize.Level0)
     const std::string jsonStr = R"({
         "app": {
             "bundleName": "com.example.app",
-            "compileSdkType": "HarmonyOS"
+            "compileSdkType": "OpenHarmony"
         },
         "module": {
             "name": "entry",
@@ -374,14 +365,14 @@ HWTEST_F(ModuleCalculatorTest, FaModel_IsExcludedFromDedup, TestSize.Level0)
     EXPECT_FALSE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
 }
 
-// 测试10：compileSdkType为HarmonyOS时允许去重
-HWTEST_F(ModuleCalculatorTest, CompileSdkType_HarmonyOS_Allowed, TestSize.Level0) {
-    auto module = CreateMockModule("entry", "entry", {"phone"}, true, "", "HarmonyOS");
+// 测试10：compileSdkType为OpenHarmony时允许去重
+HWTEST_F(ModuleCalculatorTest, CompileSdkType_OpenHarmony_Allowed, TestSize.Level0) {
+    auto module = CreateMockModule("entry", "entry", {"phone"}, true, "", "OpenHarmony");
     ASSERT_NE(module, nullptr);
 
     auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module);
-    EXPECT_EQ(config.compileSdkType, "HarmonyOS");
-    // compileSdkType为HarmonyOS不影响去重资格验证
+    EXPECT_EQ(config.compileSdkType, "OpenHarmony");
+    // compileSdkType为OpenHarmony不影响去重资格验证
     EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
 }
 

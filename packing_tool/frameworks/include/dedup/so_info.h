@@ -32,11 +32,13 @@ struct SoInfo {
     std::string sourceModule; // 来源模块名
     int64_t fileSize;         // 文件大小（字节）
 
-    bool operator==(const SoInfo& other) const {
+    bool operator==(const SoInfo& other) const
+    {
         return relativePath == other.relativePath && md5 == other.md5;
     }
 
-    bool operator<(const SoInfo& other) const {
+    bool operator<(const SoInfo& other) const
+    {
         if (relativePath != other.relativePath) {
             return relativePath < other.relativePath;
         }
@@ -51,7 +53,8 @@ struct DuplicateSoGroup {
     std::vector<SoInfo> soList;       // 包含的SO列表
 
     // 获取该重复SO组涉及的所有模块名
-    std::set<std::string> GetInvolvedModules() const {
+    std::set<std::string> GetInvolvedModules() const
+    {
         std::set<std::string> modules;
         for (const auto& so : soList) {
             modules.insert(so.sourceModule);
@@ -74,17 +77,20 @@ struct DedupPlan {
     DedupPlan() : totalSavedSize(0) {}
 
     // 添加保留的SO
-    void AddKeptSo(const std::string& moduleName, const std::string& soPath) {
+    void AddKeptSo(const std::string& moduleName, const std::string& soPath)
+    {
         keptSoMap[moduleName].push_back(soPath);
     }
 
     // 添加移除的SO
-    void AddRemovedSo(const std::string& moduleName, const std::string& soPath, int64_t fileSize) {
+    void AddRemovedSo(const std::string& moduleName, const std::string& soPath, int64_t fileSize)
+    {
         removedSoMap[moduleName].push_back(soPath);
         totalSavedSize += fileSize;
     }
 
-    void Merge(const DedupPlan& other) {
+    void Merge(const DedupPlan& other)
+    {
         for (const auto& [moduleName, soPaths] : other.keptSoMap) {
             auto& targetPaths = keptSoMap[moduleName];
             targetPaths.insert(targetPaths.end(), soPaths.begin(), soPaths.end());
@@ -105,7 +111,8 @@ enum class DedupStrategy {
     MIXED
 };
 
-inline DedupStrategy ResolveDedupStrategy(bool usedExact, bool usedGreedy) {
+inline DedupStrategy ResolveDedupStrategy(bool usedExact, bool usedGreedy)
+{
     if (usedExact && usedGreedy) {
         return DedupStrategy::MIXED;
     }

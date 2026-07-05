@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest/gtest.h>
+#include <gtest/gtest.h>
 #include <fstream>
 #include <filesystem>
 #include "dedup/report_generator.h"
+
+using testing::ext::TestSize;
 
 class ReportGeneratorTest : public testing::Test {
 protected:
@@ -29,17 +31,20 @@ protected:
     void CleanTestOutputDir();
 };
 
-void ReportGeneratorTest::SetUp() {
+void ReportGeneratorTest::SetUp()
+{
     // 设置测试输出目录
     testOutputDir_ = "test_output_reports";
     CleanTestOutputDir();
 }
 
-void ReportGeneratorTest::TearDown() {
+void ReportGeneratorTest::TearDown()
+{
     CleanTestOutputDir();
 }
 
-void ReportGeneratorTest::CleanTestOutputDir() {
+void ReportGeneratorTest::CleanTestOutputDir()
+{
     if (std::filesystem::exists(testOutputDir_)) {
         try {
             std::filesystem::remove_all(testOutputDir_);
@@ -48,7 +53,6 @@ void ReportGeneratorTest::CleanTestOutputDir() {
         }
     }
 }
-
 // 测试1：生成空去重方案的报告
 HWTEST_F(ReportGeneratorTest, GenerateReport_EmptyPlan, TestSize.Level0) {
     OHOS::AppPackingTool::DedupPlan emptyPlan;

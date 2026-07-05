@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest/gtest.h>
+#include <gtest/gtest.h>
 #include "dedup/exact_solver.h"
 #include "dedup/dedup_error.h"
 #include "dedup/device_calculator.h"
+
+using testing::ext::TestSize;
 
 class ExactSolverTest : public testing::Test {
 protected:

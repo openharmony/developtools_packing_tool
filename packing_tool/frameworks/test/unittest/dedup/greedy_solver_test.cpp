@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest/gtest.h>
+#include <gtest/gtest.h>
 #include "dedup/greedy_solver.h"
 #include "dedup/device_calculator.h"
+
+using testing::ext::TestSize;
 
 class GreedySolverTest : public testing::Test {
 protected:
