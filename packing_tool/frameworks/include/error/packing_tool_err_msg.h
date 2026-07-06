@@ -189,6 +189,9 @@ public:
     // ==================== SO file scanning errors (Type: 20) ====================
     static const ErrorMsg SCAN_SO_FILES_EXCEPTION;
 
+    // ==================== SO deduplication errors (Type: 21) ====================
+    static const ErrorMsg SO_DEDUPLICATION_FAILED;
+
 private:
     PackingToolErrMsg() = delete;
 };

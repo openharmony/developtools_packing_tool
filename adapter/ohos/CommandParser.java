@@ -35,6 +35,8 @@ public class CommandParser {
      */
     public static final String PARSE_MODE_HAPINFO = "hap-info";
 
+    public static final String CMD_DEDUPLICATE_SO = "--deduplicate-so";
+
     private static final String CMD_MODE = "--mode";
     private static final String CMD_JSON_PATH = "--json-path";
     private static final String CMD_PROFILE_PATH = "--profile-path";
@@ -247,6 +249,11 @@ public class CommandParser {
         commandFuncs.put(CMD_FORCE, entry -> {
             entry.getKey().setForceRewrite(entry.getValue());
             return true;
+        });
+        commandFuncs.put(CMD_DEDUPLICATE_SO, entry -> {
+            String value = entry.getValue();
+            entry.getKey().setDeduplicateSo(value);
+            return Boolean.TRUE.toString().equals(value) || Boolean.FALSE.toString().equals(value);
         });
         commandFuncs.put(CMD_OUT_PATH, entry -> {
             entry.getKey().setOutPath(entry.getValue());

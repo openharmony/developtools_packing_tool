@@ -25,6 +25,7 @@ import java.util.Map;
  *
  */
 class ModuleAppInfo {
+    boolean deduplicateSo = false;
     private final Integer DEFAULT_VERSION_CODE = -1;
     private final String RELEASE = "Release";
     private final String UNSPECIFIED = "unspecified";

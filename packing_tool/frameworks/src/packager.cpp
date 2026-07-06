@@ -122,6 +122,18 @@ bool Packager::CheckStatDuplicateFlag()
     return true;
 }
 
+bool Packager::CheckDeduplicateSoFlag()
+{
+    auto it = parameterMap_.find(Constants::PARAM_DEDUPLICATE_SO);
+    if (it != parameterMap_.end() && it->second != Constants::FALSE_STRING &&
+        it->second != Constants::TRUE_STRING) {
+        LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
+            "--deduplicate-so is invalid, must be 'true' or 'false'.").c_str());
+        return false;
+    }
+    return true;
+}
+
 bool Packager::IsPathValid(const std::string &path, const bool &isFile, const std::string suffix)
 {
     try {

@@ -68,6 +68,8 @@ const std::string EXTENSION_ABILITIES = "extensionAbilities";
 const std::string INSTALLATION_FREE = "installationFree";
 const std::string COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 const std::string EXTRACT_NATIVE_LIBS = "extractNativeLibs";
+const std::string LIB_ISOLATION = "libIsolation";
+const std::string REQUIRED_DEVICE_FEATURES = "requiredDeviceFeatures";
 const std::string EXECUTABLE_BINARY_PATHS = "executableBinaryPaths";
 const std::string ASAN_ENABLED = "asanEnabled";
 const std::string TSAN_ENABLED = "tsanEnabled";
@@ -1150,6 +1152,66 @@ bool ModuleJson::GetStageExtractNativeLibsByAppObj(std::unique_ptr<PtJson>& modu
         }
     } else {
         extractNativeLibs = true;  // default value is true
+    }
+    return true;
+}
+
+bool ModuleJson::GetStageLibIsolation(bool& libIsolation)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        return false;
+    }
+    if (!moduleObj->Contains(LIB_ISOLATION.c_str())) {
+        libIsolation = false;
+        return true;
+    }
+    if (moduleObj->GetBool(LIB_ISOLATION.c_str(), &libIsolation) != Result::SUCCESS) {
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            std::string("Module node get ") + LIB_ISOLATION + " failed!").c_str());
+        return false;
+    }
+    return true;
+}
+
+bool ModuleJson::GetStageHasRequiredDeviceFeatures(bool& hasRequiredDeviceFeatures)
+{
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj)) {
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("GetModuleObject failed!").c_str());
+        return false;
+    }
+    if (!moduleObj->Contains(REQUIRED_DEVICE_FEATURES.c_str())) {
+        hasRequiredDeviceFeatures = false;
+        return true;
+    }
+    std::unique_ptr<PtJson> featuresObj;
+    if (moduleObj->GetAny(REQUIRED_DEVICE_FEATURES.c_str(), &featuresObj) != Result::SUCCESS || !featuresObj) {
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            std::string("Module node get ") + REQUIRED_DEVICE_FEATURES + " failed!").c_str());
+        return false;
+    }
+    hasRequiredDeviceFeatures = featuresObj->GetSize() > 0;
+    return true;
+}
+
+bool ModuleJson::GetStageRequiredDeviceFeatureTypes(std::list<std::string>& deviceTypes)
+{
+    deviceTypes.clear();
+    std::unique_ptr<PtJson> moduleObj;
+    if (!GetModuleObject(moduleObj) || !moduleObj->Contains(REQUIRED_DEVICE_FEATURES.c_str())) {
+        return true;
+    }
+    std::unique_ptr<PtJson> featuresObj;
+    if (moduleObj->GetAny(REQUIRED_DEVICE_FEATURES.c_str(), &featuresObj) != Result::SUCCESS || !featuresObj) {
+        return false;
+    }
+    for (int32_t index = 0; index < featuresObj->GetSize(); ++index) {
+        std::unique_ptr<PtJson> feature = featuresObj->Get(index);
+        if (feature && feature->IsArray() && feature->GetSize() > 0) {
+            deviceTypes.push_back(feature->GetKey());
+        }
     }
     return true;
 }

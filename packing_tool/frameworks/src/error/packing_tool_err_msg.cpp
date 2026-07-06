@@ -804,5 +804,13 @@ const ErrorMsg PackingToolErrMsg::SCAN_SO_FILES_EXCEPTION =
     BuildPackingToolError("20", "001",
         "Scan so files exception.", "%s");
 
+// ==================== SO deduplication errors (Type: 21) ====================
+const ErrorMsg PackingToolErrMsg::SO_DEDUPLICATION_FAILED =
+    BuildPackingToolError("21", "001",
+        "SO deduplication failed.", "%s",
+        {
+            "Please check the SO deduplication error details and input module configuration.",
+        });
+
 } // namespace error
 } // namespace packing_tool

@@ -47,4 +47,9 @@ public class PackInfo {
      * Indicates the deliveryWithInstall of PackInfo.
      */
     public boolean deliveryWithInstall = false;
+
+    /**
+     * Indicates whether SO deduplication is enabled in pack.info.
+     */
+    public boolean deduplicateSo = false;
 }

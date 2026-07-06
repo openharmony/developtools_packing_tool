@@ -56,6 +56,7 @@ const std::string COMPATIBLE = "compatible";
 const std::string RELEASE_TYPE = "releaseType";
 const std::string TARGET = "target";
 const std::string API_VERSION = "apiVersion";
+const std::string DEDUPLICATE_SO = "deduplicateSo";
 }
 
 bool PackInfo::ParseFromString(const std::string& jsonString)
@@ -1094,6 +1095,44 @@ bool PackInfo::SetDeviceTypes(const std::list<std::string>& deviceTypes)
                 std::string("Module node set ") + DEVICE_TYPE + " failed!").c_str());
             return false;
         }
+    }
+    return true;
+}
+
+bool PackInfo::GetDeduplicateSo(bool& deduplicateSo)
+{
+    if (root_ == nullptr) {
+        LOGE("Failed to get root object for deduplicateSo");
+        return false;
+    }
+    // deduplicateSo is defined in summary.app.
+    std::unique_ptr<PtJson> appObj;
+    if (!GetAppObject(appObj)) {
+        LOGI("deduplicateSo field not found in pack.info");
+        return false;
+    }
+
+    if (!appObj->Contains(DEDUPLICATE_SO.c_str())) {
+        LOGI("deduplicateSo field not found in pack.info");
+        return false;
+    }
+
+    Result result = appObj->GetBool(DEDUPLICATE_SO.c_str(), &deduplicateSo);
+    if (result != Result::SUCCESS) {
+        LOGE("Failed to get deduplicateSo value");
+        return false;
+    }
+
+    LOGI("Successfully parsed deduplicateSo: %s", deduplicateSo ? "true" : "false");
+    return true;
+}
+
+bool PackInfo::GetDeduplicateSoWithDefault(bool& deduplicateSo, bool defaultValue)
+{
+    if (!GetDeduplicateSo(deduplicateSo)) {
+        LOGI("Using default value for deduplicateSo: %s", defaultValue ? "true" : "false");
+        deduplicateSo = defaultValue;
+        return true;
     }
     return true;
 }

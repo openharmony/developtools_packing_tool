@@ -1542,4 +1542,15 @@ public class PackingToolErrMsg {
             .setDescription("Scan so files exception.")
             .setCause("%s")
             .build();
+
+    /**
+     * SO_DEDUPLICATION_FAILED
+     */
+    public static final ErrorMsg SO_DEDUPLICATION_FAILED = ErrorMsg.getPackingToolErrBuilder()
+            .setTypeCode("21")
+            .setErrCode("001")
+            .setDescription("SO deduplication failed.")
+            .setCause("%s")
+            .addSolution("Please check the SO deduplication error details and input module configuration.")
+            .build();
 }

@@ -21,6 +21,7 @@
 #include "json/module_json.h"
 #include "json/module_json_utils.h"
 #include "json/pack_info_utils.h"
+#include "dedup/so_deduplicator.h"
 #include "log.h"
 #include "utils.h"
 #include "zip_utils.h"
@@ -184,6 +185,9 @@ int32_t MultiAppPackager::PreProcess()
         return ERR_INVALID_VALUE;
     }
     if (!CheckStatDuplicateFlag()) {
+        return ERR_INVALID_VALUE;
+    }
+    if (!CheckDeduplicateSoFlag()) {
         return ERR_INVALID_VALUE;
     }
     bool ret = IsVerifyValidInMultiAppMode();
@@ -608,6 +612,15 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         finalPackInfoPath)) {
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_MODE_FORMULTI_PROJECT_FAILED.toStringWithArgs(
             "CompressAppModeForMultiProject PrepareFilesForCompression failed.").c_str());
+        return false;
+    }
+    SODeduplicator soDeduplicator;
+    bool deduplicateSo = parameterMap_.find(Constants::PARAM_DEDUPLICATE_SO) != parameterMap_.end() &&
+        parameterMap_.at(Constants::PARAM_DEDUPLICATE_SO) == Constants::TRUE_STRING;
+    std::string reportDir = fs::path(parameterMap_.at(Constants::PARAM_OUT_PATH)).parent_path().string();
+    if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tempHapDirPath.string(), reportDir)) {
+        LOGE("%s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
+            soDeduplicator.GetErrorMessage()).c_str());
         return false;
     }
     if (!ModuleJsonUtils::CheckHapsIsValid(fileList, false)) {

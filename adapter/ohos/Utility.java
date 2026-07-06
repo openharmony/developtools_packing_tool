@@ -68,6 +68,7 @@ public class Utility {
     private String certificatePath = "";
     private String signaturePath = "";
     private String forceRewrite = "false";
+    private String deduplicateSo = "false";
     private String outPath = "";
     private String packInfoPath = "";
     private String replacePackInfo = "";
@@ -421,6 +422,20 @@ public class Utility {
     public void setForceRewrite(String forceRewrite) {
         if (!forceRewrite.startsWith(CMD_PREFIX)) {
             this.forceRewrite = forceRewrite.toLowerCase(Locale.ENGLISH);
+        }
+    }
+
+    public boolean isDeduplicateSo() {
+        return Boolean.parseBoolean(deduplicateSo);
+    }
+
+    public String getDeduplicateSo() {
+        return deduplicateSo;
+    }
+
+    public void setDeduplicateSo(String deduplicateSo) {
+        if (!deduplicateSo.startsWith(CMD_PREFIX)) {
+            this.deduplicateSo = deduplicateSo;
         }
     }
 

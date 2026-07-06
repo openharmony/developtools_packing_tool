@@ -19,6 +19,7 @@ config("ohos_packing_tool_config") {
     "include",
     "include/json",
     "include/error",
+    "include/dedup",
   ]
 
   cflags_cc = [
@@ -44,6 +45,12 @@ ohos_executable("ohos_packing_tool") {
   sources = [
     "src/app_packager.cpp",
     "src/appqf_packager.cpp",
+    "src/dedup/device_calculator.cpp",
+    "src/dedup/exact_solver.cpp",
+    "src/dedup/greedy_solver.cpp",
+    "src/dedup/module_calculator.cpp",
+    "src/dedup/report_generator.cpp",
+    "src/dedup/so_deduplicator.cpp",
     "src/error/error_msg.cpp",
     "src/error/packing_tool_err_msg.cpp",
     "src/error/scan_error_enum.cpp",

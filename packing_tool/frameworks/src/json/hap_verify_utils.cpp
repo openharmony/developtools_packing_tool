@@ -693,7 +693,6 @@ bool HapVerifyUtils::CheckApiVersionCovered(const ApiVersion& apiVersion, const 
     std::set<std::string> excludeSet;
     for (auto& hapVerifyInfo : entryHaps) {
         if (hapVerifyInfo.GetDistroFilter().IsEmpty() || hapVerifyInfo.GetDistroFilter().apiVersion.IsEmpty()) {
-            LOGW("distro filter is empty or apiVersion is empty.");
             return true;
         }
         if (hapVerifyInfo.GetDistroFilter().apiVersion.policy.empty()) {
@@ -724,7 +723,6 @@ bool HapVerifyUtils::CheckScreenShapeCovered(const ScreenShape& screenShape, con
     std::set<std::string> excludeSet;
     for (HapVerifyInfo hapVerifyInfo : entryHaps) {
         if (hapVerifyInfo.GetDistroFilter().IsEmpty() || hapVerifyInfo.GetDistroFilter().screenShape.IsEmpty()) {
-            LOGW("distro filter is empty or screenShape is empty.");
             return true;
         }
         if (hapVerifyInfo.GetDistroFilter().screenShape.policy.empty()) {
@@ -756,7 +754,6 @@ bool HapVerifyUtils::CheckScreenWindowCovered(const ScreenWindow& screenWindow,
     std::set<std::string> excludeSet;
     for (HapVerifyInfo hapVerifyInfo : entryHaps) {
         if (hapVerifyInfo.GetDistroFilter().IsEmpty() || hapVerifyInfo.GetDistroFilter().screenWindow.IsEmpty()) {
-            LOGW("distro filter is empty or screenWindow is empty.");
             return true;
         }
         if (hapVerifyInfo.GetDistroFilter().screenWindow.policy.empty()) {
@@ -788,7 +785,6 @@ bool HapVerifyUtils::CheckScreenDensityCovered(const ScreenDensity& screenDensit
     std::set<std::string> excludeSet;
     for (HapVerifyInfo hapVerifyInfo : entryHaps) {
         if (hapVerifyInfo.GetDistroFilter().IsEmpty() || hapVerifyInfo.GetDistroFilter().screenDensity.IsEmpty()) {
-            LOGW("distro filter is empty or screenDensity is empty.");
             return true;
         }
         if (hapVerifyInfo.GetDistroFilter().screenDensity.policy.empty()) {
@@ -819,7 +815,6 @@ bool HapVerifyUtils::CheckCountryCodeCovered(const CountryCode& countryCode, con
     std::set<std::string> excludeSet;
     for (HapVerifyInfo hapVerifyInfo : entryHaps) {
         if (hapVerifyInfo.GetDistroFilter().IsEmpty() || hapVerifyInfo.GetDistroFilter().countryCode.IsEmpty()) {
-            LOGW("distro filter is empty or countryCode is empty.");
             return true;
         }
         if (hapVerifyInfo.GetDistroFilter().countryCode.policy.empty()) {

@@ -31,6 +31,12 @@ ohos_unittest("app_packager_test") {
   module_out_path = module_output_path
   public_configs = [ ":app_packager_test_config" ]
   sources = [
+    "../../../src/dedup/device_calculator.cpp",
+    "../../../src/dedup/exact_solver.cpp",
+    "../../../src/dedup/greedy_solver.cpp",
+    "../../../src/dedup/module_calculator.cpp",
+    "../../../src/dedup/report_generator.cpp",
+    "../../../src/dedup/so_deduplicator.cpp",
     "../../../src/error/error_msg.cpp",
     "../../../src/error/packing_tool_err_msg.cpp",
     "../../../src/error/scan_error_enum.cpp",
