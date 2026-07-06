@@ -1,0 +1,90 @@
+{
+    "title": "ShareFiles schema for share_files.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["share_files"],
+    "propertyNames": {
+        "enum": ["share_files"]
+    },
+    "properties": {
+        "share_files": {
+            "description": "Configuration of shared file paths and permissions",
+            "type": "object",
+            "required": ["scopes"],
+            "propertyNames": {
+                "enum": ["scopes", "sharingOSPath", "sharingOSSubpath", "sharingOSPermission"]
+            },
+            "properties": {
+                "scopes": {
+                    "description": "List of shared file path scopes",
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                        "$ref": "#/definitions/scopeItem"
+                    }
+                },
+                "sharingOSPath": {
+                    "description": "Shared operating system path (optional)",
+                    "$ref": "#/definitions/sharingOSPath"
+                },
+                "sharingOSSubpath": {
+                    "description": "Shared operating system subpath (required when sharingOSPath is configured)",
+                    "$ref": "#/definitions/sharingOSSubpath"
+                },
+                "sharingOSPermission": {
+                    "description": "Shared operating system permission",
+                    "type": "string",
+                    "enum": ["r", "r+w"]
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "required": ["sharingOSPath"],
+                        "properties": {
+                            "sharingOSPath": { "type": "string" }
+                        }
+                    },
+                    "then": {
+                        "required": ["sharingOSSubpath"]
+                    }
+                }
+            ]
+        }
+    },
+    "definitions": {
+        "scopeItem": {
+            "description": "Single path scope item",
+            "type": "object",
+            "required": ["path", "permission"],
+            "propertyNames": {
+                "enum": ["path", "permission"]
+            },
+            "properties": {
+                "path": {
+                    "description": "File path, must be 2-10 levels deep",
+                    "type": "string",
+                    "pattern": "^/(?:el1|el2|el3|el4|el5)/(?:base|distributedfiles|cloud)(?:/[a-zA-Z0-9_-]+){0,8}$"
+                },
+                "permission": {
+                    "description": "Permission type",
+                    "type": "string",
+                    "enum": ["r", "r+w"]
+                }
+            }
+        },
+        "sharingOSPath": {
+            "description": "Shared operating system path",
+            "type": "string",
+            "pattern": "^/[a-zA-Z0-9_-]+(?:/[a-zA-Z0-9_-]+)*$"
+        },
+        "sharingOSSubpath": {
+            "description": "Shared operating system subpath",
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 32,
+            "pattern": "^$|^/[a-zA-Z0-9_-]+$"
+        }
+    }
+}

@@ -112,3 +112,8 @@ ohos_prebuilt_etc("agentCardSchema_json") {
   source = "agentCard.json"
   install_enable = false
 }
+
+ohos_prebuilt_etc("shareFilesSchema_json") {
+  source = "shareFiles.json"
+  install_enable = false
+}
