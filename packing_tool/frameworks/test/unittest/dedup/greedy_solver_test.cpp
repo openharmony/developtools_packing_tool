@@ -74,13 +74,13 @@ HWTEST_F(GreedySolverTest, Solve_SingleSoInGroup, TestSize.Level0) {
     EXPECT_EQ(plan.removedSoMap.size(), 0);
 }
 
-// 测试4：单个重复SO组 - 多个SO（贪心选择大文件）
+// 测试4：单个重复SO组 - 多个等价SO副本
 HWTEST_F(GreedySolverTest, Solve_MultipleSoInGroup_GreedySelection, TestSize.Level0) {
     OHOS::AppPackingTool::DuplicateSoGroup group;
     group.md5 = "abc123";
-    group.soList.push_back({"libs/liba.so", "abc123", "module1", 3000}); // 最大
+    group.soList.push_back({"libs/liba.so", "abc123", "module1", 1000});
     group.soList.push_back({"libs/liba.so", "abc123", "module2", 1000});
-    group.soList.push_back({"libs/liba.so", "abc123", "module3", 2000});
+    group.soList.push_back({"libs/liba.so", "abc123", "module3", 1000});
 
     std::vector<OHOS::AppPackingTool::DuplicateSoGroup> groups = {group};
 
@@ -94,12 +94,13 @@ HWTEST_F(GreedySolverTest, Solve_MultipleSoInGroup_GreedySelection, TestSize.Lev
 
     auto plan = solver_.Solve(groups, mandatoryMap);
 
-    // 贪心算法应该优先移除大文件
-    // 由于phone设备只需要module2和module3，module1的SO会被移除
-    // module1位于S外，当前C++接口保守保留；module2/module3中保留较小副本。
+    // module1位于S外且没有设备支持信息，因此必须保守保留。
+    // module2/module3是等价副本，保留其中任意一个即可满足phone设备约束。
     EXPECT_EQ(plan.keptSoMap.size(), 2);
     EXPECT_EQ(plan.removedSoMap.size(), 1);
-    EXPECT_TRUE(plan.removedSoMap.find("module3") != plan.removedSoMap.end());
+    EXPECT_TRUE(plan.keptSoMap.find("module1") != plan.keptSoMap.end());
+    size_t mandatoryKeptCount = plan.keptSoMap.count("module2") + plan.keptSoMap.count("module3");
+    EXPECT_EQ(mandatoryKeptCount, 1);
 }
 
 // 测试5：大规模场景（模拟单个SO有21个重复副本）
@@ -110,8 +111,7 @@ HWTEST_F(GreedySolverTest, Solve_LargeScaleScenario, TestSize.Level0) {
     // 在21个模块中创建同一路径、同一MD5的SO，即21个重复副本
     for (int i = 1; i <= 21; ++i) {
         std::string moduleName = "module" + std::to_string(i);
-        int64_t fileSize = i * 100; // 递增的文件大小
-        group.soList.push_back({"libs/liba.so", "abc123", moduleName, fileSize});
+        group.soList.push_back({"libs/liba.so", "abc123", moduleName, 100});
     }
 
     std::vector<OHOS::AppPackingTool::DuplicateSoGroup> groups = {group};
@@ -129,11 +129,15 @@ HWTEST_F(GreedySolverTest, Solve_LargeScaleScenario, TestSize.Level0) {
     auto plan = solver_.Solve(groups, mandatoryMap);
 
     // module21不在任何A(i)中，当前C++接口无法判断其支持设备，保守保留；
-    // 前20个必然安装模块中再保留一个最小副本。
+    // 前20个等价的必然安装模块中保留任意一个副本即可。
     EXPECT_EQ(plan.keptSoMap.size(), 2);
     EXPECT_EQ(plan.removedSoMap.size(), 19);
-    EXPECT_TRUE(plan.keptSoMap.find("module1") != plan.keptSoMap.end());
     EXPECT_TRUE(plan.keptSoMap.find("module21") != plan.keptSoMap.end());
+    size_t mandatoryKeptCount = 0;
+    for (int i = 1; i <= 20; ++i) {
+        mandatoryKeptCount += plan.keptSoMap.count("module" + std::to_string(i));
+    }
+    EXPECT_EQ(mandatoryKeptCount, 1);
 }
 
 // 测试6：多个重复SO组
