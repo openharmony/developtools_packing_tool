@@ -81,7 +81,7 @@ public class CompressEntrance {
      * @return Returns the string of sha-256 for hap.
      */
     public static String getHapSha256(String hapPath) {
-        if (!hapPath.endsWith(HAP_SUFFIX)) {
+        if (hapPath == null || hapPath.isEmpty() || !hapPath.endsWith(HAP_SUFFIX)) {
             LOG.error("input file is not a hap.");
             return EMPTY_STRING;
         }

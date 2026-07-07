@@ -34,4 +34,18 @@ public class BundleException extends Exception {
     public BundleException(String message) {
         super(message);
     }
+
+    /**
+     * constructor for BundleException.
+     */
+    public BundleException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * constructor for BundleException.
+     */
+    public BundleException(Throwable cause) {
+        super(cause);
+    }
 }

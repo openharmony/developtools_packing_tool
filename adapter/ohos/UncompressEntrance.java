@@ -305,11 +305,16 @@ public class UncompressEntrance {
      */
     public static UncompressResult parseApp(String appPath, ParseAppMode parseAppMode, String hapName) {
         UncompressResult compressResult = new UncompressResult();
+        if (parseAppMode == null) {
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp parseAppMode is null");
+            return compressResult;
+        }
         Utility utility = new Utility();
         utility.setAppPath(appPath);
         utility.setParseMode(parseAppMode.getType());
         utility.setDeviceType("");
-        utility.setHapName(hapName);
+        utility.setHapName(hapName == null ? "" : hapName);
         if (!UncompressVerify.isPathValid(utility.getAppPath(), true, APP_SUFFIX)) {
             LOG.error("UncompressEntrance::parseApp must input a app file!");
             compressResult.setResult(false);
@@ -343,10 +348,15 @@ public class UncompressEntrance {
             compressResult.setMessage("ParseApp input is null");
             return compressResult;
         }
+        if (parseAppMode == null) {
+            compressResult.setResult(false);
+            compressResult.setMessage("ParseApp parseAppMode is null");
+            return compressResult;
+        }
         Utility utility = new Utility();
         utility.setParseMode(parseAppMode.getType());
         utility.setDeviceType("");
-        utility.setHapName(hapName);
+        utility.setHapName(hapName == null ? "" : hapName);
         if (!UncompressVerify.isParseAppModeValid(utility.getParseMode(), utility.getHapName())) {
             compressResult.setResult(false);
             compressResult.setMessage("ParseApp verify failed");
@@ -372,6 +382,7 @@ public class UncompressEntrance {
             LOG.error("UncompressEntrance::parseHap must input a hap file!");
             compressResult.setResult(false);
             compressResult.setMessage("ParseHap hapPath is invalid");
+            return compressResult;
         }
 
         compressResult = Uncompress.uncompressHap(utility);
@@ -418,9 +429,10 @@ public class UncompressEntrance {
      */
     public static APPQFResult parseAPPQF(String appqfPath) {
         APPQFResult result = new APPQFResult();
-        if (!appqfPath.endsWith(APPQF_SUFFIX)) {
+        if (appqfPath == null || !appqfPath.endsWith(APPQF_SUFFIX)) {
             LOG.error("UncompressEntrance::parseAPPQF Error, input wrong type APPQF file!");
             result.setSuccess(false);
+            return result;
         }
         try {
             result.setHqfInfoList(Uncompress.parseAPPQFFile(appqfPath));
