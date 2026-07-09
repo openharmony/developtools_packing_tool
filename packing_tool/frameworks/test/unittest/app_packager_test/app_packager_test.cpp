@@ -859,7 +859,9 @@ HWTEST_F(AppPackagerTest, IsVerifyValidInAppMode_4600, Function | MediumTest | L
 HWTEST_F(AppPackagerTest, PrepareDirectoriesAndFiles_4700, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
 
     MockModuleJsonUtils::MockCheckHapsIsValid(true);
@@ -875,7 +877,9 @@ HWTEST_F(AppPackagerTest, PrepareDirectoriesAndFiles_4700, Function | MediumTest
 HWTEST_F(AppPackagerTest, PrepareDirectoriesAndFiles_4800, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
 
     EXPECT_FALSE(appPackager.PrepareDirectoriesAndFiles(OUT_PATH));
@@ -890,7 +894,9 @@ HWTEST_F(AppPackagerTest, PrepareDirectoriesAndFiles_4800, Function | MediumTest
 HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_4900, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
 
     auto tempPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
@@ -910,7 +916,9 @@ HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_4900, Function | MediumTest | L
 HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_5000, Function | MediumTest | Level1)
 {
     std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
+    };
     OHOS::AppPackingTool::AppPackager appPackager(parameterMap, resultReceiver);
 
     auto tempPath = fs::path(OUT_PATH).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
@@ -931,6 +939,7 @@ HWTEST_F(AppPackagerTest, CompressHapAndHspFiles_5100, Function | MediumTest | L
 {
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_HAP_PATH, HAP_PATH},
         {OHOS::AppPackingTool::Constants::PARAM_PACK_INFO_PATH, PACK_INFO_PATH},
     };
