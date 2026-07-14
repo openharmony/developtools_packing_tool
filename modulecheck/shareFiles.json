@@ -75,9 +75,9 @@
             }
         },
         "sharingOSPath": {
-            "description": "Shared operating system path",
+            "description": "Shared operating system path, must be 2-10 levels deep",
             "type": "string",
-            "pattern": "^/[a-zA-Z0-9_-]+(?:/[a-zA-Z0-9_-]+)*$"
+            "pattern": "^/(?:el1|el2|el3|el4|el5)/(?:base|distributedfiles|cloud)(?:/[a-zA-Z0-9_-]+){0,8}$"
         },
         "sharingOSSubpath": {
             "description": "Shared operating system subpath",
