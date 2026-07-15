@@ -224,6 +224,7 @@ VerifyCollection HapVerifyUtils::GetVerifyCollection(const HapVerifyInfo& baseIn
     verifyCollection.targetBundleName = baseInfo.GetTargetBundleName();
     verifyCollection.targetPriority = baseInfo.GetTargetPriority();
     verifyCollection.debug = baseInfo.IsDebug();
+    verifyCollection.supportMultiCard = baseInfo.IsSupportMultiCard();
     verifyCollection.moduleName = baseInfo.GetModuleName();
     verifyCollection.moduleType = baseInfo.GetModuleType();
     verifyCollection.multiAppMode = baseInfo.GetMultiAppMode();
@@ -358,6 +359,14 @@ bool HapVerifyUtils::AppFieldsIsSame(const VerifyCollection& verifyCollection, c
             std::vector<std::string>{
                 "The bundleType parameter values are different.",
                 "Check if the bundleType is the same in different modules."
+            }).c_str());
+        return false;
+    }
+    if (verifyCollection.supportMultiCard != hapVerifyInfo.IsSupportMultiCard()) {
+        LOGE("%s", PackingToolErrMsg::APP_FIELDS_DIFFERENT_ERROR.toStringWithArgs(
+            std::vector<std::string>{
+                "The isSupportMultiCard parameter values are different.",
+                "Check if the isSupportMultiCard is the same in different modules."
             }).c_str());
         return false;
     }

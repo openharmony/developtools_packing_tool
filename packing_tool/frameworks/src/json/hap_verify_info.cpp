@@ -305,6 +305,16 @@ void HapVerifyInfo::SetDebug(const bool& debug)
     debug_ = debug;
 }
 
+bool HapVerifyInfo::IsSupportMultiCard() const
+{
+    return supportMultiCard_;
+}
+
+void HapVerifyInfo::SetSupportMultiCard(bool supportMultiCard)
+{
+    supportMultiCard_ = supportMultiCard;
+}
+
 const std::string& HapVerifyInfo::GetCompileSdkVersion() const
 {
     return compileSdkVersion_;

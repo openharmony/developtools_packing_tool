@@ -517,6 +517,20 @@ HWTEST_F(HapVerifyInfoTest, SetDebug_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: SetSupportMultiCard_0100
+ * @tc.desc: SetSupportMultiCard.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyInfoTest, SetSupportMultiCard_0100, Function | MediumTest | Level1)
+{
+    bool supportMultiCard = true;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo;
+    hapVerifyInfo.SetSupportMultiCard(supportMultiCard);
+    EXPECT_EQ(hapVerifyInfo.IsSupportMultiCard(), supportMultiCard);
+}
+
+/*
  * @tc.name: SetCompileSdkVersion_0100
  * @tc.desc: SetCompileSdkVersion.
  * @tc.type: FUNC

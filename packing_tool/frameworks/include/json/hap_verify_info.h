@@ -91,6 +91,8 @@ public:
     void SetSumSizeLimit(const int32_t& sumSizeLimit);
     const bool& IsDebug() const;
     void SetDebug(const bool& debug);
+    bool IsSupportMultiCard() const;
+    void SetSupportMultiCard(bool supportMultiCard);
     const std::string& GetCompileSdkVersion() const;
     void SetCompileSdkVersion(const std::string& compileSdkVersion);
     const std::string& GetCompileSdkType() const;
@@ -140,6 +142,7 @@ private:
     int32_t notEntrySizeLimit_ = 2048;
     int32_t sumSizeLimit_ = 10240;
     bool debug_ = false;
+    bool supportMultiCard_ = false;
     std::string compileSdkVersion_ = "";
     std::string compileSdkType_ = "";
     std::list<std::string> proxyDataUris_;

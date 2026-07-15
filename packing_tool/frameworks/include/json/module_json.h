@@ -100,6 +100,7 @@ public:
     bool GetStageModuleTypeByModuleObj(std::unique_ptr<PtJson>& moduleObj, std::string& moduleType);
     bool GetStageDebug(bool& debug);
     bool GetStageDebugByAppObj(std::unique_ptr<PtJson>& appObj, bool& debug);
+    bool GetStageSupportMultiCardByAppObj(std::unique_ptr<PtJson>& appObj, bool& supportMultiCard);
     bool GetStageAsanEnabled(bool& asanEnabled);
     bool GetStageAsanEnabledByAppObj(std::unique_ptr<PtJson>& appObj, bool& asanEnabled);
     bool GetStageTsanEnabled(bool& tsanEnabled);
