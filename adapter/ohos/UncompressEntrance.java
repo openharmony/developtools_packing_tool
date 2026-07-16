@@ -210,6 +210,68 @@ public class UncompressEntrance {
         return true;
     }
 
+    /**
+     * Split a HAP by CPU ABI.
+     *
+     * @param hapPath Indicates the HAP path.
+     * @param outPath Indicates the output path.
+     * @param cpuAbis Indicates target CPU ABIs, separated by comma. If empty, all ABIs are split.
+     * @return Return the unpack result.
+     */
+    public static boolean unpackHapByCpuAbi(String hapPath, String outPath, String cpuAbis) {
+        return unpackByCpuAbi(Utility.MODE_HAP, hapPath, outPath, cpuAbis);
+    }
+
+    /**
+     * Split a HSP by CPU ABI.
+     *
+     * @param hspPath Indicates the HSP path.
+     * @param outPath Indicates the output path.
+     * @param cpuAbis Indicates target CPU ABIs, separated by comma. If empty, all ABIs are split.
+     * @return Return the unpack result.
+     */
+    public static boolean unpackHspByCpuAbi(String hspPath, String outPath, String cpuAbis) {
+        return unpackByCpuAbi(Utility.MODE_HSP, hspPath, outPath, cpuAbis);
+    }
+
+    private static boolean unpackByCpuAbi(String mode, String modulePath, String outPath, String cpuAbis) {
+        if (modulePath == null || modulePath.isEmpty()) {
+            LOG.error("UncompressEntrance::unpackByCpuAbi modulePath is invalid!");
+            return false;
+        }
+
+        if (outPath == null || outPath.isEmpty()) {
+            LOG.error("UncompressEntrance::unpackByCpuAbi outPath is invalid!");
+            return false;
+        }
+
+        Utility utility = new Utility();
+        utility.setMode(mode);
+        if (Utility.MODE_HAP.equals(mode)) {
+            utility.setHapPath(modulePath);
+        } else if (Utility.MODE_HSP.equals(mode)) {
+            utility.setHspPath(modulePath);
+        } else {
+            LOG.error("UncompressEntrance::unpackByCpuAbi mode is invalid!");
+            return false;
+        }
+        utility.setOutPath(outPath);
+        utility.setLibs("true");
+        utility.setCpuAbis(cpuAbis == null ? "" : cpuAbis);
+        utility.setForceRewrite("true");
+
+        if (!UncompressVerify.commandVerify(utility)) {
+            LOG.error("UncompressEntrance::unpackByCpuAbi verify failed");
+            return false;
+        }
+
+        if (!Uncompress.unpackageProcess(utility)) {
+            LOG.error("UncompressEntrance::unpackageProcess failed");
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Parse the app.
