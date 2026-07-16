@@ -151,6 +151,8 @@ class HapVerifyInfo {
 
     private boolean debug = false;
 
+    private boolean supportMultiCard = false;
+
     private String compileSdkVersion = "";
 
     private String compileSdkType = "";
@@ -553,6 +555,14 @@ class HapVerifyInfo {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    public boolean isSupportMultiCard() {
+        return supportMultiCard;
+    }
+
+    public void setSupportMultiCard(boolean supportMultiCard) {
+        this.supportMultiCard = supportMultiCard;
     }
 
     public String getCompileSdkVersion() {

@@ -519,6 +519,29 @@ HWTEST_F(HapVerifyUtilsTest, CheckAppFieldsIsSame_1000, Function | MediumTest | 
 }
 
 /*
+ * @tc.name: CheckAppFieldsIsSame_1100
+ * @tc.desc: CheckAppFieldsIsSame when isSupportMultiCard is different
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(HapVerifyUtilsTest, CheckAppFieldsIsSame_1100, Function | MediumTest | Level1)
+{
+    std::list<OHOS::AppPackingTool::HapVerifyInfo> hapVerifyInfos;
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo3;
+    hapVerifyInfo3.SetBundleName("test");
+    hapVerifyInfo3.SetBundleType("hap");
+    hapVerifyInfo3.SetSupportMultiCard(true);
+    hapVerifyInfos.push_back(hapVerifyInfo3);
+    OHOS::AppPackingTool::HapVerifyInfo hapVerifyInfo4;
+    hapVerifyInfo4.SetBundleName("test");
+    hapVerifyInfo4.SetBundleType("hap");
+    hapVerifyInfo4.SetSupportMultiCard(false);
+    hapVerifyInfos.push_back(hapVerifyInfo4);
+    OHOS::AppPackingTool::HapVerifyUtils utils;
+    EXPECT_FALSE(utils.CheckAppFieldsIsSame(hapVerifyInfos));
+}
+
+/*
  * @tc.name: CheckModuleNameIsValid_0100
  * @tc.desc: CheckModuleNameIsValid
  * @tc.type: FUNC

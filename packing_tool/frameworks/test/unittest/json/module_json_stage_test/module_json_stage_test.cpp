@@ -48,6 +48,14 @@ const std::string MODULE_JSON_TEST_STRING = "{"
     "}"
 "}";
 
+const std::string MODULE_JSON_SUPPORTMULTICARD_TEST_STRING = "{"
+    "\"app\": {"
+        "\"isSupportMultiCard\": true"
+    "},"
+    "\"module\": {"
+    "}"
+"}";
+
 const std::string MODULE_JSON_TEST_STRING_NOTHING = "{"
 "}";
 
@@ -1794,6 +1802,42 @@ HWTEST_F(ModuleJsonStageTest, GetStageDebugByAppObj_0200, Function | MediumTest 
     EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_VERSIONBYAPPOBJ_VERSIONCODE_TEST_STRING));
     EXPECT_FALSE(moduleJson.GetStageDebugByAppObj(appObj, debug));
     EXPECT_EQ(debug, true);
+}
+
+/*
+ * @tc.name: GetStageSupportMultiCardByAppObj_0100
+ * @tc.desc: test get stage isSupportMultiCard (field present, true)
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonStageTest, GetStageSupportMultiCardByAppObj_0100, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj;
+    moduleJson.Release();
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_SUPPORTMULTICARD_TEST_STRING));
+    moduleJson.GetAppObject(appObj);
+    bool supportMultiCard = false;
+    EXPECT_TRUE(moduleJson.GetStageSupportMultiCardByAppObj(appObj, supportMultiCard));
+    EXPECT_EQ(supportMultiCard, true);
+}
+
+/*
+ * @tc.name: GetStageSupportMultiCardByAppObj_0200
+ * @tc.desc: test get stage isSupportMultiCard (field absent, default false)
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonStageTest, GetStageSupportMultiCardByAppObj_0200, Function | MediumTest | Level1)
+{
+    OHOS::AppPackingTool::ModuleJson moduleJson;
+    std::unique_ptr<PtJson> appObj;
+    moduleJson.Release();
+    EXPECT_TRUE(moduleJson.ParseFromString(MODULE_JSON_STRING));
+    moduleJson.GetAppObject(appObj);
+    bool supportMultiCard = true;
+    EXPECT_TRUE(moduleJson.GetStageSupportMultiCardByAppObj(appObj, supportMultiCard));
+    EXPECT_EQ(supportMultiCard, false);
 }
 
 /*

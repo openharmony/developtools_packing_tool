@@ -38,6 +38,7 @@ const std::string MIN_API_VERSION = "minAPIVersion";
 const std::string TARGET_API_VERSION = "targetAPIVersion";
 const std::string API_RELEASE_TYPE = "apiReleaseType";
 const std::string DEBUG = "debug";
+const std::string IS_SUPPORT_MULTI_CARD = "isSupportMultiCard";
 const std::string COMPATIBLE = "compatible";
 const std::string RELEASE_TYPE = "releaseType";
 const std::string DELIVERY_WITH_INSTALL = "deliveryWithInstall";
@@ -604,6 +605,24 @@ bool ModuleJson::GetStageDebugByAppObj(std::unique_ptr<PtJson>& appObj, bool& de
     return true;
 }
 
+bool ModuleJson::GetStageSupportMultiCardByAppObj(std::unique_ptr<PtJson>& appObj, bool& supportMultiCard)
+{
+    if (!appObj) {
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs("App node is null!").c_str());
+        return false;
+    }
+    if (appObj->Contains(IS_SUPPORT_MULTI_CARD.c_str())) {
+        if (appObj->GetBool(IS_SUPPORT_MULTI_CARD.c_str(), &supportMultiCard) != Result::SUCCESS) {
+            LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+                std::string("App node get ") + IS_SUPPORT_MULTI_CARD + " failed!").c_str());
+            return false;
+        }
+    } else {
+        supportMultiCard = false;
+    }
+    return true;
+}
+
 // java: parseStageEntry / getDeviceTypesFromStageModule
 bool ModuleJson::GetStageEntry(std::list<std::string>& deviceTypes)
 {
@@ -999,6 +1018,12 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
             "GetStageDebugByAppObj failed!").c_str());
         return false;
     }
+    bool supportMultiCard = false;
+    if (!GetStageSupportMultiCardByAppObj(appObj, supportMultiCard)) {
+        LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
+            "GetStageSupportMultiCardByAppObj failed!").c_str());
+        return false;
+    }
     if (!GetMultiAppModeByAppObj(appObj, multiAppMode)) {
         LOGE("%s", PackingToolErrMsg::PARSE_STAGE_JSON_FAILED.toStringWithArgs(
             "GetMultiAppModeByAppObj failed!").c_str());
@@ -1015,6 +1040,7 @@ bool ModuleJson::SetStageHapVerifyInfoByAppObj(std::unique_ptr<PtJson>& appObj, 
     hapVerifyInfo.SetTargetBundleName(targetBundleName);
     hapVerifyInfo.SetTargetPriority(targetPriority);
     hapVerifyInfo.SetDebug(debug);
+    hapVerifyInfo.SetSupportMultiCard(supportMultiCard);
     hapVerifyInfo.SetMultiAppMode(multiAppMode);
     hapVerifyInfo.SetAssetAccessGroups(assetAccessGroups);
     return true;

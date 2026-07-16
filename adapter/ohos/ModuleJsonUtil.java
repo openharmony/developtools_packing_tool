@@ -100,6 +100,7 @@ class ModuleJsonUtil {
     private static final String TARGET_API_VERSION = "targetAPIVersion";
     private static final String API_RELEASE_TYPE = "apiReleaseType";
     private static final String DEBUG = "debug";
+    private static final String IS_SUPPORT_MULTI_CARD = "isSupportMultiCard";
     private static final String COMPATIBLE = "compatible";
     private static final String RELEASE_TYPE = "releaseType";
     private static final String TARGET = "target";
@@ -1034,6 +1035,7 @@ class ModuleJsonUtil {
         hapVerifyInfo.setTargetModuleName(parseTargetModuleName(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setTargetModulePriority(parseTargetModulePriority(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setDebug(getDebug(hapVerifyInfo.getProfileStr()));
+        hapVerifyInfo.setSupportMultiCard(getSupportMultiCard(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkType(getCompileSdkType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setCompileSdkVersion(getCompileSdkVersion(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setProxyDataUris(parseProxyDataUri(hapVerifyInfo.getProfileStr()));
@@ -1946,6 +1948,18 @@ class ModuleJsonUtil {
         JSONObject appObj = getAppObj(jsonString);
 
         return getJsonBooleanValue(appObj, DEBUG, false);
+    }
+
+    /**
+     * get isSupportMultiCard in module.json.
+     *
+     * @param jsonString is the file content of module.json
+     * @return the result
+     */
+    public static boolean getSupportMultiCard(String jsonString) throws BundleException {
+        JSONObject appObj = getAppObj(jsonString);
+
+        return getJsonBooleanValue(appObj, IS_SUPPORT_MULTI_CARD, false);
     }
 
     /**
