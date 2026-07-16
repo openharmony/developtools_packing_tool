@@ -139,7 +139,8 @@
             "appPreloadPhase",
             "buildVersion",
             "profileable",
-            "allowListenBundleChangedEvent"
+            "allowListenBundleChangedEvent",
+            "isSupportMultiCard"
           ]
         }
       },
@@ -198,7 +199,8 @@
               "startMode",
               "buildVersion",
               "profileable",
-              "allowListenBundleChangedEvent"
+              "allowListenBundleChangedEvent",
+              "isSupportMultiCard"
             ]
           }
         },
@@ -223,7 +225,8 @@
                 "description",
                 "minCompatibleVersionCode",
                 "minAPIVersion",
-                "targetAPIVersion"
+                "targetAPIVersion",
+                "isSupportMultiCard"
               ]
             }
           },
@@ -272,7 +275,8 @@
                 "cloudStructuredDataSyncEnabled",
                 "assetAccessGroups",
                 "startMode",
-                "buildVersion"
+                "buildVersion",
+                "isSupportMultiCard"
               ]
             }
           }
@@ -660,6 +664,11 @@
             "maxLength": 128,
             "pattern": "^[0-9a-zA-Z]+$"
           }
+        },
+        "isSupportMultiCard": {
+          "description": "Indicates whether the application supports multi card.",
+          "type": "boolean",
+          "default": false
         }
       }
     }
