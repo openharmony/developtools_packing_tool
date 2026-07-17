@@ -89,7 +89,7 @@ def compile_unpacking_tool(root_path, src_path, jar_output, out_path, big_versio
         'restool/ResourcesParserV2.java', 'restool/ResourcesParserFactory.java', 'ScreenDensity.java',
         'ScreenShape.java', 'ScreenWindow.java', 'Shortcut.java',
         'ShowHelp.java', 'SkillInfo.java', 'SkillProfileInfo.java', 'UncompressEntrance.java',
-        'Uncompress.java', 'UncompressResult.java', 'UncompressVerify.java',
+        'Uncompress.java', 'RawZipEntryCopier.java', 'UncompressResult.java', 'UncompressVerify.java',
         'UriInfo.java', 'UsedScene.java', 'Utility.java', 'Want.java', 'ProxyDataItem.java'
     ]
     compile_java = get_compile_str(src_path, java_sources)
@@ -210,13 +210,18 @@ def main():
     toolchain = tool_list[-1]
     toolchain += "_" + args.compileTarget
     
-    fastjson_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2mid/fastjson-2.0.57.jar')
-    fastjson2_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2/fastjson2-2.0.57.jar')
-    fastjson2ext_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/fastjson2ext/fastjson2-extension-2.0.57.jar')
-    compress_jar = os.path.join(root_dir, '../../prebuilts/packing_tool/compress/commons-compress-1.27.1.jar')
+    fastjson_jar = os.path.join(root_dir,
+        '../../prebuilts/packing_tool/fastjson2mid/fastjson-2.0.57.jar')
+    fastjson2_jar = os.path.join(root_dir,
+        '../../prebuilts/packing_tool/fastjson2/fastjson2-2.0.57.jar')
+    fastjson2ext_jar = os.path.join(root_dir,
+        '../../prebuilts/packing_tool/fastjson2ext/fastjson2-extension-2.0.57.jar')
+    compress_jar = os.path.join(root_dir,
+        '../../prebuilts/packing_tool/compress/commons-compress-1.27.1.jar')
     io_jar = os.path.join(root_dir,
         '../../prebuilts/packing_tool/io/commons-io-2.21.0-bin/commons-io-2.21.0/commons-io-2.21.0.jar')
-    print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar, fastjson2ext_jar)
+    print('packingTool: ', toolchain, fastjson_jar, compress_jar, io_jar, fastjson2_jar,
+          fastjson2ext_jar)
 
     # compile haptobin_tool.jar
     compile_haptobin_tool(root_dir, src_dir, args.haptobinOutput, args.outpath, 

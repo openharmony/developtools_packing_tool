@@ -1694,131 +1694,75 @@ public class Uncompress {
     static void unpackageLibsMode(String srcFile, String outPath, List<String> cpuAbiList) throws BundleException {
         String normalizedSrcFilePath = srcFile.replace("\\", LINUX_FILE_SEPARATOR);
         String normalizedOutFilePath = outPath.replace("\\", LINUX_FILE_SEPARATOR);
-        String tempDir = normalizedOutFilePath + LINUX_FILE_SEPARATOR + TEMP_PATH;
         try {
-            List<String> cpuAbiListRes = getLibsFromPackageAndUnpackage(normalizedSrcFilePath, tempDir, cpuAbiList);
-            repackPackage(normalizedSrcFilePath, normalizedOutFilePath, tempDir, cpuAbiListRes);
-        } catch (BundleException  e) {
+            List<RawZipEntryCopier.Entry> sourceEntries = RawZipEntryCopier.readEntries(normalizedSrcFilePath);
+            List<String> cpuAbiListRes = collectCpuAbisFromPackageEntries(sourceEntries, cpuAbiList);
+            repackPackageByRawCopy(normalizedSrcFilePath, normalizedOutFilePath, cpuAbiListRes, sourceEntries);
+        } catch (IOException e) {
+            LOG.error("Uncompress::unpackageLibsMode IOException: " + e.getMessage());
+            throw new BundleException("Uncompress::unpackageLibsMode failed");
+        } catch (BundleException e) {
             LOG.error("Uncompress::unpackageLibsMode failed.");
             throw new BundleException("Uncompress::unpackageLibsMode failed");
-        } finally {
-            File deleteFile = new File(tempDir);
-            deleteFile(deleteFile);
         }
     }
 
-    /**
-     * get libs directory and unpack other files.
-     *
-     * @param srcFile Indicates the path of hap or hsp.
-     * @param tempDirPath Indicates the temporary directory path.
-     * @param cpuAbiList Indicates the Designated cpuAbi.
-     */
-    static List<String> getLibsFromPackageAndUnpackage(String srcFile, String tempDirPath, List<String> cpuAbiList)
+    private static List<String> collectCpuAbisFromPackageEntries(List<RawZipEntryCopier.Entry> entries,
+                                                                   List<String> cpuAbiList)
             throws BundleException {
-        try (ZipFile zipFile = new ZipFile(srcFile)) {
-            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            Set<String> cpuAbiSetRes = new HashSet<>();
-            while (entries.hasMoreElements()) {
-                final ZipEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(LIBS + LINUX_FILE_SEPARATOR)) {
-                    String cpuAbi = entry.getName().substring(LIBS.length() + 1).split(LINUX_FILE_SEPARATOR)[0];
-                    if (!cpuAbiList.isEmpty() && !cpuAbiList.contains(cpuAbi)) {
-                        continue;
-                    }
-                    cpuAbiSetRes.add(cpuAbi);
-                    File tempFile = new File(tempDirPath, entry.getName().substring(LIBS.length() + 1));
-                    FileUtils.createParentDir(tempFile);
-                    try (InputStream inputStream = zipFile.getInputStream(entry);
-                         FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-                        FileUtils.copyStream(inputStream, outputStream);
-                    } catch (IOException e) {
-                        LOG.error("Uncompress::getLibsFromPackageAndUnpackage IOException " + e.getMessage());
-                        throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
-                    }
-                } else {
-                    String tempPath = tempDirPath + LINUX_FILE_SEPARATOR + PACKAGEFILE + LINUX_FILE_SEPARATOR
-                            + entry.getName();
-                    File destFile = new File(tempPath);
-                    FileUtils.createParentDir(destFile);
-                    dataTransfer(zipFile, entry, destFile);
-                }
+        Set<String> cpuAbiSetRes = new HashSet<>();
+        for (RawZipEntryCopier.Entry entry : entries) {
+            if (entry.cpuAbi.isEmpty()) {
+                continue;
             }
-            if (cpuAbiSetRes.size() != cpuAbiList.size() && !cpuAbiList.isEmpty()) {
-                List<String> notExistAbi = cpuAbiList.stream()
-                        .filter(item -> !cpuAbiSetRes.contains(item))
-                        .collect(Collectors.toList());
-                LOG.error("The specified abi does not exist, " + notExistAbi);
-                throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+            if (!cpuAbiList.isEmpty() && !cpuAbiList.contains(entry.cpuAbi)) {
+                continue;
             }
-            if (cpuAbiSetRes.size() > MAX_CPU_ABI_TYPE_NUM && cpuAbiList.isEmpty()) {
-                LOG.error("Uncompress::getLibsFromPackageAndUnpackage failed: the architecture type exceeds the " +
-                        "limit and must be less than or equal to 128");
-                throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
-            }
-            if (cpuAbiSetRes.isEmpty()) {
-                LOG.error("Uncompress::getLibsFromPackageAndUnpackage failed: libs has no CPU ABI");
-                throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
-            }
-            return new ArrayList<>(cpuAbiSetRes);
-        } catch (IOException e) {
-            LOG.error("Uncompress::getLibsFromPackageAndUnpackage IOException " + e.getMessage());
-            throw new BundleException("Uncompress::getLibsFromPackageAndUnpackage failed");
+            cpuAbiSetRes.add(entry.cpuAbi);
+        }
+        validateCpuAbiSet(cpuAbiSetRes, cpuAbiList);
+        return new ArrayList<>(cpuAbiSetRes);
+    }
+
+    private static void validateCpuAbiSet(Set<String> cpuAbiSetRes, List<String> cpuAbiList) throws BundleException {
+        if (cpuAbiSetRes.size() != cpuAbiList.size() && !cpuAbiList.isEmpty()) {
+            List<String> notExistAbi = cpuAbiList.stream()
+                    .filter(item -> !cpuAbiSetRes.contains(item))
+                    .collect(Collectors.toList());
+            LOG.error("The specified abi does not exist, " + notExistAbi);
+            throw new BundleException("Uncompress::collectCpuAbisFromPackageEntries failed");
+        }
+        if (cpuAbiSetRes.size() > MAX_CPU_ABI_TYPE_NUM && cpuAbiList.isEmpty()) {
+            LOG.error("Uncompress::collectCpuAbisFromPackageEntries failed: the architecture type exceeds " +
+                "the limit and must be less than or equal to 128");
+            throw new BundleException("Uncompress::collectCpuAbisFromPackageEntries failed");
+        }
+        if (cpuAbiSetRes.isEmpty()) {
+            LOG.error("Uncompress::collectCpuAbisFromPackageEntries failed: libs has no CPU ABI");
+            throw new BundleException("Uncompress::collectCpuAbisFromPackageEntries failed");
         }
     }
 
-    /**
-     * repack Package
-     *
-     * @param srcPath source file path
-     * @param outPath out file path
-     * @param tempDir temp file name
-     * @param cpuAbiList cpuAbi list
-     * @throws BundleException FileNotFoundException|IOException.
-     */
-    private static void repackPackage(String srcPath, String outPath, String tempDir, List<String> cpuAbiList)
-            throws BundleException {
-        File srcDir = new File(tempDir + LINUX_FILE_SEPARATOR + PACKAGEFILE);
-        File[] srcFiles = srcDir.listFiles();
-        if (srcFiles == null) {
-            return;
-        }
+    private static void repackPackageByRawCopy(String srcPath, String outPath, List<String> cpuAbiList,
+                                               List<RawZipEntryCopier.Entry> sourceEntries) throws BundleException {
         String[] srcPathItem = srcPath.split(LINUX_FILE_SEPARATOR);
         if (srcPathItem.length == 0) {
-            LOG.error("Uncompress::repackPackage failed: Wrong file path");
-            throw new BundleException("Uncompress::repackPackage failed");
+            LOG.error("Uncompress::repackPackageByRawCopy failed: Wrong file path");
+            throw new BundleException("Uncompress::repackPackageByRawCopy failed");
         }
         String hapName = srcPathItem[srcPathItem.length - 1];
-        for (String cpuAbi : cpuAbiList) {
-            processCpuAbi(outPath, hapName, cpuAbi, srcFiles, tempDir);
-        }
-    }
-
-    private static void processCpuAbi(String outPath, String hapName, String cpuAbi, File[] srcFiles, String tempDir)
-            throws BundleException {
-        String targetZipPath = outPath + LINUX_FILE_SEPARATOR + cpuAbi + LINUX_FILE_SEPARATOR + hapName;
-        File targetZipFile = new File(targetZipPath);
-        if (targetZipFile.getParentFile() != null && !FileUtils.exists(targetZipFile.getParentFile())) {
-            targetZipFile.getParentFile().mkdirs();
-        }
-        try (ZipOutputStream targetZipOutputStream = new ZipOutputStream(new FileOutputStream(targetZipPath))) {
-            compressSourceFiles(srcFiles, targetZipOutputStream);
-            File libsDir = new File(tempDir + LINUX_FILE_SEPARATOR + cpuAbi);
-            compressDirectory(libsDir, LIBS + LINUX_FILE_SEPARATOR, targetZipOutputStream, true);
-        } catch (IOException e) {
-            LOG.error("Uncompress::processCpuAbi IOException for path: " + targetZipPath + " - " + e.getMessage());
-            throw new BundleException("Uncompress::processCpuAbi failed for path: " + targetZipPath);
-        }
-    }
-
-    private static void compressSourceFiles(File[] srcFiles, ZipOutputStream targetZipOutputStream)
-            throws IOException, BundleException{
-        for (File srcFile : srcFiles) {
-            if (FileUtils.isDirectory(srcFile)) {
-                compressDirectory(srcFile, "", targetZipOutputStream, false);
-            } else {
-                compressFile(srcFile, "", targetZipOutputStream, false);
+        try {
+            for (String cpuAbi : cpuAbiList) {
+                String targetZipPath = outPath + LINUX_FILE_SEPARATOR + cpuAbi + LINUX_FILE_SEPARATOR + hapName;
+                File targetZipFile = new File(targetZipPath);
+                if (targetZipFile.getParentFile() != null && !FileUtils.exists(targetZipFile.getParentFile())) {
+                    targetZipFile.getParentFile().mkdirs();
+                }
+                RawZipEntryCopier.copyEntries(srcPath, sourceEntries, targetZipFile, cpuAbi);
             }
+        } catch (IOException e) {
+            LOG.error("Uncompress::repackPackageByRawCopy IOException: " + e.getMessage());
+            throw new BundleException("Uncompress::repackPackageByRawCopy failed");
         }
     }
 
