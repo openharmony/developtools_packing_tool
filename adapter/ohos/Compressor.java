@@ -670,7 +670,8 @@ public class Compressor {
                 throw new BundleException("Verify the module.json file of the Stage HAP package failed.");
             }
             Optional<String> optional = FileUtils.getFileContent(utility.getJsonPath());
-            String jsonString = optional.get();
+            String jsonString = optional.orElseThrow(() ->
+                    new BundleException("Read module.json file failed."));
             String moduleType = ModuleJsonUtil.parseModuleType(jsonString);
             if (TYPE_SHARED.equals(moduleType)) {
                 LOG.warning("Compress mode is hap, but module type is shared.");
@@ -2099,19 +2100,14 @@ public class Compressor {
             copyExtractedModulesFromApp(extractedModulePaths, selectedHapsInApp, selectedHaps, tempDir);
             return;
         }
-        ZipInputStream zipInput = null;
-        ZipFile zipFile = null;
-        OutputStream outputStream = null;
-        InputStream inputStream = null;
-        ZipEntry zipEntry = null;
-        try {
-            zipInput = new ZipInputStream(new FileInputStream(appPath));
-            zipFile = new ZipFile(appPath);
+        try (ZipInputStream zipInput = new ZipInputStream(new FileInputStream(appPath));
+             ZipFile zipFile = new ZipFile(appPath)) {
+            ZipEntry zipEntry;
             while ((zipEntry = zipInput.getNextEntry()) != null) {
-                File file = null;
                 if (!zipEntry.getName().endsWith(HAP_SUFFIX) && !zipEntry.getName().endsWith(HSP_SUFFIX)) {
                     continue;
                 }
+                File file;
                 // copy duplicated hap to duplicated dir and get moduleName of duplicated hap
                 if (selectedHaps.contains(zipEntry.getName())) {
                     LOG.error(PackingToolErrMsg.COMPRESS_FILE_DUPLICATE.toString("Copy hap from app file exist hap " +
@@ -2124,25 +2120,19 @@ public class Compressor {
                     selectedHaps.add(file.getName());
                     selectedHapsInApp.add(file.getName());
                 }
-                outputStream = new FileOutputStream(file);
-                inputStream = zipFile.getInputStream(zipEntry);
-                int len;
-                byte[] buf = new byte[BUFFER_SIZE];
-                while ((len = inputStream.read(buf)) != -1) {
-                    outputStream.write(buf, 0, len);
+                try (OutputStream outputStream = new FileOutputStream(file);
+                     InputStream inputStream = zipFile.getInputStream(zipEntry)) {
+                    int len;
+                    byte[] buf = new byte[BUFFER_SIZE];
+                    while ((len = inputStream.read(buf)) != -1) {
+                        outputStream.write(buf, 0, len);
+                    }
                 }
-                outputStream.close();
-                inputStream.close();
             }
         } catch (IOException e) {
             String errMsg = "Copy hap and hsp from app exist IOException: " + e.getMessage();
             LOG.error(PackingToolErrMsg.IO_EXCEPTION.toString(errMsg));
-            throw new BundleException(errMsg);
-        } finally {
-            Utility.closeStream(zipInput);
-            Utility.closeStream(zipFile);
-            Utility.closeStream(outputStream);
-            Utility.closeStream(inputStream);
+            throw new BundleException(errMsg, e);
         }
     }
 

@@ -91,14 +91,13 @@ int32_t ShellCommand::ParseParam()
 
 int32_t ShellCommand::OnCommand()
 {
-    auto respond = commandMap_[cmd_];
-    if (respond == nullptr) {
+    auto command = commandMap_.find(cmd_);
+    if (command == commandMap_.end() || command->second == nullptr) {
         resultReceiver_.append("not support command: ").append(cmd_).append("\n");
-        respond = commandMap_[Constants::CMD_HELP];
-        respond();
+        commandMap_.at(Constants::CMD_HELP)();
         return ERR_INVALID_VALUE;
     }
-    return respond();
+    return command->second();
 }
 
 std::string ShellCommand::ExecCommand(int32_t& ret)

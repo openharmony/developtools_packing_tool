@@ -40,6 +40,10 @@ class UncompressVerify {
      * @return commandVerify if verify valid.
      */
     public static boolean commandVerify(Utility utility) {
+        if (utility == null) {
+            LOG.error("UncompressVerify::commandVerify utility is null!");
+            return false;
+        }
         if (!utility.getForceRewrite().isEmpty() && !"true".equals(utility.getForceRewrite())
             && !"false".equals(utility.getForceRewrite())) {
             LOG.error("UncompressVerify::isVerifyVaild forceRewrite is invalid!");
@@ -288,7 +292,7 @@ class UncompressVerify {
             LOG.error("uncompressVerify parse mode " + parseMode + " is invalid!");
             return false;
         }
-        if (UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode) && hapName.isEmpty()) {
+        if (UncompressEntrance.PARSE_MODE_HAPINFO.equals(parseMode) && (hapName == null || hapName.isEmpty())) {
             LOG.error("uncompressVerify hapName should not empty when parse mode is hap-info!");
             return false;
         }

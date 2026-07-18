@@ -136,9 +136,9 @@ public class Uncompress {
                     LOG.error("Uncompress::unpackageProcess input wrong type!");
                     throw new BundleException("Uncompress::unpackageProcess input wrong type!");
             }
-        } catch (BundleException ignored) {
+        } catch (BundleException e) {
             unpackageResult = false;
-            LOG.error("Uncompress::unpackageProcess Bundle exception");
+            LOG.error("Uncompress::unpackageProcess Bundle exception: " + e.getMessage());
         }
         // return uncompress information.
         if (!unpackageResult) {
@@ -211,7 +211,6 @@ public class Uncompress {
      */
     static UncompressResult uncompressAppByPath(Utility utility) {
         UncompressResult compressResult = new UncompressResult();
-        InputStream input = null;
         String srcPath = utility.getAppPath();
         String parseMode = utility.getParseMode();
 
@@ -233,8 +232,6 @@ public class Uncompress {
             LOG.error("Uncompress::uncompressApp Bundle exception");
             compressResult.setResult(false);
             compressResult.setMessage("ParseApp Bundle exception");
-        } finally {
-            Utility.closeStream(input);
         }
         return compressResult;
     }

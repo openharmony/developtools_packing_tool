@@ -1219,6 +1219,10 @@ public class CompressVerify {
      * @return isVerifyValidInAppMode if verify valid in app mode.
      */
     private static boolean isOutPathValid(Utility utility, String suffix) {
+        if (utility.getOutPath().isEmpty()) {
+            LOG.error(PackingToolErrMsg.OUT_PATH_INVALID.toString("--out-path is empty."));
+            return false;
+        }
         File outFile = new File(utility.getOutPath());
 
         if (("false".equals(utility.getForceRewrite())) && FileUtils.exists(outFile)) {

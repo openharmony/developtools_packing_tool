@@ -79,6 +79,7 @@ public class ScanVerify {
         if (!utility.getStatSuffix() && !"true".equals(utility.getStatDuplicate())
                 && EMPTY_STRING.equals(utility.getStatFileSize())) {
             LOG.error(ScanErrorEnum.SCAN_VERIFY_STAT_PARAMETER_EMPTY_ERROR.toString());
+            return false;
         }
 
         return true;

@@ -414,4 +414,25 @@ HWTEST_F(ShellCommandTest, ParseParam_1200, Function | MediumTest | Level1)
     int32_t ret = shellcmd.ParseParam();
     EXPECT_EQ(ret, 1);
 }
+
+/*
+ * @tc.name: OnCommand_1300
+ * @tc.desc: Unknown commands do not modify the command map.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ShellCommandTest, OnCommand_1300, Function | MediumTest | Level1)
+{
+    int32_t argc = 2;
+    const char *argv[] = {
+        "ohos_packing_tool",
+        "unknown",
+    };
+
+    OHOS::AppPackingTool::ShellCommand shellcmd(argc, const_cast<char **>(argv), OHOS::AppPackingTool::TOOL_NAME);
+    EXPECT_EQ(shellcmd.CreateCommandMap(), AppPackingTool::ERR_OK);
+    size_t commandCount = shellcmd.commandMap_.size();
+    EXPECT_EQ(shellcmd.OnCommand(), AppPackingTool::ERR_INVALID_VALUE);
+    EXPECT_EQ(shellcmd.commandMap_.size(), commandCount);
+}
 } // namespace OHOS

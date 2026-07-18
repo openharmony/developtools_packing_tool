@@ -626,12 +626,12 @@ class FileUtils {
             File file = new File(hapPath);
             inputStream = new BufferedInputStream(new FileInputStream(file));
             byte[] buffer = new byte[SHA256_BUFFER_SIZE];
-            MessageDigest md5 = MessageDigest.getInstance(SHA256);
+            MessageDigest digest = MessageDigest.getInstance(SHA256);
             int size = -1;
             while ((size = inputStream.read(buffer)) != -1) {
-                md5.update(buffer, 0, size);
+                digest.update(buffer, 0, size);
             }
-            sha256 = toHex(md5.digest());
+            sha256 = toHex(digest.digest());
         } catch (FileNotFoundException e) {
             LOG.error("input hap file is not found: " + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
@@ -647,7 +647,11 @@ class FileUtils {
     private static String toHex(byte[] data) {
         StringBuilder hexString = new StringBuilder();
         for (byte item : data) {
-            hexString.append(Integer.toHexString(item & 0xFF));
+            int value = item & 0xFF;
+            if (value < 0x10) {
+                hexString.append('0');
+            }
+            hexString.append(Integer.toHexString(value));
         }
         return hexString.toString();
     }
