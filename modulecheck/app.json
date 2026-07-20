@@ -225,8 +225,7 @@
                 "description",
                 "minCompatibleVersionCode",
                 "minAPIVersion",
-                "targetAPIVersion",
-                "isSupportMultiCard"
+                "targetAPIVersion"
               ]
             }
           },
@@ -275,8 +274,7 @@
                 "cloudStructuredDataSyncEnabled",
                 "assetAccessGroups",
                 "startMode",
-                "buildVersion",
-                "isSupportMultiCard"
+                "buildVersion"
               ]
             }
           }
