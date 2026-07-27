@@ -139,8 +139,7 @@
             "appPreloadPhase",
             "buildVersion",
             "profileable",
-            "allowListenBundleChangedEvent",
-            "isSupportMultiCard"
+            "allowListenBundleChangedEvent"
           ]
         }
       },
@@ -199,8 +198,7 @@
               "startMode",
               "buildVersion",
               "profileable",
-              "allowListenBundleChangedEvent",
-              "isSupportMultiCard"
+              "allowListenBundleChangedEvent"
             ]
           }
         },
@@ -662,11 +660,6 @@
             "maxLength": 128,
             "pattern": "^[0-9a-zA-Z]+$"
           }
-        },
-        "isSupportMultiCard": {
-          "description": "Indicates whether the application supports multi card.",
-          "type": "boolean",
-          "default": false
         }
       }
     }
