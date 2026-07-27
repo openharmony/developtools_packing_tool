@@ -41,7 +41,6 @@ struct VerifyCollection {
     std::string targetBundleName = "";
     int32_t targetPriority = 0;
     bool debug = false;
-    bool supportMultiCard = false;
     std::list<std::string> moduleNames;
     std::list<std::string> packageNames;
     std::list<std::string> assetAccessGroups;

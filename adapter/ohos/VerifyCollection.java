@@ -94,11 +94,6 @@ class VerifyCollection {
     List<String> packageNames = new ArrayList<>();
 
     /**
-     * Indicates the isSupportMultiCard value of app
-     */
-    private boolean supportMultiCard = false;
-
-    /**
      * Indicates the split of atomicService in app.
      */
     private boolean split = true;
@@ -178,13 +173,5 @@ class VerifyCollection {
 
     public void setMultiAppMode(MultiAppMode multiAppMode) {
         this.multiAppMode = multiAppMode;
-    }
-
-    public boolean isSupportMultiCard() {
-        return supportMultiCard;
-    }
-
-    public void setSupportMultiCard(boolean supportMultiCard) {
-        this.supportMultiCard = supportMultiCard;
     }
 }

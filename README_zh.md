@@ -105,7 +105,6 @@ java -jar app_packing_tool.jar --mode app [--hap-path <path>] [--hsp-path <path>
 从API version 12开始，App打包不再对versionName校验。
 在API version 16之前，App打包时要求所有HAP/HSP的minCompatibleVersionCode、targetAPIVersion一致。
 在API version 20之前，App打包时要求所有HAP/HSP的minAPIVersion一致。
-从API version 26.0.0开始，App打包时要求所有HAP/HSP的isSupportMultiCard一致。
 #### 1.3.4 打包app时的压缩规则
 
 打包app时，对release模式的hap、hsp包会进行压缩，对debug模式的hap、hsp包不会压缩。
@@ -138,7 +137,6 @@ java -jar app_packing_tool.jar --mode multiApp --hap-list <1.hap,2.hap> --hsp-li
 从API version 12开始，多工程打包不再对versionName校验。
 在API version 16之前，App打包时要求所有HAP/HSP的minCompatibleVersionCode、targetAPIVersion一致。
 在API version 20之前，App打包时要求所有HAP/HSP的minAPIVersion一致。
-从API version 26.0.0开始，App打包时要求所有HAP/HSP的isSupportMultiCard一致。
 ### 1.5 hqf模式打包指令
 
 #### 1.5.1 示例
@@ -275,7 +273,6 @@ java -jar app_packing_tool.jar --mode fastApp --hap-path <option> --hsp-path <op
 
 在API version 16之前，App打包时要求所有HAP/HSP的minCompatibleVersionCode、targetAPIVersion一致。
 在API version 20之前，App打包时要求所有HAP/HSP的minAPIVersion一致。
-从API version 26.0.0开始，App打包时要求所有HAP/HSP的isSupportMultiCard一致。
 ## 2. 拆包指令说明
 
 ### 2.1 hap包模式拆包指令

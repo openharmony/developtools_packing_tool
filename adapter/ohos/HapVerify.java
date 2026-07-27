@@ -332,7 +332,6 @@ class HapVerify {
         verifyCollection.targetBundleName = baseInfo.getTargetBundleName();
         verifyCollection.targetPriority = baseInfo.getTargetPriority();
         verifyCollection.debug = baseInfo.isDebug();
-        verifyCollection.setSupportMultiCard(baseInfo.isSupportMultiCard());
         verifyCollection.setModuleName(baseInfo.getModuleName());
         verifyCollection.setModuleType(baseInfo.getModuleType());
         verifyCollection.setMultiAppMode(baseInfo.getMultiAppMode());
@@ -451,12 +450,6 @@ class HapVerify {
         if (!verifyCollection.getBundleType().equals(hapVerifyInfo.getBundleType())) {
             String errMsg = "The bundleType parameter values are different.";
             String solution = "Check if the bundleType is the same in different modules.";
-            LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
-            return false;
-        }
-        if (verifyCollection.isSupportMultiCard() != hapVerifyInfo.isSupportMultiCard()) {
-            String errMsg = "The isSupportMultiCard parameter values are different.";
-            String solution = "Check if the isSupportMultiCard is the same in different modules.";
             LOG.error(PackingToolErrMsg.APP_FIELDS_DIFFERENT_ERROR.toString(errMsg, solution));
             return false;
         }
