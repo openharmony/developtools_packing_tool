@@ -15,6 +15,8 @@
 
 #include "skill_pack_helper.h"
 
+#include <cctype>
+
 #include "log.h"
 #include "error/packing_tool_err_msg.h"
 
@@ -93,7 +95,11 @@ bool AddSkillEntryToZip(const fs::directory_entry &child, const fs::path &skillD
 
 bool IsInvalidProfileName(const std::string &profileName)
 {
+    const bool hasWindowsDrivePrefix = profileName.size() >= 2 &&
+        std::isalpha(static_cast<unsigned char>(profileName.front())) &&
+        profileName[1] == ':';
     return profileName.empty() || profileName == "." || profileName == ".." ||
+        hasWindowsDrivePrefix ||
         profileName.find("..") != std::string::npos ||
         profileName.find('/') != std::string::npos ||
         profileName.find('\\') != std::string::npos;

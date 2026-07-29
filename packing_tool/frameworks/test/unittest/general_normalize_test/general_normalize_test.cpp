@@ -14,6 +14,7 @@
  */
 
 #include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
 #include <numeric>
@@ -1314,6 +1315,29 @@ HWTEST_F(GeneralNormalizeTest, Process_0300, Function | MediumTest | Level1)
     system("rm -rf /data/test/testouthap");
 }
 
+HWTEST_F(GeneralNormalizeTest, Process_0400, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::filesystem::path testRoot = "/data/test/general_normalize_guard";
+    std::filesystem::path sentinel = testRoot / "sentinel.txt";
+    std::filesystem::path invalidInput = testRoot / "invalid.hap";
+    std::filesystem::remove_all(testRoot);
+    std::filesystem::create_directories(testRoot);
+    std::ofstream(sentinel.string()) << "sentinel";
+    std::ofstream(invalidInput.string()) << "invalid";
+
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, testRoot.string()},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    generalNormalize.hspOrhapList_.push_back(invalidInput.string());
+
+    EXPECT_EQ(generalNormalize.Process(), 1);
+    EXPECT_TRUE(std::filesystem::exists(sentinel));
+
+    std::filesystem::remove_all(testRoot);
+}
+
 /*
  * @tc.name: PreProcess_0100
  * @tc.desc: PreProcess
@@ -2096,6 +2120,53 @@ HWTEST_F(GeneralNormalizeTest, ModifyModuleJson_0140, Function | MediumTest | Le
     GeneralNormalizeVersion generalNormalizeVersion;
     EXPECT_FALSE(generalNormalize.ModifyModuleJson(moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
     system("rm -f /data/test/module.json");
+}
+
+/*
+ * @tc.name: ModifyJsonFiles_0150
+ * @tc.desc: Modify json files returns false when numeric parameter parsing throws.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(GeneralNormalizeTest, ModifyJsonFiles_0150, Function | MediumTest | Level1)
+{
+    std::string bundleName = "";
+    std::string moduleName = "";
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_VERSION_CODE, INVAILD_INT_NUM},
+    };
+    OHOS::AppPackingTool::GeneralNormalize generalNormalize(parameterMap, resultReceiver);
+    GeneralNormalizeVersion generalNormalizeVersion;
+
+    std::string moduleJsonPath = "/data/test/module.json";
+    std::ofstream moduleFile(moduleJsonPath);
+    if (moduleFile.is_open()) {
+        moduleFile << MODULE_JSON_STRING;
+        moduleFile.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyModuleJson(
+        moduleJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/module.json");
+
+    std::string configJsonPath = "/data/test/config.json";
+    std::ofstream configFile(configJsonPath);
+    if (configFile.is_open()) {
+        configFile << CONFIG_JSON_STRING;
+        configFile.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyConfigJson(
+        configJsonPath, generalNormalizeVersion, bundleName, moduleName));
+    system("rm -f /data/test/config.json");
+
+    std::string packInfoPath = "/data/test/pack.info";
+    std::ofstream packInfoFile(packInfoPath);
+    if (packInfoFile.is_open()) {
+        packInfoFile << JSON_STRING;
+        packInfoFile.close();
+    }
+    EXPECT_FALSE(generalNormalize.ModifyPackInfo(packInfoPath));
+    system("rm -f /data/test/pack.info");
 }
 
 /*

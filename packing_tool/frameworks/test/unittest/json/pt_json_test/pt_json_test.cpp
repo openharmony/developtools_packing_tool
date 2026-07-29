@@ -1055,4 +1055,47 @@ HWTEST_F(PtJsonTest, SetArray_0100, Function | MediumTest | Level1)
     ptJson.Add("BBB", value);
     EXPECT_EQ(ptJson.SetArray("BBB", value), OHOS::AppPackingTool::Result::SUCCESS);
 }
+
+/*
+ * @tc.name: GetInt_0200
+ * @tc.desc: GetInt rejects values outside the int32_t range.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PtJsonTest, GetInt_0200, Function | MediumTest | Level1)
+{
+    std::unique_ptr<OHOS::AppPackingTool::PtJson> root = OHOS::AppPackingTool::PtJson::Parse(
+        R"({"max":2147483647,"min":-2147483648,"over":2147483648,"under":-2147483649,)"
+        R"("fraction":123.75,"maxFraction":2147483647.5,"minFraction":-2147483648.5})");
+    ASSERT_NE(root, nullptr);
+
+    int32_t value = 0;
+    EXPECT_EQ(root->GetInt("max", &value), OHOS::AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(value, 2147483647);
+    EXPECT_EQ(root->GetInt("min", &value), OHOS::AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(value, static_cast<int32_t>(-2147483647 - 1));
+
+    value = 9;
+    EXPECT_EQ(root->GetInt("over", &value), OHOS::AppPackingTool::Result::TYPE_ERROR);
+    EXPECT_EQ(value, 9);
+    EXPECT_EQ(root->GetInt("under", &value), OHOS::AppPackingTool::Result::TYPE_ERROR);
+    EXPECT_EQ(value, 9);
+
+    EXPECT_EQ(root->GetInt("fraction", &value), OHOS::AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(value, 123);
+    EXPECT_EQ(root->GetInt("maxFraction", &value), OHOS::AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(value, 2147483647);
+    EXPECT_EQ(root->GetInt("minFraction", &value), OHOS::AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(value, static_cast<int32_t>(-2147483647 - 1));
+
+    OHOS::AppPackingTool::PtJson over(cJSON_GetObjectItem(root->GetJson(), "over"));
+    OHOS::AppPackingTool::PtJson under(cJSON_GetObjectItem(root->GetJson(), "under"));
+    OHOS::AppPackingTool::PtJson maxFraction(cJSON_GetObjectItem(root->GetJson(), "maxFraction"));
+    OHOS::AppPackingTool::PtJson minFraction(cJSON_GetObjectItem(root->GetJson(), "minFraction"));
+    EXPECT_EQ(over.GetInt(11), 11);
+    EXPECT_EQ(under.GetInt(12), 12);
+    EXPECT_EQ(maxFraction.GetInt(13), 2147483647);
+    EXPECT_EQ(minFraction.GetInt(14), static_cast<int32_t>(-2147483647 - 1));
+    root->ReleaseRoot();
+}
 } // namespace OHOS

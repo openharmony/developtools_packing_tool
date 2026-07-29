@@ -454,6 +454,35 @@ HWTEST_F(UtilsTest, CopyFile_2500, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: CopyFileToTempDir_2510
+ * @tc.desc: CopyFileToTempDir rejects unsafe temporary directory names.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UtilsTest, CopyFileToTempDir_2510, Function | MediumTest | Level1)
+{
+    std::string srcPath = std::string(FILE_PATH) + std::string(FILE_NAME);
+    std::string destFilePath;
+    std::string destTempDir;
+
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::CopyFileToTempDir(
+        srcPath, "copy_temp_guard", destFilePath, destTempDir));
+    EXPECT_TRUE(OHOS::AppPackingTool::Utils::IsFile(destFilePath));
+    DeleteFilePath(destTempDir);
+
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CopyFileToTempDir(
+        srcPath, "../escape", destFilePath, destTempDir));
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CopyFileToTempDir(
+        srcPath, "dir/escape", destFilePath, destTempDir));
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CopyFileToTempDir(
+        srcPath, "/data/test/escape", destFilePath, destTempDir));
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CopyFileToTempDir(
+        srcPath, "C:escape", destFilePath, destTempDir));
+    EXPECT_FALSE(OHOS::AppPackingTool::Utils::CopyFileToTempDir(
+        srcPath, "C:\\escape", destFilePath, destTempDir));
+}
+
+/*
  * @tc.name: GetFormattedPath_2600
  * @tc.desc: GetFormattedPath.
  * @tc.type: FUNC

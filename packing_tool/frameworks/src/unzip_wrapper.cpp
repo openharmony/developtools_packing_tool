@@ -15,6 +15,7 @@
 
 #include "unzip_wrapper.h"
 
+#include <cctype>
 #include <fstream>
 #include <iostream>
 
@@ -26,6 +27,29 @@ using packing_tool::error::PackingToolErrMsg;
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+bool IsSafeZipEntryName(const std::string &entryName)
+{
+    if (entryName.empty() || entryName.front() == '/' || entryName.find('\\') != std::string::npos) {
+        return false;
+    }
+    if (entryName.size() >= 2 && std::isalpha(static_cast<unsigned char>(entryName.front())) &&
+        entryName[1] == ':') {
+        return false;
+    }
+    fs::path entryPath(entryName);
+    if (entryPath.is_absolute() || entryPath.has_root_name()) {
+        return false;
+    }
+    for (const auto &part : entryPath) {
+        if (part == "..") {
+            return false;
+        }
+    }
+    return true;
+}
+} // namespace
+
 UnzipWrapper::UnzipWrapper()
 {}
 
@@ -74,6 +98,11 @@ std::string UnzipWrapper::ExtractFile(const std::string filePath)
     if (unzGetCurrentFileInfo64(unzFile_, &fileInfo, filename, MAX_ZIP_BUFFER_SIZE, NULL, 0, NULL, 0) != UNZ_OK) {
         LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
             "get current file info in zip failed!").c_str());
+        return "";
+    }
+    if (!IsSafeZipEntryName(filename)) {
+        LOGE("%s", PackingToolErrMsg::IO_EXCEPTION.toStringWithArgs(
+            ("unsafe zip entry path: " + std::string(filename)).c_str()).c_str());
         return "";
     }
     fs::path fsUnzipPath(filename);

@@ -15,6 +15,8 @@
 
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <string>
 
 #include "constants.h"
@@ -167,6 +169,9 @@ HWTEST_F(PackagerTest, IsOutPathValid_0500, Function | MediumTest | Level1)
     EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
     suffix = ".abc";
     EXPECT_FALSE(packager.IsOutPathValid(outPath, "true", suffix));
+    outPath = "/data/test/../escape.hap";
+    suffix = ".hap";
+    EXPECT_TRUE(packager.IsOutPathValid(outPath, "true", suffix));
 
     system("rm -f /data/test/entry-default-unsigned.hap");
     system("rm -f /data/test/entry-default-unsigned.har");
@@ -174,6 +179,52 @@ HWTEST_F(PackagerTest, IsOutPathValid_0500, Function | MediumTest | Level1)
     system("rm -f /data/test/entry-default-unsigned.app");
     system("rm -f /data/test/entry-default-unsigned.res");
     system("rm -f /data/test/entry-default-unsigned.hhh");
+}
+
+HWTEST_F(PackagerTest, RemoveOutputFileIfRegular_0510, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::HapPackager packager(parameterMap, resultReceiver);
+    std::filesystem::path testRoot = "/data/test/remove_output_guard";
+    std::filesystem::path outputFile = testRoot / "output.hap";
+    std::filesystem::path outputDir = testRoot / "output_dir.hap";
+    std::filesystem::path sentinel = outputDir / "sentinel.txt";
+    std::filesystem::remove_all(testRoot);
+    std::filesystem::create_directories(outputDir);
+    std::ofstream(outputFile.string()) << "partial";
+    std::ofstream(sentinel.string()) << "sentinel";
+
+    packager.RemoveOutputFileIfRegular(outputFile.string());
+    packager.RemoveOutputFileIfRegular(outputDir.string());
+
+    EXPECT_FALSE(std::filesystem::exists(outputFile));
+    EXPECT_TRUE(std::filesystem::exists(sentinel));
+
+    std::filesystem::remove_all(testRoot);
+}
+
+HWTEST_F(PackagerTest, IsOutDirectoryValid_0520, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::filesystem::path testRoot = "/data/test/out_directory_guard";
+    std::filesystem::remove_all(testRoot);
+    std::filesystem::create_directories(testRoot);
+
+    std::map<std::string, std::string> validParameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, testRoot.string()},
+    };
+    OHOS::AppPackingTool::HapPackager validPackager(validParameterMap, resultReceiver);
+    EXPECT_TRUE(validPackager.IsOutDirectoryValid());
+
+    std::map<std::string, std::string> compatibleParameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH,
+            "/data/test/out_directory_guard/../out_directory_guard"},
+    };
+    OHOS::AppPackingTool::HapPackager compatiblePackager(compatibleParameterMap, resultReceiver);
+    EXPECT_TRUE(compatiblePackager.IsOutDirectoryValid());
+
+    std::filesystem::remove_all(testRoot);
 }
 
 /*

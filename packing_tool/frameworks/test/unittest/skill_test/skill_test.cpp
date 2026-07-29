@@ -328,11 +328,18 @@ HWTEST_F(SkillPackHelperTest, IsInvalidProfileName_Backslash, Function | MediumT
     EXPECT_TRUE(SkillPackHelper::IsInvalidProfileName("a\\b"));
 }
 
+HWTEST_F(SkillPackHelperTest, IsInvalidProfileName_WindowsDrivePrefix, Function | MediumTest | Level1)
+{
+    EXPECT_TRUE(SkillPackHelper::IsInvalidProfileName("C:"));
+    EXPECT_TRUE(SkillPackHelper::IsInvalidProfileName("d:skill"));
+}
+
 HWTEST_F(SkillPackHelperTest, IsInvalidProfileName_ValidNames, Function | MediumTest | Level1)
 {
     EXPECT_FALSE(SkillPackHelper::IsInvalidProfileName("my-skill"));
     EXPECT_FALSE(SkillPackHelper::IsInvalidProfileName("skill_one"));
     EXPECT_FALSE(SkillPackHelper::IsInvalidProfileName("skill.123"));
+    EXPECT_FALSE(SkillPackHelper::IsInvalidProfileName("skill:name"));
     EXPECT_FALSE(SkillPackHelper::IsInvalidProfileName("a"));
 }
 

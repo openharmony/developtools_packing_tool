@@ -84,6 +84,7 @@ protected:
         const std::string &suffix, const std::string &extraSuffix);
     bool EnsureParentDirectoryExists(const std::filesystem::path& filePath);
     bool IsOutPathValid(const std::string &outPath, const std::string &forceRewrite, const std::string &suffix);
+    void RemoveOutputFileIfRegular(const std::string &outPath);
     bool SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHash, bool &buildHashFinish);
     bool CopyFileToTempDir(std::string &jsonPath);
     bool BuildHash(bool &buildHashFinish, const bool &generateBuildHash,

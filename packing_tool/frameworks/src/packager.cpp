@@ -383,6 +383,14 @@ bool Packager::IsOutPathValid(const std::string &outPath, const std::string &for
     return false;
 }
 
+void Packager::RemoveOutputFileIfRegular(const std::string &outPath)
+{
+    std::error_code ec;
+    if (fs::is_regular_file(outPath, ec)) {
+        fs::remove(outPath, ec);
+    }
+}
+
 bool Packager::SetGenerateBuildHash(std::string &jsonPath, bool &generateBuildHash, bool &buildHashFinish)
 {
     if (!fs::exists(jsonPath)) {
@@ -575,7 +583,9 @@ bool Packager::IsOutDirectoryValid()
         LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
             "--out-path is empty.").c_str());
         return false;
-    } else if (!Utils::IsDirectory(it->second)) {
+    }
+
+    if (!Utils::IsDirectory(it->second)) {
         LOGE("%s", PackingToolErrMsg::OUT_PATH_INVALID.toStringWithArgs(
             "--out-path is not a directory.").c_str());
         return false;

@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <dirent.h>
@@ -50,6 +51,25 @@ const int RANGE_MIN = 0;
 const int RANGE_MAX = 15;
 const int TEN = 10;
 const std::string EN_US_UTF_8 = "en_US.UTF-8";
+
+bool IsSafeTempSubDir(const std::string& tempSubDir)
+{
+    if (tempSubDir.empty() || tempSubDir.find('\\') != std::string::npos) {
+        return false;
+    }
+    if (tempSubDir.size() >= 2 && std::isalpha(static_cast<unsigned char>(tempSubDir.front())) &&
+        tempSubDir[1] == ':') {
+        return false;
+    }
+    fs::path subDirPath(tempSubDir);
+    if (subDirPath.is_absolute() || subDirPath.has_root_name() || subDirPath.has_root_directory()) {
+        return false;
+    }
+    if (subDirPath.filename().string() != tempSubDir) {
+        return false;
+    }
+    return tempSubDir != "." && tempSubDir != "..";
+}
 }
 
 std::string Utils::GetFileContent(const std::string filePath)
@@ -458,6 +478,11 @@ bool Utils::CopyFileToTempDir(const std::string& srcPath,
                               std::string& destFilePath,
                               std::string& destTempDir)
 {
+    if (!IsSafeTempSubDir(tempSubDir)) {
+        LOGE("%s", PackingToolErrMsg::COMMAND_VERIFY_FAILED.toStringWithArgs(
+            "Temporary directory name is invalid.").c_str());
+        return false;
+    }
     fs::path src(srcPath);
     if (!fs::exists(src) || !fs::is_regular_file(src)) {
         LOGE("%s", PackingToolErrMsg::FILE_NOT_EXIST.toStringWithArgs(
