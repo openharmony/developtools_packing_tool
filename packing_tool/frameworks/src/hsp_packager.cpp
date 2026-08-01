@@ -68,9 +68,7 @@ int32_t HspPackager::Process()
         if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
             outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
         }
-        if (fs::exists(outPath)) {
-            fs::remove_all(outPath);
-        }
+        RemoveOutputFileIfRegular(outPath);
         LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("Compress hsp failed.").c_str());
         return ERR_INVALID_VALUE;
     }
@@ -84,9 +82,7 @@ int32_t HspPackager::PostProcess()
             if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
                 outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
             }
-            if (fs::exists(outPath)) {
-                fs::remove_all(outPath);
-            }
+            RemoveOutputFileIfRegular(outPath);
             LOGE("%s", PackingToolErrMsg::COMPRESS_HSP_FAILED.toStringWithArgs("Compress hsp failed.").c_str());
             return ERR_INVALID_VALUE;
         }

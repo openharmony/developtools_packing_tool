@@ -15,10 +15,25 @@
 
 #include "pt_json.h"
 
+#include <cmath>
+#include <limits>
+
 #include "log.h"
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+bool CanConvertToInt32(double value)
+{
+    if (!std::isfinite(value)) {
+        return false;
+    }
+    double truncatedValue = std::trunc(value);
+    return truncatedValue >= std::numeric_limits<int32_t>::min() &&
+        truncatedValue <= std::numeric_limits<int32_t>::max();
+}
+} // namespace
+
 std::unique_ptr<PtJson> PtJson::CreateObject()
 {
     return std::make_unique<PtJson>(cJSON_CreateObject());
@@ -305,7 +320,7 @@ bool PtJson::GetBool(bool defaultValue) const
 
 int32_t PtJson::GetInt(int32_t defaultValue) const
 {
-    if (!IsNumber()) {
+    if (!IsNumber() || !CanConvertToInt32(object_->valuedouble)) {
         return defaultValue;
     }
 
@@ -395,10 +410,14 @@ Result PtJson::GetInt(const char *key, int32_t *value) const
 {
     double result;
     Result ret = GetDouble(key, &result);
-    if (ret == Result::SUCCESS) {
-        *value = static_cast<int32_t>(result);
+    if (ret != Result::SUCCESS) {
+        return ret;
     }
-    return ret;
+    if (!CanConvertToInt32(result)) {
+        return Result::TYPE_ERROR;
+    }
+    *value = static_cast<int32_t>(result);
+    return Result::SUCCESS;
 }
 
 Result PtJson::SetInt(const char *key, const int32_t& value)

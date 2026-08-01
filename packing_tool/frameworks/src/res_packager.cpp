@@ -52,9 +52,7 @@ int32_t ResPackager::PreProcess()
 int32_t ResPackager::Process()
 {
     if (!CompressPackResMode()) {
-        if (fs::exists(outPath_)) {
-            fs::remove_all(outPath_);
-        }
+        RemoveOutputFileIfRegular(outPath_);
         LOGE("%s", PackingToolErrMsg::COMPRESS_PACK_RES_MODE_FAILED.toStringWithArgs(
             "Compress pack.res failed.").c_str());
         return ERR_INVALID_VALUE;

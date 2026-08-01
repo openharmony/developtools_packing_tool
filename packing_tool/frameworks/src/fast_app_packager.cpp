@@ -152,9 +152,7 @@ int32_t FastAppPackager::Process()
         if (parameterMap_.find(Constants::PARAM_OUT_PATH) != parameterMap_.end()) {
             outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
         }
-        if (fs::exists(outPath)) {
-            fs::remove_all(outPath);
-        }
+        RemoveOutputFileIfRegular(outPath);
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
             "Compressor::compressAppMode compress failed.").c_str());
         return ERR_INVALID_VALUE;

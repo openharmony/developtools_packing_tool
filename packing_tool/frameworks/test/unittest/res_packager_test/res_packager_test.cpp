@@ -15,6 +15,8 @@
 
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -108,6 +110,25 @@ HWTEST_F(ResPackagerTest, Process_0100, Function | MediumTest | Level1)
     EXPECT_EQ(resPackager.Process(), 1);
 }
 
+HWTEST_F(ResPackagerTest, Process_0300, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {};
+    OHOS::AppPackingTool::ResPackager resPackager(parameterMap, resultReceiver);
+    std::filesystem::path outDir = "res_packager_guard.res";
+    std::filesystem::path sentinel = outDir / "sentinel.txt";
+    std::filesystem::remove_all(outDir);
+    std::filesystem::create_directories(outDir);
+    std::ofstream(sentinel.string()) << "sentinel";
+
+    resPackager.outPath_ = outDir.string();
+
+    EXPECT_EQ(resPackager.Process(), 1);
+    EXPECT_TRUE(std::filesystem::exists(sentinel));
+
+    std::filesystem::remove_all(outDir);
+}
+
 /*
  * @tc.name: Process_0200
  * @tc.desc: test process success
@@ -172,6 +193,21 @@ HWTEST_F(ResPackagerTest, PreProcess_0200, Function | MediumTest | Level1)
     system(cmd.c_str());
     cmd = std::string("rm -rf ") + OUT_PATH;
     system(cmd.c_str());
+}
+
+HWTEST_F(ResPackagerTest, PreProcess_0210, Function | MediumTest | Level1)
+{
+    std::string resultReceiver;
+    std::map<std::string, std::string> parameterMap = {
+        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
+        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, "/data/test/../escape.res"},
+    };
+    OHOS::AppPackingTool::ResPackager resPackager(parameterMap, resultReceiver);
+
+    EXPECT_TRUE(resPackager.IsOutPathValid(
+        parameterMap[OHOS::AppPackingTool::Constants::PARAM_OUT_PATH],
+        parameterMap[OHOS::AppPackingTool::Constants::PARAM_FORCE],
+        OHOS::AppPackingTool::Constants::RES_SUFFIX));
 }
 
 /*

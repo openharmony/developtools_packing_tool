@@ -33,6 +33,10 @@ namespace {
 const std::string OUT_PATH = "/data/test_1.hqf";
 const std::string FILE_PATH = "/data/test/resource/packingtool/unzip_wrapper_test";
 const std::string TEMP_PATH = "/data/temp";
+const std::string TRAVERSAL_ROOT_PATH = "/data/temp/unzip_wrapper_test_0800";
+const std::string TRAVERSAL_ZIP_PATH = TRAVERSAL_ROOT_PATH + "/archive.hqf";
+const std::string TRAVERSAL_OUTPUT_PATH = TRAVERSAL_ROOT_PATH + "/output";
+const std::string TRAVERSAL_TARGET_PATH = TRAVERSAL_ROOT_PATH + "/escape.txt";
 }
 
 class UnzipWrapperTest : public testing::Test {
@@ -181,5 +185,30 @@ HWTEST_F(UnzipWrapperTest, UnzipFile_0700, Function | MediumTest | Level1)
 
     unzipWrapper.Close();
     system("rm -rf /data/test_1.hqf");
+}
+
+/*
+ * @tc.name: UnzipFile_0800
+ * @tc.desc: UnzipFile rejects ZIP entries that escape the output directory.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(UnzipWrapperTest, UnzipFile_0800, Function | MediumTest | Level1)
+{
+    fs::remove_all(TRAVERSAL_ROOT_PATH);
+    fs::create_directories(TRAVERSAL_ROOT_PATH);
+
+    OHOS::AppPackingTool::ZipWrapper zipWrapper(TRAVERSAL_ZIP_PATH);
+    ASSERT_EQ(zipWrapper.Open(APPEND_STATUS_CREATE), 0);
+    ASSERT_EQ(zipWrapper.WriteStringToZip("malicious content", "../escape.txt"), 0);
+    zipWrapper.Close();
+
+    OHOS::AppPackingTool::UnzipWrapper unzipWrapper(TRAVERSAL_ZIP_PATH);
+    ASSERT_EQ(unzipWrapper.Open(), 0);
+    EXPECT_EQ(unzipWrapper.UnzipFile(TRAVERSAL_OUTPUT_PATH), -1);
+    EXPECT_FALSE(fs::exists(TRAVERSAL_TARGET_PATH));
+    unzipWrapper.Close();
+
+    fs::remove_all(TRAVERSAL_ROOT_PATH);
 }
 } // namespace OHOS
