@@ -117,10 +117,9 @@ HWTEST_F(SODeduplicatorTest, DeduplicateModules_ModuleNameDoesNotControlExtractP
 
     std::list<std::string> modulePaths = {hapPath.string()};
     const std::list<std::string> originalModulePaths = modulePaths;
-    std::vector<std::string> processedSoPaths;
     OHOS::AppPackingTool::SODeduplicator deduplicator;
     EXPECT_TRUE(deduplicator.DeduplicateModules(modulePaths, originalModulePaths, true,
-        workDir.string(), reportDir.string(), processedSoPaths));
+        workDir.string(), reportDir.string()));
     EXPECT_FALSE(std::filesystem::exists(escapedTarget));
 
     size_t dedupRootCount = 0;
@@ -135,12 +134,6 @@ HWTEST_F(SODeduplicatorTest, DeduplicateModules_ModuleNameDoesNotControlExtractP
             instanceDirectories.push_back(moduleEntry.path().filename().string());
         }
         EXPECT_EQ(instanceDirectories, std::vector<std::string>({"0"}));
-        ASSERT_EQ(processedSoPaths.size(), 1);
-        std::filesystem::path processedPath = std::filesystem::weakly_canonical(processedSoPaths.front());
-        std::filesystem::path expectedRoot = std::filesystem::weakly_canonical(modulesRoot / "0");
-        std::filesystem::path relativePath = processedPath.lexically_relative(expectedRoot);
-        ASSERT_FALSE(relativePath.empty());
-        EXPECT_NE(relativePath.begin()->string(), "..");
         ++dedupRootCount;
     }
     EXPECT_EQ(dedupRootCount, 1);

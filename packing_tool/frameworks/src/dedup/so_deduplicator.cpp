@@ -63,12 +63,8 @@ bool SODeduplicator::IsSoFile(const std::string& fileName)
     }
 }
 
-std::string SODeduplicator::CalculateFileMD5(
-    const std::string& filePath, std::vector<std::string>* processedSoPaths)
+std::string SODeduplicator::CalculateFileMD5(const std::string& filePath)
 {
-    if (processedSoPaths != nullptr) {
-        processedSoPaths->push_back(filePath);
-    }
     std::string realFilePath;
     if (!Utils::GetRealPath(filePath, realFilePath) || !std::filesystem::is_regular_file(realFilePath)) {
         LOG(ERROR) << FormatDedupError("Invalid file path for MD5 calculation: " + filePath);
@@ -180,7 +176,7 @@ std::vector<const SODeduplicator::ModuleDedupContext*> SODeduplicator::FilterDed
 }
 
 std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
-    const std::vector<const ModuleDedupContext*>& modules, std::vector<std::string>* processedSoPaths)
+    const std::vector<const ModuleDedupContext*>& modules)
 {
     std::map<std::string, std::vector<SoInfo>> moduleSoMap;
 
@@ -211,7 +207,7 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
                 if (!IsSoFile(fileName)) {
                     continue;
                 }
-                std::string md5 = CalculateFileMD5(filePath, processedSoPaths);
+                std::string md5 = CalculateFileMD5(filePath);
                 if (md5.empty()) {
                     SetError("Failed to calculate MD5 for file: " + filePath);
                     return {};
@@ -455,25 +451,6 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
     const std::list<std::string>& originalModulePaths, bool deduplicateSo,
     const std::string& workDir, const std::string& reportDir)
 {
-    return DeduplicateModulesInternal(
-        modulePaths, originalModulePaths, deduplicateSo, workDir, reportDir, nullptr);
-}
-
-bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
-    const std::list<std::string>& originalModulePaths, bool deduplicateSo,
-    const std::string& workDir, const std::string& reportDir,
-    std::vector<std::string>& processedSoPaths)
-{
-    processedSoPaths.clear();
-    return DeduplicateModulesInternal(
-        modulePaths, originalModulePaths, deduplicateSo, workDir, reportDir, &processedSoPaths);
-}
-
-bool SODeduplicator::DeduplicateModulesInternal(std::list<std::string>& modulePaths,
-    const std::list<std::string>& originalModulePaths, bool deduplicateSo,
-    const std::string& workDir, const std::string& reportDir,
-    std::vector<std::string>* processedSoPaths)
-{
     if (!modulePaths.empty() && modulePaths.size() != originalModulePaths.size()) {
         SetError("Module path count does not match original module path count");
         return false;
@@ -536,7 +513,7 @@ bool SODeduplicator::DeduplicateModulesInternal(std::list<std::string>& modulePa
         }
 
         std::string effectiveReportDir = reportDir.empty() ? "." : reportDir;
-        if (!ExecuteDeduplication(modules, effectiveReportDir, true, processedSoPaths)) {
+        if (!ExecuteDeduplication(modules, effectiveReportDir, true)) {
             return false;
         }
 
@@ -566,8 +543,7 @@ bool SODeduplicator::DeduplicateModulesInternal(std::list<std::string>& modulePa
 bool SODeduplicator::ExecuteDeduplication(
     const std::vector<ModuleDedupContext>& allModules,
     const std::string& reportOutputPath,
-    bool dedupEnabled,
-    std::vector<std::string>* processedSoPaths)
+    bool dedupEnabled)
 {
     LOG(INFO) << "SO deduplication started.";
     LOG(DEBUG) << "Deduplication enabled: " << (dedupEnabled ? "true" : "false");
@@ -653,8 +629,7 @@ bool SODeduplicator::ExecuteDeduplication(
         }
 
         // Step 5: Collect SO file information
-        std::map<std::string, std::vector<SoInfo>> moduleSoMap = CollectSoFiles(
-            eligibleModules, processedSoPaths);
+        std::map<std::string, std::vector<SoInfo>> moduleSoMap = CollectSoFiles(eligibleModules);
         if (!errorMessage_.empty()) {
             return false;
         }

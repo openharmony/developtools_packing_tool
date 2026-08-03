@@ -494,7 +494,10 @@ final class SODeduplicator {
         report.put("timestamp", timestamp());
         report.put("totalSavedSize", result.totalSavedSize);
         JSONObject modules = new JSONObject(true);
-        for (Map.Entry<String, ModuleReport> entry : result.modules.entrySet()) {
+        List<Map.Entry<String, ModuleReport>> moduleEntries = new ArrayList<>(result.modules.entrySet());
+        moduleEntries.sort((left, right) -> Integer.compare(
+                Integer.parseInt(left.getKey()), Integer.parseInt(right.getKey())));
+        for (Map.Entry<String, ModuleReport> entry : moduleEntries) {
             JSONObject module = new JSONObject(true);
             module.put("moduleName", entry.getValue().moduleName);
             module.put("filePath", entry.getValue().filePath);

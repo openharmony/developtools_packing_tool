@@ -183,6 +183,31 @@ HWTEST_F(ReportGeneratorTest, GenerateReportJson_DuplicateModuleNamesUseInstance
     cJSON_Delete(parsed);
 }
 
+/*
+ * @tc.name: GenerateReportJson_001
+ * @tc.desc: Verify that numeric module instance IDs use natural order in the serialized report
+ * @tc.type: FUNC
+ */
+HWTEST_F(ReportGeneratorTest, GenerateReportJson_001, TestSize.Level0)
+{
+    OHOS::AppPackingTool::DedupPlan plan;
+    for (int32_t index = 11; index >= 0; --index) {
+        plan.AddKeptSo(std::to_string(index), "libs/libsame.so");
+    }
+
+    std::string jsonStr = generator_.GenerateReportJson(plan);
+    size_t previousPosition = 0;
+    for (int32_t index = 0; index <= 11; ++index) {
+        std::string moduleKey = "\"" + std::to_string(index) + "\":{";
+        size_t position = jsonStr.find(moduleKey);
+        ASSERT_NE(position, std::string::npos);
+        if (index > 0) {
+            EXPECT_LT(previousPosition, position);
+        }
+        previousPosition = position;
+    }
+}
+
 // 测试5：输出目录不存在时自动创建
 HWTEST_F(ReportGeneratorTest, GenerateReport_CreateOutputDir, TestSize.Level0) {
     std::string nonExistentDir = "test_nonexistent_dir_reports";

@@ -14,7 +14,9 @@
  */
 
 #include "dedup/report_generator.h"
+#include <algorithm>
 #include <chrono>
+#include <cctype>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
@@ -50,6 +52,38 @@ bool AddStringArray(cJSON* object, const char* key, const std::vector<std::strin
         return false;
     }
     return true;
+}
+
+bool IsDecimalModuleId(const std::string& moduleId)
+{
+    return !moduleId.empty() && std::all_of(moduleId.begin(), moduleId.end(), [](unsigned char value) {
+        return std::isdigit(value) != 0;
+    });
+}
+
+bool CompareModuleIds(const std::string& left, const std::string& right)
+{
+    bool leftIsDecimal = IsDecimalModuleId(left);
+    bool rightIsDecimal = IsDecimalModuleId(right);
+    if (leftIsDecimal != rightIsDecimal) {
+        return leftIsDecimal;
+    }
+    if (!leftIsDecimal) {
+        return left < right;
+    }
+
+    size_t leftStart = left.find_first_not_of('0');
+    size_t rightStart = right.find_first_not_of('0');
+    leftStart = leftStart == std::string::npos ? left.size() - 1 : leftStart;
+    rightStart = rightStart == std::string::npos ? right.size() - 1 : rightStart;
+    size_t leftLength = left.size() - leftStart;
+    size_t rightLength = right.size() - rightStart;
+    if (leftLength != rightLength) {
+        return leftLength < rightLength;
+    }
+
+    int result = left.compare(leftStart, leftLength, right, rightStart, rightLength);
+    return result == 0 ? left < right : result < 0;
 }
 
 }  // namespace
@@ -126,7 +160,15 @@ std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan)
         dedupInfo.removed.insert(dedupInfo.removed.end(), soPaths.begin(), soPaths.end());
     }
 
-    for (const auto& [moduleId, dedupInfo] : moduleDedupMap) {
+    std::vector<std::string> moduleIds;
+    moduleIds.reserve(moduleDedupMap.size());
+    for (const auto& entry : moduleDedupMap) {
+        moduleIds.push_back(entry.first);
+    }
+    std::sort(moduleIds.begin(), moduleIds.end(), CompareModuleIds);
+
+    for (const auto& moduleId : moduleIds) {
+        const auto& dedupInfo = moduleDedupMap.at(moduleId);
         cJSON* module = cJSON_CreateObject();
         if (module == nullptr ||
             cJSON_AddStringToObject(module, "moduleName", dedupInfo.moduleName.c_str()) == nullptr ||

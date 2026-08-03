@@ -59,17 +59,6 @@ public:
                             const std::string& reportDir);
 
     /**
-     * Runs deduplication and returns every SO path submitted for MD5 calculation.
-     * The output is cleared before processing and is intended for access-boundary verification.
-     */
-    bool DeduplicateModules(std::list<std::string>& modulePaths,
-                            const std::list<std::string>& originalModulePaths,
-                            bool deduplicateSo,
-                            const std::string& workDir,
-                            const std::string& reportDir,
-                            std::vector<std::string>& processedSoPaths);
-
-    /**
      * @brief 获取最终的去重方案
      * @return 去重方案
      */
@@ -118,8 +107,7 @@ private:
      * @return SO文件信息列表（按模块实例ID -> SO列表）
      */
     std::map<std::string, std::vector<SoInfo>> CollectSoFiles(
-        const std::vector<const ModuleDedupContext*>& modules,
-        std::vector<std::string>* processedSoPaths);
+        const std::vector<const ModuleDedupContext*>& modules);
 
     /**
      * @brief 按MD5分组重复的SO
@@ -134,7 +122,7 @@ private:
      * @param filePath 文件路径
      * @return MD5值（失败返回空字符串）
      */
-    std::string CalculateFileMD5(const std::string& filePath, std::vector<std::string>* processedSoPaths);
+    std::string CalculateFileMD5(const std::string& filePath);
 
     /**
      * @brief 应用去重方案到文件系统
@@ -163,13 +151,7 @@ private:
     bool ExecuteDeduplication(
         const std::vector<ModuleDedupContext>& allModules,
         const std::string& reportOutputPath,
-        bool dedupEnabled,
-        std::vector<std::string>* processedSoPaths);
-
-    bool DeduplicateModulesInternal(std::list<std::string>& modulePaths,
-        const std::list<std::string>& originalModulePaths, bool deduplicateSo,
-        const std::string& workDir, const std::string& reportDir,
-        std::vector<std::string>* processedSoPaths);
+        bool dedupEnabled);
 
     /**
      * @brief 设置错误信息
