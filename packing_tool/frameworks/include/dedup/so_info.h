@@ -29,7 +29,7 @@ namespace AppPackingTool {
 struct SoInfo {
     std::string relativePath;  // 解压后的路径（如"libs/armeabi-v7a/libexample.so"）
     std::string md5;          // MD5值
-    std::string sourceModule; // 来源模块名
+    std::string sourceModule; // Internal module instance ID
     int64_t fileSize;         // 文件大小（字节）
 
     bool operator==(const SoInfo& other) const
@@ -65,11 +65,17 @@ struct DuplicateSoGroup {
 
 // 去重方案
 struct DedupPlan {
-    // 保留的SO（按模块名 -> SO路径列表）
+    // 保留的SO（按模块实例ID -> SO路径列表）
     std::map<std::string, std::vector<std::string>> keptSoMap;
 
-    // 移除的SO（按模块名 -> SO路径列表）
+    // 移除的SO（按模块实例ID -> SO路径列表）
     std::map<std::string, std::vector<std::string>> removedSoMap;
+
+    // Internal module instance ID -> moduleName, used only for report display.
+    std::map<std::string, std::string> moduleNames;
+
+    // Internal module instance ID -> original module package path.
+    std::map<std::string, std::string> modulePaths;
 
     // 总共节省的大小（字节）
     int64_t totalSavedSize;
@@ -77,28 +83,30 @@ struct DedupPlan {
     DedupPlan() : totalSavedSize(0) {}
 
     // 添加保留的SO
-    void AddKeptSo(const std::string& moduleName, const std::string& soPath)
+    void AddKeptSo(const std::string& moduleId, const std::string& soPath)
     {
-        keptSoMap[moduleName].push_back(soPath);
+        keptSoMap[moduleId].push_back(soPath);
     }
 
     // 添加移除的SO
-    void AddRemovedSo(const std::string& moduleName, const std::string& soPath, int64_t fileSize)
+    void AddRemovedSo(const std::string& moduleId, const std::string& soPath, int64_t fileSize)
     {
-        removedSoMap[moduleName].push_back(soPath);
+        removedSoMap[moduleId].push_back(soPath);
         totalSavedSize += fileSize;
     }
 
     void Merge(const DedupPlan& other)
     {
-        for (const auto& [moduleName, soPaths] : other.keptSoMap) {
-            auto& targetPaths = keptSoMap[moduleName];
+        for (const auto& [moduleId, soPaths] : other.keptSoMap) {
+            auto& targetPaths = keptSoMap[moduleId];
             targetPaths.insert(targetPaths.end(), soPaths.begin(), soPaths.end());
         }
-        for (const auto& [moduleName, soPaths] : other.removedSoMap) {
-            auto& targetPaths = removedSoMap[moduleName];
+        for (const auto& [moduleId, soPaths] : other.removedSoMap) {
+            auto& targetPaths = removedSoMap[moduleId];
             targetPaths.insert(targetPaths.end(), soPaths.begin(), soPaths.end());
         }
+        moduleNames.insert(other.moduleNames.begin(), other.moduleNames.end());
+        modulePaths.insert(other.modulePaths.begin(), other.modulePaths.end());
         totalSavedSize += other.totalSavedSize;
     }
 };

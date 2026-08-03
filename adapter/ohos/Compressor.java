@@ -1606,7 +1606,9 @@ public class Compressor {
                 tempDir.mkdirs();
             }
 
+            List<String> originalModulePaths = new ArrayList<>();
             for (String hapPathItem : utility.getFormattedHapPathList()) {
+                originalModulePaths.add(hapPathItem.trim());
                 if (!utility.isReplacePackInfo()) {
                     fileList.add(hapPathItem.trim());
                     continue;
@@ -1629,6 +1631,7 @@ public class Compressor {
                 hspTempDir.mkdirs();
             }
             for (String hspPathItem : utility.getFormattedHspPathList()) {
+                originalModulePaths.add(hspPathItem.trim());
                 if (!utility.isReplacePackInfo()) {
                     fileList.add(hspPathItem.trim());
                     continue;
@@ -1645,8 +1648,8 @@ public class Compressor {
                     throw new BundleException("Compress pack.info into hsp failed.");
                 }
             }
-            fileList = SODeduplicator.deduplicateModules(fileList, utility.isDeduplicateSo(), tempDir.toPath(),
-                    appOutputFile.getParentFile().toPath());
+            fileList = SODeduplicator.deduplicateModules(fileList, originalModulePaths,
+                    utility.isDeduplicateSo(), tempDir.toPath(), appOutputFile.getParentFile().toPath());
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Verify failed when compress app.");
@@ -1701,11 +1704,13 @@ public class Compressor {
             tmpDir = Files.createTempDirectory(appOutPath.getParent(), TEMP_DIR);
             Path appPackInfo = Paths.get(utility.getPackInfoPath());
             List<String> fileList = new ArrayList<>();
+            List<String> originalModulePaths = new ArrayList<>();
             for (String hapPath : utility.getFormattedHapPathList()) {
                 Path path = Paths.get(hapPath);
                 Path hap = PackageUtil.pack(path, appPackInfo, tmpDir, utility.getCompressLevel());
                 if (hap != null) {
                     fileList.add(hap.toString());
+                    originalModulePaths.add(hapPath);
                 }
             }
             for (String hspPath : utility.getFormattedHspPathList()) {
@@ -1713,10 +1718,11 @@ public class Compressor {
                 Path hsp = PackageUtil.pack(path, appPackInfo, tmpDir, utility.getCompressLevel());
                 if (hsp != null) {
                     fileList.add(hsp.toString());
+                    originalModulePaths.add(hspPath);
                 }
             }
-            fileList = SODeduplicator.deduplicateModules(fileList, utility.isDeduplicateSo(), tmpDir,
-                    appOutPath.getParent());
+            fileList = SODeduplicator.deduplicateModules(fileList, originalModulePaths,
+                    utility.isDeduplicateSo(), tmpDir, appOutPath.getParent());
             // check hap is valid
             if (!checkHapIsValid(fileList, utility.getSharedApp())) {
                 throw new BundleException("Verify failed when compress fast app.");
@@ -1801,8 +1807,10 @@ public class Compressor {
             for (String selectedHapName : seletedHaps) {
                 selectedHapPaths.add(tempSelectedHapDir.getPath() + File.separator + selectedHapName);
             }
-            selectedHapPaths = SODeduplicator.deduplicateModules(selectedHapPaths, utility.isDeduplicateSo(),
-                    tempHapDir.toPath(), appOutputFile.getParentFile().toPath());
+            List<String> originalModulePaths = utility.isDeduplicateSo()
+                    ? findOriginalModulePaths(utility, seletedHaps) : selectedHapPaths;
+            selectedHapPaths = SODeduplicator.deduplicateModules(selectedHapPaths, originalModulePaths,
+                    utility.isDeduplicateSo(), tempHapDir.toPath(), appOutputFile.getParentFile().toPath());
             for (String hapPathItem : selectedHapPaths) {
                 File hapFile = new File(hapPathItem.trim());
                 String hapTempPath = tempHapDir.getPath() + File.separator + hapFile.getName();
@@ -1833,6 +1841,35 @@ public class Compressor {
             deleteFile(tempPath);
             deleteFile(tempSelectedHapPath);
         }
+    }
+
+    private static List<String> findOriginalModulePaths(Utility utility, List<String> moduleNames)
+            throws IOException {
+        List<String> originalModulePaths = new ArrayList<>();
+        for (String moduleName : moduleNames) {
+            String originalPath = null;
+            for (String hapPath : utility.getFormattedHapList()) {
+                if (new File(hapPath).getName().equals(moduleName)) {
+                    originalPath = hapPath;
+                    break;
+                }
+            }
+            if (originalPath == null) {
+                for (String appPath : utility.getFormattedAppList()) {
+                    try (ZipFile app = new ZipFile(appPath)) {
+                        if (app.getEntry(moduleName) != null) {
+                            originalPath = appPath;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (originalPath == null) {
+                throw new IOException("Failed to find original input path for module: " + moduleName);
+            }
+            originalModulePaths.add(originalPath);
+        }
+        return originalModulePaths;
     }
 
     /**

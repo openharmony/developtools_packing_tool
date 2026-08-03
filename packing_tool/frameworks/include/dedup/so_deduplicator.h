@@ -47,22 +47,27 @@ public:
     SODeduplicator();
     ~SODeduplicator();
 
-    /**
-     * @brief 执行SO去重
-     * @param allModules 所有模块列表
-     * @param outputRootPath 输出根目录
-     * @param dedupEnabled 是否启用去重
-     * @return 去重是否成功
-     */
-    bool ExecuteDeduplication(const std::vector<std::shared_ptr<ModuleJson>>& allModules,
-                            const std::string& outputRootPath,
-                            const std::string& reportOutputPath,
-                            bool dedupEnabled);
-
     bool DeduplicateModules(std::list<std::string>& modulePaths,
                             bool deduplicateSo,
                             const std::string& workDir,
                             const std::string& reportDir);
+
+    bool DeduplicateModules(std::list<std::string>& modulePaths,
+                            const std::list<std::string>& originalModulePaths,
+                            bool deduplicateSo,
+                            const std::string& workDir,
+                            const std::string& reportDir);
+
+    /**
+     * Runs deduplication and returns every SO path submitted for MD5 calculation.
+     * The output is cleared before processing and is intended for access-boundary verification.
+     */
+    bool DeduplicateModules(std::list<std::string>& modulePaths,
+                            const std::list<std::string>& originalModulePaths,
+                            bool deduplicateSo,
+                            const std::string& workDir,
+                            const std::string& reportDir,
+                            std::vector<std::string>& processedSoPaths);
 
     /**
      * @brief 获取最终的去重方案
@@ -83,31 +88,38 @@ public:
     std::string GetErrorMessage() const { return errorMessage_; }
 
 private:
+    struct ModuleDedupContext {
+        std::shared_ptr<ModuleJson> module;
+        ModuleConfig config;
+        std::string moduleId;
+        std::filesystem::path extractedPath;
+        std::string sourcePath;
+    };
+
     /**
      * @brief 过滤entry模块
      * @param allModules 所有模块列表
      * @return entry模块列表
      */
-    std::vector<std::shared_ptr<ModuleJson>> FilterEntryModules(
-        const std::vector<std::shared_ptr<ModuleJson>>& allModules);
+    std::vector<const ModuleDedupContext*> FilterEntryModules(
+        const std::vector<ModuleDedupContext>& allModules);
 
     /**
      * @brief 过滤参与去重的模块
      * @param allModules 所有模块列表
      * @return 参与去重的模块列表
      */
-    std::vector<std::shared_ptr<ModuleJson>> FilterDedupEligibleModules(
-        const std::vector<std::shared_ptr<ModuleJson>>& allModules);
+    std::vector<const ModuleDedupContext*> FilterDedupEligibleModules(
+        const std::vector<ModuleDedupContext>& allModules);
 
     /**
      * @brief 收集SO文件信息
-     * @param modules 模块列表
-     * @param modulesRootPath 模块根目录
-     * @return SO文件信息列表（按模块名 -> SO列表）
+     * @param modules 模块实例上下文列表
+     * @return SO文件信息列表（按模块实例ID -> SO列表）
      */
     std::map<std::string, std::vector<SoInfo>> CollectSoFiles(
-        const std::vector<std::shared_ptr<ModuleJson>>& modules,
-        const std::string& modulesRootPath);
+        const std::vector<const ModuleDedupContext*>& modules,
+        std::vector<std::string>* processedSoPaths);
 
     /**
      * @brief 按MD5分组重复的SO
@@ -122,15 +134,17 @@ private:
      * @param filePath 文件路径
      * @return MD5值（失败返回空字符串）
      */
-    std::string CalculateFileMD5(const std::string& filePath);
+    std::string CalculateFileMD5(const std::string& filePath, std::vector<std::string>* processedSoPaths);
 
     /**
      * @brief 应用去重方案到文件系统
      * @param plan 去重方案
-     * @param modulesRootPath 模块根目录
+     * @param modules 模块实例上下文列表
      * @return 是否成功应用
      */
-    bool ApplyDedupPlan(const DedupPlan& plan, const std::string& modulesRootPath);
+    bool ApplyDedupPlan(
+        const DedupPlan& plan,
+        const std::vector<ModuleDedupContext>& modules);
 
     /**
      * @brief 重新打包模块，排除指定的SO文件
@@ -143,8 +157,19 @@ private:
     bool RepackModuleExcludingSOs(
         const std::string& sourceZip,
         const std::string& targetZip,
-        const std::string& moduleName,
+        const std::string& moduleId,
         const DedupPlan& plan);
+
+    bool ExecuteDeduplication(
+        const std::vector<ModuleDedupContext>& allModules,
+        const std::string& reportOutputPath,
+        bool dedupEnabled,
+        std::vector<std::string>* processedSoPaths);
+
+    bool DeduplicateModulesInternal(std::list<std::string>& modulePaths,
+        const std::list<std::string>& originalModulePaths, bool deduplicateSo,
+        const std::string& workDir, const std::string& reportDir,
+        std::vector<std::string>* processedSoPaths);
 
     /**
      * @brief 设置错误信息

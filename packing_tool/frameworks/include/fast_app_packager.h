@@ -49,6 +49,8 @@ public:
     bool CompressFastAppMode();
     bool CheckHapAndPackFastApp(std::list<std::string> &fileList, const fs::path &tmpDir);
     bool Pack(const std::string &tmpDir, std::list<std::string> &fileList);
+    bool Pack(const std::string &tmpDir, std::list<std::string> &fileList,
+        std::list<std::string> &originalModulePaths);
     bool Pack(const fs::path &inputPath, const fs::path &appPackInfo, const fs::path &outPath, fs::path &path);
     bool PackDir(const fs::path &inputPath, const fs::path &appPackInfo, const fs::path &outPath, fs::path &path);
     bool RepackHsp(const fs::path &inputPath, const fs::path &appPackInfo, const fs::path &outPath, fs::path &path);
