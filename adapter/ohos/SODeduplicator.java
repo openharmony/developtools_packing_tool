@@ -58,7 +58,6 @@ import java.util.zip.ZipFile;
  * SO deduplicator for Java packing tool.
  */
 final class SODeduplicator {
-    private static final String DEDUPLICATE_SO = "deduplicateSo";
     private static final String LIBS_DIR = "libs";
     private static final String MODULE_JSON = "module.json";
     private static final String CONFIG_JSON = "config.json";
@@ -93,53 +92,27 @@ final class SODeduplicator {
         LOG.error(PackingToolErrMsg.SO_DEDUPLICATION_FAILED.toString(cause));
     }
 
-    static boolean isDeduplicateSoEnabled(String packInfoPath) throws BundleException {
-        if (packInfoPath == null || packInfoPath.isEmpty()) {
-            return false;
-        }
-        try {
-            String content = readUtf8(Paths.get(packInfoPath));
-            return isDeduplicateSoEnabledInContent(content);
-        } catch (IOException | JSONException exception) {
-            String errMsg = "Parse deduplicateSo in pack.info failed: " + exception.getMessage();
-            logDedupError(errMsg);
-            throw new BundleException(errMsg);
-        }
-    }
-
-    static boolean isDeduplicateSoEnabledInContent(String packInfoContent) throws BundleException {
-        if (packInfoContent == null || packInfoContent.isEmpty()) {
-            return false;
-        }
-        try {
-            JSONObject jsonObject = JSON.parseObject(packInfoContent);
-            if (jsonObject == null) {
-                return false;
-            }
-            JSONObject summary = jsonObject.getJSONObject("summary");
-            JSONObject app = summary == null ? null : summary.getJSONObject("app");
-            return app != null && app.getBooleanValue(DEDUPLICATE_SO);
-        } catch (JSONException exception) {
-            String errMsg = "Parse deduplicateSo in pack.info failed: " + exception.getMessage();
-            logDedupError(errMsg);
-            throw new BundleException(errMsg);
-        }
-    }
-
-    static List<String> deduplicateModules(List<String> modulePaths, boolean deduplicateSo, Path workDir,
+    static List<String> deduplicateModules(List<String> modulePaths, List<String> originalModulePaths,
+                                           boolean deduplicateSo, Path workDir,
                                            Path reportDir) throws BundleException {
-        if (!deduplicateSo) {
-            LOG.info("SO deduplication skipped: disabled.");
+        if (modulePaths == null) {
+            return new ArrayList<>();
+        }
+        if (originalModulePaths == null || modulePaths.size() != originalModulePaths.size()) {
+            throw new BundleException("Module path count does not match original module path count");
+        }
+        if (modulePaths.isEmpty()) {
             return modulePaths;
         }
-        if (modulePaths == null || modulePaths.isEmpty()) {
+        if (!deduplicateSo) {
+            LOG.info("SO deduplication skipped: disabled.");
             return modulePaths;
         }
         try {
             LOG.info("SO deduplication started.");
             Path modulesRoot = Files.createTempDirectory(workDir, "so_dedup_modules_");
             Path repackedRoot = Files.createTempDirectory(workDir, "so_dedup_repacked_");
-            List<ModuleRecord> modules = extractModules(modulePaths, modulesRoot, repackedRoot);
+            List<ModuleRecord> modules = extractModules(modulePaths, originalModulePaths, modulesRoot, repackedRoot);
             DedupResult result = deduplicateExtractedModules(modules);
             writeReport(result, reportDir);
             List<String> repacked = repackModules(modules, result);
@@ -154,46 +127,22 @@ final class SODeduplicator {
         }
     }
 
-    static void deduplicateExtractedModuleFiles(List<String> modulePaths, String packInfoPath, Path reportDir)
-            throws BundleException {
-        if (!isDeduplicateSoEnabled(packInfoPath)) {
-            LOG.info("SO deduplication skipped: disabled.");
-            return;
-        }
-        try {
-            LOG.info("SO deduplication started.");
-            List<ModuleRecord> modules = new ArrayList<>();
-            for (String modulePath : modulePaths) {
-                Path path = Paths.get(modulePath);
-                ModuleConfig config = readModuleConfig(path);
-                modules.add(new ModuleRecord(modulePath, path, path, config));
-            }
-            DedupResult result = deduplicateExtractedModules(modules);
-            writeReport(result, reportDir);
-            String reportPath = reportDir == null ? "" : reportDir.resolve(REPORT_NAME).toString();
-            LOG.warning("SO deduplication completed: removed=" + result.removedRecords.size()
-                    + ", savedBytes=" + result.totalSavedSize + ", report=" + reportPath);
-        } catch (IOException exception) {
-            String errMsg = "SO deduplication error: " + exception.getMessage();
-            logDedupError(errMsg);
-            throw new BundleException(errMsg);
-        }
-    }
-
-    private static List<ModuleRecord> extractModules(List<String> modulePaths, Path modulesRoot, Path repackedRoot)
+    private static List<ModuleRecord> extractModules(List<String> modulePaths, List<String> originalModulePaths,
+            Path modulesRoot, Path repackedRoot)
             throws IOException, BundleException {
         List<ModuleRecord> modules = new ArrayList<>();
         int index = 0;
         for (String modulePath : modulePaths) {
             Path source = Paths.get(modulePath);
             String fileName = source.getFileName().toString();
-            Path moduleRoot = modulesRoot.resolve(String.valueOf(index));
-            Path extractDir = moduleRoot.resolve(stripSuffix(fileName));
-            Path repackedPath = repackedRoot.resolve(String.valueOf(index)).resolve(fileName);
+            String moduleId = String.valueOf(index);
+            Path extractDir = modulesRoot.resolve(moduleId);
+            Path repackedPath = repackedRoot.resolve(moduleId).resolve(fileName);
             Files.createDirectories(extractDir);
             unzip(source, extractDir);
             ModuleConfig config = readModuleConfig(extractDir);
-            modules.add(new ModuleRecord(modulePath, extractDir, repackedPath, config));
+            modules.add(new ModuleRecord(
+                    moduleId, modulePath, originalModulePaths.get(index), extractDir, repackedPath, config));
             index++;
         }
         return modules;
@@ -222,7 +171,7 @@ final class SODeduplicator {
         Map<DeviceInstance, Set<String>> mandatoryModules = calculateMandatoryModules(eligibleModules, devices);
         Map<String, ModuleConfig> moduleConfigs = new HashMap<>();
         for (ModuleRecord module : eligibleModules) {
-            moduleConfigs.put(module.config.moduleName, module.config);
+            moduleConfigs.put(module.moduleId, module.config);
         }
         Map<String, List<SoRecord>> groups = collectDuplicateGroups(eligibleModules);
         for (List<SoRecord> group : groups.values()) {
@@ -320,10 +269,10 @@ final class SODeduplicator {
             }
         }
         for (SoRecord so : original) {
-            if (remaining.contains(so) || mandatoryUnion.contains(so.moduleName)) {
+            if (remaining.contains(so) || mandatoryUnion.contains(so.moduleId)) {
                 continue;
             }
-            ModuleConfig config = moduleConfigs.get(so.moduleName);
+            ModuleConfig config = moduleConfigs.get(so.moduleId);
             if (config == null) {
                 return false;
             }
@@ -342,7 +291,7 @@ final class SODeduplicator {
             return false;
         }
         for (SoRecord so : records) {
-            if (modules.contains(so.moduleName)) {
+            if (modules.contains(so.moduleId)) {
                 return true;
             }
         }
@@ -365,7 +314,7 @@ final class SODeduplicator {
             List<ModuleRecord> modules, Set<DeviceInstance> devices) {
         Map<DeviceInstance, Set<String>> mandatoryModules = new HashMap<>();
         for (DeviceInstance device : devices) {
-            Set<String> moduleNames = new HashSet<>();
+            Set<String> moduleIds = new HashSet<>();
             for (ModuleRecord module : modules) {
                 ModuleConfig config = module.config;
                 boolean isEntry = ENTRY.equals(config.moduleType);
@@ -373,10 +322,10 @@ final class SODeduplicator {
                         : supportsDevice(config, device) && config.deliveryWithInstall
                         && config.requiredDeviceFeatures.isEmpty();
                 if (isMandatory) {
-                    moduleNames.add(config.moduleName);
+                    moduleIds.add(module.moduleId);
                 }
             }
-            mandatoryModules.put(device, moduleNames);
+            mandatoryModules.put(device, moduleIds);
         }
         return mandatoryModules;
     }
@@ -422,8 +371,8 @@ final class SODeduplicator {
             throw new IOException("Calculate SO MD5 failed: " + path + ", " + exception.getMessage(), exception);
         }
         Path relative = module.extractDir.relativize(path);
-        SoRecord so = new SoRecord(module.config.moduleName, relative.toString().replace('\\', '/'), path,
-                Files.size(path));
+        SoRecord so = new SoRecord(module.moduleId, module.config.moduleName, module.reportPath,
+                relative.toString().replace('\\', '/'), path, Files.size(path));
         groups.computeIfAbsent(so.relativePath + '\n' + md5, key -> new ArrayList<>()).add(so);
     }
 
@@ -507,7 +456,7 @@ final class SODeduplicator {
         for (ModuleRecord module : modules) {
             Set<String> removedPaths = new HashSet<>();
             for (SoRecord removed : result.removedRecords) {
-                if (removed.moduleName.equals(module.config.moduleName)) {
+                if (removed.moduleId.equals(module.moduleId)) {
                     removedPaths.add(removed.relativePath);
                 }
             }
@@ -545,8 +494,13 @@ final class SODeduplicator {
         report.put("timestamp", timestamp());
         report.put("totalSavedSize", result.totalSavedSize);
         JSONObject modules = new JSONObject(true);
-        for (Map.Entry<String, ModuleReport> entry : result.modules.entrySet()) {
+        List<Map.Entry<String, ModuleReport>> moduleEntries = new ArrayList<>(result.modules.entrySet());
+        moduleEntries.sort((left, right) -> Integer.compare(
+                Integer.parseInt(left.getKey()), Integer.parseInt(right.getKey())));
+        for (Map.Entry<String, ModuleReport> entry : moduleEntries) {
             JSONObject module = new JSONObject(true);
+            module.put("moduleName", entry.getValue().moduleName);
+            module.put("filePath", entry.getValue().filePath);
             module.put("kept", entry.getValue().kept);
             module.put("removed", entry.getValue().removed);
             modules.put(entry.getKey(), module);
@@ -610,11 +564,6 @@ final class SODeduplicator {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
         format.setTimeZone(TimeZone.getTimeZone("UTC"));
         return format.format(new Date());
-    }
-
-    private static String stripSuffix(String fileName) {
-        int index = fileName.lastIndexOf('.');
-        return index > 0 ? fileName.substring(0, index) : fileName;
     }
 
     private static String getString(JSONObject object, String key, String defaultValue) {
@@ -684,13 +633,18 @@ final class SODeduplicator {
     }
 
     private static final class ModuleRecord {
+        private final String moduleId;
         private final String sourcePath;
+        private final String reportPath;
         private final Path extractDir;
         private final Path repackedPath;
         private final ModuleConfig config;
 
-        private ModuleRecord(String sourcePath, Path extractDir, Path repackedPath, ModuleConfig config) {
+        private ModuleRecord(String moduleId, String sourcePath, String reportPath, Path extractDir,
+                             Path repackedPath, ModuleConfig config) {
+            this.moduleId = moduleId;
             this.sourcePath = sourcePath;
+            this.reportPath = reportPath;
             this.extractDir = extractDir;
             this.repackedPath = repackedPath;
             this.config = config;
@@ -725,13 +679,18 @@ final class SODeduplicator {
     }
 
     private static final class SoRecord {
+        private final String moduleId;
         private final String moduleName;
+        private final String moduleFilePath;
         private final String relativePath;
         private final Path path;
         private final long size;
 
-        private SoRecord(String moduleName, String relativePath, Path path, long size) {
+        private SoRecord(String moduleId, String moduleName, String moduleFilePath,
+                         String relativePath, Path path, long size) {
+            this.moduleId = moduleId;
             this.moduleName = moduleName;
+            this.moduleFilePath = moduleFilePath;
             this.relativePath = relativePath;
             this.path = path;
             this.size = size;
@@ -739,8 +698,15 @@ final class SODeduplicator {
     }
 
     private static final class ModuleReport {
+        private final String moduleName;
+        private final String filePath;
         private final List<String> kept = new ArrayList<>();
         private final List<String> removed = new ArrayList<>();
+
+        private ModuleReport(String moduleName, String filePath) {
+            this.moduleName = moduleName;
+            this.filePath = filePath;
+        }
     }
 
     private static final class DedupResult {
@@ -752,11 +718,13 @@ final class SODeduplicator {
         }
 
         private void addKept(SoRecord so) {
-            modules.computeIfAbsent(so.moduleName, key -> new ModuleReport()).kept.add(so.relativePath);
+            modules.computeIfAbsent(so.moduleId,
+                    key -> new ModuleReport(so.moduleName, so.moduleFilePath)).kept.add(so.relativePath);
         }
 
         private void addRemoved(SoRecord so) {
-            modules.computeIfAbsent(so.moduleName, key -> new ModuleReport()).removed.add(so.relativePath);
+            modules.computeIfAbsent(so.moduleId,
+                    key -> new ModuleReport(so.moduleName, so.moduleFilePath)).removed.add(so.relativePath);
             removedRecords.add(so);
             totalSavedSize += so.size;
         }

@@ -14,6 +14,7 @@
  */
 
 #include <gtest/gtest.h>
+#include "cJSON.h"
 #include <fstream>
 #include <filesystem>
 #include "dedup/report_generator.h"
@@ -89,7 +90,7 @@ HWTEST_F(ReportGeneratorTest, GenerateReport_WithDedupInfo, TestSize.Level0) {
     EXPECT_NE(content.find("\"module2\""), std::string::npos);
     EXPECT_NE(content.find("\"module3\""), std::string::npos);
     EXPECT_NE(content.find("\"module4\""), std::string::npos);
-    EXPECT_NE(content.find("\"totalSavedSize\": 3000"), std::string::npos);
+    EXPECT_NE(content.find("\"totalSavedSize\":3000"), std::string::npos);
 }
 
 // 测试3：生成JSON字符串
@@ -131,6 +132,80 @@ HWTEST_F(ReportGeneratorTest, GenerateReportJson_CompleteStructure, TestSize.Lev
     // 验证kept和removed数组
     EXPECT_NE(jsonStr.find("\"kept\":"), std::string::npos);
     EXPECT_NE(jsonStr.find("\"removed\":"), std::string::npos);
+}
+
+HWTEST_F(ReportGeneratorTest, GenerateReportJson_EscapeSpecialCharacters, TestSize.Level0) {
+    OHOS::AppPackingTool::DedupPlan plan;
+    plan.AddKeptSo("0", "libs/lib\\quoted\".so");
+    plan.AddRemovedSo("1", "libs/lib\nremoved.so", 1000);
+    plan.moduleNames = {{"0", "module\"name"}, {"1", "module\nname"}};
+    plan.modulePaths = {{"0", "D:\\input\\模块 包 0.hap"}, {"1", "D:\\input\\模块 包 1.hap"}};
+
+    std::string jsonStr = generator_.GenerateReportJson(plan);
+    cJSON* parsed = cJSON_Parse(jsonStr.c_str());
+
+    EXPECT_NE(jsonStr.find("\"moduleName\":\"module\\\"name\""), std::string::npos);
+    EXPECT_NE(jsonStr.find("\"libs/lib\\\\quoted\\\".so\""), std::string::npos);
+    EXPECT_NE(jsonStr.find("\"moduleName\":\"module\\nname\""), std::string::npos);
+    EXPECT_NE(jsonStr.find("\"libs/lib\\nremoved.so\""), std::string::npos);
+    EXPECT_NE(parsed, nullptr);
+    if (parsed != nullptr) {
+        cJSON* modules = cJSON_GetObjectItemCaseSensitive(parsed, "modules");
+        cJSON* firstModule = cJSON_GetObjectItemCaseSensitive(modules, "0");
+        EXPECT_STREQ(cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(firstModule, "filePath")),
+            "D:\\input\\模块 包 0.hap");
+        cJSON_Delete(parsed);
+    }
+}
+
+HWTEST_F(ReportGeneratorTest, GenerateReportJson_DuplicateModuleNamesUseInstanceIds, TestSize.Level0)
+{
+    OHOS::AppPackingTool::DedupPlan plan;
+    plan.AddKeptSo("0", "libs/libsame.so");
+    plan.AddRemovedSo("1", "libs/libsame.so", 1000);
+    plan.moduleNames = {{"0", "entry"}, {"1", "entry"}};
+    plan.modulePaths = {{"0", "phone.hap"}, {"1", "tablet.hap"}};
+
+    std::string jsonStr = generator_.GenerateReportJson(plan);
+    cJSON* parsed = cJSON_Parse(jsonStr.c_str());
+
+    ASSERT_NE(parsed, nullptr);
+    cJSON* modules = cJSON_GetObjectItemCaseSensitive(parsed, "modules");
+    ASSERT_NE(modules, nullptr);
+    cJSON* phoneModule = cJSON_GetObjectItemCaseSensitive(modules, "0");
+    cJSON* tabletModule = cJSON_GetObjectItemCaseSensitive(modules, "1");
+    ASSERT_NE(phoneModule, nullptr);
+    ASSERT_NE(tabletModule, nullptr);
+    EXPECT_STREQ(cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(phoneModule, "moduleName")), "entry");
+    EXPECT_STREQ(cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(phoneModule, "filePath")), "phone.hap");
+    EXPECT_STREQ(cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(tabletModule, "moduleName")), "entry");
+    EXPECT_STREQ(cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(tabletModule, "filePath")), "tablet.hap");
+    cJSON_Delete(parsed);
+}
+
+/*
+ * @tc.name: GenerateReportJson_001
+ * @tc.desc: Verify that numeric module instance IDs use natural order in the serialized report
+ * @tc.type: FUNC
+ */
+HWTEST_F(ReportGeneratorTest, GenerateReportJson_001, TestSize.Level0)
+{
+    OHOS::AppPackingTool::DedupPlan plan;
+    for (int32_t index = 11; index >= 0; --index) {
+        plan.AddKeptSo(std::to_string(index), "libs/libsame.so");
+    }
+
+    std::string jsonStr = generator_.GenerateReportJson(plan);
+    size_t previousPosition = 0;
+    for (int32_t index = 0; index <= 11; ++index) {
+        std::string moduleKey = "\"" + std::to_string(index) + "\":{";
+        size_t position = jsonStr.find(moduleKey);
+        ASSERT_NE(position, std::string::npos);
+        if (index > 0) {
+            EXPECT_LT(previousPosition, position);
+        }
+        previousPosition = position;
+    }
 }
 
 // 测试5：输出目录不存在时自动创建

@@ -14,17 +14,79 @@
  */
 
 #include "dedup/report_generator.h"
+#include <algorithm>
 #include <chrono>
+#include <cctype>
 #include <ctime>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
-#include <fstream>
+#include "cJSON.h"
 #include "dedup/dedup_log.h"
 #include "dedup/dedup_error.h"
 
 namespace OHOS {
 namespace AppPackingTool {
+namespace {
+
+bool AddStringArray(cJSON* object, const char* key, const std::vector<std::string>& values)
+{
+    if (object == nullptr || key == nullptr) {
+        return false;
+    }
+    cJSON* array = cJSON_CreateArray();
+    if (array == nullptr) {
+        return false;
+    }
+    for (const auto& value : values) {
+        cJSON* item = cJSON_CreateString(value.c_str());
+        if (item == nullptr || cJSON_AddItemToArray(array, item) == 0) {
+            cJSON_Delete(item);
+            cJSON_Delete(array);
+            return false;
+        }
+    }
+    if (cJSON_AddItemToObject(object, key, array) == 0) {
+        cJSON_Delete(array);
+        return false;
+    }
+    return true;
+}
+
+bool IsDecimalModuleId(const std::string& moduleId)
+{
+    return !moduleId.empty() && std::all_of(moduleId.begin(), moduleId.end(), [](unsigned char value) {
+        return std::isdigit(value) != 0;
+    });
+}
+
+bool CompareModuleIds(const std::string& left, const std::string& right)
+{
+    bool leftIsDecimal = IsDecimalModuleId(left);
+    bool rightIsDecimal = IsDecimalModuleId(right);
+    if (leftIsDecimal != rightIsDecimal) {
+        return leftIsDecimal;
+    }
+    if (!leftIsDecimal) {
+        return left < right;
+    }
+
+    size_t leftStart = left.find_first_not_of('0');
+    size_t rightStart = right.find_first_not_of('0');
+    leftStart = leftStart == std::string::npos ? left.size() - 1 : leftStart;
+    rightStart = rightStart == std::string::npos ? right.size() - 1 : rightStart;
+    size_t leftLength = left.size() - leftStart;
+    size_t rightLength = right.size() - rightStart;
+    if (leftLength != rightLength) {
+        return leftLength < rightLength;
+    }
+
+    int result = left.compare(leftStart, leftLength, right, rightStart, rightLength);
+    return result == 0 ? left < right : result < 0;
+}
+
+}  // namespace
 
 ReportGenerator::ReportGenerator()
 {}
@@ -64,63 +126,74 @@ std::string ReportGenerator::GenerateReportFileName() const
 
 std::string ReportGenerator::GenerateReportJson(const DedupPlan& plan)
 {
-    std::stringstream json;
-
-    json << "{\n";
-    json << "  \"timestamp\": \"" << GetCurrentTimestamp() << "\",\n";
-    json << "  \"totalSavedSize\": " << plan.totalSavedSize << ",\n";
-    json << "  \"modules\": {\n";
+    cJSON* report = cJSON_CreateObject();
+    cJSON* modules = cJSON_CreateObject();
+    if (report == nullptr || modules == nullptr ||
+        cJSON_AddStringToObject(report, "timestamp", GetCurrentTimestamp().c_str()) == nullptr ||
+        cJSON_AddNumberToObject(report, "totalSavedSize", plan.totalSavedSize) == nullptr) {
+        cJSON_Delete(report);
+        cJSON_Delete(modules);
+        return "";
+    }
 
     // Build module deduplication information
     std::map<std::string, DedupReport::ModuleDedupInfo> moduleDedupMap;
 
+    auto fillModuleMetadata = [&plan](const std::string& moduleId, DedupReport::ModuleDedupInfo& dedupInfo) {
+        auto nameIt = plan.moduleNames.find(moduleId);
+        dedupInfo.moduleName = nameIt == plan.moduleNames.end() ? moduleId : nameIt->second;
+        auto pathIt = plan.modulePaths.find(moduleId);
+        dedupInfo.filePath = pathIt == plan.modulePaths.end() ? "" : pathIt->second;
+    };
+
     // Add retained SO information
-    for (const auto& [moduleName, soPaths] : plan.keptSoMap) {
-        auto& dedupInfo = moduleDedupMap[moduleName];
-        dedupInfo.kept = soPaths;
+    for (const auto& [moduleId, soPaths] : plan.keptSoMap) {
+        auto& dedupInfo = moduleDedupMap[moduleId];
+        fillModuleMetadata(moduleId, dedupInfo);
+        dedupInfo.kept.insert(dedupInfo.kept.end(), soPaths.begin(), soPaths.end());
     }
 
     // Add removed SO information
-    for (const auto& [moduleName, soPaths] : plan.removedSoMap) {
-        auto& dedupInfo = moduleDedupMap[moduleName];
-        dedupInfo.removed = soPaths;
+    for (const auto& [moduleId, soPaths] : plan.removedSoMap) {
+        auto& dedupInfo = moduleDedupMap[moduleId];
+        fillModuleMetadata(moduleId, dedupInfo);
+        dedupInfo.removed.insert(dedupInfo.removed.end(), soPaths.begin(), soPaths.end());
     }
 
-    // Generate JSON
-    bool firstModule = true;
-    for (const auto& [moduleName, dedupInfo] : moduleDedupMap) {
-        if (!firstModule) {
-            json << ",\n";
+    std::vector<std::string> moduleIds;
+    moduleIds.reserve(moduleDedupMap.size());
+    for (const auto& entry : moduleDedupMap) {
+        moduleIds.push_back(entry.first);
+    }
+    std::sort(moduleIds.begin(), moduleIds.end(), CompareModuleIds);
+
+    for (const auto& moduleId : moduleIds) {
+        const auto& dedupInfo = moduleDedupMap.at(moduleId);
+        cJSON* module = cJSON_CreateObject();
+        if (module == nullptr ||
+            cJSON_AddStringToObject(module, "moduleName", dedupInfo.moduleName.c_str()) == nullptr ||
+            cJSON_AddStringToObject(module, "filePath", dedupInfo.filePath.c_str()) == nullptr ||
+            !AddStringArray(module, "kept", dedupInfo.kept) ||
+            !AddStringArray(module, "removed", dedupInfo.removed) ||
+            cJSON_AddItemToObject(modules, moduleId.c_str(), module) == 0) {
+            cJSON_Delete(module);
+            cJSON_Delete(modules);
+            cJSON_Delete(report);
+            return "";
         }
-        firstModule = false;
-        json << "    \"" << moduleName << "\": {\n";
-        json << "      \"kept\": [";
-
-        for (size_t i = 0; i < dedupInfo.kept.size(); ++i) {
-            if (i > 0) {
-                json << ", ";
-            }
-            json << "\"" << dedupInfo.kept[i] << "\"";
-        }
-
-        json << "],\n";
-        json << "      \"removed\": [";
-
-        for (size_t i = 0; i < dedupInfo.removed.size(); ++i) {
-            if (i > 0) {
-                json << ", ";
-            }
-            json << "\"" << dedupInfo.removed[i] << "\"";
-        }
-
-        json << "]\n";
-        json << "    }";
     }
 
-    json << "\n  }\n";
-    json << "}\n";
+    if (cJSON_AddItemToObject(report, "modules", modules) == 0) {
+        cJSON_Delete(modules);
+        cJSON_Delete(report);
+        return "";
+    }
 
-    return json.str();
+    char* jsonString = cJSON_PrintUnformatted(report);
+    std::string json = jsonString == nullptr ? "" : std::string(jsonString);
+    cJSON_free(jsonString);
+    cJSON_Delete(report);
+    return json;
 }
 
 std::string ReportGenerator::GenerateReport(
@@ -135,6 +208,10 @@ std::string ReportGenerator::GenerateReport(
 
     // Generate JSON content
     std::string jsonContent = GenerateReportJson(plan);
+    if (jsonContent.empty()) {
+        LOG(ERROR) << FormatDedupError("Failed to generate report JSON content");
+        return "";
+    }
 
     // 生成文件路径
     std::string reportFileName = GenerateReportFileName();

@@ -731,7 +731,8 @@ bool FastAppPackager::CompressFastAppMode()
         }
 
         std::list<std::string> fileList;
-        if (!Pack(tmpDir, fileList)) {
+        std::list<std::string> originalModulePaths;
+        if (!Pack(tmpDir.string(), fileList, originalModulePaths)) {
             if (fs::exists(tmpDir)) {
                 fs::remove_all(tmpDir);
             }
@@ -740,7 +741,7 @@ bool FastAppPackager::CompressFastAppMode()
         SODeduplicator soDeduplicator;
         bool deduplicateSo = parameterMap_.find(Constants::PARAM_DEDUPLICATE_SO) != parameterMap_.end() &&
             parameterMap_.at(Constants::PARAM_DEDUPLICATE_SO) == Constants::TRUE_STRING;
-        if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tmpDir.string(),
+        if (!soDeduplicator.DeduplicateModules(fileList, originalModulePaths, deduplicateSo, tmpDir.string(),
             appOutPath.parent_path().string())) {
             LOGE("%s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
                 soDeduplicator.GetErrorMessage()).c_str());
@@ -794,33 +795,42 @@ bool FastAppPackager::CheckHapAndPackFastApp(std::list<std::string> &fileList, c
 
 bool FastAppPackager::Pack(const std::string &tmpDir, std::list<std::string> &fileList)
 {
+    std::list<std::string> originalModulePaths;
+    return Pack(tmpDir, fileList, originalModulePaths);
+}
+
+bool FastAppPackager::Pack(const std::string &tmpDir, std::list<std::string> &fileList,
+    std::list<std::string> &originalModulePaths)
+{
     fs::path appPackInfo = fs::path(packInfoPath_);
-        for (const auto& hapPath : formattedHapPathList_) {
-            fs::path path = fs::path(hapPath);
-            fs::path hap;
-            if (!Pack(path, appPackInfo, tmpDir, hap)) {
-                if (fs::exists(tmpDir)) {
-                    fs::remove_all(tmpDir);
-                }
-                return false;
+    for (const auto& hapPath : formattedHapPathList_) {
+        fs::path path = fs::path(hapPath);
+        fs::path hap;
+        if (!Pack(path, appPackInfo, tmpDir, hap)) {
+            if (fs::exists(tmpDir)) {
+                fs::remove_all(tmpDir);
             }
-            if (!hap.empty()) {
-                fileList.push_back(hap.string());
-            }
+            return false;
         }
-        for (const auto& hspPath : formattedHspPathList_) {
-            fs::path path = fs::path(hspPath);
-            fs::path hsp;
-            if (!Pack(path, appPackInfo, tmpDir, hsp)) {
-                if (fs::exists(tmpDir)) {
-                    fs::remove_all(tmpDir);
-                }
-                return false;
-            }
-            if (!hsp.empty()) {
-                fileList.push_back(hsp.string());
-            }
+        if (!hap.empty()) {
+            fileList.push_back(hap.string());
+            originalModulePaths.push_back(hapPath);
         }
+    }
+    for (const auto& hspPath : formattedHspPathList_) {
+        fs::path path = fs::path(hspPath);
+        fs::path hsp;
+        if (!Pack(path, appPackInfo, tmpDir, hsp)) {
+            if (fs::exists(tmpDir)) {
+                fs::remove_all(tmpDir);
+            }
+            return false;
+        }
+        if (!hsp.empty()) {
+            fileList.push_back(hsp.string());
+            originalModulePaths.push_back(hspPath);
+        }
+    }
     return true;
 }
 

@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <limits>
 #include <regex>
 #include <set>
 #include <sstream>
@@ -52,14 +53,24 @@ void SODeduplicator::SetError(const std::string& error)
 
 bool SODeduplicator::IsSoFile(const std::string& fileName)
 {
-    // Match all .so files and versioned .so files (e.g., libtest.so.1.2.3)
-    static const std::regex SO_PATTERN(".*\\.so(\\.\\d+)*", std::regex_constants::icase);
-    return std::regex_match(fileName, SO_PATTERN);
+    try {
+        // Match all .so files and versioned .so files (e.g., libtest.so.1.2.3)
+        static const std::regex SO_PATTERN(".*\\.so(\\.\\d+)*", std::regex_constants::icase);
+        return std::regex_match(fileName, SO_PATTERN);
+    } catch (const std::exception& e) {
+        LOG(ERROR) << FormatDedupError("Failed to match SO file name: " + std::string(e.what()));
+        throw;
+    }
 }
 
 std::string SODeduplicator::CalculateFileMD5(const std::string& filePath)
 {
-    std::ifstream file(filePath, std::ios::binary);
+    std::string realFilePath;
+    if (!Utils::GetRealPath(filePath, realFilePath) || !std::filesystem::is_regular_file(realFilePath)) {
+        LOG(ERROR) << FormatDedupError("Invalid file path for MD5 calculation: " + filePath);
+        return "";
+    }
+    std::ifstream file(realFilePath, std::ios::binary);
     if (!file.is_open()) {
         LOG(ERROR) << FormatDedupError("Failed to open file for MD5 calculation: " + filePath);
         return "";
@@ -95,19 +106,18 @@ std::string SODeduplicator::CalculateFileMD5(const std::string& filePath)
     return md5String;
 }
 
-std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterEntryModules(
-    const std::vector<std::shared_ptr<ModuleJson>>& allModules)
+std::vector<const SODeduplicator::ModuleDedupContext*> SODeduplicator::FilterEntryModules(
+    const std::vector<ModuleDedupContext>& allModules)
 {
-    std::vector<std::shared_ptr<ModuleJson>> entryModules;
+    std::vector<const ModuleDedupContext*> entryModules;
 
-    for (const auto& module : allModules) {
-        if (!module) {
+    for (const auto& context : allModules) {
+        if (!context.module) {
             continue;
         }
 
-        ModuleConfig config = ModuleCalculator::ExtractModuleConfig(module);
-        if (ModuleCalculator::IsValidForDedup(config) && config.moduleType == "entry") {
-            entryModules.push_back(module);
+        if (ModuleCalculator::IsValidForDedup(context.config) && context.config.moduleType == "entry") {
+            entryModules.push_back(&context);
         }
     }
 
@@ -117,19 +127,18 @@ std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterEntryModules(
     return entryModules;
 }
 
-std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterDedupEligibleModules(
-    const std::vector<std::shared_ptr<ModuleJson>>& allModules)
+std::vector<const SODeduplicator::ModuleDedupContext*> SODeduplicator::FilterDedupEligibleModules(
+    const std::vector<ModuleDedupContext>& allModules)
 {
-    std::vector<std::shared_ptr<ModuleJson>> eligibleModules;
+    std::vector<const ModuleDedupContext*> eligibleModules;
 
-    for (const auto& module : allModules) {
-        if (!module) {
+    for (const auto& context : allModules) {
+        if (!context.module) {
             continue;
         }
 
         try {
-            // Check if module meets deduplication conditions
-            ModuleConfig config = ModuleCalculator::ExtractModuleConfig(module);
+            const ModuleConfig& config = context.config;
             if (!config.stageModel) {
                 continue;
             }
@@ -154,7 +163,7 @@ std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterDedupEligibleModu
                 continue;
             }
 
-            eligibleModules.push_back(module);
+            eligibleModules.push_back(&context);
         } catch (const std::exception& e) {
             LOG(WARNING) << "Failed to check module eligibility: " << e.what();
         }
@@ -167,34 +176,23 @@ std::vector<std::shared_ptr<ModuleJson>> SODeduplicator::FilterDedupEligibleModu
 }
 
 std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
-    const std::vector<std::shared_ptr<ModuleJson>>& modules,
-    const std::string& modulesRootPath)
+    const std::vector<const ModuleDedupContext*>& modules)
 {
     std::map<std::string, std::vector<SoInfo>> moduleSoMap;
 
-    if (modulesRootPath.empty()) {
-        SetError("Modules root path is empty");
-        return moduleSoMap;
-    }
+    LOG(DEBUG) << "Collecting SO files from " << modules.size() << " modules";
 
-    LOG(DEBUG) << "Collecting SO files from " << modules.size() << " modules in " << modulesRootPath;
-
-    for (const auto& module : modules) {
-        if (!module) {
+    for (const auto* context : modules) {
+        if (context == nullptr || !context->module) {
             continue;
         }
 
         try {
-            std::string moduleName;
-            if (!module->GetStageModuleName(moduleName)) {
-                continue;
-            }
-
-            std::string modulePath = modulesRootPath + "/" + moduleName;
+            const std::filesystem::path& modulePath = context->extractedPath;
 
             // Check if module directory exists
             if (!std::filesystem::exists(modulePath)) {
-                SetError("Module directory does not exist: " + modulePath);
+                SetError("Module directory does not exist: " + modulePath.string());
                 return {};
             }
 
@@ -216,12 +214,16 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
                 }
 
                 std::string relativePath = std::filesystem::relative(entry.path(), modulePath).generic_string();
-                int64_t fileSize = std::filesystem::file_size(entry.path());
+                uintmax_t rawFileSize = std::filesystem::file_size(entry.path());
+                if (rawFileSize > static_cast<uintmax_t>(std::numeric_limits<int64_t>::max())) {
+                    SetError("SO file size exceeds the supported range: " + filePath);
+                    return {};
+                }
                 SoInfo soInfo;
                 soInfo.relativePath = relativePath;
                 soInfo.md5 = md5;
-                soInfo.sourceModule = moduleName;
-                soInfo.fileSize = fileSize;
+                soInfo.sourceModule = context->moduleId;
+                soInfo.fileSize = static_cast<int64_t>(rawFileSize);
 
                 soFiles.push_back(soInfo);
                 LOG(DEBUG) << "Found SO file: " << relativePath << " (MD5: "
@@ -229,8 +231,9 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
             }
 
             if (!soFiles.empty()) {
-                moduleSoMap[moduleName] = soFiles;
-                LOG(DEBUG) << "Module " << moduleName << " contains " << soFiles.size() << " SO files";
+                moduleSoMap[context->moduleId] = soFiles;
+                LOG(DEBUG) << "Module " << context->config.moduleName << " (" << context->moduleId
+                           << ") contains " << soFiles.size() << " SO files";
             }
         } catch (const std::exception& e) {
             SetError("Failed to collect SO files from module: " + std::string(e.what()));
@@ -238,7 +241,7 @@ std::map<std::string, std::vector<SoInfo>> SODeduplicator::CollectSoFiles(
         }
     }
 
-    int32_t totalSoCount = 0;
+    size_t totalSoCount = 0;
     for (const auto& [moduleName, soList] : moduleSoMap) {
         totalSoCount += soList.size();
     }
@@ -284,40 +287,46 @@ std::vector<DuplicateSoGroup> SODeduplicator::GroupDuplicateSos(
     return duplicateGroups;
 }
 
-bool SODeduplicator::ApplyDedupPlan(const DedupPlan& plan, const std::string& modulesRootPath)
+bool SODeduplicator::ApplyDedupPlan(
+    const DedupPlan& plan,
+    const std::vector<ModuleDedupContext>& modules)
 {
     LOG(DEBUG) << "Applying deduplication plan";
 
-    if (modulesRootPath.empty()) {
-        SetError("Modules root path is empty for applying dedup plan");
-        return false;
+    std::map<std::string, std::filesystem::path> extractedPaths;
+    for (const auto& context : modules) {
+        extractedPaths[context.moduleId] = context.extractedPath;
     }
 
     int32_t removedCount = 0;
 
-    // Remove SO files marked for deletion
-    for (const auto& [moduleName, soPaths] : plan.removedSoMap) {
+    for (const auto& [moduleId, soPaths] : plan.removedSoMap) {
+        auto moduleIt = extractedPaths.find(moduleId);
+        if (moduleIt == extractedPaths.end()) {
+            SetError("Module instance does not exist for deduplication plan: " + moduleId);
+            return false;
+        }
         for (const auto& soPath : soPaths) {
-            std::string fullFilePath = modulesRootPath + "/" + moduleName + "/" + soPath;
+            std::filesystem::path fullFilePath = moduleIt->second / soPath;
 
             try {
                 if (std::filesystem::exists(fullFilePath)) {
-                    std::filesystem::remove(fullFilePath);
                     removedCount++;
-                    LOG(DEBUG) << "Removed SO file: " << fullFilePath;
+                    LOG(DEBUG) << "SO file scheduled for exclusion: " << fullFilePath.string();
                 } else {
-                    LOG(WARNING) << "SO file does not exist, cannot remove: " << fullFilePath;
+                    LOG(WARNING) << "SO file does not exist, cannot exclude: " << fullFilePath.string();
                 }
             } catch (const std::exception& e) {
                 LOG(ERROR) << FormatDedupError(
-                    "Failed to remove SO file: " + fullFilePath + " - " + e.what());
-                SetError("Failed to remove SO file: " + fullFilePath);
+                    "Failed to check SO file: " + fullFilePath.string() + " - " + e.what());
+                SetError("Failed to check SO file: " + fullFilePath.string());
                 return false;
             }
         }
     }
 
-    LOG(DEBUG) << "Successfully applied deduplication plan: removed " << removedCount << " SO files";
+    LOG(DEBUG) << "Successfully applied deduplication plan: scheduled " << removedCount
+               << " SO files for exclusion";
 
     return true;
 }
@@ -325,15 +334,15 @@ bool SODeduplicator::ApplyDedupPlan(const DedupPlan& plan, const std::string& mo
 bool SODeduplicator::RepackModuleExcludingSOs(
     const std::string& sourceZip,
     const std::string& targetZip,
-    const std::string& moduleName,
+    const std::string& moduleId,
     const DedupPlan& plan)
 {
-    LOG(DEBUG) << "Repacking module excluding removed SOs: " << moduleName
+    LOG(DEBUG) << "Repacking module instance " << moduleId
               << " from " << sourceZip << " to " << targetZip;
 
     // Collect SO file paths to exclude for this module
     std::set<std::string> excludedPaths;
-    auto it = plan.removedSoMap.find(moduleName);
+    auto it = plan.removedSoMap.find(moduleId);
     if (it != plan.removedSoMap.end()) {
         for (const auto& soPath : it->second) {
             std::string normalized = soPath;
@@ -435,6 +444,17 @@ bool SODeduplicator::RepackModuleExcludingSOs(
 bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
     bool deduplicateSo, const std::string& workDir, const std::string& reportDir)
 {
+    return DeduplicateModules(modulePaths, modulePaths, deduplicateSo, workDir, reportDir);
+}
+
+bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
+    const std::list<std::string>& originalModulePaths, bool deduplicateSo,
+    const std::string& workDir, const std::string& reportDir)
+{
+    if (!modulePaths.empty() && modulePaths.size() != originalModulePaths.size()) {
+        SetError("Module path count does not match original module path count");
+        return false;
+    }
     if (!deduplicateSo) {
         LOG(INFO) << "SO deduplication skipped: disabled.";
         return true;
@@ -451,17 +471,17 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
         std::filesystem::create_directories(modulesRoot);
         std::filesystem::create_directories(repackedRoot);
 
-        std::vector<std::shared_ptr<ModuleJson>> modules;
-        // Use triple: original path, extracted directory, target path, module name
-        using ModuleFile = std::tuple<std::string, std::filesystem::path,
-            std::filesystem::path, std::string>;
+        std::vector<ModuleDedupContext> modules;
+        using ModuleFile = std::tuple<std::string, std::filesystem::path, std::string>;
         std::vector<ModuleFile> moduleFiles;
         size_t index = 0;
+        auto originalPathIt = originalModulePaths.begin();
         for (const auto& modulePath : modulePaths) {
             std::filesystem::path source(modulePath);
             std::string sourcePathStr = source.string();
             size_t moduleIndex = index++;
-            std::filesystem::path extractDir = root / ("extract_" + std::to_string(moduleIndex));
+            std::string moduleId = std::to_string(moduleIndex);
+            std::filesystem::path extractDir = modulesRoot / moduleId;
             std::filesystem::create_directories(extractDir);
             if (ZipUtils::Unzip(sourcePathStr, extractDir.string()) != ZIP_ERR_SUCCESS) {
                 SetError("Failed to unzip module: " + sourcePathStr);
@@ -485,31 +505,22 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
             if (module) {
                 config = ModuleCalculator::ExtractModuleConfig(module, stageModel);
             }
-            std::string directoryName = ModuleCalculator::IsValidForDedup(config) ? config.moduleName :
-                "excluded_module_" + std::to_string(index);
-            std::filesystem::path finalExtractDir = modulesRoot / directoryName;
-            if (std::filesystem::exists(finalExtractDir)) {
-                SetError("Duplicate module name: " + config.moduleName);
-                return false;
-            }
-            std::filesystem::rename(extractDir, finalExtractDir);
-            modules.push_back(module);
-            // Save: original path, extracted directory, target path, module name
+            modules.push_back({module, config, moduleId, extractDir, *originalPathIt});
+            ++originalPathIt;
             std::filesystem::path repackedPath = repackedRoot / std::to_string(moduleIndex) / source.filename();
             std::filesystem::create_directories(repackedPath.parent_path());
-            moduleFiles.push_back({sourcePathStr, finalExtractDir,
-                repackedPath, config.moduleName});
+            moduleFiles.push_back({sourcePathStr, repackedPath, moduleId});
         }
 
         std::string effectiveReportDir = reportDir.empty() ? "." : reportDir;
-        if (!ExecuteDeduplication(modules, root.string(), effectiveReportDir, true)) {
+        if (!ExecuteDeduplication(modules, effectiveReportDir, true)) {
             return false;
         }
 
         std::list<std::string> repackedPaths;
-        for (const auto& [sourcePath, moduleDir, repackedPath, moduleName] : moduleFiles) {
+        for (const auto& [sourcePath, repackedPath, moduleId] : moduleFiles) {
             // Use optimized repack method: directly copy ZIP entries, excluding removed SOs
-            if (!RepackModuleExcludingSOs(sourcePath, repackedPath.string(), moduleName, dedupPlan_)) {
+            if (!RepackModuleExcludingSOs(sourcePath, repackedPath.string(), moduleId, dedupPlan_)) {
                 SetError("Failed to repack module: " + repackedPath.string());
                 return false;
             }
@@ -530,12 +541,10 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
 }
 
 bool SODeduplicator::ExecuteDeduplication(
-    const std::vector<std::shared_ptr<ModuleJson>>& allModules,
-    const std::string& outputRootPath,
+    const std::vector<ModuleDedupContext>& allModules,
     const std::string& reportOutputPath,
     bool dedupEnabled)
 {
-
     LOG(INFO) << "SO deduplication started.";
     LOG(DEBUG) << "Deduplication enabled: " << (dedupEnabled ? "true" : "false");
     LOG(DEBUG) << "Total modules: " << allModules.size();
@@ -558,11 +567,15 @@ bool SODeduplicator::ExecuteDeduplication(
 
     try {
         // Step 1: Filter entry modules
-        std::vector<std::shared_ptr<ModuleJson>> entryModules = FilterEntryModules(allModules);
+        std::vector<const ModuleDedupContext*> entryModules = FilterEntryModules(allModules);
 
         // Step 2: Calculate device set
         DeviceCalculator deviceCalculator;
-        std::vector<DeviceInstance> devices = deviceCalculator.CalculateDevices(entryModules);
+        std::vector<std::shared_ptr<ModuleJson>> entryModuleJsons;
+        for (const auto* context : entryModules) {
+            entryModuleJsons.push_back(context->module);
+        }
+        std::vector<DeviceInstance> devices = deviceCalculator.CalculateDevices(entryModuleJsons);
 
         if (devices.empty()) {
             LOG(INFO) << "SO deduplication skipped: no valid entry devices.";
@@ -574,7 +587,7 @@ bool SODeduplicator::ExecuteDeduplication(
         }
 
         // Step 3: Filter modules for deduplication
-        std::vector<std::shared_ptr<ModuleJson>> eligibleModules = FilterDedupEligibleModules(allModules);
+        std::vector<const ModuleDedupContext*> eligibleModules = FilterDedupEligibleModules(allModules);
         if (!errorMessage_.empty()) {
             return false;
         }
@@ -592,27 +605,31 @@ bool SODeduplicator::ExecuteDeduplication(
         }
 
         // Step 4: Calculate mandatory module set
-        ModuleCalculator moduleCalculator;
-        std::map<DeviceInstance, std::vector<std::string>> mandatoryModuleMap =
-            moduleCalculator.CalculateMandatoryModules(eligibleModules, devices);
+        std::map<DeviceInstance, std::vector<std::string>> mandatoryModuleMap;
+        for (const auto& device : devices) {
+            auto& mandatoryModules = mandatoryModuleMap[device];
+            for (const auto* context : eligibleModules) {
+                if (ModuleCalculator::IsMandatoryModule(context->config, device)) {
+                    mandatoryModules.push_back(context->moduleId);
+                }
+            }
+        }
         std::map<std::string, std::vector<DeviceInstance>> moduleSupportMap;
-        for (const auto& module : eligibleModules) {
-            ModuleConfig config = ModuleCalculator::ExtractModuleConfig(module);
+        for (const auto* context : eligibleModules) {
+            const ModuleConfig& config = context->config;
             for (const auto& device : devices) {
                 bool supportsType = std::find(config.deviceTypes.begin(), config.deviceTypes.end(), device.type) !=
                     config.deviceTypes.end();
                 bool supportsFilter = config.distributionFilter.empty() ||
                     config.distributionFilter == device.distributionFilter;
                 if (supportsType && supportsFilter) {
-                    moduleSupportMap[config.moduleName].push_back(device);
+                    moduleSupportMap[context->moduleId].push_back(device);
                 }
             }
         }
 
         // Step 5: Collect SO file information
-        std::string modulesRootPath = outputRootPath + "/modules"; // Assume modules are in this directory
-        std::map<std::string, std::vector<SoInfo>> moduleSoMap =
-            CollectSoFiles(eligibleModules, modulesRootPath);
+        std::map<std::string, std::vector<SoInfo>> moduleSoMap = CollectSoFiles(eligibleModules);
         if (!errorMessage_.empty()) {
             return false;
         }
@@ -676,6 +693,10 @@ bool SODeduplicator::ExecuteDeduplication(
         // Merge results
         dedupPlan_.Merge(smallGroupsPlan);
         dedupPlan_.Merge(largeGroupsPlan);
+        for (const auto& context : allModules) {
+            dedupPlan_.moduleNames[context.moduleId] = context.config.moduleName;
+            dedupPlan_.modulePaths[context.moduleId] = context.sourcePath;
+        }
 
         if (dedupPlan_.keptSoMap.empty() && dedupPlan_.removedSoMap.empty()) {
             SetError("Failed to generate deduplication plan");
@@ -683,7 +704,7 @@ bool SODeduplicator::ExecuteDeduplication(
         }
 
         // Step 8: Apply deduplication plan
-        if (!ApplyDedupPlan(dedupPlan_, modulesRootPath)) {
+        if (!ApplyDedupPlan(dedupPlan_, allModules)) {
             return false;
         }
 

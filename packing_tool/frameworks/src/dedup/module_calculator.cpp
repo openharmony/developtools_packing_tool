@@ -193,43 +193,5 @@ bool ModuleCalculator::IsMandatoryModule(const ModuleConfig& moduleConfig,
         HasEmptyRequireDeviceFeatures(moduleConfig);
 }
 
-std::map<DeviceInstance, std::vector<std::string>> ModuleCalculator::CalculateMandatoryModules(
-    const std::vector<std::shared_ptr<ModuleJson>>& allModules,
-    const std::vector<DeviceInstance>& devices)
-{
-    std::map<DeviceInstance, std::vector<std::string>> mandatoryModuleMap;
-
-    if (allModules.empty() || devices.empty()) {
-        LOG(WARNING) << "No modules or devices provided for mandatory module calculation";
-        return mandatoryModuleMap;
-    }
-
-    LOG(DEBUG) << "Calculating mandatory modules for " << devices.size() << " devices from "
-              << allModules.size() << " modules";
-
-    // Calculate mandatory module set for each device
-    for (const auto& device : devices) {
-        std::vector<std::string> mandatoryModules;
-
-        for (const auto& moduleJson : allModules) {
-            if (!moduleJson) {
-                continue;
-            }
-
-            // Extract module configuration
-            ModuleConfig config = ExtractModuleConfig(moduleJson);
-            // Check if module is mandatory
-            if (IsMandatoryModule(config, device)) {
-                mandatoryModules.push_back(config.moduleName);
-            }
-        }
-
-        mandatoryModuleMap[device] = mandatoryModules;
-        LOG(DEBUG) << "Device " << DeviceCalculator::DeviceTypeToString(device.type)
-                  << " has " << mandatoryModules.size() << " mandatory modules";
-    }
-
-    return mandatoryModuleMap;
-}
 }  // namespace AppPackingTool
 }  // namespace OHOS

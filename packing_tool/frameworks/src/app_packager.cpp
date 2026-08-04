@@ -589,8 +589,10 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
 {
     std::map<std::string, std::string>::const_iterator it = parameterMap_.find(Constants::PARAM_HAP_PATH);
     std::list<std::string> fileList;
+    std::list<std::string> originalModulePaths;
     if (it != parameterMap_.end()) {
         for (const auto& hapPathItem : formattedHapPathList_) {
+            originalModulePaths.push_back(hapPathItem);
             fs::path hapFile = hapPathItem;
             if (!isReplacePackInfo_) {
                 fileList.push_back(hapFile.string());
@@ -609,6 +611,7 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
     it = parameterMap_.find(Constants::PARAM_HSP_PATH);
     if (it != parameterMap_.end()) {
         for (const auto& hspPathItem : formattedHspPathList_) {
+            originalModulePaths.push_back(hspPathItem);
             fs::path hspFile = hspPathItem;
             if (!isReplacePackInfo_) {
                 fileList.push_back(hspFile.string());
@@ -628,7 +631,8 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
         parameterMap_.at(Constants::PARAM_DEDUPLICATE_SO) == Constants::TRUE_STRING;
     SODeduplicator soDeduplicator;
     std::string reportDir = fs::path(parameterMap_.at(Constants::PARAM_OUT_PATH)).parent_path().string();
-    if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tempPath.string(), reportDir)) {
+    if (!soDeduplicator.DeduplicateModules(
+        fileList, originalModulePaths, deduplicateSo, tempPath.string(), reportDir)) {
         LOGE("%s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
             soDeduplicator.GetErrorMessage()).c_str());
         return false;

@@ -78,6 +78,30 @@ bool GetFirstBundleTypeFromPathList(const std::list<std::string> &pathList, std:
     return false;
 }
 
+bool BuildOriginalModulePaths(const std::list<std::string> &modulePaths,
+    const std::list<std::string> &directModulePaths, const std::list<std::string> &appPaths,
+    std::list<std::string> &originalModulePaths)
+{
+    for (const auto &modulePath : modulePaths) {
+        std::string moduleName = fs::path(modulePath).filename().string();
+        auto direct = std::find_if(directModulePaths.begin(), directModulePaths.end(),
+            [&moduleName](const std::string &path) { return fs::path(path).filename().string() == moduleName; });
+        if (direct != directModulePaths.end()) {
+            originalModulePaths.push_back(*direct);
+            continue;
+        }
+        auto app = std::find_if(appPaths.begin(), appPaths.end(), [&moduleName](const std::string &path) {
+            return ZipUtils::IsFileExistsInZip(path, moduleName);
+        });
+        if (app == appPaths.end()) {
+            LOGE("Failed to find original input path for module: %s", moduleName.c_str());
+            return false;
+        }
+        originalModulePaths.push_back(*app);
+    }
+    return true;
+}
+
 void CollectDirectSkillRuleInputs(const std::list<std::string> &formattedHapAndHspList, bool &hasHapPath,
     std::list<std::string> &hspPaths)
 {
@@ -616,7 +640,16 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
     bool deduplicateSo = parameterMap_.find(Constants::PARAM_DEDUPLICATE_SO) != parameterMap_.end() &&
         parameterMap_.at(Constants::PARAM_DEDUPLICATE_SO) == Constants::TRUE_STRING;
     std::string reportDir = fs::path(parameterMap_.at(Constants::PARAM_OUT_PATH)).parent_path().string();
-    if (!soDeduplicator.DeduplicateModules(fileList, deduplicateSo, tempHapDirPath.string(), reportDir)) {
+    std::list<std::string> originalModulePaths;
+    if (deduplicateSo) {
+        if (!BuildOriginalModulePaths(fileList, formattedHapAndHspList_, formattedAppList_, originalModulePaths)) {
+            return false;
+        }
+    } else {
+        originalModulePaths = fileList;
+    }
+    if (!soDeduplicator.DeduplicateModules(fileList, originalModulePaths, deduplicateSo,
+        tempHapDirPath.string(), reportDir)) {
         LOGE("%s", PackingToolErrMsg::SO_DEDUPLICATION_FAILED.toStringWithArgs(
             soDeduplicator.GetErrorMessage()).c_str());
         return false;

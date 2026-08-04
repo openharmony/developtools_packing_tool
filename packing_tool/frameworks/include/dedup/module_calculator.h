@@ -56,16 +56,6 @@ public:
     ~ModuleCalculator();
 
     /**
-     * @brief 计算每个设备的必然安装模块集合A(i)
-     * @param allModules 所有模块列表（包括entry、feature、shared）
-     * @param devices 设备实例列表
-     * @return 映射：设备实例 -> 该设备的必然安装模块列表
-     */
-    std::map<DeviceInstance, std::vector<std::string>> CalculateMandatoryModules(
-        const std::vector<std::shared_ptr<ModuleJson>>& allModules,
-        const std::vector<DeviceInstance>& devices);
-
-    /**
      * @brief 判断模块是否为必然安装模块
      * @param moduleConfig 模块配置
      * @param device 设备实例

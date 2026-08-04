@@ -227,13 +227,21 @@ bool Packager::SplitDirList(const std::string &dirList, std::list<std::string> &
 
 void Packager::RemoveDuplicatePath(const std::string &path, std::list<std::string> &pathList)
 {
+    std::unordered_set<std::string> uniqueTokens;
+    std::list<std::string> orderedPaths;
+    for (const auto& existingPath : pathList) {
+        if (uniqueTokens.insert(existingPath).second) {
+            orderedPaths.push_back(existingPath);
+        }
+    }
     std::string pathItem;
     std::istringstream pathStream(path);
     while (std::getline(pathStream, pathItem, Constants::COMMA_SPLIT)) {
-        pathList.push_back(pathItem);
+        if (uniqueTokens.insert(pathItem).second) {
+            orderedPaths.push_back(pathItem);
+        }
     }
-    std::unordered_set<std::string> uniqueTokens(pathList.begin(), pathList.end());
-    pathList.assign(uniqueTokens.begin(), uniqueTokens.end());
+    pathList.swap(orderedPaths);
 }
 
 bool Packager::CompatibleProcess(const std::string &inputPath, std::list<std::string> &fileList,

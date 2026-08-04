@@ -28,6 +28,8 @@ namespace AppPackingTool {
 struct DedupReport {
     // 模块去重信息
     struct ModuleDedupInfo {
+        std::string moduleName;
+        std::string filePath;
         std::vector<std::string> kept;     // 保留的so路径
         std::vector<std::string> removed;  // 移除的so路径
     };

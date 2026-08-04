@@ -24,6 +24,7 @@ group("dedup_tests") {
     "module_calculator_test:unittest",
     "pack_info_parser_test:unittest",
     "report_generator_test:unittest",
+    "so_deduplicator_test:unittest",
   ]
 }
 
