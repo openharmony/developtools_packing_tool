@@ -502,8 +502,17 @@ bool SODeduplicator::DeduplicateModules(std::list<std::string>& modulePaths,
                 module.reset();
             }
             ModuleConfig config;
+            std::map<std::string, std::string> resourceMap;
             if (module) {
-                config = ModuleCalculator::ExtractModuleConfig(module, stageModel);
+                if (!ZipUtils::GetResourceMapFromZip(sourcePathStr, resourceMap)) {
+                    SetError("Failed to read profile resources from module: " + sourcePathStr);
+                    return false;
+                }
+                config = ModuleCalculator::ExtractModuleConfig(module, stageModel, resourceMap);
+                if (!config.distributionFilterValid) {
+                    SetError("Failed to parse distributionFilter from module: " + sourcePathStr);
+                    return false;
+                }
             }
             modules.push_back({module, config, moduleId, extractDir, *originalPathIt});
             ++originalPathIt;
@@ -571,11 +580,11 @@ bool SODeduplicator::ExecuteDeduplication(
 
         // Step 2: Calculate device set
         DeviceCalculator deviceCalculator;
-        std::vector<std::shared_ptr<ModuleJson>> entryModuleJsons;
+        std::vector<ModuleConfig> entryModuleConfigs;
         for (const auto* context : entryModules) {
-            entryModuleJsons.push_back(context->module);
+            entryModuleConfigs.push_back(context->config);
         }
-        std::vector<DeviceInstance> devices = deviceCalculator.CalculateDevices(entryModuleJsons);
+        std::vector<DeviceInstance> devices = deviceCalculator.CalculateDevices(entryModuleConfigs);
 
         if (devices.empty()) {
             LOG(INFO) << "SO deduplication skipped: no valid entry devices.";

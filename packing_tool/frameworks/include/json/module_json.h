@@ -127,6 +127,8 @@ public:
         const std::map<std::string, std::string>& resourceMap, std::list<ModuleMetadataInfo>& moduleMetadataInfos);
     bool ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
         DistroFilter& distroFilter);
+    bool ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
+        std::string& distroFilter);
 
     bool IsExistedStageRequestPermissions();
     bool IsExistedStageModuleTargetPriority();

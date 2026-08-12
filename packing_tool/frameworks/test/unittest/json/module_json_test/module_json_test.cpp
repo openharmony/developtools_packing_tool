@@ -7659,6 +7659,309 @@ HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_0500, Function | Med
 }
 
 /*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_0600
+ * @tc.desc: use the first valid distribution filter profile when later profiles conflict
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_0600, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo includeMetadata;
+    includeMetadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xldpi"]}}})";
+    moduleMetadataInfos.push_back(includeMetadata);
+    ModuleMetadataInfo excludeMetadata;
+    excludeMetadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"exclude","value":["xxldpi"]}}})";
+    moduleMetadataInfos.push_back(excludeMetadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.screenDensity.policy, "include");
+    EXPECT_EQ(distroFilter.screenDensity.value, std::list<std::string>({"xldpi"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_0700
+ * @tc.desc: do not merge dimensions from later distribution filter profiles
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_0700, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo configuredMetadata;
+    configuredMetadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xldpi"]}}})";
+    moduleMetadataInfos.push_back(configuredMetadata);
+    ModuleMetadataInfo emptyMetadata;
+    emptyMetadata.resource =
+        R"({"distributionFilter":{"countryCode":{"policy":"include","value":["CN"]}}})";
+    moduleMetadataInfos.push_back(emptyMetadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.screenDensity.policy, "include");
+    EXPECT_EQ(distroFilter.screenDensity.value, std::list<std::string>({"xldpi"}));
+    EXPECT_TRUE(distroFilter.countryCode.policy.empty());
+    EXPECT_TRUE(distroFilter.countryCode.value.empty());
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_0800
+ * @tc.desc: distributionFilter keeps apiVersion and uses the last repeated property
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_0800, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource = R"({
+        "distributionFilter":{
+            "apiVersion":{"policy":"include","value":[10]},
+            "screenDensity":{"policy":"include","value":["xldpi"]},
+            "screenDensity":{"policy":"exclude","value":["xxldpi"]}
+        }
+    })";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.apiVersion.policy, "include");
+    EXPECT_EQ(distroFilter.apiVersion.value, std::list<std::string>({"10"}));
+    EXPECT_EQ(distroFilter.screenDensity.policy, "exclude");
+    EXPECT_EQ(distroFilter.screenDensity.value, std::list<std::string>({"xxldpi"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_0900
+ * @tc.desc: legacy distroFilter keeps apiVersion
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_0900, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource = R"({"distroFilter":{"apiVersion":{"policy":"include","value":[10]}}})";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.apiVersion.policy, "include");
+    EXPECT_EQ(distroFilter.apiVersion.value, std::list<std::string>({"10"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1000
+ * @tc.desc: use the last repeated distributionFilter node
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1000, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource = R"({
+        "distributionFilter":{"screenDensity":{"policy":"include","value":["xldpi"]}},
+        "distributionFilter":{"countryCode":{"policy":"include","value":["CN"]}}
+    })";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_TRUE(distroFilter.screenDensity.policy.empty());
+    EXPECT_EQ(distroFilter.countryCode.policy, "include");
+    EXPECT_EQ(distroFilter.countryCode.value, std::list<std::string>({"CN"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1100
+ * @tc.desc: fail when a distribution filter property is not an object
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1100, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo invalidMetadata;
+    invalidMetadata.resource = R"({"distributionFilter":{"screenDensity":"invalid"}})";
+    moduleMetadataInfos.push_back(invalidMetadata);
+    ModuleMetadataInfo validMetadata;
+    validMetadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xxldpi"]}}})";
+    moduleMetadataInfos.push_back(validMetadata);
+    DistroFilter distroFilter;
+
+    EXPECT_FALSE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1200
+ * @tc.desc: fail when distributionFilter is invalid without falling back to distroFilter
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1200, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource = R"({
+        "distributionFilter":{"screenDensity":"invalid"},
+        "distroFilter":{"countryCode":{"policy":"include","value":["CN"]}}
+    })";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    EXPECT_FALSE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1300
+ * @tc.desc: skip an unrelated profile and use the following distributionFilter profile
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1300, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo unrelatedMetadata;
+    unrelatedMetadata.resource = R"({"shortcuts":[]})";
+    moduleMetadataInfos.push_back(unrelatedMetadata);
+    ModuleMetadataInfo distributionMetadata;
+    distributionMetadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xxldpi"]}}})";
+    moduleMetadataInfos.push_back(distributionMetadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.screenDensity.policy, "include");
+    EXPECT_EQ(distroFilter.screenDensity.value, std::list<std::string>({"xxldpi"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1400
+ * @tc.desc: skip an empty metadata resource and use the following distributionFilter profile
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1400, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    moduleMetadataInfos.emplace_back();
+    ModuleMetadataInfo distributionMetadata;
+    distributionMetadata.resource =
+        R"({"distributionFilter":{"countryCode":{"policy":"include","value":["CN"]}}})";
+    moduleMetadataInfos.push_back(distributionMetadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.countryCode.policy, "include");
+    EXPECT_EQ(distroFilter.countryCode.value, std::list<std::string>({"CN"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1500
+ * @tc.desc: use the last repeated policy and value properties
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1500, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource = R"({
+        "distributionFilter":{
+            "screenDensity":{
+                "policy":"include",
+                "policy":"exclude",
+                "value":["xldpi"],
+                "value":["xxldpi"]
+            }
+        }
+    })";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.screenDensity.policy, "exclude");
+    EXPECT_EQ(distroFilter.screenDensity.value, std::list<std::string>({"xxldpi"}));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1600
+ * @tc.desc: fail when policy is not a string
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1600, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource = R"({"distributionFilter":{"screenDensity":{"policy":1,"value":["xldpi"]}}})";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    EXPECT_FALSE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1700
+ * @tc.desc: fail when value is not an array
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1700, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo metadata;
+    metadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":"xldpi"}}})";
+    moduleMetadataInfos.push_back(metadata);
+    DistroFilter distroFilter;
+
+    EXPECT_FALSE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+}
+
+/*
+ * @tc.name: ParseModuleMetadatasToDistroFilter_1800
+ * @tc.desc: skip a non-object metadata profile and use the following distributionFilter profile
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(ModuleJsonTest, ParseModuleMetadatasToDistroFilter_1800, Function | MediumTest | Level1)
+{
+    ModuleJson moduleJson;
+    std::list<ModuleMetadataInfo> moduleMetadataInfos;
+    ModuleMetadataInfo unrelatedMetadata;
+    unrelatedMetadata.resource = R"(["featureA", "featureB"])";
+    moduleMetadataInfos.push_back(unrelatedMetadata);
+    ModuleMetadataInfo distributionMetadata;
+    distributionMetadata.resource =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xldpi"]}}})";
+    moduleMetadataInfos.push_back(distributionMetadata);
+    DistroFilter distroFilter;
+
+    ASSERT_TRUE(moduleJson.ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, distroFilter));
+    EXPECT_EQ(distroFilter.screenDensity.policy, "include");
+    EXPECT_EQ(distroFilter.screenDensity.value, std::list<std::string>({"xldpi"}));
+}
+
+/*
  * @tc.name: GetAbilityNamesByModuleObj_0200
  * @tc.desc: test get ability names by module obj
  * @tc.type: FUNC

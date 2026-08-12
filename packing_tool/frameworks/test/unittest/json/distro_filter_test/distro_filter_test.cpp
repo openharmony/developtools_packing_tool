@@ -40,7 +40,7 @@ const std::string DISTRO_FILTER_JSON_STRING = "{"
     "\"apiVersion\": {"
         "\"policy\": \"\","
         "\"value\": ["
-            "\"xxx\""
+            "1"
         "]"
     "},"
     "\"screenShape\": {"
@@ -500,9 +500,39 @@ HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0100, Function | 
  */
 HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0200, Function | MediumTest | Level1)
 {
-    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(POLICY_VALUE_JSON_STRING2);
+    std::unique_ptr<AppPackingTool::PtJson> root =
+        AppPackingTool::PtJson::Parse(R"({"policy":"xxx","value":[1]})");
     AppPackingTool::PolicyValue policyValue;
     EXPECT_TRUE(policyValue.ParseFromJsonApiVersion(root));
+}
+
+/*
+ * @tc.name: PolicyValue_ParseFromJson_0600
+ * @tc.desc: Reject non-string elements in a distributionFilter value array.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJson_0600, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(R"({"value":[1]})");
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_FALSE(policyValue.ParseFromJson(root));
+}
+
+/*
+ * @tc.name: PolicyValue_ParseFromJsonApiVersion_0500
+ * @tc.desc: Reject non-integer elements in an apiVersion value array.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(DistroFilterTest, PolicyValue_ParseFromJsonApiVersion_0500, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> stringRoot = AppPackingTool::PtJson::Parse(R"({"value":["10"]})");
+    AppPackingTool::PolicyValue policyValue;
+    EXPECT_FALSE(policyValue.ParseFromJsonApiVersion(stringRoot));
+
+    std::unique_ptr<AppPackingTool::PtJson> decimalRoot = AppPackingTool::PtJson::Parse(R"({"value":[10.5]})");
+    EXPECT_FALSE(policyValue.ParseFromJsonApiVersion(decimalRoot));
 }
 
 /*
@@ -542,11 +572,11 @@ HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0200, Function | MediumTes
     EXPECT_FALSE(distroFilter.IsEmpty());
     EXPECT_EQ(distroFilter.Dump(),
     "distroFilter: apiVersion: policy is xxx, "
-    "value is 123 screenShape: policy is xxx, "
-    "value is xxx screenDensity: policy is xxx, "
-    "value is xxx screenWindow: policy is xxx, "
-    "value is xxx countryCode: policy is xxx, "
-    "value is xxx");
+    "value is [1, 2, 3] screenShape: policy is xxx, "
+    "value is [xxx] screenDensity: policy is xxx, "
+    "value is [xxx] screenWindow: policy is xxx, "
+    "value is [xxx] countryCode: policy is xxx, "
+    "value is [xxx]");
 }
 
 /*
@@ -887,5 +917,17 @@ HWTEST_F(DistroFilterTest, DistroFilter_ParseFromJson_0800, Function | MediumTes
         AppPackingTool::PtJson::Parse(COUNTRY_CODE_NOT_OBJECT_TEST_JSON_STRING);
     AppPackingTool::DistroFilter distroFilter;
     EXPECT_FALSE(distroFilter.ParseFromJson(root));
+}
+
+HWTEST_F(DistroFilterTest, DistroFilter_DumpPreservesValueBoundaries, Function | MediumTest | Level1)
+{
+    AppPackingTool::DistroFilter left;
+    left.apiVersion.policy = "include";
+    left.apiVersion.value = {"1", "23"};
+    AppPackingTool::DistroFilter right;
+    right.apiVersion.policy = "include";
+    right.apiVersion.value = {"12", "3"};
+
+    EXPECT_NE(left.Dump(), right.Dump());
 }
 }

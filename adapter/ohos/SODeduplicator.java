@@ -25,6 +25,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,8 +67,6 @@ final class SODeduplicator {
     private static final String TYPE = "type";
     private static final String DEVICE_TYPES = "deviceTypes";
     private static final String DELIVERY_WITH_INSTALL = "deliveryWithInstall";
-    private static final String DISTRIBUTION_FILTER = "distributionFilter";
-    private static final String DISTRO_FILTER = "distroFilter";
     private static final String REQUIRED_DEVICE_FEATURES = "requiredDeviceFeatures";
     private static final String COMPRESS_NATIVE_LIBS = "compressNativeLibs";
     private static final String EXTRACT_NATIVE_LIBS = "extractNativeLibs";
@@ -140,7 +139,7 @@ final class SODeduplicator {
             Path repackedPath = repackedRoot.resolve(moduleId).resolve(fileName);
             Files.createDirectories(extractDir);
             unzip(source, extractDir);
-            ModuleConfig config = readModuleConfig(extractDir);
+            ModuleConfig config = readModuleConfig(extractDir, source);
             modules.add(new ModuleRecord(
                     moduleId, modulePath, originalModulePaths.get(index), extractDir, repackedPath, config));
             index++;
@@ -380,10 +379,10 @@ final class SODeduplicator {
         return SO_PATTERN.matcher(fileName).matches();
     }
 
-    private static ModuleConfig readModuleConfig(Path moduleDir) throws IOException {
+    private static ModuleConfig readModuleConfig(Path moduleDir, Path source) throws IOException, BundleException {
         Path moduleJson = moduleDir.resolve(MODULE_JSON);
         if (Files.exists(moduleJson)) {
-            return readStageModuleConfig(moduleJson);
+            return readStageModuleConfig(moduleJson, source);
         }
         Path configJson = moduleDir.resolve(CONFIG_JSON);
         if (Files.exists(configJson)) {
@@ -393,10 +392,14 @@ final class SODeduplicator {
         return new ModuleConfig();
     }
 
-    private static ModuleConfig readStageModuleConfig(Path moduleJson) throws IOException {
+    private static ModuleConfig readStageModuleConfig(Path moduleJson, Path source)
+            throws IOException, BundleException {
         JSONObject root;
+        String profile;
         try {
-            root = JSON.parseObject(readUtf8(moduleJson));
+            profile = readUtf8(moduleJson);
+            root = JSON.parseObject(
+                    new ByteArrayInputStream(profile.getBytes(StandardCharsets.UTF_8)), JSONObject.class);
         } catch (IOException | JSONException exception) {
             LOG.warning("SO deduplication skipped for module: failed to parse configuration, module="
                     + moduleJson.getParent());
@@ -414,7 +417,10 @@ final class SODeduplicator {
         config.deviceTypes = getDeviceTypes(module.getJSONArray(DEVICE_TYPES));
         config.deliveryWithInstallPresent = module.containsKey(DELIVERY_WITH_INSTALL);
         config.deliveryWithInstall = module.getBooleanValue(DELIVERY_WITH_INSTALL);
-        config.distributionFilter = parseDistributionFilter(module);
+        try (ZipFile zipFile = new ZipFile(source.toFile())) {
+            HashMap<String, String> resourceMap = FileUtils.getProfileJson(zipFile);
+            config.distributionFilter = parseDistributionFilter(profile, resourceMap);
+        }
         parseRequiredDeviceFeatures(module.getJSONObject(REQUIRED_DEVICE_FEATURES), config);
         config.deviceTypesConfigured = !config.deviceTypes.isEmpty();
         config.compressNativeLibs = module.getBooleanValue(COMPRESS_NATIVE_LIBS);
@@ -424,6 +430,12 @@ final class SODeduplicator {
         config.compileSdkType = app == null ? "" : getString(app, COMPILE_SDK_TYPE, "");
         config.bundleType = app == null ? "" : getString(app, BUNDLE_TYPE, APP);
         return config;
+    }
+
+    private static String parseDistributionFilter(String profile, HashMap<String, String> resourceMap)
+            throws BundleException {
+        List<ModuleMetadataInfo> metadata = ModuleJsonUtil.parseModuleAllMetadata(profile, resourceMap);
+        return ModuleJsonUtil.parseStageDistroFilter(metadata);
     }
 
     private static void parseRequiredDeviceFeatures(JSONObject features, ModuleConfig config) {
@@ -441,14 +453,6 @@ final class SODeduplicator {
                 config.deviceTypes.add(normalized);
             }
         }
-    }
-
-    private static String parseDistributionFilter(JSONObject module) {
-        JSONObject filter = module.getJSONObject(DISTRIBUTION_FILTER);
-        if (filter == null) {
-            filter = module.getJSONObject(DISTRO_FILTER);
-        }
-        return filter == null || filter.isEmpty() ? "" : filter.toJSONString();
     }
 
     private static List<String> repackModules(List<ModuleRecord> modules, DedupResult result) throws IOException {

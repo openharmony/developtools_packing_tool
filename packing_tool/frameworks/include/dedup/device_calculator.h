@@ -18,11 +18,11 @@
 
 #include <string>
 #include <vector>
-#include <memory>
-#include "json/module_json.h"
 
 namespace OHOS {
 namespace AppPackingTool {
+
+struct ModuleConfig;
 
 // 设备类型枚举
 enum class DeviceType {
@@ -61,10 +61,10 @@ public:
 
     /**
      * @brief 计算设备集合
-     * @param entryModules entry模块列表
+     * @param entryModules entry模块配置列表
      * @return 设备实例列表
      */
-    std::vector<DeviceInstance> CalculateDevices(const std::vector<std::shared_ptr<ModuleJson>>& entryModules);
+    std::vector<DeviceInstance> CalculateDevices(const std::vector<ModuleConfig>& entryModules);
 
     /**
      * @brief 将设备类型字符串转换为枚举
@@ -79,23 +79,6 @@ public:
      * @return 设备类型字符串
      */
     static std::string DeviceTypeToString(DeviceType deviceType);
-
-private:
-    /**
-     * @brief 从单个entry模块提取设备实例
-     * @param moduleJson entry模块的ModuleJson对象
-     * @return 该模块支持的设备实例列表
-     */
-    std::vector<DeviceInstance> ExtractDevicesFromModule(const std::shared_ptr<ModuleJson>& moduleJson);
-
-    /**
-     * @brief 合并设备实例列表，去重
-     * @param devices1 设备实例列表1
-     * @param devices2 设备实例列表2
-     * @return 合并后的设备实例列表
-     */
-    std::vector<DeviceInstance> MergeDevices(const std::vector<DeviceInstance>& devices1,
-                                            const std::vector<DeviceInstance>& devices2);
 };
 
 }  // namespace AppPackingTool

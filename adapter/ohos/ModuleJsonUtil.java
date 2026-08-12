@@ -1016,7 +1016,8 @@ class ModuleJsonUtil {
         hapVerifyInfo.setModuleName(parseStageModuleName(hapVerifyInfo.getProfileStr()));
         List<ModuleMetadataInfo> moduleMetadataInfos =
                 parseModuleAllMetadata(hapVerifyInfo.getProfileStr(), hapVerifyInfo.getResourceMap());
-        hapVerifyInfo.setDistroFilter(parseStageDistroFilter(moduleMetadataInfos));
+        DistroFilter distroFilter = parseJsonObject(parseStageDistroFilter(moduleMetadataInfos), DistroFilter.class);
+        hapVerifyInfo.setDistroFilter(distroFilter == null ? new DistroFilter() : distroFilter);
         hapVerifyInfo.setDeviceType(parseDeviceType(hapVerifyInfo.getProfileStr()));
         hapVerifyInfo.setAbilityNames(parseAbilityNames(hapVerifyInfo.getProfileStr()));
         List<String> extensionAbilityNames = parseExtensionAbilityName(hapVerifyInfo.getProfileStr());
@@ -1092,9 +1093,9 @@ class ModuleJsonUtil {
      * parse stage distroFilter.
      *
      * @param moduleMetadataInfos all metadata of module
-     * @return DistroFilter is the result of parsed distroFilter
+     * @return distroFilter JSON string
      */
-    public static DistroFilter parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
+    public static String parseStageDistroFilter(List<ModuleMetadataInfo> moduleMetadataInfos) {
         for (ModuleMetadataInfo moduleMetadataInfo : moduleMetadataInfos) {
             String resource = moduleMetadataInfo.resource;
             if (resource.isEmpty()) {
@@ -1103,24 +1104,16 @@ class ModuleJsonUtil {
             try {
                 JSONObject distroFilter = parseJsonObject(resource);
                 if (distroFilter != null && distroFilter.containsKey(DISTRIBUTION_FILTER)) {
-                    DistroFilter parsedDistroFilter =
-                            parseJsonObject(getJsonString(distroFilter, DISTRIBUTION_FILTER), DistroFilter.class);
-                    if (parsedDistroFilter != null) {
-                        return parsedDistroFilter;
-                    }
+                    return getJsonString(distroFilter, DISTRIBUTION_FILTER);
                 }
                 if (distroFilter != null && distroFilter.containsKey(DISTRO_FILTER)) {
-                    DistroFilter parsedDistroFilter =
-                            parseJsonObject(getJsonString(distroFilter, DISTRO_FILTER), DistroFilter.class);
-                    if (parsedDistroFilter != null) {
-                        return parsedDistroFilter;
-                    }
+                    return getJsonString(distroFilter, DISTRO_FILTER);
                 }
             } catch (JSONException exception) {
                 LOG.warning("parseStageDistroFilter failed for resource: " + resource);
             }
         }
-        return new DistroFilter();
+        return "";
     }
 
     /**

@@ -1035,6 +1035,46 @@ HWTEST_F(PtJsonTest, GetAny_0100, Function | MediumTest | Level1)
 }
 
 /*
+ * @tc.name: GetLastItem_0100
+ * @tc.desc: GetLast accessors use the last case-sensitive duplicate key.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PtJsonTest, GetLastItem_0100, Function | MediumTest | Level1)
+{
+    std::unique_ptr<AppPackingTool::PtJson> root = AppPackingTool::PtJson::Parse(
+        R"({"object":{"value":1},"object":{"value":2},)"
+        R"("array":[1],"array":[2],"string":"first","string":"last"})");
+    ASSERT_NE(root, nullptr);
+
+    std::unique_ptr<AppPackingTool::PtJson> object;
+    EXPECT_EQ(root->GetLastObject("object", &object), AppPackingTool::Result::SUCCESS);
+    ASSERT_NE(object, nullptr);
+    int32_t value = 0;
+    EXPECT_EQ(object->GetInt("value", &value), AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(value, 2);
+
+    std::unique_ptr<AppPackingTool::PtJson> array;
+    EXPECT_EQ(root->GetLastArray("array", &array), AppPackingTool::Result::SUCCESS);
+    ASSERT_NE(array, nullptr);
+    ASSERT_EQ(array->GetSize(), 1);
+    EXPECT_EQ(array->Get(0)->GetInt(), 2);
+
+    std::string stringValue;
+    EXPECT_EQ(root->GetLastString("string", &stringValue), AppPackingTool::Result::SUCCESS);
+    EXPECT_EQ(stringValue, "last");
+    EXPECT_EQ(root->GetLastString("String", &stringValue), AppPackingTool::Result::NOT_EXIST);
+
+    std::unique_ptr<AppPackingTool::PtJson> invalidRoot = AppPackingTool::PtJson::Parse(
+        R"({"object":{},"object":"invalid"})");
+    ASSERT_NE(invalidRoot, nullptr);
+    EXPECT_EQ(invalidRoot->GetLastObject("object", &object), AppPackingTool::Result::TYPE_ERROR);
+
+    invalidRoot->ReleaseRoot();
+    root->ReleaseRoot();
+}
+
+/*
  * @tc.name: SetArray_0100
  * @tc.desc: SetArray.
  * @tc.type: FUNC

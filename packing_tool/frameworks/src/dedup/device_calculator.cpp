@@ -16,8 +16,7 @@
 #include "dedup/device_calculator.h"
 #include <algorithm>
 #include "dedup/dedup_log.h"
-#include "dedup/dedup_error.h"
-#include "json/distro_filter.h"
+#include "dedup/module_calculator.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -67,79 +66,8 @@ std::string DeviceCalculator::DeviceTypeToString(DeviceType deviceType)
     }
 }
 
-std::vector<DeviceInstance> DeviceCalculator::ExtractDevicesFromModule(
-    const std::shared_ptr<ModuleJson>& moduleJson)
-{
-    std::vector<DeviceInstance> devices;
-
-    if (!moduleJson) {
-        return devices;
-    }
-
-    try {
-        // Get device type list
-        std::list<std::string> deviceTypeStrings;
-        bool isStageModel = moduleJson->GetStageDeviceTypes(deviceTypeStrings);
-        if (!isStageModel) {
-            return devices;
-        }
-        std::list<std::string> requiredDeviceTypes;
-        if (moduleJson->GetStageRequiredDeviceFeatureTypes(requiredDeviceTypes)) {
-            deviceTypeStrings.insert(deviceTypeStrings.end(), requiredDeviceTypes.begin(), requiredDeviceTypes.end());
-        }
-
-        // Get distributionFilter
-        DistroFilter distroFilter;
-        std::map<std::string, std::string> resourceMap; // Empty resource mapping
-        bool hasDistroFilter = moduleJson->GetStageDistroFilter(distroFilter, resourceMap);
-
-        // Create device instance for each device type
-        for (const auto& deviceTypeStr : deviceTypeStrings) {
-            DeviceInstance device;
-            device.type = StringToDeviceType(deviceTypeStr);
-
-            // If has distributionFilter, add to device instance
-            if (hasDistroFilter && !distroFilter.IsEmpty()) {
-                device.distributionFilter = distroFilter.Dump();
-            } else {
-                device.distributionFilter = ""; // No distributionFilter
-            }
-
-            devices.push_back(device);
-        }
-    } catch (const std::exception& e) {
-        LOG(ERROR) << FormatDedupError("Extract devices from module failed: " + std::string(e.what()));
-    }
-
-    return devices;
-}
-
-std::vector<DeviceInstance> DeviceCalculator::MergeDevices(
-    const std::vector<DeviceInstance>& devices1,
-    const std::vector<DeviceInstance>& devices2)
-{
-    std::vector<DeviceInstance> merged = devices1;
-
-    for (const auto& device : devices2) {
-        // 检查是否已存在
-        bool found = false;
-        for (const auto& existing : merged) {
-            if (existing == device) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            merged.push_back(device);
-        }
-    }
-
-    return merged;
-}
-
 std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
-    const std::vector<std::shared_ptr<ModuleJson>>& entryModules)
+    const std::vector<ModuleConfig>& entryModules)
 {
     std::vector<DeviceInstance> allDevices;
 
@@ -147,24 +75,16 @@ std::vector<DeviceInstance> DeviceCalculator::CalculateDevices(
         LOG(WARNING) << "No entry modules provided for device calculation";
         return allDevices;
     }
-
     LOG(DEBUG) << "Calculating devices from " << entryModules.size() << " entry modules";
 
     // Traverse all entry modules, collect device instances
     for (const auto& entryModule : entryModules) {
-        if (!entryModule) {
-            continue;
+        for (DeviceType deviceType : entryModule.deviceTypes) {
+            DeviceInstance device = {deviceType, entryModule.distributionFilter};
+            if (std::find(allDevices.begin(), allDevices.end(), device) == allDevices.end()) {
+                allDevices.push_back(device);
+            }
         }
-
-        std::vector<DeviceInstance> moduleDevices = ExtractDevicesFromModule(entryModule);
-
-        if (moduleDevices.empty()) {
-            LOG(WARNING) << "No devices found in entry module";
-            continue;
-        }
-
-        // Merge device instances
-        allDevices = MergeDevices(allDevices, moduleDevices);
     }
 
     LOG(DEBUG) << "Calculated " << allDevices.size() << " unique device instances";
