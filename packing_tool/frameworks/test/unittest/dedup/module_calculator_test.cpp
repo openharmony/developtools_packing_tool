@@ -18,6 +18,7 @@
 #include <memory>
 #include "dedup/module_calculator.h"
 #include "dedup/device_calculator.h"
+#include "json/distro_filter.h"
 #include "json/module_json.h"
 
 using testing::ext::TestSize;
@@ -299,4 +300,30 @@ HWTEST_F(ModuleCalculatorTest, CompileSdkType_Empty_Allowed, TestSize.Level0) {
     EXPECT_EQ(config.compileSdkType, "");
     // 空compileSdkType不影响去重资格验证
     EXPECT_TRUE(OHOS::AppPackingTool::ModuleCalculator::IsValidForDedup(config));
+}
+
+HWTEST_F(ModuleCalculatorTest, ExtractModuleConfig_UsesFirstDistributionFilterResource, TestSize.Level0)
+{
+    const std::string jsonStr = R"({
+        "app":{"bundleName":"com.example.app","bundleType":"app"},
+        "module":{
+            "name":"entry","type":"entry","deviceTypes":["phone"],"deliveryWithInstall":true,
+            "metadata":[
+                {"name":"density","resource":"$profile:density_filter"},
+                {"name":"country","resource":"$profile:country_filter"}
+            ]
+        }
+    })";
+    auto module = std::make_shared<OHOS::AppPackingTool::ModuleJson>();
+    ASSERT_TRUE(module->ParseFromString(jsonStr));
+    const std::map<std::string, std::string> resourceMap = {
+        {"density_filter.json",
+            R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xldpi","xxldpi"]}}})"},
+        {"country_filter.json",
+            R"({"distributionFilter":{"countryCode":{"policy":"include","value":["CN"]}}})"}
+    };
+
+    auto config = OHOS::AppPackingTool::ModuleCalculator::ExtractModuleConfig(module, true, resourceMap);
+    EXPECT_EQ(config.distributionFilter,
+        R"({"screenDensity":{"policy":"include","value":["xldpi","xxldpi"]}})");
 }

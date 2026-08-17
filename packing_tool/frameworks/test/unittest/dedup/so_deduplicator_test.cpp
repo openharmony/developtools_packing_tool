@@ -32,6 +32,7 @@ namespace {
 constexpr const char* TEST_ROOT = "so_deduplicator_security_test";
 constexpr const char* MALICIOUS_MODULE_NAME = "../../target";
 constexpr const char* SO_PATH = "libs/arm64-v8a/libsame.so";
+constexpr const char* DISTRO_FILTER_PATH = "resources/base/profile/density_filter.json";
 
 std::string EscapeJsonString(const std::string& value)
 {
@@ -49,7 +50,8 @@ std::string BuildModuleJson(
     const std::string& moduleName,
     const std::string& deviceType = "phone",
     const std::string& moduleType = "entry",
-    bool deliveryWithInstall = true)
+    bool deliveryWithInstall = true,
+    bool hasDistributionFilter = false)
 {
     return "{"
         "\"app\":{\"bundleType\":\"app\"},"
@@ -58,6 +60,8 @@ std::string BuildModuleJson(
             "\"type\":\"" + moduleType + "\","
             "\"deviceTypes\":[\"" + deviceType + "\"],"
             "\"deliveryWithInstall\":" + (deliveryWithInstall ? "true" : "false") + ","
+            + (hasDistributionFilter ?
+                "\"metadata\":[{\"name\":\"distributionFilter\",\"resource\":\"$profile:density_filter\"}]," : "") +
             "\"extractNativeLibs\":true"
         "}"
     "}";
@@ -71,7 +75,8 @@ void RemoveTestRoot()
 bool CreateModuleZip(
     const std::filesystem::path& zipPath,
     const std::string& moduleJson,
-    bool includeSo = false)
+    bool includeSo = false,
+    const std::string& distroFilter = "")
 {
     OHOS::AppPackingTool::ZipWrapper zipWrapper(zipPath.string());
     if (zipWrapper.Open() != OHOS::AppPackingTool::ZIP_ERR_SUCCESS) {
@@ -81,6 +86,10 @@ bool CreateModuleZip(
         OHOS::AppPackingTool::ZIP_ERR_SUCCESS;
     if (includeSo) {
         success = success && zipWrapper.WriteStringToZip("same so content", SO_PATH) ==
+            OHOS::AppPackingTool::ZIP_ERR_SUCCESS;
+    }
+    if (!distroFilter.empty()) {
+        success = success && zipWrapper.WriteStringToZip(distroFilter, DISTRO_FILTER_PATH) ==
             OHOS::AppPackingTool::ZIP_ERR_SUCCESS;
     }
     zipWrapper.Close();
@@ -263,4 +272,39 @@ HWTEST_F(SODeduplicatorTest, DeduplicateModules_RemovesSoFromOnlyOneDuplicateNam
     EXPECT_FALSE(OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(*moduleIt++, SO_PATH));
     EXPECT_FALSE(OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(*moduleIt++, SO_PATH));
     EXPECT_TRUE(OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(*moduleIt, SO_PATH));
+}
+
+HWTEST_F(SODeduplicatorTest, DeduplicateModules_UsesDistributionFilterResource, TestSize.Level0)
+{
+    std::filesystem::path root(TEST_ROOT);
+    std::filesystem::path workDir = root / "work";
+    std::filesystem::path reportDir = root / "report";
+    std::filesystem::path xldpiEntry = root / "xldpi_entry.hap";
+    std::filesystem::path xxldpiEntry = root / "xxldpi_entry.hap";
+    std::filesystem::path xxldpiFeature = root / "xxldpi_feature.hsp";
+    std::filesystem::create_directories(workDir);
+    std::filesystem::create_directories(reportDir);
+
+    const std::string xldpiFilter =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xldpi"]}}})";
+    const std::string xxldpiFilter =
+        R"({"distributionFilter":{"screenDensity":{"policy":"include","value":["xxldpi"]}}})";
+    ASSERT_TRUE(CreateModuleZip(xldpiEntry,
+        BuildModuleJson("xldpiEntry", "phone", "entry", true, true), true, xldpiFilter));
+    ASSERT_TRUE(CreateModuleZip(xxldpiEntry,
+        BuildModuleJson("xxldpiEntry", "phone", "entry", true, true), true, xxldpiFilter));
+    ASSERT_TRUE(CreateModuleZip(xxldpiFeature,
+        BuildModuleJson("xxldpiFeature", "phone", "feature", false, true), true, xxldpiFilter));
+
+    std::list<std::string> modulePaths = {
+        xldpiEntry.string(), xxldpiEntry.string(), xxldpiFeature.string()
+    };
+    OHOS::AppPackingTool::SODeduplicator deduplicator;
+    ASSERT_TRUE(deduplicator.DeduplicateModules(modulePaths, true, workDir.string(), reportDir.string()));
+    ASSERT_EQ(modulePaths.size(), 3);
+
+    auto moduleIt = modulePaths.begin();
+    EXPECT_TRUE(OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(*moduleIt++, SO_PATH));
+    EXPECT_TRUE(OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(*moduleIt++, SO_PATH));
+    EXPECT_FALSE(OHOS::AppPackingTool::ZipUtils::IsFileExistsInZip(*moduleIt, SO_PATH));
 }

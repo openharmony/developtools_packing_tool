@@ -35,6 +35,7 @@ struct ModuleConfig {
     std::vector<DeviceType> deviceTypes;
     bool deviceTypesConfigured;
     std::string distributionFilter;
+    bool distributionFilterValid;
     bool deliveryWithInstall;
     bool deliveryWithInstallPresent;
     std::vector<std::string> requireDeviceFeatures;
@@ -43,7 +44,8 @@ struct ModuleConfig {
     bool libIsolation;
     std::string compileSdkType; // SDK类型标识
 
-    ModuleConfig() : stageModel(false), deviceTypesConfigured(false), deliveryWithInstall(false),
+    ModuleConfig() : stageModel(false), deviceTypesConfigured(false), distributionFilterValid(true),
+                     deliveryWithInstall(false),
                      deliveryWithInstallPresent(false),
                      compressNativeLibs(false),
                      extractNativeLibs(false), libIsolation(false) {}
@@ -66,10 +68,13 @@ public:
     /**
      * @brief 从ModuleJson提取模块配置
      * @param moduleJson ModuleJson对象
+     * @param stageModel Whether the module uses the stage model.
+     * @param resourceMap Profile resources referenced by module metadata.
      * @return 模块配置
      */
     static ModuleConfig ExtractModuleConfig(
-        const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel = true);
+        const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel = true,
+        const std::map<std::string, std::string>& resourceMap = {});
 
     static bool IsValidForDedup(const ModuleConfig& moduleConfig);
 

@@ -78,6 +78,7 @@ const std::string ATOMIC_SERVICE = "atomicService";
 const std::string PRELOADS = "preloads";
 const std::string SHARED = "shared";
 const std::string APP_SERVICE = "appService";
+
 const std::string APP_PLUGIN = "appPlugin";
 const std::string TYPE_SKILL = "skill";
 const std::string REQUEST_PERMISSIONS = "requestPermissions";
@@ -98,6 +99,7 @@ const std::string MULTI_APP_MODE_NUMBER = "maxCount";
 const std::string GENERATE_BUILD_HASH = "generateBuildHash";
 const std::string BUILD_HASH = "buildHash";
 const std::string ASSET_ACCESS_GROUPS = "assetAccessGroups";
+
 }
 
 bool ModuleJson::ParseFromString(const std::string& jsonString)
@@ -601,37 +603,74 @@ bool ModuleJson::GetModuleMetadatasByModuleObj(std::unique_ptr<PtJson>& moduleOb
     return true;
 }
 
-bool ModuleJson::ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
-    DistroFilter& distroFilter)
+namespace {
+bool GetDistroFilterObject(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
+    std::unique_ptr<PtJson>& distroFilterObj)
 {
-    for (auto& moduleMetadataInfo : moduleMetadataInfos) {
+    for (const auto& moduleMetadataInfo : moduleMetadataInfos) {
         if (moduleMetadataInfo.resource.empty()) {
             continue;
         }
         std::unique_ptr<PtJson> distroFilterJsonObj = PtJson::Parse(moduleMetadataInfo.resource);
         if (!distroFilterJsonObj) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("DistroFilter node is null!").c_str());
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "Invalid metadata profile resource while parsing distributionFilter.").c_str());
             return false;
         }
-        std::unique_ptr<PtJson> distroFilterObj;
-        if (distroFilterJsonObj->Contains(DISTRIBUTION_FILTER.c_str())) {
-            if (distroFilterJsonObj->GetObject(DISTRIBUTION_FILTER.c_str(), &distroFilterObj) != Result::SUCCESS) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                    ("DistroFilter node get " + DISTRIBUTION_FILTER + " failed!").c_str()).c_str());
-                return false;
-            }
-        } else if (distroFilterJsonObj->Contains(DISTRO_FILTER.c_str())) {
-            if (distroFilterJsonObj->GetObject(DISTRO_FILTER.c_str(), &distroFilterObj) != Result::SUCCESS) {
-                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-                    ("DistroFilter node get " + DISTRO_FILTER + " failed!").c_str()).c_str());
-                return false;
-            }
+        if (!distroFilterJsonObj->IsObject()) {
+            continue;
         }
-        if (!distroFilter.ParseFromJson(distroFilterObj)) {
-            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Parse distro filter failed!").c_str());
+        Result result = distroFilterJsonObj->GetLastObject(DISTRIBUTION_FILTER.c_str(), &distroFilterObj);
+        if (result == Result::TYPE_ERROR) {
+            LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                "The distributionFilter node is not an object.").c_str());
             return false;
         }
+        if (result == Result::NOT_EXIST) {
+            result = distroFilterJsonObj->GetLastObject(DISTRO_FILTER.c_str(), &distroFilterObj);
+            if (result == Result::TYPE_ERROR) {
+                LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+                    "The distroFilter node is not an object.").c_str());
+                return false;
+            }
+            if (result == Result::NOT_EXIST) {
+                continue;
+            }
+        }
+        return true;
     }
+    return true;
+}
+} // namespace
+
+bool ModuleJson::ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
+    DistroFilter& distroFilter)
+{
+    std::unique_ptr<PtJson> distroFilterObj;
+    if (!GetDistroFilterObject(moduleMetadataInfos, distroFilterObj)) {
+        return false;
+    }
+    if (!distroFilterObj) {
+        return true;
+    }
+    DistroFilter parsedDistroFilter;
+    if (!parsedDistroFilter.ParseFromJson(distroFilterObj)) {
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "The distributionFilter profile contains invalid properties.").c_str());
+        return false;
+    }
+    distroFilter = parsedDistroFilter;
+    return true;
+}
+
+bool ModuleJson::ParseModuleMetadatasToDistroFilter(const std::list<ModuleMetadataInfo>& moduleMetadataInfos,
+    std::string& distroFilter)
+{
+    std::unique_ptr<PtJson> distroFilterObj;
+    if (!GetDistroFilterObject(moduleMetadataInfos, distroFilterObj)) {
+        return false;
+    }
+    distroFilter = distroFilterObj ? distroFilterObj->Stringify() : "";
     return true;
 }
 

@@ -28,7 +28,8 @@ ModuleCalculator::~ModuleCalculator()
 {}
 
 ModuleConfig ModuleCalculator::ExtractModuleConfig(
-    const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel)
+    const std::shared_ptr<ModuleJson>& moduleJson, bool stageModel,
+    const std::map<std::string, std::string>& resourceMap)
 {
     ModuleConfig config;
 
@@ -68,10 +69,10 @@ ModuleConfig ModuleCalculator::ExtractModuleConfig(
         }
 
         // Get distributionFilter
-        DistroFilter distroFilter;
-        std::map<std::string, std::string> resourceMap;
-        if (moduleJson->GetStageDistroFilter(distroFilter, resourceMap)) {
-            config.distributionFilter = distroFilter.Dump();
+        std::list<ModuleMetadataInfo> moduleMetadataInfos;
+        if (!moduleJson->GetModuleMetadatas(moduleMetadataInfos, resourceMap) ||
+            !moduleJson->ParseModuleMetadatasToDistroFilter(moduleMetadataInfos, config.distributionFilter)) {
+            config.distributionFilterValid = false;
         }
 
         // Get deliveryWithInstall

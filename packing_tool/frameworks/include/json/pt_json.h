@@ -112,6 +112,11 @@ public:
     Result GetArray(const char *key, std::unique_ptr<PtJson> *value) const;
     Result GetAny(const char *key, std::unique_ptr<PtJson> *value) const;
 
+    // Use the last matching child when an object contains duplicate keys.
+    Result GetLastString(const char *key, std::string *value) const;
+    Result GetLastObject(const char *key, std::unique_ptr<PtJson> *value) const;
+    Result GetLastArray(const char *key, std::unique_ptr<PtJson> *value) const;
+
     Result SetBool(const char *key, const bool& value);
     Result SetInt(const char *key, const int32_t& value);
     Result SetInt64(const char *key, const int64_t& value);
@@ -122,6 +127,8 @@ public:
     Result SetArray(const char *key, const std::list<std::string>& value);
 
 private:
+    cJSON *GetLastItem(const char *key) const;
+
     cJSON *object_ = nullptr;
 };
 }  // namespace AppPackingTool

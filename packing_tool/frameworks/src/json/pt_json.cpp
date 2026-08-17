@@ -16,6 +16,7 @@
 #include "pt_json.h"
 
 #include <cmath>
+#include <cstring>
 #include <limits>
 
 #include "log.h"
@@ -599,6 +600,62 @@ Result PtJson::GetAny(const char *key, std::unique_ptr<PtJson> *value) const
     cJSON *item = cJSON_GetObjectItem(object_, key);
     if (item == nullptr) {
         return Result::NOT_EXIST;
+    }
+
+    *value = std::make_unique<PtJson>(item);
+    return Result::SUCCESS;
+}
+
+cJSON *PtJson::GetLastItem(const char *key) const
+{
+    if (object_ == nullptr || key == nullptr) {
+        return nullptr;
+    }
+    cJSON *result = nullptr;
+    for (cJSON *item = object_->child; item != nullptr; item = item->next) {
+        if (item->string != nullptr && std::strcmp(item->string, key) == 0) {
+            result = item;
+        }
+    }
+    return result;
+}
+
+Result PtJson::GetLastString(const char *key, std::string *value) const
+{
+    cJSON *item = GetLastItem(key);
+    if (item == nullptr) {
+        return Result::NOT_EXIST;
+    }
+    if (cJSON_IsString(item) == 0) {
+        return Result::TYPE_ERROR;
+    }
+
+    *value = item->valuestring;
+    return Result::SUCCESS;
+}
+
+Result PtJson::GetLastObject(const char *key, std::unique_ptr<PtJson> *value) const
+{
+    cJSON *item = GetLastItem(key);
+    if (item == nullptr) {
+        return Result::NOT_EXIST;
+    }
+    if (cJSON_IsObject(item) == 0) {
+        return Result::TYPE_ERROR;
+    }
+
+    *value = std::make_unique<PtJson>(item);
+    return Result::SUCCESS;
+}
+
+Result PtJson::GetLastArray(const char *key, std::unique_ptr<PtJson> *value) const
+{
+    cJSON *item = GetLastItem(key);
+    if (item == nullptr) {
+        return Result::NOT_EXIST;
+    }
+    if (cJSON_IsArray(item) == 0) {
+        return Result::TYPE_ERROR;
     }
 
     *value = std::make_unique<PtJson>(item);
