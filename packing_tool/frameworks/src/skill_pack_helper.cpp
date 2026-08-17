@@ -135,11 +135,17 @@ bool GetSkillsPathFromParam(const std::map<std::string, std::string> &parameterM
 
 bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, std::string &skillsPath)
 {
+    return ValidateSkillsPath(parameterMap, skillsPath, PackingToolErrMsg::HAP_MODE_ARGS_INVALID);
+}
+
+bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, std::string &skillsPath,
+    const packing_tool::error::ErrorMsg &errorType)
+{
     if (!GetSkillsPathFromParam(parameterMap, skillsPath)) {
         return false;
     }
     if (skillsPath.empty()) {
-        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", errorType.toStringWithArgs(
             "--skills-path is required when skillProfiles is configured in module.json.").c_str());
         return false;
     }
@@ -153,8 +159,14 @@ bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, 
 
 bool CheckBundleTypeAllowsSkills(const std::string &bundleType)
 {
+    return CheckBundleTypeAllowsSkills(bundleType, PackingToolErrMsg::HAP_MODE_ARGS_INVALID);
+}
+
+bool CheckBundleTypeAllowsSkills(const std::string &bundleType,
+    const packing_tool::error::ErrorMsg &errorType)
+{
     if (IsForbiddenBundleType(bundleType)) {
-        LOGE("%s", PackingToolErrMsg::HAP_MODE_ARGS_INVALID.toStringWithArgs(
+        LOGE("%s", errorType.toStringWithArgs(
             ("skillProfiles is not allowed when bundleType is " + bundleType + ".").c_str()).c_str());
         return false;
     }
@@ -165,6 +177,15 @@ bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &ski
     const std::map<std::string, std::string> &parameterMap, const std::string &bundleType,
     const std::string &jsonPath, const AddSkillFileFunc &addFile)
 {
+    return CompressSkillFiles(skillProfiles, parameterMap, bundleType, jsonPath,
+        PackingToolErrMsg::HAP_MODE_ARGS_INVALID, addFile);
+}
+
+bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &skillProfiles,
+    const std::map<std::string, std::string> &parameterMap, const std::string &bundleType,
+    const std::string &jsonPath, const packing_tool::error::ErrorMsg &errorType,
+    const AddSkillFileFunc &addFile)
+{
     std::set<std::string> profileNames;
     if (!CollectProfileNames(skillProfiles, profileNames)) {
         return false;
@@ -173,10 +194,10 @@ bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &ski
         return true;
     }
     std::string skillsPath;
-    if (!ValidateSkillsPath(parameterMap, skillsPath)) {
+    if (!ValidateSkillsPath(parameterMap, skillsPath, errorType)) {
         return false;
     }
-    if (!CheckBundleTypeAllowsSkills(bundleType)) {
+    if (!CheckBundleTypeAllowsSkills(bundleType, errorType)) {
         return false;
     }
     std::string failedProfile;
@@ -185,7 +206,7 @@ bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &ski
         if (failureDetail.find("skillProfiles has '") == 0) {
             failureDetail += " Checked skillProfiles declared in --json-path: " + jsonPath + ".";
         }
-        LOGE("%s", PackingToolErrMsg::FAST_APP_MODE_ARGS_INVALID.toStringWithArgs(failureDetail.c_str()).c_str());
+        LOGE("%s", errorType.toStringWithArgs(failureDetail.c_str()).c_str());
         return false;
     }
     if (!AddConfiguredSkillsToZip(skillsPath, profileNames, addFile, failedProfile)) {
