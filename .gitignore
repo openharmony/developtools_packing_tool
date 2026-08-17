@@ -6,7 +6,6 @@ jar
 
 # Local Codex/test artifacts
 /.agents/
-/AGENTS.md
 /CLAUDE.md
 /JDK_EMPTY_PATH_FIX_REPORT.md
 /build_recommendation.md
