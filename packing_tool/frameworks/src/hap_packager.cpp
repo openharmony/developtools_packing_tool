@@ -902,6 +902,7 @@ bool HapPackager::CompressSkillsDirectory()
     std::string bundleType;
     moduleJson_.GetStageBundleType(bundleType);
     return SkillPackHelper::CompressSkillFiles(skillProfiles, parameterMap_, bundleType, jsonPath_,
+        PackingToolErrMsg::HAP_MODE_ARGS_INVALID,
         [this](const std::string &sourcePath, const std::string &zipPath) {
             return zipWrapper_.AddFileOrDirectoryToZip(sourcePath, zipPath) == ZipErrCode::ZIP_ERR_SUCCESS;
         });

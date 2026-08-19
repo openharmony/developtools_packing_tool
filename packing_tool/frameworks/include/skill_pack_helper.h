@@ -24,6 +24,7 @@
 #include <string>
 
 #include "constants.h"
+#include "error/error_msg.h"
 
 namespace OHOS {
 namespace AppPackingTool {
@@ -43,11 +44,21 @@ bool GetSkillsPathFromParam(const std::map<std::string, std::string> &parameterM
 
 bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, std::string &skillsPath);
 
+bool ValidateSkillsPath(const std::map<std::string, std::string> &parameterMap, std::string &skillsPath,
+    const packing_tool::error::ErrorMsg &errorType);
+
 bool CheckBundleTypeAllowsSkills(const std::string &bundleType);
+
+bool CheckBundleTypeAllowsSkills(const std::string &bundleType, const packing_tool::error::ErrorMsg &errorType);
 
 bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &skillProfiles,
     const std::map<std::string, std::string> &parameterMap, const std::string &bundleType,
     const std::string &jsonPath, const AddSkillFileFunc &addFile);
+
+bool CompressSkillFiles(const std::list<std::map<std::string, std::string>> &skillProfiles,
+    const std::map<std::string, std::string> &parameterMap, const std::string &bundleType,
+    const std::string &jsonPath, const packing_tool::error::ErrorMsg &errorType,
+    const AddSkillFileFunc &addFile);
 
 bool HasSkillMarkdown(const fs::path &skillDir);
 
