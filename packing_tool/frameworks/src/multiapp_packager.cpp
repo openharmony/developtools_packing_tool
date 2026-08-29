@@ -36,14 +36,20 @@ class TempDirGuard {
 public:
     ~TempDirGuard()
     {
-        if (!path_.empty() && fs::exists(path_)) {
-            fs::remove_all(path_);
+        std::error_code ec;
+        if (!path_.empty() && fs::exists(path_, ec)) {
+            fs::remove_all(path_, ec);
         }
     }
 
     void Reset(const fs::path &path)
     {
         path_ = path;
+    }
+
+    void Release()
+    {
+        path_.clear();
     }
 
     const fs::path &Get() const
@@ -574,6 +580,8 @@ void MultiAppPackager::WritePackInfo(const std::string &filePath, const std::str
 bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileList, fs::path &tempHapDirPath,
     fs::path &tempSelectedHapDirPath, std::string &finalPackInfoStr, std::string &finalPackInfoPath)
 {
+    isTempHapDirCreated_ = false;
+    isTempSelectedHapDirCreated_ = false;
     std::string outPath = parameterMap_.at(Constants::PARAM_OUT_PATH);
     zipWrapper_.Open(outPath);
     if (!zipWrapper_.IsOpen()) {
@@ -600,12 +608,25 @@ bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileLi
         tempSelectedHapDirPath = fs::path(path).parent_path() / ((Constants::COMPRESSOR_MULTIAPP_TEMP_DIR) +
             Utils::GenerateUUID());
     }
-    if (!fs::exists(tempHapDirPath)) {
-        fs::create_directories(tempHapDirPath);
+    std::error_code ec;
+    TempDirGuard tempHapDirGuard;
+    TempDirGuard tempSelectedHapDirGuard;
+    if (!fs::create_directories(tempHapDirPath, ec)) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_MODE_FORMULTI_PROJECT_FAILED.toStringWithArgs(
+            ("Failed to create temporary directory: " + tempHapDirPath.string() +
+            (ec ? " - " + ec.message() : " already exists")).c_str()).c_str());
+        return false;
     }
-    if (!fs::exists(tempSelectedHapDirPath)) {
-        fs::create_directories(tempSelectedHapDirPath);
+    tempHapDirGuard.Reset(tempHapDirPath);
+    isTempHapDirCreated_ = true;
+    if (!fs::create_directories(tempSelectedHapDirPath, ec)) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_MODE_FORMULTI_PROJECT_FAILED.toStringWithArgs(
+            ("Failed to create temporary directory: " + tempSelectedHapDirPath.string() +
+            (ec ? " - " + ec.message() : " already exists")).c_str()).c_str());
+        return false;
     }
+    tempSelectedHapDirGuard.Reset(tempSelectedHapDirPath);
+    isTempSelectedHapDirCreated_ = true;
     std::list<std::string> selectedHaps;
     finalPackInfoStr = DisposeApp(selectedHaps, tempSelectedHapDirPath);
     finalPackInfoStr = DisposeHapAndHsp(selectedHaps, tempSelectedHapDirPath, finalPackInfoStr);
@@ -620,6 +641,8 @@ bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileLi
         fileList.push_back(hapTempPath);
         CompressPackinfoIntoHap(hapPathItem, hapUnzipTempPath, hapTempPath, finalPackInfoPath);
     }
+    tempHapDirGuard.Release();
+    tempSelectedHapDirGuard.Release();
     return true;
 }
 
@@ -635,6 +658,14 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_MODE_FORMULTI_PROJECT_FAILED.toStringWithArgs(
             "CompressAppModeForMultiProject PrepareFilesForCompression failed.").c_str());
         return false;
+    }
+    TempDirGuard tempHapDirGuard;
+    TempDirGuard tempSelectedHapDirGuard;
+    if (isTempHapDirCreated_) {
+        tempHapDirGuard.Reset(tempHapDirPath);
+    }
+    if (isTempSelectedHapDirCreated_) {
+        tempSelectedHapDirGuard.Reset(tempSelectedHapDirPath);
     }
     SODeduplicator soDeduplicator;
     bool deduplicateSo = parameterMap_.find(Constants::PARAM_DEDUPLICATE_SO) != parameterMap_.end() &&
@@ -658,12 +689,6 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         LOGE("%s", PackingToolErrMsg::CHECK_HAP_INVALID.toStringWithArgs(
             "here are somehaps with different version code or build version or duplicated moduleName "
             "or packageName.").c_str());
-        if (fs::exists(tempHapDirPath)) {
-            fs::remove_all(tempHapDirPath);
-        }
-        if (fs::exists(tempSelectedHapDirPath)) {
-            fs::remove_all(tempSelectedHapDirPath);
-        }
         return false;
     }
     if (!ModuleJsonUtils::GetHapVerifyInfosMapfromFileList(fileList, hapVerifyInfoMap_)) {
@@ -689,12 +714,6 @@ bool MultiAppPackager::CompressAppModeForMultiProject()
         }
     }
     zipWrapper_.Close();
-    if (fs::exists(tempHapDirPath)) {
-        fs::remove_all(tempHapDirPath);
-    }
-    if (fs::exists(tempSelectedHapDirPath)) {
-        fs::remove_all(tempSelectedHapDirPath);
-    }
     if (!ModuleJsonUtils::CheckAppAtomicServiceCompressedSizeValid(parameterMap_, hapVerifyInfoMap_)) {
         LOGE("%s", PackingToolErrMsg::CHECK_ATOMIC_SERVICE_SIZE_FAILED.toStringWithArgs(
             "MultiAppPackager::CompressAppModeForMultiProject: "

@@ -39,6 +39,27 @@ int32_t Packager::atomicServiceNonEntrySizeLimit_ = 2048;
 namespace {
 const std::string EN_US_UTF_8 = "en_US.UTF-8";
 const std::string SCAN_RESULT = "scan_result";
+
+class TempDirGuard {
+public:
+    explicit TempDirGuard(fs::path &path) : path_(path) {}
+
+    ~TempDirGuard()
+    {
+        std::error_code ec;
+        if (!path_.empty() && fs::exists(path_, ec)) {
+            fs::remove_all(path_, ec);
+        }
+    }
+
+    void Release()
+    {
+        path_.clear();
+    }
+
+private:
+    fs::path &path_;
+};
 }
 
 Packager::Packager(const std::map<std::string, std::string> &parameterMap, std::string &resultReceiver)
@@ -50,6 +71,8 @@ Packager::~Packager()
 
 int32_t Packager::MakePackage()
 {
+    buildHashTempDir_.clear();
+    TempDirGuard buildHashTempDirGuard(buildHashTempDir_);
     int32_t ret = ERR_OK;
     ret = InitAllowedParam();
     if (ret != ERR_OK) {
@@ -473,12 +496,24 @@ bool Packager::CopyFileToTempDir(std::string &jsonPath)
     std::string tempDir = Constants::COMPRESSOR_TEMP_DIR + fs::path::preferred_separator + Utils::GenerateUUID();
     fs::path tempDirFs(tempDir);
     tempDir = oldFileParent.string() + fs::path::preferred_separator + tempDirFs.string();
-    fs::create_directories(tempDir);
+    std::error_code ec;
+    fs::path tempDirPath(tempDir);
+    fs::path ownedTempDir;
+    TempDirGuard tempDirGuard(ownedTempDir);
+    if (!fs::create_directories(tempDirPath, ec)) {
+        LOGE("%s", PackingToolErrMsg::FILE_IO_EXCEPTION.toStringWithArgs(
+            ("Failed to create temporary directory: " + tempDir +
+            (ec ? " - " + ec.message() : " already exists")).c_str()).c_str());
+        return false;
+    }
+    ownedTempDir = tempDirPath;
     fs::path fileName = JsonUtils::IsModuleJson(jsonPath) ? Constants::MODULE_JSON : Constants::CONFIG_JSON;
     std::string tempPath = tempDir + fs::path::preferred_separator + fileName.string();
     if (!Utils::CopyFile(jsonPath, tempPath)) {
         return false;
     }
+    buildHashTempDir_ = ownedTempDir;
+    tempDirGuard.Release();
     jsonPath = tempPath;
     return true;
 }
@@ -507,7 +542,11 @@ bool Packager::PutBuildHash(const std::string &jsonPath, const std::string &hash
     }
 
     ModuleJson moduleJson;
-    moduleJson.ParseFromFile(jsonPath);
+    if (!moduleJson.ParseFromFile(jsonPath)) {
+        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
+            "Failed to parse --json-path when writing build hash.").c_str());
+        return false;
+    }
     moduleJson.SetBuildHash(hash);
     std::string prettyJsonString = moduleJson.ToString();
     if (prettyJsonString.empty()) {

@@ -35,6 +35,22 @@ using packing_tool::error::PackingToolErrMsg;
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
+class TempDirGuard {
+public:
+    explicit TempDirGuard(const fs::path &path) : path_(path) {}
+
+    ~TempDirGuard()
+    {
+        std::error_code ec;
+        if (fs::exists(path_, ec)) {
+            fs::remove_all(path_, ec);
+        }
+    }
+
+private:
+    fs::path path_;
+};
+
 bool ValidateSkillProfilesInArchive(const fs::path &archivePath, const std::set<std::string> &profileNames,
     std::string &failureDetail)
 {
@@ -922,11 +938,14 @@ bool FastAppPackager::RepackHsp(const fs::path &inputPath, const fs::path &appPa
     
     std::string uZipTempPath = "uzip_fast_app_temp_";
     fs::path unzipPathString = inputPath.parent_path() / fs::path(uZipTempPath + Utils::GenerateUUID());
-    if (!fs::create_directories(unzipPathString)) {
+    std::error_code ec;
+    if (!fs::create_directories(unzipPathString, ec)) {
         LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs(
-            ("Can't create directory: " + unzipPathString.string()).c_str()).c_str());
+            ("Can't create directory: " + unzipPathString.string() +
+                (ec ? " - " + ec.message() : "")).c_str()).c_str());
         return false;
     }
+    TempDirGuard unzipPathGuard(unzipPathString);
     std::string uzipHsp = UzipHspAndRemovePackInfo(inputPath.string(), unzipPathString.string());
     if (zipWrapper_.AddFileOrDirectoryToZip(uzipHsp, Constants::NULL_DIR_NAME) != ZipErrCode::ZIP_ERR_SUCCESS) {
         LOGE("%s", PackingToolErrMsg::REPACK_HSP_EXCEPTION.toStringWithArgs(
