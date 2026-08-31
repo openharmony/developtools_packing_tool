@@ -26,6 +26,7 @@
 #include "log.h"
 #include "scan_statdulpicate.h"
 #include "utils.h"
+#include "parse_packing_int.h"
 #include "zip_utils.h"
 #include "error/packing_tool_err_msg.h"
 using packing_tool::error::PackingToolErrMsg;
@@ -176,14 +177,9 @@ bool Packager::IsCompressLevelValid()
                 "--compress-level value not number between 1-9.").c_str());
             return false;
         }
-        try {
-            int level = std::stoi(levelStr);
-            if (level < Constants::MIN_COMPRESS_LEVEL || level > Constants::MAX_COMPRESS_LEVEL) {
-                LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
-                    "--compress-level value not number between 1-9.").c_str());
-                return false;
-            }
-        } catch (const std::exception& e) {
+        int32_t level = 0;
+        if (!ParsePackingInt32(levelStr, level) ||
+            level < Constants::MIN_COMPRESS_LEVEL || level > Constants::MAX_COMPRESS_LEVEL) {
             LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
                 "--compress-level value not number between 1-9.").c_str());
             return false;
@@ -613,9 +609,7 @@ bool Packager::ParseAtomicServiceEntrySizeLimitParameter()
     auto it = parameterMap_.find(Constants::PARAM_ATOMIC_SERVICE_ENTRY_SIZE_LIMIT);
     int32_t entrySizeLimit = Constants::ATOMIC_SERVICE_ENTRY_SIZE_LIMIT_DEFAULT;
     if (it != parameterMap_.end()) {
-        try {
-            entrySizeLimit = std::stoi(it->second);
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(it->second, entrySizeLimit)) {
             LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 std::vector<std::string>{
                     "parseAtomicServiceEntrySizeLimitParameter failed, "
@@ -643,9 +637,7 @@ bool Packager::ParseAtomicServiceNonEntrySizeLimitParameter()
     auto it = parameterMap_.find(Constants::PARAM_ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT);
     int32_t nonEntrySizeLimit = Constants::ATOMIC_SERVICE_NON_ENTRY_SIZE_LIMIT_DEFAULT;
     if (it != parameterMap_.end()) {
-        try {
-            nonEntrySizeLimit = std::stoi(it->second);
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(it->second, nonEntrySizeLimit)) {
             LOGE("%s", PackingToolErrMsg::PARSE_ATOMIC_SERVICE_SIZE_LIMIT_FAILED.toStringWithArgs(
                 std::vector<std::string>{
                     "parseAtomicServiceSizeLimit failed, "

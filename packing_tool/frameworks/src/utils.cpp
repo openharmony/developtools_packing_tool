@@ -15,6 +15,8 @@
 
 #include "utils.h"
 
+#include "parse_packing_int.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cctype>
@@ -361,19 +363,17 @@ bool Utils::IsPositiveInteger(const std::string& str, int min, int max)
         return false;
     }
     for (char c : str) {
-        if (!std::isdigit(c)) {
+        if (!std::isdigit(static_cast<unsigned char>(c))) {
             return false;
         }
     }
-    try {
-        int number = std::stoi(str);
-        return number >= min && number <= max;
-    } catch (const std::out_of_range& e) {
+    int32_t number = 0;
+    if (!ParsePackingInt32(str, number)) {
         LOGE("%s", PackingToolErrMsg::COMMAND_PARSER_FAILED.toStringWithArgs(
             ("Number " + str + " is Out of Range!").c_str()).c_str());
         return false;
     }
-    return true;
+    return number >= min && number <= max;
 }
 
 bool Utils::StringToBool(const std::string& str)
