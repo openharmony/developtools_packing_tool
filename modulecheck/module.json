@@ -2833,7 +2833,7 @@
                 "description": "Indicates the path of a binary with kernel permission.",
                 "type": "string",
                 "maxLength": 128,
-                "pattern": "^([a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/)?[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_]+)?$"
+                "pattern": "^(\\.?[a-zA-Z0-9_-]+(\\/\\.?[a-zA-Z0-9_-]+)*\\/)?[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_]+)?$"
               }
             }
           }
