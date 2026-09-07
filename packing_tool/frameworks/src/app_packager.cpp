@@ -29,6 +29,25 @@ using packing_tool::error::PackingToolErrMsg;
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
+class TempDirGuard {
+public:
+    ~TempDirGuard()
+    {
+        std::error_code ec;
+        if (fs::exists(path_, ec)) {
+            fs::remove_all(path_, ec);
+        }
+    }
+
+    void Reset(const fs::path &path)
+    {
+        path_ = path;
+    }
+
+private:
+    fs::path path_;
+};
+
 bool GetFirstBundleTypeFromPathList(const std::list<std::string> &pathList, std::string &bundleType)
 {
     for (const auto &path : pathList) {
@@ -565,19 +584,24 @@ bool AppPackager::PrepareDirectoriesAndFiles(const std::string outPath)
         hspTempDirPath = fs::path(outPath).parent_path() / ((Constants::COMPRESSOR_APP_TEMP_DIR) +
             Utils::GenerateUUID());
     }
-    if (!fs::exists(tempPath)) {
-        fs::create_directories(tempPath);
+    std::error_code ec;
+    TempDirGuard tempPathGuard;
+    TempDirGuard hspTempDirPathGuard;
+    if (!fs::create_directories(tempPath, ec)) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            ("Failed to create temporary directory: " + tempPath.string() +
+            (ec ? " - " + ec.message() : " already exists")).c_str()).c_str());
+        return false;
     }
-    if (!fs::exists(hspTempDirPath)) {
-        fs::create_directories(hspTempDirPath);
+    tempPathGuard.Reset(tempPath);
+    if (!fs::create_directories(hspTempDirPath, ec)) {
+        LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
+            ("Failed to create temporary directory: " + hspTempDirPath.string() +
+            (ec ? " - " + ec.message() : " already exists")).c_str()).c_str());
+        return false;
     }
+    hspTempDirPathGuard.Reset(hspTempDirPath);
     if (!CompressHapAndHspFiles(tempPath, hspTempDirPath)) {
-        if (fs::exists(tempPath)) {
-            fs::remove_all(tempPath);
-        }
-        if (fs::exists(hspTempDirPath)) {
-            fs::remove_all(hspTempDirPath);
-        }
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
             "Compress Hap And Hsp Files failed.").c_str());
         return false;
@@ -652,12 +676,6 @@ bool AppPackager::CompressHapAndHspFiles(const fs::path &tempPath, const fs::pat
         LOGE("%s", PackingToolErrMsg::COMPRESS_APP_FAILED.toStringWithArgs(
             "Add Hap List To App failed.").c_str());
         return false;
-    }
-    if (fs::exists(tempPath)) {
-        fs::remove_all(tempPath);
-    }
-    if (fs::exists(hspTempDirPath)) {
-        fs::remove_all(hspTempDirPath);
     }
     return true;
 }

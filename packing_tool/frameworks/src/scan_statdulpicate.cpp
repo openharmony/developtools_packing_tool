@@ -54,6 +54,22 @@ const std::string HTML_TABLE_END = "</table>";
 const std::string HTML_TR_TD_LAYOUT = "<tr class=\"layout\"><td class=\"key\">";
 const std::string HTML_TR_TD_VALUE = "</td><td class=\"value\">";
 const std::string HTML_TR_TD_END = "</td></tr>";
+
+class TempDirGuard {
+public:
+    explicit TempDirGuard(const fs::path &path) : path_(path) {}
+
+    ~TempDirGuard()
+    {
+        std::error_code ec;
+        if (fs::exists(path_, ec)) {
+            fs::remove_all(path_, ec);
+        }
+    }
+
+private:
+    fs::path path_;
+};
 const std::string HTML_TR_TD_RESULT = "<tr class=\"result\"><td class=\"key\">";
 const std::string HTML_TR_TD_RESULT_VALUE = "</td><td class=\"value\">";
 const std::string HTML_TR_TD = "<tr%s><td%s>";
@@ -370,8 +386,14 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
     const std::string& unZipPath)
 {
     std::vector<std::string> fileList;
+    std::error_code ec;
     if (!fs::exists(fs::path(unZipPath))) {
-        fs::create_directory(fs::path(unZipPath));
+        fs::create_directory(fs::path(unZipPath), ec);
+        if (ec) {
+            LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
+                ("create unzip directory failed: " + ec.message()).c_str()).c_str());
+            return fileList;
+        }
     }
     ZipUtils::Unzip(inputApp, unZipPath);
     if (!fs::exists(unZipPath) || !fs::is_directory(unZipPath)) {
@@ -385,7 +407,12 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
     }
     std::string copyPath = unZipPath + Constants::LINUX_FILE_SEPARATOR + BACKUPS;
     if (!fs::exists(fs::path(copyPath))) {
-        fs::create_directory(fs::path(copyPath));
+        fs::create_directory(fs::path(copyPath), ec);
+        if (ec) {
+            LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
+                ("create backup directory failed: " + ec.message()).c_str()).c_str());
+            return {};
+        }
     }
     for (const auto& entryPath : entryPaths) {
         std::string fileName = entryPath.filename().string();
@@ -402,7 +429,12 @@ std::vector<std::string> ScanStatDuplicate::GetAllInputFileList(const std::strin
         fs::remove(entryPath);
         std::string outPath = unZipPath + Constants::LINUX_FILE_SEPARATOR + fileName;
         if (!fs::exists(fs::path(outPath))) {
-            fs::create_directory(fs::path(outPath));
+            fs::create_directory(fs::path(outPath), ec);
+            if (ec) {
+                LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
+                    ("create output directory failed: " + ec.message()).c_str()).c_str());
+                return {};
+            }
         }
         ZipUtils::Unzip(targetPath, outPath);
     }
@@ -428,8 +460,16 @@ bool ScanStatDuplicate::ScanSoFiles(const std::string& outPath)
     std::string htmlStr = HTML_START + HTML_HEAD + DIV_BOX + HTML_BODY + templateHtml;
 
     fs::path filePath(outPath);
-    std::string targetPath = filePath.parent_path().string() + Constants::LINUX_FILE_SEPARATOR + UNPACK_NAME;
-    std::vector<std::string> fileList = GetAllInputFileList(outPath, targetPath);
+    fs::path targetPath = filePath.parent_path() / UNPACK_NAME;
+    std::error_code ec;
+    if (!fs::create_directory(targetPath, ec)) {
+        LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_UNPACK_ERROR,
+            ("create unzip directory failed: " + targetPath.string() +
+            (ec ? " - " + ec.message() : " already exists")).c_str()).c_str());
+        return false;
+    }
+    TempDirGuard targetPathGuard(targetPath);
+    std::vector<std::string> fileList = GetAllInputFileList(outPath, targetPath.string());
 
     std::regex pattern(Constants::LIB_SO_PATTERN);
     fileList.erase(std::remove_if(fileList.begin(), fileList.end(),
@@ -461,9 +501,6 @@ bool ScanStatDuplicate::ScanSoFiles(const std::string& outPath)
         LOGE("%s", toStringWithArgs(ScanErrorEnum::SCAN_WRITEFILE_ERROR,
             "write failed, css file.").c_str());
         return false;
-    }
-    if (fs::exists(fs::path(targetPath))) {
-        fs::remove_all(fs::path(targetPath));
     }
     return true;
 }

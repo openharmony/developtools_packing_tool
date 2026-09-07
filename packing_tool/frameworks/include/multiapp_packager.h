@@ -60,6 +60,8 @@ private:
     std::list<std::string> formattedHapAndHspList_;
     std::map<std::string, std::shared_ptr<HapVerifyInfo>> hapVerifyInfoMap_;
     bool isSkillApp_ = false;
+    bool isTempHapDirCreated_ = false;
+    bool isTempSelectedHapDirCreated_ = false;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

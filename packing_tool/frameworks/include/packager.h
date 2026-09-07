@@ -69,6 +69,7 @@ protected:
     std::vector<Parameter> allowedParameters_;
     bool buildHashFinish_ = false;
     bool generateBuildHash_ = false;
+    std::filesystem::path buildHashTempDir_;
     
     bool CheckForceFlag();
     bool CheckStatDuplicateFlag();
