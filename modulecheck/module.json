@@ -1389,7 +1389,8 @@
                     "taskKeeping",
                     "avPlaybackAndRecord",
                     "specialScenarioProcessing",
-                    "nearlink"
+                    "nearlink",
+                    "usbConnection"
                   ]
                 }
               },
