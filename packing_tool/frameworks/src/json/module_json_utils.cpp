@@ -39,7 +39,6 @@ const std::string MODULE_JSON = "module.json";
 const std::string CONFIG_JSON = "config.json";
 const std::string HAP_SUFFIX = ".hap";
 const std::string HSP_SUFFIX = ".hsp";
-const int32_t SHARED_APP_HSP_LIMIT = 1;
 const std::string TYPE_SHARED = "shared";
 const std::string INCLUDE = "include";
 const std::string EXCLUDE = "exclude";
@@ -128,24 +127,14 @@ bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVeri
 }
 
 // java : Compressor::checkSharedAppIsValid / HapVerify::checkSharedApppIsValid
-bool ModuleJsonUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos, bool& isOverlay)
+bool ModuleJsonUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("hapVerifyInfos is empty").c_str());
         return false;
     }
-    if (hapVerifyInfos.size() > SHARED_APP_HSP_LIMIT) {
-        LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
-            std::string("hapVerifyInfos size is over than ") + std::to_string(SHARED_APP_HSP_LIMIT)).c_str());
-        return false;
-    }
-    for (auto& hapVerifyInfo : hapVerifyInfos) {
-        if (!hapVerifyInfo.GetTargetBundleName().empty()) {
-            isOverlay = true;
-            return true;
-        }
-    }
-    return HapVerifyUtils::CheckSharedAppIsValid(hapVerifyInfos);
+    // All single-package checks are completed here; the caller must not revalidate the whole set.
+    return HapVerifyUtils::CheckSharedAppVariantsIsValid(hapVerifyInfos);
 }
 
 bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>& fileList,
@@ -321,15 +310,20 @@ bool ModuleJsonUtils::CheckHapsIsValid(const std::list<std::string>& fileList, c
             "GetHapVerifyInfosfromFileList failed!").c_str());
         return false;
     }
-    if (isSharedApp) {
-        bool isOverlay = false;
-        if (!CheckSharedAppIsValid(hapVerifyInfos, isOverlay)) {
+    bool hasSharedHsp = std::any_of(hapVerifyInfos.begin(), hapVerifyInfos.end(),
+        [](const HapVerifyInfo& info) {
+            return info.GetBundleType() == TYPE_SHARED && info.GetFileType() == HSP_SUFFIX;
+        });
+    if (isSharedApp || hasSharedHsp) {
+        if (!CheckSharedAppIsValid(hapVerifyInfos)) {
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("CheckSharedAppIsValid failed!").c_str());
+            size_t inputIndex = 0;
+            for (const auto& file : fileList) {
+                LOGE("Shared HSP input #%zu: %s", ++inputIndex, file.c_str());
+            }
             return false;
         }
-        if (!isOverlay) {
-            return true;
-        }
+        return true;
     } else {
         for (auto& hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.GetBundleType().compare(TYPE_SHARED) == 0) {

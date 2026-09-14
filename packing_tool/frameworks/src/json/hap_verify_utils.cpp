@@ -16,6 +16,7 @@
 #include "hap_verify_utils.h"
 
 #include <algorithm>
+#include <iterator>
 #include <optional>
 #include <set>
 #include <vector>
@@ -1572,7 +1573,71 @@ bool HapVerifyUtils::CheckContinueTypeIsValid(const HapVerifyInfo& hapVerifyInfo
     return true;
 }
 
-// java : Compressor::checkSharedAppIsValid / HapVerify::checkSharedApppIsValid
+bool HapVerifyUtils::CheckSharedAppVariantsIsValid(const std::list<HapVerifyInfo>& infos)
+{
+    if (infos.empty()) {
+        LOGE("%s", PackingToolErrMsg::CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toStringWithArgs(
+            "Hap verify infos is empty.").c_str());
+        return false;
+    }
+    const auto& base = infos.front();
+    size_t inputIndex = 0;
+    for (const auto& info : infos) {
+        ++inputIndex;
+        std::string cause;
+        if (info.GetFileType() != HSP_SUFFIX || info.GetBundleType() != TYPE_SHARED) {
+            cause = "Only HSP modules with bundleType shared can be packed in a shared App.";
+        } else if (info.GetModuleName().empty() || info.GetModuleName() != base.GetModuleName()) {
+            cause = "A shared App must contain one logical module with the same non-empty moduleName.";
+        } else if (info.GetBundleName() != base.GetBundleName()) {
+            cause = "The bundleName values of shared HSP modules are different.";
+        } else if (info.GetVersion().versionCode != base.GetVersion().versionCode) {
+            cause = "The versionCode values of shared HSP modules are different.";
+        }
+        if (!cause.empty()) {
+            LOGE("%s", PackingToolErrMsg::CHECK_SHARED_APP_INVALID.toStringWithArgs(
+                std::vector<std::string>{cause + " Input #" + std::to_string(inputIndex) +
+                    ", moduleName=" + info.GetModuleName(),
+                    "Use shared HSPs with the same bundleName, versionCode and non-empty moduleName."}).c_str());
+            return false;
+        }
+    }
+    size_t leftIndex = 0;
+    for (auto left = infos.begin(); left != infos.end(); ++left) {
+        ++leftIndex;
+        size_t rightIndex = leftIndex;
+        for (auto right = std::next(left); right != infos.end(); ++right) {
+            ++rightIndex;
+            if (!CheckDuplicatedIsValid(*left, *right)) {
+                LOGE("%s", PackingToolErrMsg::CHECK_SHARED_APP_INVALID.toStringWithArgs(
+                    std::vector<std::string>{"Shared HSP inputs #" + std::to_string(leftIndex) +
+                    " and #" + std::to_string(rightIndex) +
+                    ", moduleName=" + base.GetModuleName() +
+                    ", have overlapping deviceTypes and non-disjoint distroFilter.",
+                    "Ensure every pair has disjoint deviceTypes or disjoint distroFilter."}).c_str());
+                ShowCheckTips(*left, *right, "Shared HSP variants overlap");
+                return false;
+            }
+        }
+    }
+    inputIndex = 0;
+    for (const auto& info : infos) {
+        ++inputIndex;
+        std::list<HapVerifyInfo> single = {info};
+        bool valid = info.GetTargetBundleName().empty()
+            ? CheckSharedAppIsValid(single) : CheckHapIsValid(single);
+        if (!valid) {
+            LOGE("%s", PackingToolErrMsg::CHECK_SHARED_APP_INVALID.toStringWithArgs(
+                std::vector<std::string>{"Single-package validation failed for input #" +
+                    std::to_string(inputIndex) + ", moduleName=" + info.GetModuleName(),
+                    "Correct this HSP according to the preceding single-package diagnostic."}).c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+// java : HapVerify::checkSharedApppIsValid
 bool HapVerifyUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {

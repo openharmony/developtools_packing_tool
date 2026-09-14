@@ -39,6 +39,9 @@ public:
         std::error_code ec;
         if (!path_.empty() && fs::exists(path_, ec)) {
             fs::remove_all(path_, ec);
+            if (ec) {
+                LOGE("Failed to clean temporary directory %s: %s", path_.string().c_str(), ec.message().c_str());
+            }
         }
     }
 
@@ -485,11 +488,14 @@ std::string MultiAppPackager::SelectHapInApp(const std::string &appPath, std::li
                                              const std::string &tempDir, std::string &finalAppPackInfo)
 {
     std::list<std::string> selectedHapsInApp;
-    CopyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir);
+    if (!CopyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir)) {
+        return "";
+    }
     std::string packInfoStr = GetJsonInZips(appPath, Constants::PACK_INFO);
     if (packInfoStr.empty()) {
         LOGE("%s", PackingToolErrMsg::NO_PACK_INFO.toStringWithArgs(
             "MultiAppPackager:SelectHapInApp failed, app has no pack.info.").c_str());
+        return "";
     }
     if (finalAppPackInfo.empty()) {
         finalAppPackInfo = packInfoStr;
@@ -504,6 +510,7 @@ std::string MultiAppPackager::SelectHapInApp(const std::string &appPath, std::li
     if (!PackInfoUtils::MergeTwoPackInfosByPackagePair(finalAppPackInfo, packInfoStr, packagePair, packInfoJsonStr)) {
         LOGE("%s", PackingToolErrMsg::MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED.toStringWithArgs(
             "PackInfoUtils::MergeTwoPackInfosByPackagePair failed.").c_str());
+        return "";
     }
     return packInfoJsonStr;
 }
@@ -516,6 +523,9 @@ std::string MultiAppPackager::DisposeApp(std::list<std::string> &selectedHaps, c
     }
     for (const auto &appPath : formattedAppList_) {
         finalAppPackInfo = SelectHapInApp(appPath, selectedHaps, tempDir, finalAppPackInfo);
+        if (finalAppPackInfo.empty()) {
+            return "";
+        }
     }
     return finalAppPackInfo;
 }
@@ -531,11 +541,14 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
         if (std::find(selectedHaps.begin(), selectedHaps.end(), hapPathFile.filename()) != selectedHaps.end()) {
             LOGE("%s", PackingToolErrMsg::COMPRESS_FILE_DUPLICATE.toStringWithArgs(
                 ("file duplicated, file is " + hapPathFile.filename().string()).c_str()).c_str());
+            return "";
         }
         fs::path hapFile(hapPath);
         selectedHaps.push_back(hapFile.filename());
         std::string dstDirString = tempDir + "/" + static_cast<std::string>(hapFile.filename());
-        Utils::CopyFile(hapPath, dstDirString);
+        if (!Utils::CopyFile(hapPath, dstDirString)) {
+            return "";
+        }
         std::string packInfo = GetJsonInZips(hapFile, Constants::PACK_INFO);
         if (packInfo.empty()) {
             LOGW("hap has no pack.info.");
@@ -547,6 +560,7 @@ std::string MultiAppPackager::DisposeHapAndHsp(std::list<std::string> &selectedH
             if (!PackInfoUtils::MergeTwoPackInfos(finalPackInfoStr, packInfo, packInfoJsonStr)) {
                 LOGE("%s", PackingToolErrMsg::MERGE_TWO_PACKINFO_FAILED.toStringWithArgs(
                     "Verify pack.info failed.").c_str());
+                return "";
             }
             finalPackInfoStr = packInfoJsonStr;
         }
@@ -629,7 +643,13 @@ bool MultiAppPackager::PrepareFilesForCompression(std::list<std::string> &fileLi
     isTempSelectedHapDirCreated_ = true;
     std::list<std::string> selectedHaps;
     finalPackInfoStr = DisposeApp(selectedHaps, tempSelectedHapDirPath);
-    finalPackInfoStr = DisposeHapAndHsp(selectedHaps, tempSelectedHapDirPath, finalPackInfoStr);
+    if (formattedAppList_.empty() || !finalPackInfoStr.empty()) {
+        finalPackInfoStr = DisposeHapAndHsp(selectedHaps, tempSelectedHapDirPath, finalPackInfoStr);
+    }
+    if (finalPackInfoStr.empty()) {
+        zipWrapper_.Close();
+        return false;
+    }
     finalPackInfoPath = tempSelectedHapDirPath.string() + "/" + Constants::PACK_INFO;
     WritePackInfo(finalPackInfoPath, finalPackInfoStr);
     for (const auto &selectedHapName : selectedHaps) {

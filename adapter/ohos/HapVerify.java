@@ -216,11 +216,71 @@ class HapVerify {
     }
 
     /**
-     * check inter-app hsp is valid.
+     * Check the shared HSP set, then retain each HSP's original singleton validation path.
+     *
+     * @param infos is the collection of shared HSP variants
+     * @return the result
+     * @throws BundleException Throws this exception if the json is not standard
+     */
+    static boolean checkSharedAppVariantsIsValid(List<HapVerifyInfo> infos) throws BundleException {
+        if (infos == null || infos.isEmpty()) {
+            LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString("Hap verify infos is empty."));
+            return false;
+        }
+        HapVerifyInfo base = infos.get(0);
+        for (int i = 0; i < infos.size(); i++) {
+            HapVerifyInfo info = infos.get(i);
+            String cause = "";
+            if (!HSP_SUFFIX.equals(info.getFileType()) || !TYPE_SHARED.equals(info.getBundleType())) {
+                cause = "Only HSP modules with bundleType shared can be packed in a shared App.";
+            } else if (info.getModuleName().isEmpty() || !base.getModuleName().equals(info.getModuleName())) {
+                cause = "A shared App must contain one logical module with the same non-empty moduleName.";
+            } else if (!base.getBundleName().equals(info.getBundleName())) {
+                cause = "The bundleName values of shared HSP modules are different.";
+            } else if (base.getVersion().versionCode != info.getVersion().versionCode) {
+                cause = "The versionCode values of shared HSP modules are different.";
+            }
+            if (!cause.isEmpty()) {
+                LOG.error(PackingToolErrMsg.CHECK_SHARED_APP_INVALID.toString(
+                        cause + " Input #" + (i + 1) + ", moduleName=" + info.getModuleName(),
+                        "Use shared HSPs with the same bundleName, versionCode and non-empty moduleName."));
+                return false;
+            }
+        }
+        for (int i = 0; i < infos.size(); i++) {
+            for (int j = i + 1; j < infos.size(); j++) {
+                if (!checkDuplicatedIsValid(infos.get(i), infos.get(j))) {
+                    LOG.error(PackingToolErrMsg.CHECK_SHARED_APP_INVALID.toString(
+                            "Shared HSP inputs #" + (i + 1) + " and #" + (j + 1) + ", moduleName=" +
+                            base.getModuleName() + ", have overlapping deviceTypes " + infos.get(i).getDeviceType() +
+                            " and " + infos.get(j).getDeviceType() + " and non-disjoint distroFilter.",
+                            "Ensure every pair has disjoint deviceTypes or disjoint distroFilter."));
+                    return false;
+                }
+            }
+        }
+        for (int i = 0; i < infos.size(); i++) {
+            HapVerifyInfo info = infos.get(i);
+            List<HapVerifyInfo> single = Collections.singletonList(info);
+            boolean valid = info.getTargetBundleName().isEmpty()
+                    ? checkSharedApppIsValid(single) : checkHapIsValid(single);
+            if (!valid) {
+                LOG.error(PackingToolErrMsg.CHECK_SHARED_APP_INVALID.toString(
+                        "Single-package validation failed for input #" + (i + 1) +
+                                ", moduleName=" + info.getModuleName(),
+                        "Correct this HSP according to the preceding single-package diagnostic."));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check the existing non-overlay shared HSP constraints.
      *
      * @param hapVerifyInfos is the collection of hap infos
      * @return the result
-     * @throws BundleException Throws this exception if the json is not standard
+     * @throws BundleException if the distroFilter is invalid
      */
     public static boolean checkSharedApppIsValid(List<HapVerifyInfo> hapVerifyInfos) throws BundleException {
         if (hapVerifyInfos == null || hapVerifyInfos.isEmpty()) {

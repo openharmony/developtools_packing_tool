@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class ModuleJsonUtil {
     private static void checkSkillBundleTypePair(String moduleName, String moduleType, String bundleType)
@@ -821,9 +823,11 @@ class ModuleJsonUtil {
             LOG.error(PackingToolErrMsg.MERGE_PACKINFO_BY_PACKAGE_PAIR_FAILED.toString(errMsg));
             throw new BundleException(errMsg);
         }
+        Set<String> mergedModuleNames = new HashSet<>();
         for (HashMap.Entry<String, String> entry : packagePair.entrySet()) {
             String packageName = entry.getKey().substring(0, entry.getKey().lastIndexOf(DOT));
-            mergeTwoPackInfoObjByPackagePair(finalPackObj, srcPackObj, packageName, entry.getValue());
+            mergeTwoPackInfoObjByPackagePair(finalPackObj, srcPackObj, packageName, entry.getValue(),
+                    mergedModuleNames.add(entry.getValue()));
         }
         return finalPackObj.toString();
     }
@@ -839,6 +843,11 @@ class ModuleJsonUtil {
      */
     public static void mergeTwoPackInfoObjByPackagePair(JSONObject finalPackObj, JSONObject srcPackObj,
                                                         String packageName, String moduleName) throws BundleException {
+        mergeTwoPackInfoObjByPackagePair(finalPackObj, srcPackObj, packageName, moduleName, true);
+    }
+
+    private static void mergeTwoPackInfoObjByPackagePair(JSONObject finalPackObj, JSONObject srcPackObj,
+            String packageName, String moduleName, boolean mergeModule) throws BundleException {
         if (finalPackObj == null || srcPackObj == null) {
             String errMsg = "Input json objects (final pack.info or src pack.info) is null.";
             LOG.error(PackingToolErrMsg.MERGE_PACKINFO_OBJ_BY_PACKAGE_PAIR_FAILED.toString(errMsg));
@@ -860,14 +869,13 @@ class ModuleJsonUtil {
             throw new
                 BundleException("ModuleJsonUtil:mergeTwoPackInfoObjByPackagePair input json file has empty module.");
         }
-        boolean findModule = false;
-        for (int index = 0; index < srcModules.size(); ++index) {
+        boolean findModule = !mergeModule;
+        for (int index = 0; mergeModule && index < srcModules.size(); ++index) {
             JSONObject moduleObj = srcModules.getJSONObject(index);
             JSONObject distroObj = moduleObj.getJSONObject(DISTRO);
             if (distroObj.getString(MODULE_NAME).equals(moduleName)) {
                 finalModules.add(moduleObj);
                 findModule = true;
-                break;
             }
         }
         if (!findModule) {

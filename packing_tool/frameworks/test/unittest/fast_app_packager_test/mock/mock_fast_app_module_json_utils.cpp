@@ -55,7 +55,6 @@ const std::string MODULE_JSON = "module.json";
 const std::string CONFIG_JSON = "config.json";
 const std::string HAP_SUFFIX = ".hap";
 const std::string HSP_SUFFIX = ".hsp";
-const int32_t SHARED_APP_HSP_LIMIT = 1;
 const std::string TYPE_SHARED = "shared";
 const std::string INCLUDE = "include";
 const std::string EXCLUDE = "exclude";
@@ -151,23 +150,13 @@ bool ModuleJsonUtils::GetFaHapVerifyInfo(const std::string& hapFilePath, HapVeri
 }
 
 // java : Compressor::checkSharedAppIsValid / HapVerify::checkSharedApppIsValid
-bool ModuleJsonUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos, bool& isOverlay)
+bool ModuleJsonUtils::CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos)
 {
     if (hapVerifyInfos.empty()) {
         LOGE("hapVerifyInfos is empty");
         return false;
     }
-    if (hapVerifyInfos.size() > SHARED_APP_HSP_LIMIT) {
-        LOGE("hapVerifyInfos size is over than %d", SHARED_APP_HSP_LIMIT);
-        return false;
-    }
-    for (auto& hapVerifyInfo : hapVerifyInfos) {
-        if (!hapVerifyInfo.GetTargetBundleName().empty()) {
-            isOverlay = true;
-            return true;
-        }
-    }
-    return HapVerifyUtils::CheckSharedAppIsValid(hapVerifyInfos);
+    return HapVerifyUtils::CheckSharedAppVariantsIsValid(hapVerifyInfos);
 }
 
 bool ModuleJsonUtils::GetHapVerifyInfosfromFileList(const std::list<std::string>& fileList,
@@ -360,15 +349,16 @@ bool ModuleJsonUtils::CheckHapsIsValid(const std::list<std::string>& fileList, c
         LOGE("GetHapVerifyInfosfromFileList failed!");
         return false;
     }
-    if (isSharedApp) {
-        bool isOverlay = false;
-        if (!CheckSharedAppIsValid(hapVerifyInfos, isOverlay)) {
+    bool hasSharedHsp = std::any_of(hapVerifyInfos.begin(), hapVerifyInfos.end(),
+        [](const HapVerifyInfo& info) {
+            return info.GetBundleType() == TYPE_SHARED && info.GetFileType() == HSP_SUFFIX;
+        });
+    if (isSharedApp || hasSharedHsp) {
+        if (!CheckSharedAppIsValid(hapVerifyInfos)) {
             LOGE("CheckSharedAppIsValid failed!");
             return false;
         }
-        if (!isOverlay) {
-            return true;
-        }
+        return true;
     } else {
         for (auto& hapVerifyInfo : hapVerifyInfos) {
             if (hapVerifyInfo.GetBundleType().compare(TYPE_SHARED) == 0) {

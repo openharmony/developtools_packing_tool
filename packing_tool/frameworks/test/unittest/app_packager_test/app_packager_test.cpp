@@ -15,6 +15,7 @@
 
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <fstream>
 #include <string>
 
 #include "constants.h"
@@ -1546,5 +1547,44 @@ HWTEST_F(AppPackagerTest, CheckInputModulePath_SkillAppMultipleHsp_3900, Functio
     series.emplace_back(true, hapVerifyInfo);
     MockModuleJsonUtils::MockGetStageHapVerifyInfo(series);
     EXPECT_FALSE(appPackager.CheckInputModulePath(hapPath, hspPath));
+}
+/*
+ * @tc.name: DuplicateAppInputFileNames
+ * @tc.desc: Reject identical basenames from different directories for HAP and HSP inputs.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppPackagerTest, DuplicateAppInputFileNames, Function | MediumTest | Level1)
+{
+    const auto root = std::filesystem::temp_directory_path() / ("app-input-names-" + Utils::GenerateUUID());
+    ASSERT_TRUE(std::filesystem::create_directory(root));
+    std::filesystem::create_directory(root / "first");
+    std::filesystem::create_directory(root / "second");
+    HapVerifyInfo info;
+    info.SetBundleType(Constants::TYPE_SHARED);
+    MockModuleJsonUtils::MockIsModuleHap(true);
+    MockModuleJsonUtils::MockGetStageHapVerifyInfo(true, info);
+    for (const std::string suffix : {".hap", ".hsp"}) {
+        const auto first = root / "first" / ("same" + suffix);
+        const auto duplicate = root / "second" / ("same" + suffix);
+        const auto distinct = root / "second" / ("other" + suffix);
+        for (const auto &path : {first, duplicate, distinct}) {
+            std::ofstream stream(path);
+            stream << "fixture";
+        }
+        for (const bool sameName : {true, false}) {
+            const std::string input = first.string() + "," + (sameName ? duplicate : distinct).string();
+            const std::string parameter = suffix == ".hap" ? Constants::PARAM_HAP_PATH : Constants::PARAM_HSP_PATH;
+            std::map<std::string, std::string> parameters = {{parameter, input}};
+            std::string receiver;
+            AppPackager packager(parameters, receiver);
+            std::string hapPath;
+            std::string hspPath;
+            EXPECT_EQ(packager.GetAndCheckHapPathAndHspPath(hapPath, hspPath), !sameName);
+            EXPECT_TRUE(std::filesystem::exists(first));
+            EXPECT_TRUE(std::filesystem::exists(duplicate));
+        }
+    }
+    // root was exclusively created by this test under the system temporary directory.
+    std::filesystem::remove_all(root);
 }
 } // namespace OHOS

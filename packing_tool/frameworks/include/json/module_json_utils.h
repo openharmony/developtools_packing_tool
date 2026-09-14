@@ -40,7 +40,7 @@ public:
         std::string> parameterMap, std::map<std::string, std::shared_ptr<HapVerifyInfo>>& hapVerifyInfoMap);
 
 private:
-    static bool CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos, bool& isOverlay);
+    static bool CheckSharedAppIsValid(const std::list<HapVerifyInfo>& hapVerifyInfos);
     static void setAtomicServiceFileSizeLimit(std::list<HapVerifyInfo>& hapVerifyInfos);
     static bool GetHapVerifyInfosfromFileList(const std::list<std::string>& fileList,
         std::list<HapVerifyInfo>& hapVerifyInfos);

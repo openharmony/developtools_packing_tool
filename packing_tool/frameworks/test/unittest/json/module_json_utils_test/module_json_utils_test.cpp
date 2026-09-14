@@ -15,6 +15,8 @@
 
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <string>
 
 #define private public
@@ -25,6 +27,7 @@
 #include "pt_json.h"
 #include "log.h"
 #include "zip_wrapper.h"
+#include "utils.h"
 #undef private
 #undef protected
 
@@ -607,6 +610,9 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0100, Function | MediumTest 
     HapVerifyInfo hapVerifyInfo;
     hapVerifyInfo.SetTargetBundleName("test1_target_bundle_name");
     hapVerifyInfo.SetModuleName("test1_module_name");
+    hapVerifyInfo.SetBundleType("shared");
+    hapVerifyInfo.SetBundleName("com.example.shared");
+    hapVerifyInfo.SetFileType(".hsp");
 
     std::list<DependencyItem> dependencyItemList;
     DependencyItem dependencyItem;
@@ -619,8 +625,7 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0100, Function | MediumTest 
     hapVerifyInfo.SetModuleType("test1_module_type");
     hapVerifyInfos.emplace_back(hapVerifyInfo);
 
-    bool isOverlay = false;
-    EXPECT_TRUE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+    EXPECT_TRUE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos));
 }
 
 /*
@@ -632,8 +637,7 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0100, Function | MediumTest 
 HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0200, Function | MediumTest | Level1)
 {
     std::list<HapVerifyInfo> hapVerifyInfos;
-    bool isOverlay = false;
-    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos));
 }
 
 /*
@@ -649,8 +653,7 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0300, Function | MediumTest 
     HapVerifyInfo hapVerifyInfo2;
     hapVerifyInfos.emplace_back(hapVerifyInfo1);
     hapVerifyInfos.emplace_back(hapVerifyInfo2);
-    bool isOverlay = false;
-    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos));
 }
 
 /*
@@ -666,8 +669,7 @@ HWTEST_F(ModuleJsonUtilsTest, CheckSharedAppIsValid_0400, Function | MediumTest 
     hapVerifyInfo.SetModuleName("test1_module_name");
     hapVerifyInfos.emplace_back(hapVerifyInfo);
 
-    bool isOverlay = false;
-    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos, isOverlay));
+    EXPECT_FALSE(ModuleJsonUtils::CheckSharedAppIsValid(hapVerifyInfos));
 }
 
  /*
@@ -783,7 +785,7 @@ HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0600, Function | MediumTest | Lev
 
 /*
  * @tc.name: CheckHapsIsValid_0700
- * @tc.desc: CheckHapsIsValid
+ * @tc.desc: Reject a shared module packaged as HAP even when the shared app flag is set.
  * @tc.type: FUNC
  * @tc.require:
  */
@@ -795,13 +797,109 @@ HWTEST_F(ModuleJsonUtilsTest, CheckHapsIsValid_0700, Function | MediumTest | Lev
     std::list<std::string> fileList;
     fileList.emplace_back(hapFilePath);
     bool isSharedApp = true;
-    EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid(fileList, isSharedApp));
 
     std::string cmd = {"rm -f "};
     cmd += HAP_FILE_PATH_TEST;
     cmd += " ";
     cmd += MODULE_JSON_FILE;
     system(cmd.c_str());
+}
+
+class SharedModuleJsonUtilsTest : public testing::Test {
+protected:
+    void SetUp() override
+    {
+        const auto path = std::filesystem::temp_directory_path() / ("shared-json-" + Utils::GenerateUUID());
+        ASSERT_TRUE(std::filesystem::create_directory(path));
+        root_ = path;
+    }
+
+    void TearDown() override
+    {
+        if (!root_.empty()) {
+            // Only remove the directory exclusively created by this test.
+            std::error_code error;
+            std::filesystem::remove_all(root_, error);
+            EXPECT_FALSE(error) << error.message();
+        }
+    }
+
+    void CreateModule(const std::string& name, const std::string& json)
+    {
+        const auto config = root_ / "module.json";
+        std::ofstream stream(config);
+        stream << json;
+        stream.close();
+        ASSERT_FALSE(stream.fail());
+        ZipWrapper archive((root_ / name).string());
+        archive.Open(APPEND_STATUS_CREATE);
+        ASSERT_TRUE(archive.IsOpen());
+        const auto result = archive.AddFileOrDirectoryToZip(config.string(), "module.json");
+        archive.Close();
+        ASSERT_EQ(result, ZipErrCode::ZIP_ERR_SUCCESS);
+    }
+
+    std::filesystem::path root_;
+};
+
+/*
+ * @tc.name: CheckHapsIsValid_001
+ * @tc.desc: Discover shared HSP variants without a shared flag and reject overlapping variants.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(SharedModuleJsonUtilsTest, CheckHapsIsValid_001, Function | MediumTest | Level1)
+{
+    std::string phoneJson = MODULE_JSON_STR_SHARED;
+    const std::string devices = "[\"default\",\"tablet\"]";
+    const auto position = phoneJson.find(devices);
+    ASSERT_NE(position, std::string::npos);
+    phoneJson.replace(position, devices.size(), "[\"phone\"]");
+    ASSERT_NO_FATAL_FAILURE(CreateModule("phone.hsp", phoneJson));
+    ASSERT_NO_FATAL_FAILURE(CreateModule("tablet.hsp", MODULE_JSON_STR_SHARED));
+    const auto phone = (root_ / "phone.hsp").string();
+    const auto tablet = (root_ / "tablet.hsp").string();
+    EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid({phone, tablet}, false));
+    EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid({tablet, phone}, false));
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid({phone, tablet, phone}, false));
+    EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid({phone}, true));
+}
+
+/*
+ * @tc.name: CheckHapsIsValid_002
+ * @tc.desc: Reject mixed inputs in every position without affecting later ordinary app validation.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(SharedModuleJsonUtilsTest, CheckHapsIsValid_002, Function | MediumTest | Level2)
+{
+    std::string phoneJson = MODULE_JSON_STR_SHARED;
+    const std::string devices = "[\"default\",\"tablet\"]";
+    const auto position = phoneJson.find(devices);
+    ASSERT_NE(position, std::string::npos);
+    phoneJson.replace(position, devices.size(), "[\"phone\"]");
+    ASSERT_NO_FATAL_FAILURE(CreateModule("phone.hsp", phoneJson));
+    ASSERT_NO_FATAL_FAILURE(CreateModule("tablet.hsp", MODULE_JSON_STR_SHARED));
+    ASSERT_NO_FATAL_FAILURE(CreateModule("ordinary.hap", MODULE_JSON_STR));
+    ASSERT_NO_FATAL_FAILURE(CreateModule("shared.hap", MODULE_JSON_STR_SHARED));
+    std::string ordinaryHspJson = phoneJson;
+    const std::string bundleType = "\"bundleType\":\"shared\"";
+    const auto bundlePosition = ordinaryHspJson.find(bundleType);
+    ASSERT_NE(bundlePosition, std::string::npos);
+    ordinaryHspJson.replace(bundlePosition, bundleType.size(), "\"bundleType\":\"app\"");
+    ASSERT_NO_FATAL_FAILURE(CreateModule("ordinary.hsp", ordinaryHspJson));
+    const auto phone = (root_ / "phone.hsp").string();
+    const auto tablet = (root_ / "tablet.hsp").string();
+    for (const auto& name : {"ordinary.hap", "ordinary.hsp", "shared.hap"}) {
+        SCOPED_TRACE(name);
+        const auto mixed = (root_ / name).string();
+        EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid({mixed, phone, tablet}, false));
+        EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid({phone, mixed, tablet}, false));
+        EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid({phone, tablet, mixed}, false));
+    }
+    EXPECT_FALSE(ModuleJsonUtils::CheckHapsIsValid({(root_ / "shared.hap").string()}, true));
+    EXPECT_TRUE(ModuleJsonUtils::CheckHapsIsValid({(root_ / "ordinary.hap").string()}, false));
 }
 
 /*

@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
 #include <string>
+#include <set>
 
 #include "constants.h"
 #define private public
@@ -29,6 +30,7 @@
 #include <filesystem>
 #include <fstream>
 #include "utils.h"
+#include "pack_info.h"
 #undef private
 #undef protected
 
@@ -90,6 +92,77 @@ void DeleteFile(const std::string& file)
     std::string cmd = "rm -f " + file;
     system(cmd.c_str());
 }
+
+class MultiAppVariantsTest : public testing::Test {
+protected:
+    void SetUp() override
+    {
+        MockMultiAppModuleJsonUtils::Reset();
+        const auto path = fs::temp_directory_path() / ("multiapp-variants-" + AppPackingTool::Utils::GenerateUUID());
+        ASSERT_TRUE(fs::create_directory(path));
+        root_ = path;
+        ASSERT_TRUE(fs::create_directories(root_ / "work" / "selected"));
+    }
+
+    void TearDown() override
+    {
+        MockMultiAppModuleJsonUtils::Reset();
+        if (!root_.empty()) {
+            // All fixture files and packager temporary directories stay under this owned root.
+            std::error_code error;
+            fs::remove_all(root_, error);
+            EXPECT_FALSE(error) << error.message();
+        }
+    }
+
+    std::string PackInfo(const std::string& device, int version = 1)
+    {
+        return "{\"summary\":{\"app\":{\"bundleName\":\"com.example.shared\","
+            "\"bundleType\":\"shared\",\"version\":{\"code\":" + std::to_string(version) +
+            ",\"name\":\"1.0\"}},\"modules\":[{\"distro\":{\"moduleName\":\"library\"},"
+            "\"deviceType\":[\"" + device + "\"]}]},\"packages\":[{\"name\":\"" + device + "\"}]}";
+    }
+
+    void WriteFile(const fs::path& path, const std::string& content)
+    {
+        std::ofstream stream(path, std::ios::binary);
+        stream << content;
+        stream.close();
+        ASSERT_FALSE(stream.fail());
+    }
+
+    void CreateHsp(const std::string& device, int version = 1)
+    {
+        ASSERT_NO_FATAL_FAILURE(WriteFile(root_ / "pack.info", PackInfo(device, version)));
+        ASSERT_NO_FATAL_FAILURE(WriteFile(root_ / "module.json",
+            "{\"app\":{\"bundleName\":\"com.example.shared\",\"bundleType\":\"shared\","
+            "\"versionCode\":" + std::to_string(version) + ",\"versionName\":\"1.0\"},"
+            "\"module\":{\"name\":\"library\",\"type\":\"shared\",\"deviceTypes\":[\"" + device + "\"]}}"));
+        AppPackingTool::ZipWrapper archive((root_ / (device + ".hsp")).string());
+        ASSERT_EQ(archive.Open(), AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+        ASSERT_EQ(archive.AddFileOrDirectoryToZip((root_ / "module.json").string(), "module.json"),
+            AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+        ASSERT_EQ(archive.AddFileOrDirectoryToZip((root_ / "pack.info").string(), "pack.info"),
+            AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+        archive.Close();
+    }
+
+    void CreateApp(const std::string& device, bool withPackInfo = true)
+    {
+        ASSERT_NO_FATAL_FAILURE(CreateHsp(device));
+        AppPackingTool::ZipWrapper archive((root_ / (device + ".app")).string());
+        ASSERT_EQ(archive.Open(), AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+        ASSERT_EQ(archive.AddFileOrDirectoryToZip((root_ / (device + ".hsp")).string(), device + ".hsp"),
+            AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+        if (withPackInfo) {
+            ASSERT_EQ(archive.AddFileOrDirectoryToZip((root_ / "pack.info").string(), "pack.info"),
+                AppPackingTool::ZipErrCode::ZIP_ERR_SUCCESS);
+        }
+        archive.Close();
+    }
+
+    fs::path root_;
+};
 
 /*
  * @tc.name: MultiAppPackager_0100
@@ -684,7 +757,7 @@ HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0100, Function | MediumTest | Le
  */
 HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0200, Function | MediumTest | Level1)
 {
-    std::list<std::string> selectedHaps = {HAP_LIST};
+    std::list<std::string> selectedHaps = {fs::path(HAP_LIST).filename().string()};
     std::string resultReceiver;
     std::map<std::string, std::string> parameterMap = {
         {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
@@ -695,7 +768,8 @@ HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0200, Function | MediumTest | Le
 
     OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
     multiAppPackager.formattedHapAndHspList_ = {HAP_LIST};
-    EXPECT_NO_THROW(multiAppPackager.DisposeHapAndHsp(selectedHaps, "temp_test_dir", ""));
+    EXPECT_TRUE(multiAppPackager.DisposeHapAndHsp(selectedHaps, "temp_test_dir", "existing info").empty());
+    EXPECT_EQ(selectedHaps, std::list<std::string>({fs::path(HAP_LIST).filename().string()}));
 }
 
 /*
@@ -704,22 +778,59 @@ HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0200, Function | MediumTest | Le
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(MultiAppPackagerTest, DisposeHapAndHsp_0300, Function | MediumTest | Level1)
+HWTEST_F(MultiAppVariantsTest, DisposeHapAndHsp_0300, Function | MediumTest | Level1)
 {
-    std::list<std::string> selectedHaps;
+    ASSERT_NO_FATAL_FAILURE(CreateHsp("tablet", 2));
+    ASSERT_NO_FATAL_FAILURE(CreateHsp("tv"));
     std::string resultReceiver;
-    std::map<std::string, std::string> parameterMap = {
-        {OHOS::AppPackingTool::Constants::PARAM_OUT_PATH, OUT_PATH},
-        {OHOS::AppPackingTool::Constants::PARAM_FORCE, "true"},
-        {OHOS::AppPackingTool::Constants::PARAM_HAP_LIST, HAP_LIST},
-        {OHOS::AppPackingTool::Constants::PARAM_HSP_LIST, HSP_LIST},
-    };
+    AppPackingTool::MultiAppPackager packager({}, resultReceiver);
+    packager.formattedHapAndHspList_ = {(root_ / "tablet.hsp").string(), (root_ / "tv.hsp").string()};
+    std::list<std::string> selected;
+    const auto destination = root_ / "work" / "selected";
+    EXPECT_TRUE(packager.DisposeHapAndHsp(selected, destination.string(), PackInfo("phone")).empty());
+    EXPECT_TRUE(fs::exists(destination / "tablet.hsp"));
+    EXPECT_FALSE(fs::exists(destination / "tv.hsp"));
+    EXPECT_EQ(selected, std::list<std::string>({"tablet.hsp"}));
+}
 
-    OHOS::AppPackingTool::MultiAppPackager multiAppPackager(parameterMap, resultReceiver);
-    multiAppPackager.formattedHapAndHspList_ = {HAP_LIST};
-    std::string finalPackInfoStr = multiAppPackager.DisposeHapAndHsp(selectedHaps, "temp_test_dir", HAP_LIST);
-    EXPECT_TRUE(finalPackInfoStr.empty());
-    EXPECT_EQ(selectedHaps.size(), 1);
+/*
+ * @tc.name: DisposeHapAndHsp_001
+ * @tc.desc: A duplicate physical name must not overwrite the previously selected file.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppVariantsTest, DisposeHapAndHsp_001, Function | MediumTest | Level2)
+{
+    ASSERT_NO_FATAL_FAILURE(CreateHsp("phone"));
+    const auto destination = root_ / "work" / "selected";
+    ASSERT_NO_FATAL_FAILURE(WriteFile(destination / "phone.hsp", "original"));
+    std::string receiver;
+    AppPackingTool::MultiAppPackager packager({}, receiver);
+    packager.formattedHapAndHspList_ = {(root_ / "phone.hsp").string()};
+    std::list<std::string> selected = {"phone.hsp"};
+    EXPECT_TRUE(packager.DisposeHapAndHsp(selected, destination.string(), PackInfo("phone")).empty());
+    EXPECT_EQ(selected, std::list<std::string>({"phone.hsp"}));
+    std::ifstream stream(destination / "phone.hsp");
+    const std::string content((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+    EXPECT_EQ(content, "original");
+}
+
+/*
+ * @tc.name: DisposeHapAndHsp_002
+ * @tc.desc: Copy failure returns failure instead of retaining the previous valid pack.info.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppVariantsTest, DisposeHapAndHsp_002, Function | MediumTest | Level2)
+{
+    ASSERT_NO_FATAL_FAILURE(CreateHsp("phone"));
+    ASSERT_NO_FATAL_FAILURE(WriteFile(root_ / "blocked", "not a directory"));
+    std::string receiver;
+    AppPackingTool::MultiAppPackager packager({}, receiver);
+    packager.formattedHapAndHspList_ = {(root_ / "phone.hsp").string()};
+    std::list<std::string> selected;
+    EXPECT_TRUE(packager.DisposeHapAndHsp(selected, (root_ / "blocked").string(), PackInfo("tablet")).empty());
+    EXPECT_TRUE(fs::exists(root_ / "phone.hsp"));
 }
 
 /*
@@ -826,10 +937,10 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0100, Function | Mediu
     fs::path tempSelectedHapDirPath;
     std::string finalPackInfoStr;
     std::string finalPackInfoPath;
-    multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
-        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath);
+    EXPECT_FALSE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
+        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath));
     EXPECT_TRUE(finalPackInfoStr.empty());
-    EXPECT_FALSE(finalPackInfoPath.empty());
+    EXPECT_TRUE(finalPackInfoPath.empty());
 }
 
 /*
@@ -854,10 +965,11 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0200, Function | Mediu
     fs::path tempSelectedHapDirPath;
     std::string finalPackInfoStr;
     std::string finalPackInfoPath;
-    multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath,
-     finalPackInfoStr, finalPackInfoPath);
-    EXPECT_TRUE(fs::exists(tempHapDirPath));
-    EXPECT_TRUE(fs::exists(tempSelectedHapDirPath));
+    EXPECT_FALSE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath, tempSelectedHapDirPath,
+        finalPackInfoStr, finalPackInfoPath));
+    EXPECT_FALSE(fs::exists(tempHapDirPath));
+    EXPECT_FALSE(fs::exists(tempSelectedHapDirPath));
+    EXPECT_FALSE(multiAppPackager.zipWrapper_.IsOpen());
 }
 
 /*
@@ -886,10 +998,10 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0300, Function | Mediu
     fs::path tempSelectedHapDirPath;
     std::string finalPackInfoStr;
     std::string finalPackInfoPath;
-    multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
-        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath);
+    EXPECT_FALSE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
+        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath));
     EXPECT_TRUE(finalPackInfoStr.empty());
-    EXPECT_FALSE(finalPackInfoPath.empty());
+    EXPECT_TRUE(finalPackInfoPath.empty());
 }
 
 /*
@@ -914,7 +1026,7 @@ HWTEST_F(MultiAppPackagerTest, PrepareFilesForCompression_0400, Function | Mediu
     fs::path tempSelectedHapDirPath;
     std::string finalPackInfoStr;
     std::string finalPackInfoPath;
-    EXPECT_TRUE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
+    EXPECT_FALSE(multiAppPackager.PrepareFilesForCompression(fileList, tempHapDirPath,
        tempSelectedHapDirPath, finalPackInfoStr, finalPackInfoPath));
     EXPECT_TRUE(fileList.empty());
 }
@@ -935,6 +1047,94 @@ HWTEST_F(MultiAppPackagerTest, DisposeApp_0100, Function | MediumTest | Level1)
     std::string tempDir = "temp_test_dir";
     std::string result = multiAppPackager.DisposeApp(selectedHaps, tempDir);
     EXPECT_TRUE(result.empty());
+}
+
+/*
+ * @tc.name: DisposeApp_001
+ * @tc.desc: A missing pack.info in the first APP is not masked by a later valid APP.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppVariantsTest, DisposeApp_001, Function | MediumTest | Level2)
+{
+    ASSERT_NO_FATAL_FAILURE(CreateApp("phone", false));
+    ASSERT_NO_FATAL_FAILURE(CreateApp("tablet"));
+    const auto validDestination = root_ / "work" / "valid";
+    ASSERT_TRUE(fs::create_directory(validDestination));
+    std::string receiver;
+    AppPackingTool::MultiAppPackager packager({}, receiver);
+    std::list<std::string> selected;
+    std::string info;
+    // Prove the second input can succeed on its own.
+    ASSERT_FALSE(packager.SelectHapInApp((root_ / "tablet.app").string(), selected,
+        validDestination.string(), info).empty());
+    selected.clear();
+    packager.formattedAppList_ = {(root_ / "phone.app").string(), (root_ / "tablet.app").string()};
+    const auto destination = root_ / "work" / "selected";
+    EXPECT_TRUE(packager.DisposeApp(selected, destination.string()).empty());
+    EXPECT_EQ(selected, std::list<std::string>({"phone.hsp"}));
+    EXPECT_TRUE(fs::exists(destination / "phone.hsp"));
+    EXPECT_FALSE(fs::exists(destination / "tablet.hsp"));
+}
+
+/*
+ * @tc.name: PrepareFilesForCompression_001
+ * @tc.desc: APP inputs retain both shared HSP variants and their merged metadata during preparation.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(MultiAppVariantsTest, PrepareFilesForCompression_001, Function | MediumTest | Level1)
+{
+    using namespace OHOS::AppPackingTool;
+    ASSERT_NO_FATAL_FAILURE(CreateApp("phone"));
+    ASSERT_NO_FATAL_FAILURE(CreateApp("tablet"));
+    std::string receiver;
+    MultiAppPackager packager({{Constants::PARAM_OUT_PATH, (root_ / "work" / "result.app").string()}}, receiver);
+    packager.formattedAppList_ = {(root_ / "phone.app").string(), (root_ / "tablet.app").string()};
+    std::list<std::string> files;
+    fs::path tempHaps;
+    fs::path tempSelected;
+    std::string info;
+    std::string infoPath;
+    ASSERT_TRUE(packager.PrepareFilesForCompression(files, tempHaps, tempSelected, info, infoPath));
+    ASSERT_EQ(files.size(), 2U);
+    ASSERT_TRUE(fs::exists(infoPath));
+    AppPackingTool::PackInfo parsed;
+    ASSERT_TRUE(parsed.ParseFromString(info));
+    std::unique_ptr<PtJson> modules;
+    std::unique_ptr<PtJson> packages;
+    ASSERT_TRUE(parsed.GetModulesObject(modules));
+    ASSERT_TRUE(parsed.GetPackagesObject(packages));
+    ASSERT_EQ(modules->GetSize(), 2);
+    ASSERT_EQ(packages->GetSize(), 2);
+    std::set<std::string> devices;
+    std::set<std::string> names;
+    for (int32_t index = 0; index < 2; ++index) {
+        std::unique_ptr<PtJson> distro;
+        std::unique_ptr<PtJson> deviceTypes;
+        ASSERT_EQ(modules->Get(index)->GetObject("distro", &distro), Result::SUCCESS);
+        std::string name;
+        ASSERT_EQ(distro->GetString("moduleName", &name), Result::SUCCESS);
+        EXPECT_EQ(name, "library");
+        ASSERT_EQ(modules->Get(index)->GetArray("deviceType", &deviceTypes), Result::SUCCESS);
+        ASSERT_EQ(deviceTypes->GetSize(), 1);
+        devices.insert(deviceTypes->Get(0)->GetString());
+        ASSERT_EQ(packages->Get(index)->GetString("name", &name), Result::SUCCESS);
+        names.insert(name);
+    }
+    const std::set<std::string> expected = {"phone", "tablet"};
+    EXPECT_EQ(devices, expected);
+    EXPECT_EQ(names, expected);
+    std::set<std::string> filesFound;
+    for (const auto& file : files) {
+        ASSERT_TRUE(fs::exists(file));
+        filesFound.insert(fs::path(file).stem().string());
+        EXPECT_EQ(packager.GetJsonInZips(file, Constants::PACK_INFO), info);
+        EXPECT_EQ(packager.GetJsonInZips(file, Constants::MODULE_JSON),
+            packager.GetJsonInZips((root_ / fs::path(file).filename()).string(), Constants::MODULE_JSON));
+    }
+    EXPECT_EQ(filesFound, expected);
+    packager.zipWrapper_.Close();
 }
 
 /*
@@ -1018,7 +1218,7 @@ HWTEST_F(MultiAppPackagerTest, CompressAppModeForMultiProject_0300, Function | M
     std::list<std::string> fileList;
     fileList.push_back((tempHapDirPath / "hap1").string());
     fileList.push_back((tempHapDirPath / "hap2").string());
-    std::string invalidHapPath = tempHapDirPath / "invalid_hap";
+    std::string invalidHapPath = (tempHapDirPath / "invalid_hap").string();
     fileList.push_back(invalidHapPath);
     EXPECT_FALSE(multiAppPackager.CompressAppModeForMultiProject());
     fs::remove_all(tempDir);
@@ -1175,5 +1375,48 @@ HWTEST_F(MultiAppPackagerTest, CopyHapAndHspFromApp_0200, Function | MediumTest 
     std::list<std::string> selectedHapsInApp;
     std::string tempDir("/data/");
     EXPECT_TRUE(multiAppPackager.CopyHapAndHspFromApp(appPath, selectedHapsInApp, selectedHaps, tempDir));
+}
+HWTEST_F(MultiAppPackagerTest, MergeFailureCleansCreatedDirectories, Function | MediumTest | Level1)
+{
+    namespace apt = OHOS::AppPackingTool;
+    fs::path root = fs::current_path() / ("merge_failure_" + apt::Utils::GenerateUUID());
+    ASSERT_TRUE(fs::create_directory(root));
+    ASSERT_TRUE(fs::create_directory(root / "output"));
+    std::list<std::string> inputs;
+    for (int version = 1; version <= 2; ++version) {
+        std::string jsonPath = (root / "pack.info").string();
+        std::ofstream json(jsonPath);
+        json << R"({"summary":{"app":{"bundleName":"com.example.shared","version":{"code":)"
+             << version << R"(,"name":"1.0"}},"modules":[]},"packages":[]})";
+        json.close();
+        ASSERT_FALSE(json.fail());
+        std::string hspPath = (root / (std::to_string(version) + ".hsp")).string();
+        apt::ZipWrapper archive;
+        archive.Open(hspPath);
+        ASSERT_TRUE(archive.IsOpen());
+        ASSERT_EQ(archive.AddFileOrDirectoryToZip(jsonPath, "pack.info"), apt::ZipErrCode::ZIP_ERR_SUCCESS);
+        archive.Close();
+        inputs.push_back(hspPath);
+    }
+    std::string receiver;
+    std::map<std::string, std::string> parameters = {
+        {apt::Constants::PARAM_OUT_PATH, (root / "output" / "result.app").string()}};
+    apt::MultiAppPackager packager(parameters, receiver);
+    packager.formattedHapAndHspList_ = inputs;
+    std::list<std::string> files;
+    fs::path tempHaps;
+    fs::path tempSelected;
+    std::string info;
+    std::string infoPath;
+    EXPECT_FALSE(packager.PrepareFilesForCompression(files, tempHaps, tempSelected, info, infoPath));
+    EXPECT_FALSE(tempHaps.empty());
+    EXPECT_FALSE(tempSelected.empty());
+    EXPECT_FALSE(fs::exists(tempHaps));
+    EXPECT_FALSE(fs::exists(tempSelected));
+    EXPECT_FALSE(packager.zipWrapper_.IsOpen());
+    for (const auto& input : inputs) {
+        EXPECT_TRUE(fs::exists(input));
+    }
+    fs::remove_all(root);
 }
 } // namespace OHOS

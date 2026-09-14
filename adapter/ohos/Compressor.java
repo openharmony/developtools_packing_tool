@@ -211,13 +211,11 @@ public class Compressor {
     // set buffer size of each read
     private static final int BUFFER_SIZE = 40 * 1024;
     private static final Log LOG = new Log(Compressor.class.toString());
-    private static final int SHARED_APP_HSP_LIMIT = 1;
 
     private static int entryModuleSizeLimit = 2048;
     private static int notEntryModuleSizeLimit = 2048;
     private static int sumModuleSizeLimit = 10240;
     private static final int INVALID_VERSION = -1;
-    private static boolean isOverlay = false;
 
     private ZipArchiveOutputStream zipOut = null;
     private boolean mIsContain2x2EntryCard = true;
@@ -2113,7 +2111,6 @@ public class Compressor {
             finalAppPackInfo = packInfoStr;
             return finalAppPackInfo;
         }
-        // read selected module in temp hap
         HashMap<String, String> packagePair = new HashMap<>();
         for (String hapName : selectedHapsInApp) {
             packagePair.put(hapName, readModlueNameFromHap(tempDir + File.separator + hapName));
@@ -3437,14 +3434,16 @@ public class Compressor {
             }
         }
 
-        if (isSharedApp) {
-            boolean res = checkSharedAppIsValid(hapVerifyInfos);
-            if (!res) {
-                return false;
+        boolean hasSharedHsp = hapVerifyInfos.stream().anyMatch(info ->
+                TYPE_SHARED.equals(info.getBundleType()) && HSP_SUFFIX.equals(info.getFileType()));
+        if (isSharedApp || hasSharedHsp) {
+            boolean valid = checkSharedAppIsValid(hapVerifyInfos);
+            if (!valid) {
+                LOG.error(PackingToolErrMsg.CHECK_SHARED_APP_INVALID.toString(
+                        "Shared HSP validation failed. Input order: " + fileLists,
+                        "Correct the inputs identified by the preceding validation diagnostic."));
             }
-            if (!isOverlay) {
-                return true;
-            }
+            return valid;
         } else {
             for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
                 String bundleType = hapVerifyInfo.getBundleType();
@@ -3710,19 +3709,7 @@ public class Compressor {
             LOG.error(PackingToolErrMsg.CHECK_HAP_VERIFY_INFO_LIST_EMPTY.toString(cause));
             return false;
         }
-        if (hapVerifyInfos.size() > SHARED_APP_HSP_LIMIT) {
-            String cause = "The shared App only can contain one module.";
-            String solution = "Please ensure that there is only one module in the shared App.";
-            LOG.error(PackingToolErrMsg.CHECK_SHARED_APP_INVALID.toString(cause, solution));
-            return false;
-        }
-        for (HapVerifyInfo hapVerifyInfo : hapVerifyInfos) {
-            if (!hapVerifyInfo.getTargetBundleName().isEmpty()) {
-                isOverlay = true;
-                return true;
-            }
-        }
-        return HapVerify.checkSharedApppIsValid(hapVerifyInfos);
+        return HapVerify.checkSharedAppVariantsIsValid(hapVerifyInfos);
     }
 
     private void versionNormalize(Utility utility) {
