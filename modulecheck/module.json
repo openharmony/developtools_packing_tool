@@ -683,7 +683,8 @@
                         "contentEmbed",
                         "embeddedCashier",
                         "modularObject",
-                        "assetCache"
+                        "assetCache",
+                        "ukeyAuth"
                       ]
                     }
                   }
@@ -2070,7 +2071,8 @@
                   "agent",
                   "agentUI",
                   "modularObject",
-                  "assetCache"
+                  "assetCache",
+                  "ukeyAuth"
                 ]
               },
               "permissions": {
