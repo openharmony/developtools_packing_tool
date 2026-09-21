@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -796,6 +797,21 @@ public class CompressVerify {
         return isOutPathValid(utility, HAR_SUFFIX);
     }
 
+    private static boolean checkAppInputFileNames(List<String> paths) {
+        Map<String, String> inputs = new HashMap<>();
+        for (String path : paths) {
+            String name = new File(path).getName();
+            String previous = inputs.putIfAbsent(name, path);
+            if (previous != null) {
+                String errMsg = "Duplicate input filename: " + name + ". Input #1: " + previous
+                        + ". Input #2: " + path + ".";
+                LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * parse and check args if valid in app mode.
      *
@@ -824,6 +840,10 @@ public class CompressVerify {
                 && !compatibleProcess(utility, utility.getHspPath(), utility.getFormattedHspPathList(), HSP_SUFFIX)) {
             String errMsg = "--hsp-path is invalid.";
             LOG.error(PackingToolErrMsg.APP_MODE_ARGS_INVALID.toString(errMsg));
+            return false;
+        }
+        if (!checkAppInputFileNames(utility.getFormattedHapPathList())
+                || !checkAppInputFileNames(utility.getFormattedHspPathList())) {
             return false;
         }
         boolean hasSkillBundleType =

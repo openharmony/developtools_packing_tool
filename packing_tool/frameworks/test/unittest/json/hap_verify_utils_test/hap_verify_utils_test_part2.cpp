@@ -2050,4 +2050,128 @@ HWTEST_F(HapVerifyUtilsTestPart2, CheckProxyDataUriIsUnique_1000,
 
     EXPECT_TRUE(utils.CheckProxyDataUriIsUnique(hapVerifyInfos));
 }
+namespace {
+AppPackingTool::HapVerifyInfo SharedVariant(const std::string& device)
+{
+    AppPackingTool::HapVerifyInfo info;
+    info.SetFileType(".hsp");
+    info.SetBundleType("shared");
+    info.SetBundleName("com.example.shared");
+    info.SetModuleName("library");
+    info.SetModuleType("shared");
+    info.SetDeviceTypes({device});
+    return info;
+}
+}
+
+HWTEST_F(HapVerifyUtilsTestPart2, SharedVariantsDisjointAndConflict, Function | MediumTest | Level1)
+{
+    auto phone = SharedVariant("phone");
+    auto tablet = SharedVariant("tablet");
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, tablet}));
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, tablet, phone}));
+    AppPackingTool::DistroFilter first;
+    first.countryCode.policy = "include";
+    first.countryCode.value = {"CN"};
+    AppPackingTool::DistroFilter second = first;
+    second.countryCode.value = {"US"};
+    phone.SetDistroFilter(first);
+    auto other = phone;
+    other.SetDistroFilter(second);
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, other}));
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, phone}));
+}
+
+HWTEST_F(HapVerifyUtilsTestPart2, SharedVariantsVersionCode, Function | MediumTest | Level1)
+{
+    auto phone = SharedVariant("phone");
+    auto tablet = SharedVariant("tablet");
+    AppPackingTool::Version version;
+    version.versionCode = 1;
+    phone.SetVersion(version);
+    version.versionName = "different name";
+    tablet.SetVersion(version);
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, tablet}));
+    version.versionCode = 2;
+    tablet.SetVersion(version);
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, tablet}));
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({tablet, phone}));
+    tablet.SetTargetBundleName("com.example.target");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, tablet}));
+}
+
+HWTEST_F(HapVerifyUtilsTestPart2, SharedVariantsRejectMixedInputs, Function | MediumTest | Level1)
+{
+    auto phone = SharedVariant("phone");
+    auto other = SharedVariant("tablet");
+    other.SetFileType(".hap");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, other}));
+    other.SetFileType(".hsp");
+    other.SetBundleType("app");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({other, phone}));
+    other.SetBundleType("shared");
+    other.SetBundleName("com.example.other");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, other}));
+    other.SetBundleName(phone.GetBundleName());
+    other.SetModuleName("other");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, other}));
+    other.SetModuleName("");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({other}));
+}
+
+HWTEST_F(HapVerifyUtilsTestPart2, SharedVariantsPreservePerModuleOverlayChecks, Function | MediumTest | Level1)
+{
+    auto phone = SharedVariant("phone");
+    auto overlay = SharedVariant("tablet");
+    overlay.SetTargetBundleName("com.example.target");
+    overlay.SetCompileSdkType("different");
+    AppPackingTool::DependencyItem dependency;
+    dependency.bundleName = "com.example.external";
+    dependency.moduleName = "external";
+    overlay.SetDependencyItemList({dependency});
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay, phone}));
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, overlay}));
+    phone.SetDependencyItemList({dependency});
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay, phone}));
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone, overlay}));
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({phone}));
+}
+
+HWTEST_F(HapVerifyUtilsTestPart2, SharedVariantsOverlayUriCheck, Function | MediumTest | Level1)
+{
+    auto overlay = SharedVariant("phone");
+    overlay.SetTargetBundleName("com.example.target");
+    overlay.SetProxyDataUris({"datashare://duplicate", "datashare://duplicate"});
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay}));
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({SharedVariant("phone")}));
+}
+
+HWTEST_F(HapVerifyUtilsTestPart2, SharedVariantsSingletonValidation, Function | MediumTest | Level1)
+{
+    auto overlay = SharedVariant("phone");
+    overlay.SetTargetBundleName("com.example.target");
+    overlay.SetBundleName("");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay}));
+    overlay.SetBundleName("com.example.shared");
+    AppPackingTool::DependencyItem dependency;
+    dependency.bundleName = "com.example.shared";
+    dependency.moduleName = "library";
+    overlay.SetDependencyItemList({dependency});
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay}));
+    overlay.SetDependencyItemList({});
+    overlay.SetAbilityNames({"first", "second"});
+    overlay.SetContinueTypeMap({{"first", {"common"}}, {"second", {"common"}}});
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay}));
+    overlay.SetContinueTypeMap({});
+    overlay.SetAbilityNames({"duplicate", "duplicate"});
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay}));
+    auto other = SharedVariant("tablet");
+    other.SetTargetBundleName("com.example.otherTarget");
+    other.SetTargetPriority(99);
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({overlay, other}));
+    other.SetModuleType("feature");
+    EXPECT_TRUE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({other}));
+    other.SetTargetBundleName("");
+    EXPECT_FALSE(AppPackingTool::HapVerifyUtils::CheckSharedAppVariantsIsValid({other}));
+}
 } // namespace OHOS

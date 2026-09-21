@@ -16,6 +16,7 @@
 #include "pack_info_utils.h"
 
 #include <fstream>
+#include <set>
 
 #include "error/packing_tool_err_msg.h"
 #include "log.h"
@@ -29,6 +30,33 @@ const std::string DEFAULT_BUNDLE_TYPE = "APP";
 const std::string MODULE = "module";
 const std::string PACKAGES = "packages";
 const char DOT = '.';
+
+class PackInfoReleaseGuard final {
+public:
+    explicit PackInfoReleaseGuard(PackInfo& info) : info_(info) {}
+    ~PackInfoReleaseGuard()
+    {
+        info_.Release();
+    }
+
+    PackInfoReleaseGuard(const PackInfoReleaseGuard&) = delete;
+    PackInfoReleaseGuard& operator=(const PackInfoReleaseGuard&) = delete;
+    PackInfoReleaseGuard(PackInfoReleaseGuard&&) = delete;
+    PackInfoReleaseGuard& operator=(PackInfoReleaseGuard&&) = delete;
+
+private:
+    PackInfo& info_;
+};
+
+bool PushClonedNode(const PtJson& destination, const std::unique_ptr<PtJson>& source)
+{
+    if (!source) {
+        return false;
+    }
+    // Adding an existing cJSON node would alter the source array links.
+    // Push owns the clone on success and deletes it on insertion failure.
+    return destination.Push(cJSON_Duplicate(source->GetJson(), true));
+}
 }
 
 // java : mergeTwoPackInfo
@@ -37,6 +65,8 @@ bool PackInfoUtils::MergeTwoPackInfos(const std::string& srcPackInfoJsonStr1, co
 {
     PackInfo srcPackInfo1;
     PackInfo srcPackInfo2;
+    PackInfoReleaseGuard releaseFirst(srcPackInfo1);
+    PackInfoReleaseGuard releaseSecond(srcPackInfo2);
     if (!srcPackInfo1.ParseFromString(srcPackInfoJsonStr1)) {
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Parse from string1 failed![") + srcPackInfoJsonStr1 + "]").c_str());
@@ -74,7 +104,7 @@ bool PackInfoUtils::MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackI
         return false;
     }
     for (int32_t i = 0; i < modulesObj2->GetSize(); i++) {
-        if (!modulesObj1->Push(modulesObj2->Get(i))) {
+        if (!PushClonedNode(*modulesObj1, modulesObj2->Get(i))) {
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Push module node failed!").c_str());
             return false;
         }
@@ -91,7 +121,7 @@ bool PackInfoUtils::MergeTwoPackInfos(PackInfo& srcPackInfo1, PackInfo& srcPackI
         return false;
     }
     for (int32_t i = 0; i < packagesObj2->GetSize(); i++) {
-        if (!packagesObj1->Push(packagesObj2->Get(i))) {
+        if (!PushClonedNode(*packagesObj1, packagesObj2->Get(i))) {
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Push package node failed!").c_str());
             return false;
         }
@@ -106,6 +136,8 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(const std::string& srcPackInf
 {
     PackInfo srcPackInfo1;
     PackInfo srcPackInfo2;
+    PackInfoReleaseGuard releaseFirst(srcPackInfo1);
+    PackInfoReleaseGuard releaseSecond(srcPackInfo2);
     if (!srcPackInfo1.ParseFromString(srcPackInfoJsonStr1)) {
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
             std::string("Parse from string1 failed![") + srcPackInfoJsonStr1 + "]").c_str());
@@ -120,12 +152,15 @@ bool PackInfoUtils::MergeTwoPackInfosByPackagePair(const std::string& srcPackInf
         LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("VerifyPackInfos failed!").c_str());
         return false;
     }
+    std::set<std::string> mergedModuleNames;
     auto iter = packagesMap.begin();
     while (iter != packagesMap.end()) {
         std::string packageName = iter->first;
         std::string moduleName = iter->second;
         std::string tmpStr = packageName.substr(0, packageName.find_last_of(DOT));
-        if (!MergeTwoPackInfosByPackagePair(srcPackInfo1, srcPackInfo2, tmpStr, moduleName)) {
+        if ((mergedModuleNames.insert(moduleName).second &&
+            !FindAndMergeModulesByPackagePair(srcPackInfo1, srcPackInfo2, moduleName)) ||
+            !FindAndMergePackagesByPackagePair(srcPackInfo1, srcPackInfo2, tmpStr)) {
             LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs(
                 "MergeTwoPackInfosByPackagePair failed!").c_str());
             return false;
@@ -164,12 +199,11 @@ bool PackInfoUtils::FindAndMergeModulesByPackagePair(PackInfo& srcPackInfo1, Pac
             return false;
         }
         if (moduleNameInDistroObj.compare(moduleName) == 0) {
-            if (!modulesObj1->Push(modulesObj2->Get(i))) {
+            if (!PushClonedNode(*modulesObj1, modulesObj2->Get(i))) {
                 LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Push module node failed!").c_str());
                 return false;
             }
             isFind = true;
-            break;
         }
     }
     if (!isFind) {
@@ -202,7 +236,7 @@ bool PackInfoUtils::FindAndMergePackagesByPackagePair(PackInfo& srcPackInfo1, Pa
             return false;
         }
         if (packageNameInPackageObj.compare(packageName) == 0) {
-            if (!packagesObj1->Push(packagesObj2->Get(i))) {
+            if (!PushClonedNode(*packagesObj1, packagesObj2->Get(i))) {
                 LOGE("%s", PackingToolErrMsg::PARSE_JSON_FAILED.toStringWithArgs("Push Pacakge node failed!").c_str());
                 return false;
             }

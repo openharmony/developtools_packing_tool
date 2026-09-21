@@ -29,6 +29,23 @@ using packing_tool::error::PackingToolErrMsg;
 namespace OHOS {
 namespace AppPackingTool {
 namespace {
+bool CheckAppInputFileNames(const std::list<std::string> &paths)
+{
+    std::map<std::string, std::string> inputs;
+    for (const auto &path : paths) {
+        const std::string name = fs::path(path).filename().string();
+        const auto result = inputs.emplace(name, path);
+        if (!result.second) {
+            const std::string errMsg = "Duplicate input filename: " + name + ". Input #1: "
+                + result.first->second + ". Input #2: " + path
+                + ". Use distinct filenames and update the corresponding pack.info entries.";
+            LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs(errMsg).c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
 class TempDirGuard {
 public:
     ~TempDirGuard()
@@ -415,7 +432,7 @@ bool AppPackager::GetAndCheckHapPathAndHspPath(std::string &hapPath, std::string
         LOGE("%s", PackingToolErrMsg::APP_MODE_ARGS_INVALID.toStringWithArgs("--hsp-path is invalid.").c_str());
         return false;
     }
-    return true;
+    return CheckAppInputFileNames(formattedHapPathList_) && CheckAppInputFileNames(formattedHspPathList_);
 }
 
 bool AppPackager::GetAndCheckPackInfoPath(std::string &packInfoPath)

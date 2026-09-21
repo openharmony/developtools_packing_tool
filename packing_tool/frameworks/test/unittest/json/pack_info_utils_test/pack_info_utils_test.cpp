@@ -15,6 +15,7 @@
 
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <set>
 #include <string>
 
 #define private public
@@ -32,6 +33,41 @@ using namespace std;
 
 namespace OHOS {
 namespace {
+int64_t g_liveJsonAllocations = 0;
+
+void* CountJsonAllocation(size_t size)
+{
+    void* memory = std::malloc(size);
+    if (memory != nullptr) {
+        ++g_liveJsonAllocations;
+    }
+    return memory;
+}
+
+void CountJsonFree(void* memory)
+{
+    if (memory != nullptr) {
+        --g_liveJsonAllocations;
+    }
+    std::free(memory);
+}
+
+class JsonAllocationGuard final {
+public:
+    JsonAllocationGuard()
+    {
+        g_liveJsonAllocations = 0;
+        cJSON_Hooks hooks = {CountJsonAllocation, CountJsonFree};
+        cJSON_InitHooks(&hooks);
+    }
+    ~JsonAllocationGuard()
+    {
+        cJSON_InitHooks(nullptr);
+    }
+    JsonAllocationGuard(const JsonAllocationGuard&) = delete;
+    JsonAllocationGuard& operator=(const JsonAllocationGuard&) = delete;
+};
+
 const string PACKING_INFO_STR_1 = "{"
     "\"summary\": {"
         "\"app\": {"
@@ -769,5 +805,195 @@ HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_1200, Function | Medi
 
     EXPECT_FALSE(packInfoUtils.MergeTwoPackInfosByPackagePair(PACKING_INFO_STR_1, PACKING_INFO_STR_2,
                                                               packagesMap, dstPackInfoJsonStr));
+}
+
+/*
+ * @tc.name: MergeSelectedVariantsOnce
+ * @tc.desc: Keep all selected module variants once and filter packages by their physical names.
+ * @tc.type: FUNC
+ */
+HWTEST_F(PackInfoUtilsTest, MergeSelectedVariantsOnce, Function | MediumTest | Level1)
+{
+    using OHOS::AppPackingTool::PackInfo;
+    using OHOS::AppPackingTool::PackInfoUtils;
+    using OHOS::AppPackingTool::PtJson;
+    const std::string base = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[]},"packages":[]})";
+    const std::string source = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[{"distro":{"moduleName":"shared"},"deviceType":["phone"]},
+        {"distro":{"moduleName":"shared"},"deviceType":["tablet"]},
+        {"distro":{"moduleName":"unused"},"deviceType":["tv"]}]},
+        "packages":[{"name":"phone"},{"name":"tablet"},{"name":"unused"}]})";
+    std::map<std::string, std::string> selected = {{"phone.hsp", "shared"}, {"tablet.hsp", "shared"}};
+    std::string output;
+    ASSERT_TRUE(PackInfoUtils::MergeTwoPackInfosByPackagePair(base, source, selected, output));
+    PackInfo result;
+    ASSERT_TRUE(result.ParseFromString(output));
+    std::unique_ptr<PtJson> modules;
+    std::unique_ptr<PtJson> packages;
+    ASSERT_TRUE(result.GetModulesObject(modules));
+    ASSERT_TRUE(result.GetPackagesObject(packages));
+    EXPECT_EQ(modules->GetSize(), 2);
+    EXPECT_EQ(packages->GetSize(), 2);
+    EXPECT_EQ(output.find("unused"), std::string::npos);
+    EXPECT_NE(output.find("phone"), std::string::npos);
+    EXPECT_NE(output.find("tablet"), std::string::npos);
+    selected["missing.hsp"] = "shared";
+    EXPECT_FALSE(PackInfoUtils::MergeTwoPackInfosByPackagePair(base, source, selected, output));
+    selected = {{"phone.hsp", "missing"}};
+    EXPECT_FALSE(PackInfoUtils::MergeTwoPackInfosByPackagePair(base, source, selected, output));
+}
+
+/*
+ * @tc.name: MergeTwoPackInfosByPackagePair_001
+ * @tc.desc: Consecutive sources retain every same-name module variant and its package metadata once.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfosByPackagePair_001, Function | MediumTest | Level1)
+{
+    using namespace OHOS::AppPackingTool;
+    const std::string base = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[]},"packages":[]})";
+    const std::string first = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[{"distro":{"moduleName":"shared"},"deviceType":["phone"]},
+        {"distro":{"moduleName":"shared"},"deviceType":["tablet"]}]},
+        "packages":[{"name":"phone","deviceType":["phone"]},
+        {"name":"tablet","deviceType":["tablet"]}]})";
+    const std::string second = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[{"distro":{"moduleName":"shared"},"deviceType":["tv"]},
+        {"distro":{"moduleName":"shared"},"deviceType":["wearable"]}]},
+        "packages":[{"name":"tv","deviceType":["tv"]},
+        {"name":"wearable","deviceType":["wearable"]}]})";
+    std::string intermediate;
+    std::string output;
+    ASSERT_TRUE(PackInfoUtils::MergeTwoPackInfosByPackagePair(base, first,
+        {{"phone.hsp", "shared"}, {"tablet.hsp", "shared"}}, intermediate));
+    ASSERT_TRUE(PackInfoUtils::MergeTwoPackInfosByPackagePair(intermediate, second,
+        {{"tv.hsp", "shared"}, {"wearable.hsp", "shared"}}, output));
+    PackInfo result;
+    ASSERT_TRUE(result.ParseFromString(output));
+    std::unique_ptr<PtJson> modules;
+    std::unique_ptr<PtJson> packages;
+    ASSERT_TRUE(result.GetModulesObject(modules));
+    ASSERT_TRUE(result.GetPackagesObject(packages));
+    ASSERT_EQ(modules->GetSize(), 4);
+    ASSERT_EQ(packages->GetSize(), 4);
+    std::set<std::string> moduleDevices;
+    std::set<std::string> packageNames;
+    for (int32_t i = 0; i < 4; ++i) {
+        std::unique_ptr<PtJson> distro;
+        std::unique_ptr<PtJson> devices;
+        ASSERT_EQ(modules->Get(i)->GetObject("distro", &distro), Result::SUCCESS);
+        std::string name;
+        ASSERT_EQ(distro->GetString("moduleName", &name), Result::SUCCESS);
+        EXPECT_EQ(name, "shared");
+        ASSERT_EQ(modules->Get(i)->GetArray("deviceType", &devices), Result::SUCCESS);
+        ASSERT_EQ(devices->GetSize(), 1);
+        EXPECT_TRUE(moduleDevices.insert(devices->Get(0)->GetString()).second);
+        ASSERT_EQ(packages->Get(i)->GetString("name", &name), Result::SUCCESS);
+        EXPECT_TRUE(packageNames.insert(name).second);
+        ASSERT_EQ(packages->Get(i)->GetArray("deviceType", &devices), Result::SUCCESS);
+        ASSERT_EQ(devices->GetSize(), 1);
+        EXPECT_EQ(devices->Get(0)->GetString(), name);
+    }
+    const std::set<std::string> expected = {"phone", "tablet", "tv", "wearable"};
+    EXPECT_EQ(moduleDevices, expected);
+    EXPECT_EQ(packageNames, expected);
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_001
+ * @tc.desc: Both merge paths copy nested metadata without modifying or sharing the source nodes.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_001, Function | MediumTest | Level1)
+{
+    using namespace OHOS::AppPackingTool;
+    const std::string base = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[]},"packages":[]})";
+    const std::string sourceJson = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[{"distro":{"moduleName":"shared"},"deviceType":["phone"],"custom":{"tag":"keep"}},
+        {"distro":{"moduleName":"shared"},"deviceType":["tablet"]}]},
+        "packages":[{"name":"phone","custom":{"tag":"keep"}},{"name":"tablet"}]})";
+    for (const bool selectedOnly : {false, true}) {
+        SCOPED_TRACE(selectedOnly);
+        PackInfo destination;
+        PackInfo source;
+        ASSERT_TRUE(destination.ParseFromString(base));
+        ASSERT_TRUE(source.ParseFromString(sourceJson));
+        const auto original = source.ToString();
+        if (selectedOnly) {
+            ASSERT_TRUE(PackInfoUtils::MergeTwoPackInfosByPackagePair(destination, source, "phone", "shared"));
+        } else {
+            ASSERT_TRUE(PackInfoUtils::MergeTwoPackInfos(destination, source));
+        }
+        EXPECT_EQ(source.ToString(), original);
+        std::unique_ptr<PtJson> modules;
+        std::unique_ptr<PtJson> packages;
+        std::unique_ptr<PtJson> sourceModules;
+        std::unique_ptr<PtJson> sourcePackages;
+        ASSERT_TRUE(destination.GetModulesObject(modules));
+        ASSERT_TRUE(destination.GetPackagesObject(packages));
+        ASSERT_TRUE(source.GetModulesObject(sourceModules));
+        ASSERT_TRUE(source.GetPackagesObject(sourcePackages));
+        ASSERT_EQ(modules->GetSize(), 2);
+        ASSERT_EQ(packages->GetSize(), selectedOnly ? 1 : 2);
+        EXPECT_EQ(modules->Get(0)->Stringify(), sourceModules->Get(0)->Stringify());
+        EXPECT_EQ(modules->Get(1)->Stringify(), sourceModules->Get(1)->Stringify());
+        EXPECT_EQ(packages->Get(0)->Stringify(), sourcePackages->Get(0)->Stringify());
+        if (!selectedOnly) {
+            EXPECT_EQ(packages->Get(1)->Stringify(), sourcePackages->Get(1)->Stringify());
+        }
+        std::unique_ptr<PtJson> moduleCustom;
+        std::unique_ptr<PtJson> packageCustom;
+        ASSERT_EQ(modules->Get(0)->GetObject("custom", &moduleCustom), Result::SUCCESS);
+        ASSERT_EQ(packages->Get(0)->GetObject("custom", &packageCustom), Result::SUCCESS);
+        ASSERT_EQ(moduleCustom->SetString("tag", "changed"), Result::SUCCESS);
+        ASSERT_EQ(packageCustom->SetString("tag", "changed"), Result::SUCCESS);
+        EXPECT_EQ(source.ToString(), original);
+    }
+}
+
+/*
+ * @tc.name: MergeTwoPackInfos_002
+ * @tc.desc: String merge entry points release JSON trees on success and every failure stage exercised here.
+ * @tc.type: FUNC
+ * @tc.require:
+ */
+HWTEST_F(PackInfoUtilsTest, MergeTwoPackInfos_002, Function | MediumTest | Level2)
+{
+    using namespace OHOS::AppPackingTool;
+    const std::string base = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[]},"packages":[]})";
+    const std::string source = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[{"distro":{"moduleName":"shared"},"deviceType":["phone"]}]},"packages":[{"name":"phone"}]})";
+    const std::string noPackages = R"({"summary":{"app":{"bundleName":"test","version":{"code":1,"name":"1.0"}},
+        "modules":[{"distro":{"moduleName":"shared"},"deviceType":["phone"]}]}})";
+    struct MergeCase {
+        std::string first;
+        std::string second;
+        bool expected;
+    };
+    const MergeCase cases[] = {
+        {base, source, true}, {"{", source, false}, {base, "{", false},
+        {base, "{}", false}, {base, noPackages, false}
+    };
+    // This GTest target runs cases sequentially; restore the default hooks before leaving the test.
+    JsonAllocationGuard guard;
+    for (const auto& input : cases) {
+        SCOPED_TRACE(input.second);
+        std::string output;
+        EXPECT_EQ(PackInfoUtils::MergeTwoPackInfos(input.first, input.second, output), input.expected);
+        EXPECT_EQ(g_liveJsonAllocations, 0);
+        EXPECT_EQ(PackInfoUtils::MergeTwoPackInfosByPackagePair(input.first, input.second,
+            {{"phone.hsp", "shared"}}, output), input.expected);
+        EXPECT_EQ(g_liveJsonAllocations, 0);
+    }
+    std::string output;
+    EXPECT_FALSE(PackInfoUtils::MergeTwoPackInfosByPackagePair(base, source,
+        {{"phone.hsp", "shared"}, {"zmissing.hsp", "shared"}}, output));
+    EXPECT_EQ(g_liveJsonAllocations, 0);
 }
 }
