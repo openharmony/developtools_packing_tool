@@ -26,6 +26,7 @@
 #include "json/pack_info.h"
 #include "log.h"
 #include "utils.h"
+#include "parse_packing_int.h"
 #include "zip_utils.h"
 #include "error/packing_tool_err_msg.h"
 
@@ -96,16 +97,10 @@ int32_t GeneralNormalize::PreProcess()
                 "--version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
-        try {
-            int32_t versionCode = std::stoi(it->second);
-            if (versionCode > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                    "--version-code is invalid.").c_str());
-                return ERR_INVALID_VALUE;
-            }
-        } catch (const std::exception& e) {
+        int32_t versionCode = 0;
+        if (!ParsePackingInt32(it->second, versionCode) || versionCode > Constants::MAX_VERSION_CODE) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "--version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -155,16 +150,10 @@ int32_t GeneralNormalize::PreProcess()
                 "--min-compatible-version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
-        try {
-            int32_t minCompatibleVersionCode = std::stoi(it->second);
-            if (minCompatibleVersionCode > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                    "--min-compatible-version-code is invalid.").c_str());
-                return ERR_INVALID_VALUE;
-            }
-        } catch (const std::exception& e) {
+        int32_t minCompatibleVersionCode = 0;
+        if (!ParsePackingInt32(it->second, minCompatibleVersionCode) || minCompatibleVersionCode > Constants::MAX_VERSION_CODE) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "--min-compatible-version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -176,16 +165,10 @@ int32_t GeneralNormalize::PreProcess()
                 "--min-api-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
-        try {
-            int32_t minApiVersion = std::stoi(it->second);
-            if (minApiVersion > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                    "--min-api-version is invalid.").c_str());
-                return ERR_INVALID_VALUE;
-            }
-        } catch (const std::exception& e) {
+        int32_t minApiVersion = 0;
+        if (!ParsePackingInt32(it->second, minApiVersion) || minApiVersion > Constants::MAX_VERSION_CODE) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "--min-api-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -197,16 +180,10 @@ int32_t GeneralNormalize::PreProcess()
                 "--target-api-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
-        try {
-            int32_t targetApiVersion = std::stoi(it->second);
-            if (targetApiVersion > Constants::MAX_VERSION_CODE) {
-                LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                    "--target-api-version is invalid.").c_str());
-                return ERR_INVALID_VALUE;
-            }
-        } catch (const std::exception& e) {
+        int32_t targetApiVersion = 0;
+        if (!ParsePackingInt32(it->second, targetApiVersion) || targetApiVersion > Constants::MAX_VERSION_CODE) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "--target-api-version is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     }
@@ -270,11 +247,9 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         moduleJson.GetStageVersion(version);
         generalNormalizeVersion.originVersionCode = version.versionCode;
         int32_t versionCode = 0;
-        try {
-            versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_VERSION_CODE), versionCode)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!moduleJson.SetVersionCode(versionCode, true)) {
@@ -327,11 +302,9 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         moduleJson.GetStageVersion(version);
         generalNormalizeVersion.originMinCompatibleVersionCode = version.minCompatibleVersionCode;
         int32_t minCompatibleVersionCode = 0;
-        try {
-            minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE), minCompatibleVersionCode)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!moduleJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, true)) {
@@ -347,11 +320,9 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         moduleJson.GetMinApiVersion(originMinAPIVersion);
         generalNormalizeVersion.originMinAPIVersion = originMinAPIVersion;
         int32_t minAPIVersion = 0;
-        try {
-            minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_MIN_API_VERSION), minAPIVersion)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!moduleJson.SetMinAPIVersion(minAPIVersion, true)) {
@@ -367,11 +338,9 @@ bool GeneralNormalize::ModifyModuleJson(const std::string &moduleJsonPath,
         moduleJson.GetTargetApiVersion(originTargetAPIVersion);
         generalNormalizeVersion.originTargetAPIVersion = originTargetAPIVersion;
         int32_t targetAPIVersion = 0;
-        try {
-            targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION), targetAPIVersion)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!moduleJson.SetTargetAPIVersion(targetAPIVersion, true)) {
@@ -473,11 +442,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         configJson.GetFaVersion(version);
         generalNormalizeVersion.originVersionCode = version.versionCode;
         int32_t versionCode = 0;
-        try {
-            versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_VERSION_CODE), versionCode)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!configJson.SetVersionCode(versionCode, false)) {
@@ -517,11 +484,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         configJson.GetFaVersion(version);
         generalNormalizeVersion.originMinCompatibleVersionCode = version.minCompatibleVersionCode;
         int32_t minCompatibleVersionCode = 0;
-        try {
-            minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE), minCompatibleVersionCode)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!configJson.SetMinCompatibleVersionCode(minCompatibleVersionCode, false)) {
@@ -537,11 +502,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         configJson.GetFaModuleApiVersion(moduleApiVersion);
         generalNormalizeVersion.originMinAPIVersion = moduleApiVersion.compatibleApiVersion;
         int32_t minAPIVersion = 0;
-        try {
-            minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_MIN_API_VERSION), minAPIVersion)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!configJson.SetMinAPIVersion(minAPIVersion, false)) {
@@ -557,11 +520,9 @@ bool GeneralNormalize::ModifyConfigJson(const std::string &configJsonPath,
         configJson.GetFaModuleApiVersion(moduleApiVersion);
         generalNormalizeVersion.originTargetAPIVersion = moduleApiVersion.targetApiVersion;
         int32_t targetAPIVersion = 0;
-        try {
-            targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION), targetAPIVersion)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!configJson.SetTargetAPIVersion(targetAPIVersion, false)) {
@@ -660,11 +621,9 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
         int32_t versionCode = 0;
-        try {
-            versionCode = std::stoi(parameterMap_.at(Constants::PARAM_VERSION_CODE));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_VERSION_CODE), versionCode)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!packInfo.SetVersionCode(versionCode)) {
@@ -707,11 +666,9 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     it = parameterMap_.find(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE);
     if (it != parameterMap_.end()) {
         int32_t minCompatibleVersionCode = 0;
-        try {
-            minCompatibleVersionCode = std::stoi(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_MIN_COMPATIBLE_VERSION_CODE), minCompatibleVersionCode)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!packInfo.SetMinCompatibleVersionCode(minCompatibleVersionCode)) {
@@ -724,11 +681,9 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     it = parameterMap_.find(Constants::PARAM_MIN_API_VERSION);
     if (it != parameterMap_.end()) {
         int32_t minAPIVersion = 0;
-        try {
-            minAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_MIN_API_VERSION));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_MIN_API_VERSION), minAPIVersion)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!packInfo.SetMinAPIVersion(minAPIVersion)) {
@@ -741,11 +696,9 @@ bool GeneralNormalize::ModifyPackInfo(const std::string &packInfoPath)
     it = parameterMap_.find(Constants::PARAM_TARGET_API_VERSION);
     if (it != parameterMap_.end()) {
         int32_t targetAPIVersion = 0;
-        try {
-            targetAPIVersion = std::stoi(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION));
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(parameterMap_.at(Constants::PARAM_TARGET_API_VERSION), targetAPIVersion)) {
             LOGE("%s", PackingToolErrMsg::GENERAL_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "CLI integer parameter is invalid.").c_str());
             return false;
         }
         if (!packInfo.SetTargetAPIVersion(targetAPIVersion)) {

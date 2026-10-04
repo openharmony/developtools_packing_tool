@@ -23,6 +23,7 @@
 #include "json/pack_info.h"
 #include "log.h"
 #include "utils.h"
+#include "parse_packing_int.h"
 #include "zip_utils.h"
 #include "error/packing_tool_err_msg.h"
 
@@ -295,11 +296,9 @@ int32_t VersionNormalize::Process()
     int32_t versionCode = 0;
     auto it = parameterMap_.find(Constants::PARAM_VERSION_CODE);
     if (it != parameterMap_.end()) {
-        try {
-            versionCode = std::stoi(it->second);
-        } catch (const std::exception& e) {
+        if (!ParsePackingInt32(it->second, versionCode)) {
             LOGE("%s", PackingToolErrMsg::VERSION_NORMALIZE_MODE_ARGS_INVALID.toStringWithArgs(
-                ("Exception: " + std::string(e.what())).c_str()).c_str());
+                "Input version-code is invalid.").c_str());
             return ERR_INVALID_VALUE;
         }
     } else {
